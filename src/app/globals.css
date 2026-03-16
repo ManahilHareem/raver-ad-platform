@@ -1,26 +1,55 @@
 @import "tailwindcss";
 
+@theme {
+  /* Fonts */
+  --font-sans: "Outfit", "Inter", ui-sans-serif, system-ui, sans-serif;
+  --font-mono: "Fira Code", ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+  
+  /* Brand Palette */
+  --color-brand-primary: #4F46E5;    /* Indigo 600 */
+  --color-brand-primary-hover: #4338CA; /* Indigo 700 */
+  --color-brand-secondary: #0EA5E9;  /* Sky 500 */
+  --color-brand-accent: #22D3EE;     /* Cyan 400 */
+  
+  /* Semantic Surfaces */
+  --color-surface-base: var(--background);
+  --color-surface-card: var(--card-bg);
+  --color-surface-card-hover: var(--card-hover);
+  
+  /* Semantic Text */
+  --color-text-primary: var(--foreground);
+  --color-text-secondary: var(--text-muted);
+  --color-text-accent: var(--color-brand-primary);
+  
+  /* Semantic Borders */
+  --color-border-subtle: var(--card-border);
+}
+
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --background: #f8fafc;
+  --foreground: #0f172a;
+  --card-bg: rgba(255, 255, 255, 0.7);
+  --card-hover: rgba(255, 255, 255, 0.9);
+  --card-border: rgba(0, 0, 0, 0.05);
+  --text-muted: #64748b;
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+.dark {
+  --background: #020617;
+  --foreground: #f8fafc;
+  --card-bg: rgba(15, 23, 42, 0.6);
+  --card-hover: rgba(15, 23, 42, 0.8);
+  --card-border: rgba(255, 255, 255, 0.05);
+  --text-muted: #94a3b8;
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  @apply bg-surface-base text-text-primary antialiased selection:bg-brand-primary/20 selection:text-brand-primary;
+  font-feature-settings: "cv02", "cv03", "cv04", "cv11";
+}
+
+@layer utilities {
+  .glass {
+    @apply backdrop-blur-xl bg-surface-card border border-border-subtle shadow-xl;
+  }
 }
