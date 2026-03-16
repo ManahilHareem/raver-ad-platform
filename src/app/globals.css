@@ -6,10 +6,7 @@
   --font-mono: "Fira Code", ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
   
   /* Brand Palette */
-  --color-brand-primary: #4F46E5;    /* Indigo 600 */
-  --color-brand-primary-hover: #4338CA; /* Indigo 700 */
   --color-brand-secondary: #0EA5E9;  /* Sky 500 */
-  --color-brand-accent: #22D3EE;     /* Cyan 400 */
   
   /* Semantic Surfaces */
   --color-surface-base: var(--background);
@@ -44,7 +41,7 @@
 }
 
 body {
-  @apply bg-surface-base text-text-primary antialiased selection:bg-brand-primary/20 selection:text-brand-primary;
+  @apply bg-surface-base text-text-primary antialiased;
   font-feature-settings: "cv02", "cv03", "cv04", "cv11";
 }
 
