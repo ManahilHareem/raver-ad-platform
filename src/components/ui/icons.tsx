@@ -25,7 +25,12 @@ import {
   ArrowRight,
   Instagram,
   Facebook,
-  Youtube
+  Youtube,
+  Zap,
+  Activity as LucideActivity,
+  Volume2,
+  VolumeX,
+  Square
 } from "lucide-react";
 import { CustomIcons } from "./custom-icons";
 
@@ -64,5 +69,11 @@ export const Icons = {
   ArrowRight: ArrowRight,
   Instagram: Instagram,
   Facebook: Facebook,
-  Youtube: Youtube
+  Youtube: Youtube,
+  Activity: Zap,
+  AudioWave: LucideActivity,
+  whiteMagicWand: CustomIcons.whiteMagicWand,
+  Volume: Volume2,
+  Mute: VolumeX,
+  Square: Square
 };

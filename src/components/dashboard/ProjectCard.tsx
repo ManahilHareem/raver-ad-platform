@@ -29,12 +29,9 @@ export default function ProjectCard({ title, time, members, image }: ProjectCard
       <div className="pt-[12px] pb-[4px] px-[16px] flex flex-col gap-[12px] flex-1">
         <div className="flex items-start justify-between gap-2">
           <h3 className="text-[16px] font-bold text-[#121212] leading-tight line-clamp-1">{title}</h3>
-          <button className="p-1 hover:bg-slate-50 rounded-lg transition-colors">
-            <Icons.More className="w-5 h-5 text-[#4F4F4F]" />
-          </button>
         </div>
 
-        <div className="flex items-center justify-between mt-auto">
+        <div className="flex items-center gap-[16px] mt-auto">
           <div className="flex items-center gap-2 text-[12px] font-regular text-[#4F4F4F]">
             <Icons.Clock className="w-4 h-4" />
             <span>{time} ago</span>
