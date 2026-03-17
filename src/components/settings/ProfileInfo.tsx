@@ -12,7 +12,7 @@ export default function ProfileInfo() {
         
         {/* Banner and Avatar section */}
         <div className="relative w-full h-[180px] rounded-[16px] overflow-visible mb-16">
-          <div className="w-full h-full bg-[linear-gradient(90deg,_#ABABFC_0%,_#C4C4F4_50%,_rgba(252,171,236,0.72)_100%)]  rounded-[16px]" />
+          <div className="w-full h-full bg-[linear-gradient(90deg,#ABABFC_0%,#C4C4F4_50%,rgba(252,171,236,0.72)_100%)]  rounded-[16px]" />
           <div className="absolute -bottom-12 left-6 w-[120px] h-[120px] rounded-[24px] border-4 border-white overflow-hidden bg-white shadow-sm">
             <Image 
               src="/assets/Template images /5848f944078b1cf8c3d4dc417dae4c9e60024951.jpg" 

@@ -15,7 +15,7 @@ export default function BillingSettings({
       <div className="flex flex-col gap-[12px]">
         <h3 className="text-[18px] font-medium text-[#121212]">Billing & Credits</h3>
         
-        <div className="bg-[linear-gradient(135deg,_#EEF2FF_0%,_#FAF5FF_100%)] p-[20px] rounded-[16px] border border-[#E0E7FF] flex items-center justify-between shadow-sm relative overflow-hidden group">
+        <div className="bg-[linear-gradient(135deg,#EEF2FF_0%,#FAF5FF_100%)] p-[20px] rounded-[16px] border border-[#E0E7FF] flex items-center justify-between shadow-sm relative overflow-hidden group">
           <div className="absolute top-0 right-0 w-[300px] h-[300px] bg-blue-400 opacity-5 blur-[100px] -mr-32 -mt-32 transition-opacity group-hover:opacity-10 duration-500" />
           <div className="flex flex-col relative z-10">
             <span className="text-[13px] text-[#4F4F4F] font-regular  tracking-wider">Current Balance</span>

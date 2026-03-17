@@ -21,7 +21,7 @@ export default function SecuritySettings({
           className="flex items-center justify-between p-6 bg-white rounded-[16px] border border-[#F1F5F9] hover:border-[#E2E8F0] transition-colors shadow-sm group text-left"
         >
           <div className="flex items-center gap-4">
-            <div className="p-3 bg-gray-50 rounded-[12px]  transition-colors">
+            <div className="p-3 bg-gray-50 rounded-[12px] transition-colors">
               <Icons.Lock className="w-5 h-5 text-[#64748B]" />
             </div>
             <div className="flex flex-col gap-1">
