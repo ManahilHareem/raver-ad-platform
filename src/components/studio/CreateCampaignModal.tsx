@@ -36,7 +36,7 @@ export default function CreateCampaignModal({ isOpen, onClose }: CreateCampaignM
           <div className="flex gap-2 mb-4 ">
             {[1, 2, 3, 4].map((i) => (
               <div key={i} className={`h-[3px] flex-1 rounded-full transition-all duration-500 ${
-                i <= step ? "bg-[linear-gradient(90deg,_#01012A_0%,_#2E2C66_100%)] " : "bg-[#E2E8F0]"
+                i <= step ? "bg-[linear-gradient(90deg,#01012A_0%,#2E2C66_100%)] " : "bg-[#E2E8F0]"
               }`} />
             ))}
           </div>

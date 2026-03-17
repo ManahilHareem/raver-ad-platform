@@ -11,11 +11,11 @@ interface StatsCardProps {
 
 export default function StatsCard({ label, value, change, icon: Icon, trend = "up" }: StatsCardProps) {
   return (
-    <div className="bg-white px-[21px] pt-[21px] pb-[1px] rounded-[8px]  min-w-[230px] h-[98px] border-[0.35px] border-[#0000000D] flex flex-col gap-[8px] shadow-sm hover:shadow-md transition-shadow">
+    <div className="bg-white px-[21px] pt-[21px] rounded-[8px]  min-w-[230px] h-[98px] border-[0.35px] border-[#0000000D] flex flex-col gap-[8px] shadow-sm hover:shadow-md transition-shadow">
       <div className="flex items-center justify-between">
         <span className="text-[12px] font-medium text-[#4F4F4F]">{label}</span>
       </div>
-      <div className="flex items-end justify-between">
+      <div className="flex items-baseline gap-1 mt-1 pb-px">
         <span className="text-[24px] font-bold text-[#02022C]">{value}</span>
         <span className={cn(
           "text-[12px] font-bold px-2 py-0.5 rounded-full bg-opacity-10",

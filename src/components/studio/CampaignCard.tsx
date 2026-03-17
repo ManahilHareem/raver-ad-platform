@@ -23,7 +23,7 @@ export default function CampaignCard({ title, status, image }: CampaignCardProps
         />
         <div className="absolute top-3 right-3">
           <span className={`px-[8px] py-[4px] rounded-[4px] text-[11px] font-bold uppercase tracking-wider ${
-            isReady ? "bg-[linear-gradient(90deg,_#01012A_0%,_#2E2C66_100%)] text-[#FFFFFF]" : "bg-[linear-gradient(135deg,_#AD46FF_0%,_#2B7FFF_100%)] text-[#FFFFFF]"
+            isReady ? "bg-[linear-gradient(90deg,#01012A_0%,#2E2C66_100%)] text-white shadow-lg shadow-[#01012A]/10" : "bg-[linear-gradient(135deg,#AD46FF_0%,#2B7FFF_100%)] text-white"
           }`}>
             {status}
           </span>

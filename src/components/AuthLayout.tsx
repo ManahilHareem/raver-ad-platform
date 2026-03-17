@@ -27,7 +27,7 @@ export default function AuthLayout({
             priority
           />
           {/* Overlay Content */}
-          <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
+          <div className="absolute inset-0 bg-linear-to-t from-black/60 via-black/20 to-transparent" />
           <div className="absolute bottom-[64px] left-[64px] right-[64px] flex flex-col gap-[16px]">
             <h2 className="text-[32px] font-bold text-white leading-tight">
               {title}
