@@ -30,7 +30,15 @@ import {
   Activity as LucideActivity,
   Volume2,
   VolumeX,
-  Square
+  Square,
+  CreditCard,
+  Mail,
+  Lock,
+  ChevronRight,
+  PenLine,
+  Eye,
+  EyeOff,
+  ShieldCheck
 } from "lucide-react";
 import { CustomIcons } from "./custom-icons";
 
@@ -75,5 +83,13 @@ export const Icons = {
   whiteMagicWand: CustomIcons.whiteMagicWand,
   Volume: Volume2,
   Mute: VolumeX,
-  Square: Square
+  Square: Square,
+  CreditCard: CreditCard,
+  Mail: Mail,
+  Lock: Lock,
+  ChevronRight: ChevronRight,
+  PenLine: PenLine,
+  Eye: Eye,
+  EyeOff: EyeOff,
+  Shield: ShieldCheck
 };

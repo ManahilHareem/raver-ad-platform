@@ -56,14 +56,16 @@ export const CustomIcons = {
       />
     </div>
   ),
-  MagicWand: (props: React.SVGProps<SVGSVGElement>) => (
-    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" {...props}>
-      <path d="M11 2L5.5 12.5L11 23" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-      <path d="M15 2L20.5 12.5L15 23" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-      <path d="M22 2L11 13" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-      <path d="M7 6.5L2 12.5L7 18.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-      <path d="M5 3.33334L5.18423 3.83122C5.42581 4.48407 5.5466 4.8105 5.78472 5.04863C6.02284 5.28674 6.34927 5.40754 7.00212 5.64911L7.5 5.83334L7.00212 6.01758C6.34927 6.25915 6.02284 6.37994 5.78472 6.61807C5.5466 6.85619 5.42581 7.18262 5.18423 7.83547L5 8.33334L4.81577 7.83547C4.57419 7.18262 4.4534 6.85619 4.21528 6.61807C3.97716 6.37994 3.65073 6.25915 2.99788 6.01758L2.5 5.83334L2.99788 5.64911C3.65073 5.40754 3.97716 5.28674 4.21528 5.04862C4.4534 4.8105 4.57419 4.48407 4.81577 3.83122L5 3.33334Z" stroke="currentColor" strokeWidth="1.2" strokeLinejoin="round" />
-    </svg>
+  MagicWand: ({ className }: { className?: string }) => (
+    <div className={className}>
+      <Image
+        src="/assets/magic-wand-01 (1).svg"
+        alt="Settings"
+        width={20}
+        height={20}
+        className="w-full h-full object-contain brightness-0 group-hover:brightness-0 group-hover:invert transition-all duration-200"
+      />
+    </div>
   ),
   Settings: ({ className }: { className?: string }) => (
     <div className={className}>

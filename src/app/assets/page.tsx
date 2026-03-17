@@ -111,9 +111,10 @@ export default function AssetsPage() {
 
   return (
     <DashboardLayout>
-      <div className="flex flex-col gap-6 p-4 max-w-[1400px] mx-auto">
+      <div className="flex flex-col gap-[10px] p-[20px] mx-auto w-full">
+        < div className="flex flex-col gap-[16px] p-[16px] rounded-[12px] bg-[#FFFFFF] border-[0.35px] border-[#0000001A]">
         {/* Header Section */}
-        <div className="flex flex-col gap-1">
+        <div className="flex flex-col gap- w-full bg-[#FFFFFF]">
           <h1 className="text-[32px] font-bold text-[#121212]">Assets Library</h1>
           <p className="text-[14px] text-[#64748B]">
             Upload and manage your brand assets, media, and creative files
@@ -125,11 +126,11 @@ export default function AssetsPage() {
           {stats.map((stat, i) => (
             <div key={i} className="bg-[#F8F8F8] w-full h-[98px] px-[21px] flex flex-col justify-center rounded-[8px] border border-[#F1F5F9] shadow-sm gap-2">
               <span className="text-[12px] font-medium text-[#64748B] uppercase tracking-wider">{stat.label}</span>
-              <span className="text-[28px] font-bold text-[#02022C]">{stat.value}</span>
+              <span className="text-[24px] font-bold text-[#02022C]">{stat.value}</span>
             </div>
           ))}
         </div>
-
+</div>
         {/* Content Section */}
         <div className="flex flex-col gap-[24px] bg-[#FFFFFF] p-[24px] rounded-[12px] border-[0.35px] border-[#0000001A] flex-1 min-h-[600px]">
           
