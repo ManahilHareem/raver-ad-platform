@@ -14,9 +14,6 @@ Raver.ai is a next-generation platform designed to streamline advertising workfl
 First, ensure you have the required environment variables. Create a `.env` file in the root of your project:
 
 ```env
-# RDS Configuration (Optional - if backend API is set up)
-export RDSHOST="raver-ad-plateform.cct7vwwwdvxn.us-east-1.rds.amazonaws.com" 
-
 # API Configuration
 NEXT_PUBLIC_API_URL="http://localhost:3000/api"
 ```
