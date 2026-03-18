@@ -13,7 +13,7 @@ export default function CampaignCard({ title, status, image }: CampaignCardProps
   const isReady = status === "Ready";
 
   return (
-    <div className="flex flex-col bg-[#F8F8F8] rounded-[12px] overflow-hidden  border-[0.35px] border-[#0000001A] shadow-sm group hover:shadow-md transition-all">
+    <div className="flex flex-col bg-[#F8F8F8] rounded-[12px] p-[8px] overflow-hidden  border-[0.35px] border-[#0000001A] shadow-sm group hover:shadow-md transition-all">
       <div className="relative aspect-video w-full overflow-hidden">
         <Image 
           src={image} 
@@ -29,16 +29,16 @@ export default function CampaignCard({ title, status, image }: CampaignCardProps
           </span>
         </div>
       </div>
-      <div className="p-4 flex flex-col gap-[12px]">
+      <div className="flex flex-col gap-[4px] pt-[12px] pb-[4px]">
         <h3 className="text-[16px] font-semibold text-[#121212]">{title}</h3>
         <div className="flex items-center gap-[4px]">
           <button className="flex-1 h-[36px] bg-white border border-[#F1F5F9] rounded-[5px] text-[12px] font-medium text-[#121212] hover:bg-[#F8FAFC] transition-colors">
             Preview
           </button>
-          <button className="w-[36px] h-[36px] flex items-center justify-center border border-[#F1F5F9] rounded-[5px] text-[#121212] hover:text-[#02022C] transition-colors">
+          <button className="w-[36px] h-[36px] bg-white flex items-center justify-center border border-[#F1F5F9] rounded-[5px] text-[#121212] hover:text-[#02022C] transition-colors">
             <Icons.Download className="w-4 h-4" />
           </button>
-          <button className="w-[36px] h-[36px] flex items-center justify-center border border-[#F1F5F9] rounded-[5px] text-[#121212] hover:text-red-500 transition-colors">
+          <button className="w-[36px] h-[36px] bg-white flex items-center justify-center border border-[#F1F5F9] rounded-[5px] text-[#121212] hover:text-red-500 transition-colors">
             <Icons.Trash className="w-4 h-4" />
           </button>
         </div>

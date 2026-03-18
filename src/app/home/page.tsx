@@ -6,6 +6,7 @@ import QuickCreateCard from "@/components/dashboard/QuickCreateCard";
 import ProjectCard from "@/components/dashboard/ProjectCard";
 import { Icons } from "@/components/ui/icons";
 import {CustomIcons} from "@/components/ui/custom-icons";
+import Link from "next/link";
 const stats = [
   { label: "Total Projects", value: "24", change: "12%", icon: Icons.Dashboard, trend: "up" as const },
   { label: "Content Generated", value: "1,847", change: "5.2%", icon: Icons.CreativeStudio, trend: "up" as const },
@@ -45,7 +46,7 @@ const recentProjects = [
 export default function HomePage() {
   return (
     <DashboardLayout>
-      <div className="flex flex-col bg-[#FFFFFF] gap-[16px] rounded-[12px] max-w-[1400px] mx-auto p-[16px]">
+      <div className="flex flex-col bg-[#FFFFFF] gap-[16px] rounded-[12px]  mx-auto p-[16px]">
         {/* Welcome Section */}
         <div className="flex flex-col gap-[2px]">
           <h1 className="text-[30px] font-bold text-[#121212]">Welcome back!</h1>
@@ -71,11 +72,11 @@ export default function HomePage() {
 
         {/* Recent Projects Section */}
         <div className="flex flex-col gap-[12px]">
-          <div className="flex items-center justify-between">
+          <div className="items-center justify-between flex">
             <h2 className="text-[18px] font-medium text-[#02022C]">Recent Projects</h2>
-            <button className="text-[14px] font-semibold text-[#02022C] hover:underline flex items-center gap-2">
+            <Link href="/projects" className="text-[14px] font-semibold text-[#02022C] hover:underline flex items-center gap-2">
               View All <Icons.ExternalLink className="w-4 h-4" />
-            </button>
+            </Link>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             {recentProjects.map((project, i) => (

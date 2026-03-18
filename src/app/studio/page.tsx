@@ -1,6 +1,7 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useSearchParams, useRouter } from "next/navigation";
 import DashboardLayout from "@/components/DashboardLayout";
 import StudioHero from "@/components/studio/StudioHero";
 import CampaignCard from "@/components/studio/CampaignCard";
@@ -42,11 +43,24 @@ const insights = [
 ];
 
 export default function StudioPage() {
-  const [isModalOpen, setIsModalOpen] = useState(true);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const searchParams = useSearchParams();
+  const router = useRouter();
+
+  useEffect(() => {
+    if (searchParams.get("create") === "true") {
+      setIsModalOpen(true);
+      // Clean up the URL after opening the modal
+      const newParams = new URLSearchParams(searchParams.toString());
+      newParams.delete("create");
+      const newUrl = `${window.location.pathname}${newParams.toString() ? `?${newParams.toString()}` : ""}`;
+      router.replace(newUrl);
+    }
+  }, [searchParams, router]);
 
   return (
     <DashboardLayout>
-      <div className="flex flex-col gap-[12px] max-w-[1400px] mx-auto p-4 lg:p-6">
+      <div className="flex flex-col gap-[12px]  mx-auto p-4 lg:p-6">
         {/* Hero Section */}
         <StudioHero onCreateClick={() => setIsModalOpen(true)} />
 

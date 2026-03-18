@@ -22,12 +22,15 @@ export default function Sidebar() {
   return (
     <aside className="w-[280px] h-screen bg-white border-r border-slate-100 flex flex-col">
       {/* Header / Logo Section */}
-      <div className="w-[227px] h-[78px] pt-[16px] pb-[16px] px-[16px] flex items-center justify-center gap-[10px] border-b border-[#0000000D] mx-auto">
+      <Link 
+        href="/home"
+        className="w-[227px] h-[78px] pt-[16px] pb-[16px] px-[16px] flex items-center justify-center gap-[10px] border-b border-[#0000000D] mx-auto hover:opacity-80 transition-opacity"
+      >
         <div className="w-[23px] h-[23px] flex items-center justify-center">
           <Icons.Logo className="text-[#02022C] w-full h-full" />
         </div>
         <span className="text-xl font-bold text-[#02022C] tracking-tight">raver</span>
-      </div>
+      </Link>
 
       <div className="p-6 flex flex-col gap-8">
         {/* Navigation */}

@@ -68,7 +68,7 @@ export default function SignupPage() {
         <Button type="submit" className="bg-indigo-900 hover:bg-indigo-950">Sign up</Button>
         <p className="text-center text-[14px] leading-[20px] tracking-[-0.15px] text-[#4F4F4F]">
           Already have an account?{" "}
-          <Link href="/login" className="text-[16px] leading-[24px] tracking-[-0.31px] text-[#02022C] font-semibold hover:text-indigo-500">
+          <Link href="/" className="text-[16px] leading-[24px] tracking-[-0.31px] text-[#02022C] font-semibold hover:text-indigo-500">
             Sign In
           </Link>
         </p>

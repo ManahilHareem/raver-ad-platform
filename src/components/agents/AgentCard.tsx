@@ -26,11 +26,11 @@ export default function AgentCard({ name, role, description, tasksCompleted, ima
       style={{ boxShadow: "0px 0px 20px 0px #0000000A" }}
     >
       {/* Avatar Container */}
-      <div className="relative h-[192px] bg-[#F8F8F8]">
+      <div className="relative  min-w-[284px] h-[192px] bg-[#F8F8F8] overflow-hidden group items-center">
         <Image 
           src={imagePath} 
           alt={name}
-          fill
+          fill  
           className="object-cover group-hover:scale-105 transition-transform duration-500"
           onError={(e) => {
             const target = e.target as HTMLImageElement;
