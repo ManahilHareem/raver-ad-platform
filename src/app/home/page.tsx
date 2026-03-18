@@ -1,5 +1,7 @@
 "use client";
 
+import { useEffect, useState } from "react";
+
 import DashboardLayout from "@/components/DashboardLayout";
 import StatsCard from "@/components/dashboard/StatsCard";
 import QuickCreateCard from "@/components/dashboard/QuickCreateCard";
@@ -44,6 +46,50 @@ const recentProjects = [
 ];
 
 export default function HomePage() {
+  const [dashboardProjects, setDashboardProjects] = useState(recentProjects);
+  const [dashboardStats, setDashboardStats] = useState(stats);
+
+  useEffect(() => {
+    // Utility to get cookie
+    const getCookie = (name: string) => {
+      const value = `; ${document.cookie}`;
+      const parts = value.split(`; ${name}=`);
+      if (parts.length === 2) return parts.pop()?.split(';').shift();
+    };
+
+    // Attempt to fetch live data from the backend
+    const fetchDashboardData = async () => {
+      try {
+        const token = getCookie("raver_token");
+        const headers = {
+          "Content-Type": "application/json",
+          ...(token ? { "Authorization": `Bearer ${token}` } : {})
+        };
+
+        const [projectsRes, statsRes] = await Promise.all([
+          fetch("http://localhost:8000/api/projects", { headers }).catch(() => null),
+          fetch("http://localhost:8000/api/campaigns", { headers }).catch(() => null)
+        ]);
+
+        if (projectsRes && projectsRes.ok) {
+          const data = await projectsRes.json();
+          if (data && data.length > 0) {
+            // Map the API data to matching project card props
+            setDashboardProjects(data.slice(0, 3).map((p: any) => ({
+              title: p.name,
+              time: "Just now",
+              members: 1,
+              image: "/assets/f3866e13f8851b89b6d19d9a6186e137dbe58fcc.jpg"
+            })));
+          }
+        }
+      } catch (err) {
+        console.error("Dashboard API integration error:", err);
+      }
+    };
+    fetchDashboardData();
+  }, []);
+
   return (
     <DashboardLayout>
       <div className="flex flex-col bg-[#FFFFFF] gap-[16px] rounded-[12px]  mx-auto p-[16px]">
@@ -55,7 +101,7 @@ export default function HomePage() {
 
         {/* Stats Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-          {stats.map((stat, i) => (
+          {dashboardStats.map((stat, i) => (
             <StatsCard key={i} {...stat} />
           ))}
         </div>
@@ -79,7 +125,7 @@ export default function HomePage() {
             </Link>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {recentProjects.map((project, i) => (
+            {dashboardProjects.map((project, i) => (
               <ProjectCard key={i} {...project} />
             ))}
           </div>

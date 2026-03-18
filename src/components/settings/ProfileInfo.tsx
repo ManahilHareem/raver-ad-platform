@@ -4,7 +4,12 @@ import React from "react";
 import Image from "next/image";
 import { Icons } from "@/components/ui/icons";
 
-export default function ProfileInfo() {
+interface ProfileInfoProps {
+  user: any;
+  onEdit: () => void;
+}
+
+export default function ProfileInfo({ user, onEdit }: ProfileInfoProps) {
   return (
     <div className="flex flex-col gap-8">
       <div className="flex flex-col gap-4">
@@ -25,10 +30,13 @@ export default function ProfileInfo() {
 
         <div className="flex items-center justify-between mt-4">
           <div className="flex flex-col">
-            <h4 className="text-[24px] font-bold text-[#121212]">Hareem Ahsen</h4>
-            <span className="text-[14px] text-[#4F4F4F]">hareem.ahsen@example.com</span>
+            <h4 className="text-[24px] font-bold text-[#121212]">{user?.fullName || "Hareem Ahsen"}</h4>
+            <span className="text-[14px] text-[#4F4F4F]">{user?.email || "hareem.ahsen@example.com"}</span>
           </div>
-          <button className="flex items-center gap-2 px-4 py-2 bg-[#F8F8F8] border border-[#F1F5F9] rounded-[12px] text-[14px] font-medium text-[#121212] hover:bg-gray-50 transition-colors shadow-sm">
+          <button 
+            onClick={onEdit}
+            className="flex items-center gap-2 px-4 py-2 bg-[#F8F8F8] border border-[#F1F5F9] rounded-[12px] text-[14px] font-medium text-[#121212] hover:bg-gray-50 transition-colors shadow-sm"
+          >
             <Icons.PenLine className="w-4 h-4 text-[#121212]" />
             Edit Profile
           </button>
@@ -38,7 +46,10 @@ export default function ProfileInfo() {
       <div className="bg-[#F8F8F8] p-6 rounded-[16px] border border-[#F1F5F9] flex flex-col gap-6">
         <div className="flex items-center justify-between h-[38px] border-b border-[#0000001A] pb-[12px]">
           <h5 className="text-[20px] font-medium text-[#121212]">Profile details</h5>
-          <button className="text-[14px] font-medium text-[#64748B] hover:text-[#121212] flex items-center gap-1 transition-colors">
+          <button 
+            onClick={onEdit}
+            className="text-[14px] font-medium text-[#64748B] hover:text-[#121212] flex items-center gap-1 transition-colors"
+          >
             <Icons.PenLine className="w-4 h-4" /> Edit
           </button>
         </div>
@@ -50,7 +61,7 @@ export default function ProfileInfo() {
              </div>
              <div className="flex flex-col">
                 <span className="text-[12px] text-[#4F4F4F] font-regular uppercase tracking-wider">Full Name</span>
-                <span className="text-[16px] font-medium text-[#121212]">Hareem Ahsen</span>
+                <span className="text-[16px] font-medium text-[#121212]">{user?.fullName || "Hareem Ahsen"}</span>
              </div>
           </div>
 
@@ -60,7 +71,7 @@ export default function ProfileInfo() {
              </div>
              <div className="flex flex-col">
                 <span className="text-[12px] text-[#4F4F4F] font-regular uppercase tracking-wider">Email</span>
-                <span className="text-[16px] font-medium text-[#121212]">hareem.ahsen@example.com</span>
+                <span className="text-[16px] font-medium text-[#121212]">{user?.email || "hareem.ahsen@example.com"}</span>
              </div>
           </div>
 
@@ -69,8 +80,18 @@ export default function ProfileInfo() {
                 <Icons.MagicWand className="w-5 h-5 text-[#64748B]" />
              </div>
              <div className="flex flex-col">
-                <span className="text-[12px] text-[#4F4F4F] font-regular uppercase tracking-wider">Professional Role</span>
-                <span className="text-[16px] font-medium text-[#121212]">Hair Stylish</span>
+                <span className="text-[12px] text-[#4F4F4F] font-regular uppercase tracking-wider">Hair Style</span>
+                <span className="text-[16px] font-medium text-[#121212]">{user?.professionalRole || "Hair Stylish"}</span>
+             </div>
+          </div>
+
+          <div className="flex items-start gap-3">
+             <div className="p-2 bg-white rounded-[8px] border border-[#F1F5F9]">
+                <Icons.Instagram className="w-5 h-5 text-[#64748B]" />
+             </div>
+             <div className="flex flex-col">
+                <span className="text-[12px] text-[#4F4F4F] font-regular uppercase tracking-wider">Instagram</span>
+                <span className="text-[16px] font-medium text-[#121212]">{user?.instagram || "Not linked"}</span>
              </div>
           </div>
         </div>
@@ -78,7 +99,7 @@ export default function ProfileInfo() {
         <div className="flex flex-col gap-2 mt-2">
            <div className="p-[20px] bg-white rounded-[16px] border border-[#F1F5F9]  gap-[12px] min-h-[170px]">
               <span className="text-[12px] text-[#4F4F4F] font-regular uppercase tracking-wider block mb-2">Bio</span>
-              <p className="text-[14px] text-[#121212] font-medium">Tell us about your beauty expertise...</p>
+              <p className="text-[14px] text-[#121212] font-medium">{user?.bio || "Tell us about your beauty expertise..."}</p>
            </div>
         </div>
       </div>

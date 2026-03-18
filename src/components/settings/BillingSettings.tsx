@@ -1,15 +1,47 @@
-"use client";
-
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { Icons } from "@/components/ui/icons";
 
 export default function BillingSettings({ 
   onBuyCredits, 
-  onAddPayment 
+  onAddPayment,
+  onEdit
 }: { 
   onBuyCredits: () => void;
   onAddPayment: () => void;
+  onEdit: (card: any) => void;
 }) {
+  const [cards, setCards] = useState<any[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+
+  const getCookie = (name: string) => {
+    const value = `; ${document.cookie}`;
+    const parts = value.split(`; ${name}=`);
+    if (parts.length === 2) return parts.pop()?.split(';').shift();
+  };
+
+  const fetchCards = async () => {
+    try {
+      const token = getCookie("raver_token");
+      const response = await fetch("http://localhost:8000/api/billing/payment-methods", {
+        headers: {
+          ...(token ? { "Authorization": `Bearer ${token}` } : {})
+        }
+      });
+      if (response.ok) {
+        const result = await response.json();
+        setCards(result.data || []);
+      }
+    } catch (err) {
+      console.error("Failed to fetch cards:", err);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchCards();
+  }, []);
+
   return (
     <div className="flex flex-col gap-8">
       <div className="flex flex-col gap-[12px]">
@@ -44,21 +76,37 @@ export default function BillingSettings({
           </button>
         </div>
 
-        <div className="bg-[#F8F8F8] p-6 rounded-[16px] border border-[#FFFFFF] flex items-center justify-between hover:border-gray-300 transition-all shadow-sm">
-          <div className="flex items-center gap-4">
-            <div className="w-[48px] h-[32px] bg-gray-50 border border-gray-100 rounded-[4px] flex items-center justify-center p-1">
-               <Icons.CreditCard className="w-6 h-6 text-gray-400" />
+        {isLoading ? (
+          <div className="p-6 text-center text-gray-500">Loading payment methods...</div>
+        ) : cards.length > 0 ? (
+          cards.map((card) => (
+            <div key={card.id} className="bg-[#F8F8F8] p-6 rounded-[16px] border border-[#FFFFFF] flex items-center justify-between hover:border-gray-300 transition-all shadow-sm">
+              <div className="flex items-center gap-4">
+                <div className="w-[48px] h-[32px] bg-gray-50 border border-gray-100 rounded-[4px] flex items-center justify-center p-1">
+                   <Icons.CreditCard className="w-6 h-6 text-gray-400" />
+                </div>
+                <div className="flex flex-col">
+                  <span className="text-[16px] font-bold text-[#121212]">
+                    {card.brand || "Card"} •••• {card.last4 || card.cardNumber?.slice(-4)}
+                  </span>
+                  <span className="text-[12px] text-[#64748B]">Expires {card.expiryDate}</span>
+                </div>
+                {card.isDefault && <span className="px-2 py-1 bg-black text-white text-[10px] font-bold rounded-[4px] ml-2">DEFAULT</span>}
+              </div>
+              <button 
+                onClick={() => onEdit(card)}
+                className="text-[14px] font-medium text-[#64748B] hover:text-[#121212] flex items-center gap-1 transition-colors"
+              >
+                <Icons.PenLine className="w-4 h-4" /> Edit
+              </button>
             </div>
-            <div className="flex flex-col">
-              <span className="text-[16px] font-bold text-[#121212]">Visa •••• 4242</span>
-              <span className="text-[12px] text-[#64748B]">Expires 12/26</span>
-            </div>
-            <span className="px-2 py-1 bg-black text-white text-[10px] font-bold rounded-[4px] ml-2">DEFAULT</span>
+          ))
+        ) : (
+          <div className="p-10 border-2 border-dashed border-gray-100 rounded-[16px] text-center flex flex-col items-center gap-2">
+            <Icons.CreditCard className="w-10 h-10 text-gray-200" />
+            <p className="text-[14px] text-gray-400">No payment methods added yet</p>
           </div>
-          <button className="text-[14px] font-medium text-[#64748B] hover:text-[#121212] flex items-center gap-1">
-            <Icons.PenLine className="w-4 h-4" /> Edit
-          </button>
-        </div>
+        )}
       </div>
 
       <div className="flex flex-col gap-4">

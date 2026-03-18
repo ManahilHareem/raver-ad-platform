@@ -1,12 +1,18 @@
 "use client";
 
-import React, { useState } from "react";
 import { Icons } from "@/components/ui/icons";
 
-export default function CampaignStep3() {
-  const [selectedPlatforms, setSelectedPlatforms] = useState<string[]>(["Instagram"]);
-  const [selectedDuration, setSelectedDuration] = useState<string>("15 sec");
-  const [selectedFormat, setSelectedFormat] = useState<string>("Square (1:1)");
+interface CampaignStep3Props {
+  data: any;
+  updateData: (fields: any) => void;
+}
+
+export default function CampaignStep3({ data, updateData }: CampaignStep3Props) {
+  const togglePlatform = (platform: string) => {
+    const prev = data.platforms || [];
+    const next = prev.includes(platform) ? prev.filter((p: string) => p !== platform) : [...prev, platform];
+    updateData({ platforms: next });
+  };
 
   const platforms = [
     { label: "Instagram", icon: Icons.Instagram },
@@ -40,12 +46,6 @@ export default function CampaignStep3() {
     },
   ];
 
-  const togglePlatform = (platform: string) => {
-    setSelectedPlatforms(prev => 
-      prev.includes(platform) ? prev.filter(p => p !== platform) : [...prev, platform]
-    );
-  };
-
   return (
     <div className="flex flex-col gap-[24px] animate-in slide-in-from-right-4 duration-300">
       <div className="flex flex-col gap-1">
@@ -59,7 +59,7 @@ export default function CampaignStep3() {
           <label className="text-[14px] font-bold text-[#000000]">Social Media Platform *</label>
           <div className="flex flex-wrap gap-[12px]">
             {platforms.map((p) => {
-              const isSelected = selectedPlatforms.includes(p.label);
+              const isSelected = data.platforms?.includes(p.label);
               return (
                 <button 
                   key={p.label} 
@@ -85,11 +85,11 @@ export default function CampaignStep3() {
           <label className="text-[14px] font-bold text-[#000000]">Video Duration *</label>
           <div className="flex flex-wrap gap-[12px]">
             {durations.map((d) => {
-              const isSelected = selectedDuration === d;
+              const isSelected = data.duration === d;
               return (
                 <button 
                   key={d} 
-                  onClick={() => setSelectedDuration(d)}
+                  onClick={() => updateData({ duration: d })}
                   className={`px-[16px] py-[8px] rounded-xl text-[16px] font-regular items-center justify-center transition-all flex flex-row gap-[10px] ${
                     isSelected ? "text-[#02022C]" : "bg-white border text-[#475569] border-[#E2E8F0] hover:border-[#02022C] "
                   }`}
@@ -110,11 +110,11 @@ export default function CampaignStep3() {
           <label className="text-[14px] font-bold text-[#000000]">Video Format *</label>
           <div className="grid grid-cols-2 gap-[12px]">
             {formats.map((f) => {
-              const isSelected = selectedFormat === f.label;
+              const isSelected = data.format === f.label;
               return (
                 <button 
                   key={f.label} 
-                  onClick={() => setSelectedFormat(f.label)}
+                  onClick={() => updateData({ format: f.label })}
                   className={`px-[16px] py-[8px] rounded-xl text-[16px] font-regular items-start transition-all flex flex-col gap-[5px] ${
                     isSelected ? "text-[#02022C]" : "bg-white border text-[#475569] border-[#E2E8F0] hover:border-[#02022C] "
                   }`}

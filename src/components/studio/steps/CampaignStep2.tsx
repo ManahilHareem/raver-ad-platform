@@ -1,26 +1,25 @@
 "use client";
 
-import React, { useState } from "react";
+interface CampaignStep2Props {
+  data: any;
+  updateData: (fields: any) => void;
+}
 
-export default function CampaignStep2() {
-  const [selectedStyles, setSelectedStyles] = useState<string[]>([]);
-  const [selectedTones, setSelectedTones] = useState<string[]>([]);
-  const [selectedColorScheme, setSelectedColorScheme] = useState<string | null>(null);
-
+export default function CampaignStep2({ data, updateData }: CampaignStep2Props) {
   const toggleStyle = (style: string) => {
-    setSelectedStyles(prev => 
-      prev.includes(style) ? prev.filter(s => s !== style) : [...prev, style]
-    );
+    const prev = data.visualStyles || [];
+    const next = prev.includes(style) ? prev.filter((s: string) => s !== style) : [...prev, style];
+    updateData({ visualStyles: next });
   };
 
   const toggleTone = (tone: string) => {
-    setSelectedTones(prev => 
-      prev.includes(tone) ? prev.filter(t => t !== tone) : [...prev, tone]
-    );
+    const prev = data.tones || [];
+    const next = prev.includes(tone) ? prev.filter((t: string) => t !== tone) : [...prev, tone];
+    updateData({ tones: next });
   };
 
   const toggleColorScheme = (scheme: string) => {
-    setSelectedColorScheme(prev => prev === scheme ? null : scheme);
+    updateData({ colorScheme: data.colorScheme === scheme ? "" : scheme });
   };
 
   const colorSchemes = [
@@ -45,7 +44,7 @@ export default function CampaignStep2() {
           <label className="text-[14px] font-bold text-[#000000]">Visual Style *</label>
           <div className="flex flex-wrap gap-[12px]">
             {["Modern & Clean", "Elegant & Luxury", "Vibrant & Bold", "Minimalist", "Natural & Organic", "Dramatic"].map((s) => {
-              const isSelected = selectedStyles.includes(s);
+              const isSelected = data.visualStyles?.includes(s);
               return (
                 <button 
                   key={s} 
@@ -70,7 +69,7 @@ export default function CampaignStep2() {
           <label className="text-[14px] font-bold text-[#000000]">Tone & Voice *</label>
           <div className="flex flex-wrap gap-[12px]">
             {["Professional", "Friendly", "Inspiring", "Playful", "Sophisticated", "Educational"].map((t) => {
-              const isSelected = selectedTones.includes(t);
+              const isSelected = data.tones?.includes(t);
               return (
                 <button 
                   key={t} 
@@ -95,7 +94,7 @@ export default function CampaignStep2() {
           <label className="text-[14px] font-bold text-[#000000]">Color Scheme *</label>
           <div className="flex flex-wrap gap-[12px]">
             {colorSchemes.map((scheme) => {
-              const isSelected = selectedColorScheme === scheme.label;
+              const isSelected = data.colorScheme === scheme.label;
               return (
                 <button 
                   key={scheme.label} 

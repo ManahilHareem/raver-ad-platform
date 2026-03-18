@@ -8,17 +8,21 @@ interface SummaryItem {
   fullWidth?: boolean;
 }
 
-export default function CampaignStep4() {
+interface CampaignStep4Props {
+  data: any;
+}
+
+export default function CampaignStep4({ data }: CampaignStep4Props) {
   const summaryData: SummaryItem[] = [
-    { label: "Campaign Name", value: "Instagram promotion for summer balayage special", fullWidth: true },
-    { label: "Objective", value: "Lead Generation" },
-    { label: "Visual Style", value: "Elegant & Luxury" },
-    { label: "Target Audience", value: "25-35 year old women interested in hair styling", fullWidth: true },
-    { label: "Tone", value: "Friendly" },
-    { label: "Color Scheme", value: "Warm Tones" },
-    { label: "Platform", value: "TikTok", fullWidth: true },
-    { label: "Duration", value: "30 sec" },
-    { label: "Format", value: "Vertical (9:16)" },
+    { label: "Campaign Name", value: data.name || "N/A", fullWidth: true },
+    { label: "Objective", value: data.objective },
+    { label: "Visual Style", value: data.visualStyles?.join(", ") || "N/A" },
+    { label: "Target Audience", value: data.audience || "N/A", fullWidth: true },
+    { label: "Tone", value: data.tones?.join(", ") || "N/A" },
+    { label: "Color Scheme", value: data.colorScheme || "N/A" },
+    { label: "Platform", value: data.platforms?.join(", ") || "N/A", fullWidth: true },
+    { label: "Duration", value: data.duration },
+    { label: "Format", value: data.format },
   ];
 
   return (
