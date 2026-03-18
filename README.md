@@ -1,37 +1,44 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Raver.ai - AI Creative Studio & Ad Platform 🚀
 
-## Getting Started
+Raver.ai is a next-generation platform designed to streamline advertising workflows through advanced AI. It provides an intuitive Studio and Dashboard for generating, managing, and optimizing ad campaigns across various platforms (Instagram, Facebook, TikTok).
 
-First, run the development server:
+## 🛠 Tech Stack
+
+- **Framework**: [Next.js](https://nextjs.org/) (App Router)
+- **Styling**: [Tailwind CSS](https://tailwindcss.com/)
+- **Icons**: [Lucide React](https://lucide.dev/)
+- **Language**: TypeScript
+
+## 🚀 Getting Started
+
+First, ensure you have the required environment variables. Create a `.env` file in the root of your project:
+
+```env
+# RDS Configuration (Optional - if backend API is set up)
+export RDSHOST="raver-ad-plateform.cct7vwwwdvxn.us-east-1.rds.amazonaws.com" 
+
+# API Configuration
+NEXT_PUBLIC_API_URL="http://localhost:3000/api"
+```
+
+Next, install the dependencies and run the development server:
 
 ```bash
+npm install
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## 📂 Project Structure
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+- `src/app/`: Next.js App Router pages (Home, Studio, Dashboard, Settings, etc.)
+- `src/components/`: Reusable UI components (Modals, Cards, Sidebar, Layout)
+- `public/`: Static assets (Logos, Images)
 
-## Learn More
+## ✨ Core Features
 
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
-# raver-ad-platform
+- **AI Creative Studio**: Multi-step wizard to generate ad creatives based on visual style, tone, and platform.
+- **Agent Orchestration**: Monitor and manage specialized AI agents (Audience Optimizer, Content Analyst, Creative Director).
+- **Campaign Dashboard**: Real-time performance metrics and active campaign management.
+- **Premium UI/UX**: Designed with smooth animations, dark-mode aesthetics, and a glassmorphism feel.

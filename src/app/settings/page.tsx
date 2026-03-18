@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import DashboardLayout from "@/components/DashboardLayout";
 import ProfileInfo from "@/components/settings/ProfileInfo";
 import NotificationSettings from "@/components/settings/NotificationSettings";
@@ -9,6 +9,7 @@ import SecuritySettings from "@/components/settings/SecuritySettings";
 import BuyCreditsModal from "@/components/settings/BuyCreditsModal";
 import AddPaymentMethodModal from "@/components/settings/AddPaymentMethodModal";
 import ChangePasswordModal from "@/components/settings/ChangePasswordModal";
+import EditProfileModal from "@/components/settings/EditProfileModal";
 import { cn } from "@/lib/utils";
 
 const tabs = [
@@ -23,24 +24,76 @@ export default function SettingsPage() {
   const [isBuyCreditsOpen, setIsBuyCreditsOpen] = useState(false);
   const [isAddPaymentOpen, setIsAddPaymentOpen] = useState(false);
   const [isChangePasswordOpen, setIsChangePasswordOpen] = useState(false);
+  const [isEditProfileOpen, setIsEditProfileOpen] = useState(false);
+  const [billingRefreshKey, setBillingRefreshKey] = useState(0);
+  const [editingCard, setEditingCard] = useState<any>(null);
+  
+  const [user, setUser] = useState<any>(null);
+  const [isLoading, setIsLoading] = useState(true);
+
+  const getCookie = (name: string) => {
+    const value = `; ${document.cookie}`;
+    const parts = value.split(`; ${name}=`);
+    if (parts.length === 2) return parts.pop()?.split(';').shift();
+  };
+
+  const fetchUser = async () => {
+    try {
+      const token = getCookie("raver_token");
+      const res = await fetch("http://localhost:8000/api/users/me", {
+        headers: {
+          ...(token ? { "Authorization": `Bearer ${token}` } : {})
+        }
+      });
+      if (res.ok) {
+        const result = await res.json();
+        setUser(result.data);
+      }
+    } catch (err) {
+      console.error("Failed to fetch user:", err);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchUser();
+  }, []);
+
+  const handleGlobalSave = () => {
+    if (activeTab === "profile") {
+      setIsEditProfileOpen(true);
+    } else {
+      // For other tabs, we can show a toast or implement specific save logic if needed
+      alert("Settings saved successfully!");
+    }
+  };
 
   const renderContent = () => {
     switch (activeTab) {
       case "profile":
-        return <ProfileInfo />;
+        return <ProfileInfo user={user} onEdit={() => setIsEditProfileOpen(true)} />;
       case "notifications":
-        return <NotificationSettings />;
+        return <NotificationSettings user={user} onUpdate={fetchUser} />;
       case "billing":
         return <BillingSettings 
           onBuyCredits={() => setIsBuyCreditsOpen(true)} 
-          onAddPayment={() => setIsAddPaymentOpen(true)}
+          onAddPayment={() => {
+            setEditingCard(null);
+            setIsAddPaymentOpen(true);
+          }}
+          onEdit={(card) => {
+            setEditingCard(card);
+            setIsAddPaymentOpen(true);
+          }}
+          key={`billing-${billingRefreshKey}`}
         />;
       case "security":
         return <SecuritySettings 
           onChangePassword={() => setIsChangePasswordOpen(true)}
         />;
       default:
-        return <ProfileInfo />;
+        return <ProfileInfo user={user} onEdit={() => setIsEditProfileOpen(true)} />;
     }
   };
 
@@ -88,14 +141,22 @@ export default function SettingsPage() {
         <button className="px-6 py-2.5 rounded-[12px] text-[18px] font-medium text-[#121212] hover:bg-gray-50 transition-colors">
           Cancel
         </button>
-        <button className="px-8 py-2.5 bg-[#02022C] text-[#FFFFFF] rounded-[12px] text-[18px] font-medium hover:opacity-90 transition-all shadow-[inset_0px_-5px_5px_0px_#4F569B]">
+        <button 
+          onClick={handleGlobalSave}
+          className="px-8 py-2.5 bg-[#02022C] text-[#FFFFFF] rounded-[12px] text-[18px] font-medium hover:opacity-90 transition-all shadow-[inset_0px_-5px_5px_0px_#4F569B]"
+        >
           Save Changes
         </button>
       </div>
 
       <AddPaymentMethodModal
         isOpen={isAddPaymentOpen}
-        onClose={() => setIsAddPaymentOpen(false)}
+        onClose={() => {
+          setIsAddPaymentOpen(false);
+          setEditingCard(null);
+        }}
+        onSuccess={() => setBillingRefreshKey(prev => prev + 1)}
+        card={editingCard}
       />
 
       <ChangePasswordModal
@@ -107,6 +168,13 @@ export default function SettingsPage() {
       <BuyCreditsModal
         isOpen={isBuyCreditsOpen}
         onClose={() => setIsBuyCreditsOpen(false)}
+      />
+
+      <EditProfileModal
+        isOpen={isEditProfileOpen}
+        user={user}
+        onClose={() => setIsEditProfileOpen(false)}
+        onSuccess={fetchUser}
       />
     </DashboardLayout>
   );

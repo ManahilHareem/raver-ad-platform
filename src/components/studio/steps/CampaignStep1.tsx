@@ -2,7 +2,12 @@
 
 import React from "react";
 
-export default function CampaignStep1() {
+interface CampaignStep1Props {
+  data: any;
+  updateData: (fields: any) => void;
+}
+
+export default function CampaignStep1({ data, updateData }: CampaignStep1Props) {
   return (
     <div className="flex flex-col gap-[24px] animate-in slide-in-from-right-4 duration-300">
       <div className="flex flex-col gap-1">
@@ -17,6 +22,8 @@ export default function CampaignStep1() {
           <input 
             type="text" 
             placeholder="Instagram promotion for summer balayage special"
+            value={data.name}
+            onChange={(e) => updateData({ name: e.target.value })}
             className="w-full px-5 py-3.5 bg-white border border-[#F1F5F9] rounded-[8px] text-[14px] text-[#121212] outline-none focus:border-[#02022C] placeholder:text-[#94A3B8]"
           />
         </div>
@@ -26,8 +33,11 @@ export default function CampaignStep1() {
           <label className="text-[14px] font-bold text-[#000000]">Campaign Objective *</label>
           <div className="flex flex-wrap gap-[10px]">
             {["Brand Awareness", "Lead Generation", "Engagement", "Sales Conversion"].map((obj) => (
-              <button key={obj} className={`px-[8px] py-[16px] h-[36px] w-[155px] flex items-center justify-center rounded-[8px] border text-[13px] font-medium transition-all ${
-                obj === "Brand Awareness" 
+              <button 
+                key={obj} 
+                onClick={() => updateData({ objective: obj })}
+                className={`px-[8px] py-[16px] h-[36px] w-[155px] flex items-center justify-center rounded-[8px] border text-[13px] font-medium transition-all ${
+                data.objective === obj 
                   ? "bg-white border-[#02022C] text-[#02022C]" 
                   : "bg-white text-[#94A3B8] border-[#F1F5F9] hover:border-[#E2E8F0]"
               }`}>
@@ -42,6 +52,8 @@ export default function CampaignStep1() {
           <label className="text-[14px] font-bold text-[#000000]">Target Audience *</label>
           <textarea 
             placeholder="Describe your target audience (e.g., Women aged 25-45 interested in premium hair care)"
+            value={data.audience}
+            onChange={(e) => updateData({ audience: e.target.value })}
             className="w-full p-[16px] bg-white border border-[#F1F5F9] rounded-[8px] text-[15px] text-[#121212] outline-none focus:border-[#02022C] h-[160px] resize-none placeholder:text-[#94A3B8]"
           />
         </div>

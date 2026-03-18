@@ -44,8 +44,42 @@ const insights = [
 
 export default function StudioPage() {
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [campaigns, setCampaigns] = useState(activeCampaigns);
   const searchParams = useSearchParams();
   const router = useRouter();
+
+  const getCookie = (name: string) => {
+    const value = `; ${document.cookie}`;
+    const parts = value.split(`; ${name}=`);
+    if (parts.length === 2) return parts.pop()?.split(';').shift();
+  };
+
+  const fetchCampaigns = async () => {
+    try {
+      const token = getCookie("raver_token");
+      const res = await fetch("http://localhost:8000/api/campaigns", {
+        headers: {
+          ...(token ? { "Authorization": `Bearer ${token}` } : {})
+        }
+      });
+      if (res.ok) {
+        const data = await res.json();
+        if (data && data.length > 0) {
+          setCampaigns(data.map((c: any) => ({
+            title: c.name,
+            status: c.status || "Ready",
+            image: "/assets/hashtag-campaign.jpg"
+          })));
+        }
+      }
+    } catch (err) {
+      console.error("Failed to fetch campaigns:", err);
+    }
+  };
+
+  useEffect(() => {
+    fetchCampaigns();
+  }, []);
 
   useEffect(() => {
     if (searchParams.get("create") === "true") {
@@ -70,7 +104,7 @@ export default function StudioPage() {
             <h2 className="text-[18px] font-semibold text-[#121212]">Active Campaigns</h2>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-[12px]">
-            {activeCampaigns.map((campaign, i) => (
+            {campaigns.map((campaign, i) => (
               <CampaignCard key={i} {...campaign} />
             ))}
           </div>
@@ -109,7 +143,11 @@ export default function StudioPage() {
         <Icons.MessageCircle className="w-6 h-6" />
       </button>
 
-      <CreateCampaignModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} />
+      <CreateCampaignModal 
+        isOpen={isModalOpen} 
+        onClose={() => setIsModalOpen(false)} 
+        onSuccess={fetchCampaigns}
+      />
     </DashboardLayout>
   );
 }
