@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { Button } from "@/components/ui/Button";
 
 export default function NotFound() {
   return (
@@ -34,9 +35,9 @@ export default function NotFound() {
         {/* Action Button */}
         <div className="pt-4">
           <Link href="/home">
-            <button className="h-14 px-10 rounded-2xl bg-brand-primary hover:bg-brand-primary-hover text-white font-semibold text-lg transition-all hover:scale-[1.02] active:scale-[0.98] shadow-xl shadow-brand-primary/25">
+            <Button className="w-auto px-10 h-14 rounded-2xl">
               Back to Home
-            </button>
+            </Button>
           </Link>
         </div>
 
