@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { Suspense, useState, useEffect } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import DashboardLayout from "@/components/DashboardLayout";
 import StudioHero from "@/components/studio/StudioHero";
@@ -42,7 +42,7 @@ const insights = [
   { label: "Avg Render Time", value: "4.2m", change: "" },
 ];
 
-export default function StudioPage() {
+function StudioPageContent() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [campaigns, setCampaigns] = useState(activeCampaigns);
   const [selectedCampaign, setSelectedCampaign] = useState<typeof activeCampaigns[0] | null>(null);
@@ -155,6 +155,14 @@ export default function StudioPage() {
         onSuccess={fetchCampaigns}
       />
     </DashboardLayout>
+  );
+}
+
+export default function StudioPage() {
+  return (
+    <Suspense fallback={<DashboardLayout><div className="p-6">Loading studio...</div></DashboardLayout>}>
+      <StudioPageContent />
+    </Suspense>
   );
 }
 
