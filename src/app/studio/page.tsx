@@ -45,14 +45,16 @@ const insights = [
 function StudioPageContent() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [campaigns, setCampaigns] = useState(activeCampaigns);
-  const [selectedCampaign, setSelectedCampaign] = useState<typeof activeCampaigns[0] | null>(null);
+  const [selectedCampaign, setSelectedCampaign] = useState<
+    (typeof activeCampaigns)[0] | null
+  >(null);
   const searchParams = useSearchParams();
   const router = useRouter();
 
   const getCookie = (name: string) => {
     const value = `; ${document.cookie}`;
     const parts = value.split(`; ${name}=`);
-    if (parts.length === 2) return parts.pop()?.split(';').shift();
+    if (parts.length === 2) return parts.pop()?.split(";").shift();
   };
 
   const fetchCampaigns = async () => {
@@ -60,17 +62,19 @@ function StudioPageContent() {
       const token = getCookie("raver_token");
       const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/campaigns`, {
         headers: {
-          ...(token ? { "Authorization": `Bearer ${token}` } : {})
-        }
+          ...(token ? { Authorization: `Bearer ${token}` } : {}),
+        },
       });
       if (res.ok) {
         const data = await res.json();
         if (data && data.length > 0) {
-          setCampaigns(data.map((c: any) => ({
-            title: c.name,
-            status: c.status || "Ready",
-            image: "/assets/hashtag-campaign.jpg"
-          })));
+          setCampaigns(
+            data.map((c: any) => ({
+              title: c.name,
+              status: c.status || "Ready",
+              image: "/assets/hashtag-campaign.jpg",
+            })),
+          );
         }
       }
     } catch (err) {
@@ -97,8 +101,8 @@ function StudioPageContent() {
     <DashboardLayout>
       <div className="flex flex-col gap-[12px]  mx-auto p-4 lg:p-6">
         {/* Hero Section */}
-        <StudioHero 
-          onCreateClick={() => setIsModalOpen(true)} 
+        <StudioHero
+          onCreateClick={() => setIsModalOpen(true)}
           campaigns={campaigns}
           selectedCampaign={selectedCampaign}
           onCampaignSelect={setSelectedCampaign}
@@ -107,7 +111,9 @@ function StudioPageContent() {
         {/* Active Campaigns Section */}
         <div className="flex flex-col gap-[16px] bg-[#FFFFFF] border-[0.35px]-[#0000001A] rounded-[12px] p-[16px]">
           <div className="flex items-center justify-between">
-            <h2 className="text-[18px] font-semibold text-[#121212]">Active Campaigns</h2>
+            <h2 className="text-[18px] font-semibold text-[#121212]">
+              Active Campaigns
+            </h2>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-[12px]">
             {campaigns.map((campaign, i) => (
@@ -118,7 +124,9 @@ function StudioPageContent() {
 
         {/* Production Pipeline */}
         <div className="flex flex-col gap-4 bg-[#FFFFFF] border-[0.35px]-[#0000001A] rounded-[12px] p-[16px]">
-          <h2 className="text-[18px] font-medium text-[#121212]">AI Production Pipeline</h2>
+          <h2 className="text-[18px] font-medium text-[#121212]">
+            AI Production Pipeline
+          </h2>
           <ProductionPipeline />
         </div>
 
@@ -127,19 +135,28 @@ function StudioPageContent() {
           <h2 className="text-[18px] font-medium text-[#121212]">Insights</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
             {insights.map((insight, i) => (
-              <div key={i} className="bg-[#F8F8F8] p-5 rounded-[8px] border-[0.35px]-[#0000001A] shadow-sm flex flex-col gap-2">
-                <span className="text-[12px] text-[#4F4F4F] font-medium">{insight.label}</span>
+              <div
+                key={i}
+                className="bg-[#F8F8F8] p-5 rounded-[8px] border-[0.35px]-[#0000001A] shadow-sm flex flex-col gap-2"
+              >
+                <span className="text-[12px] text-[#4F4F4F] font-medium">
+                  {insight.label}
+                </span>
                 <div className="flex items-end justify-between">
-                  <span className="text-[24px] font-bold text-[#02022C] leading-none">{insight.value}</span>
+                  <span className="text-[24px] font-bold text-[#02022C] leading-none">
+                    {insight.value}
+                  </span>
                   {insight.change && (
-                    <span className={cn(
-                      "text-[12px] font-semibold mb-1 text-[#02022C]"
-                    )}>
+                    <span
+                      className={cn(
+                        "text-[12px] font-semibold mb-1 text-[#02022C]",
+                      )}
+                    >
                       {insight.change}
                     </span>
                   )}
                 </div>
-              </div>  
+              </div>
             ))}
           </div>
         </div>
@@ -149,9 +166,9 @@ function StudioPageContent() {
         <Icons.MessageCircle className="w-6 h-6" />
       </button>
 
-      <CreateCampaignModal 
-        isOpen={isModalOpen} 
-        onClose={() => setIsModalOpen(false)} 
+      <CreateCampaignModal
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
         onSuccess={fetchCampaigns}
       />
     </DashboardLayout>
@@ -160,7 +177,13 @@ function StudioPageContent() {
 
 export default function StudioPage() {
   return (
-    <Suspense fallback={<DashboardLayout><div className="p-6">Loading studio...</div></DashboardLayout>}>
+    <Suspense
+      fallback={
+        <DashboardLayout>
+          <div className="p-6">Loading studio...</div>
+        </DashboardLayout>
+      }
+    >
       <StudioPageContent />
     </Suspense>
   );
