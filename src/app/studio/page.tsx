@@ -45,6 +45,7 @@ const insights = [
 export default function StudioPage() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [campaigns, setCampaigns] = useState(activeCampaigns);
+  const [selectedCampaign, setSelectedCampaign] = useState<typeof activeCampaigns[0] | null>(null);
   const searchParams = useSearchParams();
   const router = useRouter();
 
@@ -96,7 +97,12 @@ export default function StudioPage() {
     <DashboardLayout>
       <div className="flex flex-col gap-[12px]  mx-auto p-4 lg:p-6">
         {/* Hero Section */}
-        <StudioHero onCreateClick={() => setIsModalOpen(true)} />
+        <StudioHero 
+          onCreateClick={() => setIsModalOpen(true)} 
+          campaigns={campaigns}
+          selectedCampaign={selectedCampaign}
+          onCampaignSelect={setSelectedCampaign}
+        />
 
         {/* Active Campaigns Section */}
         <div className="flex flex-col gap-[16px] bg-[#FFFFFF] border-[0.35px]-[#0000001A] rounded-[12px] p-[16px]">
