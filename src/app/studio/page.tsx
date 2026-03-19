@@ -23,6 +23,24 @@ interface Campaign {
   image: string;
 }
 
+const activeCampaigns = [
+  {
+    title: "Holiday Special Campaign",
+    status: "Ready",
+    image: "/assets/hashtag-campaign.jpg",
+  },
+  {
+    title: "Bridal Package Showcase",
+    status: "In Production",
+    image: "/assets/hashtag-campaign.jpg",
+  },
+  {
+    title: "Nail Art Collection",
+    status: "Ready",
+    image: "/assets/hashtag-campaign.jpg",
+  },
+];
+
 const insights = [
   { label: "Campaigns Created", value: "24", change: "+12%" },
   { label: "Credit Remaining", value: "250", change: "-12%" },
@@ -32,7 +50,8 @@ const insights = [
 
 function StudioPageContent() {
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [campaigns, setCampaigns] = useState<Campaign[]>([]);
+  const [campaigns, setCampaigns] = useState<Campaign[]>();
+const [Videos, setVideos] = useState<Campaign[]>(activeCampaigns);
   const [selectedCampaign, setSelectedCampaign] = useState<Campaign | null>(null);
   const searchParams = useSearchParams();
   const router = useRouter();
@@ -102,7 +121,7 @@ function StudioPageContent() {
             </h2>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-[12px]">
-            {campaigns.map((campaign, i) => (
+            {Videos.map((campaign, i) => (
               <CampaignCard key={i} {...campaign} />
             ))}
           </div>
