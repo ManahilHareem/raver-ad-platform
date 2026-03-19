@@ -40,7 +40,7 @@ export default function SettingsPage() {
   const fetchUser = async () => {
     try {
       const token = getCookie("raver_token");
-      const res = await fetch("http://localhost:8000/api/users/me", {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/users/me`, {
         headers: {
           ...(token ? { "Authorization": `Bearer ${token}` } : {})
         }

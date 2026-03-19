@@ -48,7 +48,7 @@ export default function EditProfileModal({ isOpen, onClose, user, onSuccess }: E
 
     try {
       const token = getCookie("raver_token");
-      const response = await fetch(`http://localhost:8000/api/users/${user.id}`, {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/users/${user.id}`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",

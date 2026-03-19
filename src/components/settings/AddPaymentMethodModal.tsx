@@ -53,10 +53,11 @@ export default function AddPaymentMethodModal({ isOpen, onClose, onSuccess, card
 
     try {
       const token = getCookie("raver_token");
-      const url = isEditing 
-        ? `http://localhost:8000/api/billing/payment-methods/${card.id}`
-        : "http://localhost:8000/api/billing/payment-methods";
+      const url = card 
+        ? `${process.env.NEXT_PUBLIC_API_URL}/billing/payment-methods/${card.id}`
+        : `${process.env.NEXT_PUBLIC_API_URL}/billing/payment-methods`;
       
+      const method = card ? "PATCH" : "POST";
       const response = await fetch(url, {
         method: isEditing ? "PUT" : "POST",
         headers: {

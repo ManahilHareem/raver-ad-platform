@@ -12,22 +12,34 @@ interface TemplateCardProps {
   members?: number;
   onClick?: () => void;
   className?: string;
-  aspectRatio?: "portrait" | "landscape" | "square";
+  aspectRatio?: "portrait" | "landscape" | "square" | "custom";
+  height?: string;
 }
 
-export default function TemplateCard({ title, imagePath, time, members, onClick, className, aspectRatio = "portrait" }: TemplateCardProps) {
+export default function TemplateCard({ 
+  title, 
+  imagePath, 
+  time, 
+  members, 
+  onClick, 
+  className, 
+  aspectRatio = "portrait",
+  height
+}: TemplateCardProps) {
   const aspectClasses = {
     portrait: "aspect-[3/4]",
     landscape: "aspect-[4/3]",
     square: "aspect-square",
+    custom: "",
   };
 
   return (
     <div 
       onClick={onClick}
+      style={height ? { height } : undefined}
       className={cn(
         "group relative rounded-[16px] overflow-hidden cursor-pointer transition-all duration-300 hover:shadow-xl",
-        aspectClasses[aspectRatio],
+        aspectRatio !== "custom" && aspectClasses[aspectRatio],
         className
       )}
     >

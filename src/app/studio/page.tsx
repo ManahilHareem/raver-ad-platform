@@ -58,7 +58,7 @@ export default function StudioPage() {
   const fetchCampaigns = async () => {
     try {
       const token = getCookie("raver_token");
-      const res = await fetch("http://localhost:8000/api/campaigns", {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/campaigns`, {
         headers: {
           ...(token ? { "Authorization": `Bearer ${token}` } : {})
         }

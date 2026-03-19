@@ -20,7 +20,8 @@ const templates = [
     title: "Makeup Tutorial Series",
     imagePath: "/assets/Template images /35282b8da06ec3e8e994540eff7f2fdbc623a01f.jpg",
     category: "Video Content",
-    aspectRatio: "portrait",
+    aspectRatio: "custom",
+    height: "394px",
     time: "2 hours ago",
     members: 3
   },
@@ -28,7 +29,8 @@ const templates = [
     title: "Luxury Spa Promotion",
     imagePath: "/assets/Template images /40156466b18f4c31e97beb972b4b9008524c7b98.jpg",
     category: "Ads & Promotions",
-    aspectRatio: "landscape",
+    aspectRatio: "custom",
+    height: "203px",
     time: "1 hour ago",
     members: 2
   },
@@ -36,59 +38,83 @@ const templates = [
     title: "Signature Glow Campaign",
     imagePath: "/assets/Template images /76aa3198e62eb617bb9f0d5cafa17ab8b1b1f2e2.jpg",
     category: "Social Media",
-    aspectRatio: "portrait",
+    aspectRatio: "custom",
+    height: "532px",
     time: "30 mins ago",
     members: 5
   },
-  // Column 2
+  // Batch of 9 Additional Templates
   {
-    title: "Summer Hair Color Campaign",
+    title: "Eco-Friendly Skincare",
     imagePath: "/assets/Template images /e014f16d6ac266d999b6cfaa999eceec057a361d.jpg",
-    category: "Social Media",
-    aspectRatio: "portrait",
-    time: "2 hours ago",
-    members: 3
-  },
-  {
-    title: "Minimalist Skincare Ad",
-    imagePath: "/assets/Template images /3247e2d37a108f21ab9ab00ab905d73decf83b64.jpg",
-    category: "Ads & Promotions",
-    aspectRatio: "square",
-    time: "4 hours ago",
-    members: 1
-  },
-  {
-    title: "Fragrance Collection",
-    imagePath: "/assets/Template images /4b7bdcb179e32b9af114fd0170adf50c53a4b060.jpg",
     category: "Branding",
     aspectRatio: "portrait",
-    time: "1 day ago",
-    members: 4
+    time: "4 hours ago",
+    members: 8
   },
-  // Column 3
   {
-    title: "Product Launch Video",
-    imagePath: "/assets/Template images /71e298c05e8d785491ebb24678f8c88e1b7194cd.jpg",
+    title: "Weekend Wellness Reel",
+    imagePath: "/assets/Template images /3247e2d37a108f21ab9ab00ab905d73decf83b64.jpg",
     category: "Video Content",
     aspectRatio: "landscape",
-    time: "3 hours ago",
-    members: 6
+    time: "5 hours ago",
+    members: 12
   },
   {
-    title: "Daily Skincare Routine",
+    title: "Organic Beauty Branding",
+    imagePath: "/assets/Template images /4b7bdcb179e32b9af114fd0170adf50c53a4b060.jpg",
+    category: "Branding",
+    aspectRatio: "square",
+    time: "6 hours ago",
+    members: 4
+  },
+  {
+    title: "Social Media Flash Sale",
+    imagePath: "/assets/Template images /71e298c05e8d785491ebb24678f8c88e1b7194cd.jpg",
+    category: "Social Media",
+    aspectRatio: "portrait",
+    time: "7 hours ago",
+    members: 15
+  },
+  {
+    title: "Salon Reopening Story",
     imagePath: "/assets/Template images /5848f944078b1cf8c3d4dc417dae4c9e60024951.jpg",
     category: "Social Media",
-    aspectRatio: "square",
-    time: "5 hours ago",
+    aspectRatio: "landscape",
+    time: "8 hours ago",
+    members: 9
+  },
+  {
+    title: "Autumn Lookbook 2024",
+    imagePath: "/assets/Template images /1f26e30e7625c0d9542da3aa237eb1766fd402e0.jpg",
+    category: "Video Content",
+    aspectRatio: "portrait",
+    time: "10 hours ago",
     members: 2
   },
   {
-    title: "Beauty Brand Story",
-    imagePath: "/assets/Template images /1f26e30e7625c0d9542da3aa237eb1766fd402e0.jpg",
-    category: "Branding",
+    title: "Bridal Makeup Masterclass",
+    imagePath: "/assets/Template images /35282b8da06ec3e8e994540eff7f2fdbc623a01f.jpg",
+    category: "Ads & Promotions",
     aspectRatio: "portrait",
-    time: "2 days ago",
-    members: 3
+    time: "12 hours ago",
+    members: 18
+  },
+  {
+    title: "Glow Skin Routine",
+    imagePath: "/assets/Template images /40156466b18f4c31e97beb972b4b9008524c7b98.jpg",
+    category: "Social Media",
+    aspectRatio: "landscape",
+    time: "14 hours ago",
+    members: 22
+  },
+  {
+    title: "Modern Aesthetics Branding",
+    imagePath: "/assets/Template images /76aa3198e62eb617bb9f0d5cafa17ab8b1b1f2e2.jpg",
+    category: "Branding",
+    aspectRatio: "square",
+    time: "16 hours ago",
+    members: 7
   }
 ];
 
@@ -99,6 +125,8 @@ export default function TemplatesPage() {
   const filteredTemplates = templates.filter(t => 
     activeCategory === "All Templates" || t.category === activeCategory
   );
+
+  const displayTemplates = activeCategory === "All Templates" ? filteredTemplates : filteredTemplates.slice(0, 3);
 
   return (
     <DashboardLayout>
@@ -115,7 +143,7 @@ export default function TemplatesPage() {
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-[12px]">
             {[
-              { label: "Total Templates", value: "9" },
+              { label: "Total Templates", value: templates.length.toString() },
               { label: "Templates Used", value: "5" },
               { label: "Custom Templates", value: "2" }
             ].map((stat, i) => (
@@ -150,11 +178,12 @@ export default function TemplatesPage() {
 
           {/* Masonry Grid Implementation */}
           <div className="columns-1 md:columns-2 lg:columns-3 gap-[16px] space-y-[16px]">
-            {filteredTemplates.map((template, i) => (
+            {displayTemplates.map((template, i) => (
               <div key={i} className="break-inside-avoid">
                 <TemplateCard 
                   {...template} 
                   aspectRatio={template.aspectRatio as any}
+                  height={(template as any).height}
                   onClick={() => setSelectedTemplate(template)}
                 />
               </div>
