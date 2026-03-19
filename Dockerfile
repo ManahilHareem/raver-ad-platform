@@ -23,9 +23,9 @@ COPY . .
 # Next.js telemetry is disabled during the build
 ENV NEXT_TELEMETRY_DISABLED 1
 
-# Define build arguments for Next.js public variables
-ARG NEXT_PUBLIC_API_URL
-ARG NEXT_PUBLIC_BACKEND_URL
+# Define build arguments for Next.js public variables (with defaults)
+ARG NEXT_PUBLIC_API_URL=https://api.adplatform.raver.ai/api
+ARG NEXT_PUBLIC_BACKEND_URL=https://api.adplatform.raver.ai
 
 # Set them as environment variables so they are baked into the build
 ENV NEXT_PUBLIC_API_URL=$NEXT_PUBLIC_API_URL
