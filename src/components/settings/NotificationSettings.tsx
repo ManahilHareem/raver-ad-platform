@@ -24,8 +24,8 @@ export default function NotificationSettings({ user, onUpdate }: NotificationSet
   const toggle = async (id: string, currentVal: boolean) => {
     try {
       const token = getCookie("raver_token");
-      const response = await fetch(`http://localhost:8000/api/users/${user.id}`, {
-        method: "PUT",
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/users/${user.id}`, {
+        method: "PATCH",
         headers: {
           "Content-Type": "application/json",
           ...(token ? { "Authorization": `Bearer ${token}` } : {})

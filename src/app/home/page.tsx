@@ -67,8 +67,8 @@ export default function HomePage() {
         };
 
         const [projectsRes, statsRes] = await Promise.all([
-          fetch("http://localhost:8000/api/projects", { headers }).catch(() => null),
-          fetch("http://localhost:8000/api/campaigns", { headers }).catch(() => null)
+          fetch(`${process.env.NEXT_PUBLIC_API_URL}/projects`, { headers }).catch(() => null),
+          fetch(`${process.env.NEXT_PUBLIC_API_URL}/campaigns`, { headers }).catch(() => null)
         ]);
 
         if (projectsRes && projectsRes.ok) {

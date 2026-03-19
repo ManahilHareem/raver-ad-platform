@@ -22,7 +22,7 @@ export default function BillingSettings({
   const fetchCards = async () => {
     try {
       const token = getCookie("raver_token");
-      const response = await fetch("http://localhost:8000/api/billing/payment-methods", {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/billing/payment-methods`, {
         headers: {
           ...(token ? { "Authorization": `Bearer ${token}` } : {})
         }

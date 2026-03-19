@@ -46,7 +46,7 @@ export default function CreateCampaignModal({ isOpen, onClose, onSuccess }: Crea
     
     try {
       const token = getCookie("raver_token");
-      const response = await fetch("http://localhost:8000/api/campaigns", {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/campaigns`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
