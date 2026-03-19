@@ -17,23 +17,11 @@ import { Icons } from "@/components/ui/icons";
 - These icons are automatically available for use throughout the application.
 */
 
-const activeCampaigns = [
-  {
-    title: "Holiday Special Campaign",
-    status: "Ready",
-    image: "/assets/hashtag-campaign.jpg",
-  },
-  {
-    title: "Bridal Package Showcase",
-    status: "In Production",
-    image: "/assets/hashtag-campaign.jpg",
-  },
-  {
-    title: "Nail Art Collection",
-    status: "Ready",
-    image: "/assets/hashtag-campaign.jpg",
-  },
-];
+interface Campaign {
+  title: string;
+  status: string;
+  image: string;
+}
 
 const insights = [
   { label: "Campaigns Created", value: "24", change: "+12%" },
@@ -44,10 +32,8 @@ const insights = [
 
 function StudioPageContent() {
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [campaigns, setCampaigns] = useState(activeCampaigns);
-  const [selectedCampaign, setSelectedCampaign] = useState<
-    (typeof activeCampaigns)[0] | null
-  >(null);
+  const [campaigns, setCampaigns] = useState<Campaign[]>([]);
+  const [selectedCampaign, setSelectedCampaign] = useState<Campaign | null>(null);
   const searchParams = useSearchParams();
   const router = useRouter();
 
@@ -66,10 +52,10 @@ function StudioPageContent() {
         },
       });
       if (res.ok) {
-        const data = await res.json();
-        if (data && data.length > 0) {
+        const responseData = await res.json();
+        if (responseData.success && responseData.data && responseData.data.length > 0) {
           setCampaigns(
-            data.map((c: any) => ({
+            responseData.data.map((c: any) => ({
               title: c.name,
               status: c.status || "Ready",
               image: "/assets/hashtag-campaign.jpg",

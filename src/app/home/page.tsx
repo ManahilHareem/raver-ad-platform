@@ -72,10 +72,10 @@ export default function HomePage() {
         ]);
 
         if (projectsRes && projectsRes.ok) {
-          const data = await projectsRes.json();
-          if (data && data.length > 0) {
+          const responseData = await projectsRes.json();
+          if (responseData.success && responseData.data && responseData.data.length > 0) {
             // Map the API data to matching project card props
-            setDashboardProjects(data.slice(0, 3).map((p: any) => ({
+            setDashboardProjects(responseData.data.slice(0, 3).map((p: any) => ({
               title: p.name,
               time: "Just now",
               members: 1,
