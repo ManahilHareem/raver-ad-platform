@@ -25,7 +25,7 @@ export default function NotificationSettings({ user, onUpdate }: NotificationSet
     try {
       const token = getCookie("raver_token");
       const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/users/${user.id}`, {
-        method: "PATCH",
+        method: "PUT",
         headers: {
           "Content-Type": "application/json",
           ...(token ? { "Authorization": `Bearer ${token}` } : {})
