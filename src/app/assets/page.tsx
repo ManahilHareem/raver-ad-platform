@@ -11,95 +11,12 @@ import { apiFetch } from "@/lib/api";
 
 const categories = ["All Assets", "Images", "Videos", "Graphics", "Audio"];
 
-const assets = [
-  {
-    id: 1,
-    title: "Summer-Hair-Color-1.jpg",
-    imagePath: "/assets/Template images /e014f16d6ac266d999b6cfaa999eceec057a361d.jpg",
-    time: "2 hours ago",
-    members: 3,
-    type: "image",
-    aspectRatio: "portrait"
-  },
-  {
-    id: 2,
-    title: "Product-Cosmetics-Display",
-    imagePath: "/assets/Template images /35282b8da06ec3e8e994540eff7f2fdbc623a01f.jpg",
-    time: "5 hours ago",
-    members: 12,
-    type: "image",
-    aspectRatio: "landscape"
-  },
-  {
-    id: 3,
-    title: "Makeup-Tutorial-Vertical",
-    imagePath: "/assets/Template images /71e298c05e8d785491ebb24678f8c88e1b7194cd.jpg",
-    time: "1 day ago",
-    members: 8,
-    type: "video",
-    aspectRatio: "portrait"
-  },
-  {
-    id: 4,
-    title: "New-Campaign-Audio",
-    imagePath: "",
-    time: "3 days ago",
-    members: 2,
-    type: "audio",
-    aspectRatio: "square"
-  },
-  {
-    id: 5,
-    title: "Brand-Texture-Mac",
-    imagePath: "/assets/Template images /40156466b18f4c31e97beb972b4b9008524c7b98.jpg",
-    time: "4 days ago",
-    members: 5,
-    type: "image",
-    aspectRatio: "square"
-  },
-  {
-    id: 6,
-    title: "Fashion-Shoot-Model",
-    imagePath: "/assets/Template images /5848f944078b1cf8c3d4dc417dae4c9e60024951.jpg",
-    time: "1 week ago",
-    members: 15,
-    type: "video",
-    aspectRatio: "portrait",
-    hasVolume: true
-  },
-  {
-    id: 7,
-    title: "Glossy-Lips-CloseUp",
-    imagePath: "/assets/Template images /76aa3198e62eb617bb9f0d5cafa17ab8b1b1f2e2.jpg",
-    time: "2 weeks ago",
-    members: 4,
-    type: "graphic",
-    aspectRatio: "portrait"
-  },
-  {
-    id: 8,
-    title: "Studio-Portrait-Dark",
-    imagePath: "/assets/Template images /4b7bdcb179e32b9af114fd0170adf50c53a4b060.jpg",
-    time: "3 weeks ago",
-    members: 7,
-    type: "image",
-    aspectRatio: "landscape"
-  },
-  {
-    id: 9,
-    title: "Creative-Vignette-Shot",
-    imagePath: "/assets/Template images /1f26e30e7625c0d9542da3aa237eb1766fd402e0.jpg",
-    time: "1 month ago",
-    members: 9,
-    type: "video",
-    aspectRatio: "portrait",
-    hasVolume: true
-  }
-];
+
 
 const statsData = [
   { label: "Total Assets", value: "9" },
-  { label: "Storage Used", value: "5 MB" }
+  { label: "Storage Used", value: "5 MB" },
+  { label: "Storage Available", value: "1 GB" }
 ];
 
 export default function AssetsPage() {
@@ -120,7 +37,7 @@ export default function AssetsPage() {
         const result = await response.json();
         setAssetList(result.data || []);
         if (result.metadata?.stats) {
-          setStats(result.metadata.stats.filter((s: any) => s.label !== "Storage Available"));
+          setStats(result.metadata.stats.filter((s: any) => s.label !== "Quota"));
         }
       }
     } catch (error) {
@@ -151,7 +68,8 @@ export default function AssetsPage() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           filename: file.name,
-          contentType: file.type
+          contentType: file.type,
+          fileSize: file.size
         })
       });
 
@@ -202,7 +120,7 @@ export default function AssetsPage() {
     }
   };
 
-  const filteredAssets = [...assets, ...assetList].filter(asset => {
+  const filteredAssets = [...assetList].filter(asset => {
     const matchesCategory = activeCategory === "All Assets" || 
       (asset.type || 'image').toLowerCase() === activeCategory.toLowerCase().replace(/s$/, '');
     
@@ -222,18 +140,6 @@ export default function AssetsPage() {
             <p className="text-[14px] text-[#64748B]">
               Upload and manage your brand assets, media, and creative files
             </p>
-          </div>
-          <div className="flex items-center gap-4 flex-1 max-w-[400px]">
-            <div className="relative w-full">
-              <Icons.Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#64748B]" />
-              <input 
-                type="text" 
-                placeholder="Search assets..." 
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full h-[48px] pl-10 pr-4 bg-[#F8F8F8] border border-[#F1F5F9] rounded-xl text-[14px] focus:outline-none focus:ring-2 focus:ring-[#02022C]/10 transition-all"
-              />
-            </div>
           </div>
 
           <div className="flex items-center gap-3">
