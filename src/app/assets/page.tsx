@@ -258,7 +258,7 @@ export default function AssetsPage() {
 
         {/* Stats Section */}
         <div className="flex flex-row w-full gap-[12px] overflow-x-auto pb-2 scrollbar-hide">
-          {metadata.length > 0 ? (
+          {stats.length > 0 ? (
             stats.map((stat, i) => (
               <div key={i} className="bg-[#F8F8F8] min-w-[200px] flex-1 h-[98px] px-[21px] flex flex-col justify-center rounded-[8px] border border-[#F1F5F9] shadow-sm gap-2">
                 <span className="text-[12px] font-medium text-[#64748B] uppercase tracking-wider">{stat.label}</span>
@@ -266,20 +266,12 @@ export default function AssetsPage() {
               </div>
             ))
           ) : (
-            <>
-              <div className="bg-[#F8F8F8] w-full h-[98px] px-[21px] flex flex-col justify-center rounded-[8px] border border-[#F1F5F9] shadow-sm gap-2">
-                <span className="text-[12px] font-medium text-[#64748B] uppercase tracking-wider">Total Assets</span>
-                <span className="text-[24px] font-bold text-[#02022C]">{assetList.length}</span>
+            statsData.map((stat, i) => (
+              <div key={i} className="bg-[#F8F8F8] min-w-[200px] flex-1 h-[98px] px-[21px] flex flex-col justify-center rounded-[8px] border border-[#F1F5F9] shadow-sm gap-2">
+                <span className="text-[12px] font-medium text-[#64748B] uppercase tracking-wider">{stat.label}</span>
+                <span className="text-[24px] font-bold text-[#02022C]">{stat.value}</span>
               </div>
-              <div className="bg-[#F8F8F8] w-full h-[98px] px-[21px] flex flex-col justify-center rounded-[8px] border border-[#F1F5F9] shadow-sm gap-2">
-                <span className="text-[12px] font-medium text-[#64748B] uppercase tracking-wider">Storage Used</span>
-                <span className="text-[24px] font-bold text-[#02022C]">Calculating...</span>
-              </div>
-              <div className="bg-[#F8F8F8] w-full h-[98px] px-[21px] flex flex-col justify-center rounded-[8px] border border-[#F1F5F9] shadow-sm gap-2">
-                <span className="text-[12px] font-medium text-[#64748B] uppercase tracking-wider">Storage Capacity</span>
-                <span className="text-[24px] font-bold text-[#02022C]">1 GB</span>
-              </div>
-            </>
+            ))
           )}
         </div>
 </div>
