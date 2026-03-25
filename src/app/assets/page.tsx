@@ -68,6 +68,7 @@ export default function AssetsPage() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           filename: file.name,
+          name: file.name,
           contentType: file.type,
           fileSize: file.size
         })
