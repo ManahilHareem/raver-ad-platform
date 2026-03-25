@@ -39,6 +39,12 @@ export default function AssetModal({ asset, isOpen, onClose, onDelete }: AssetMo
     }
   };
 
+  const assetUrl = asset.url || asset.imagePath || "";
+  const isVideo = asset.type === "video" || 
+    assetUrl.toLowerCase().split('?')[0].endsWith(".mp4") || 
+    assetUrl.toLowerCase().split('?')[0].endsWith(".webm") || 
+    assetUrl.toLowerCase().split('?')[0].endsWith(".mov");
+
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm p-4">
       <div className="bg-white w-full max-w-[541px] rounded-[24px] overflow-hidden shadow-2xl animate-in fade-in zoom-in-95 duration-200 flex flex-col p-[12px] gap-[12px] relative">
@@ -58,15 +64,15 @@ export default function AssetModal({ asset, isOpen, onClose, onDelete }: AssetMo
                     <Icons.AudioWave className="w-16 h-16 text-[#02022C]" />
                 </div>
              </div>
-          ) : asset.type === "video" ? (
+          ) : isVideo ? (
             <video 
-              src={asset.url || asset.imagePath || ""} 
+              src={assetUrl} 
               controls
               className="w-full h-full object-contain"
             />
           ) : (
             <Image 
-              src={asset.url || asset.imagePath || ""} 
+              src={assetUrl} 
               alt={asset.name || asset.title || "Asset"}
               fill
               className="object-contain p-4"

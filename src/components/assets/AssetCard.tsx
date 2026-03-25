@@ -38,6 +38,11 @@ export default function AssetCard({
     square: "aspect-square",
   };
 
+  const isVideo = type === "video" || 
+    imagePath?.toLowerCase().split('?')[0].endsWith(".mp4") || 
+    imagePath?.toLowerCase().split('?')[0].endsWith(".webm") || 
+    imagePath?.toLowerCase().split('?')[0].endsWith(".mov");
+
   return (
     <div 
       onClick={onClick}
@@ -56,7 +61,7 @@ export default function AssetCard({
                </div>
             </div>
          </div>
-      ) : type === "video" ? (
+      ) : isVideo ? (
         <video 
           src={imagePath} 
           muted 
