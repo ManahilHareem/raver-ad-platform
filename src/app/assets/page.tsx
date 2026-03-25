@@ -99,8 +99,7 @@ const assets = [
 
 const statsData = [
   { label: "Total Assets", value: "9" },
-  { label: "Storage Used", value: "5 MB" },
-  { label: "Storage Available", value: "2.45 GB" }
+  { label: "Storage Used", value: "5 MB" }
 ];
 
 export default function AssetsPage() {
@@ -121,7 +120,7 @@ export default function AssetsPage() {
         const result = await response.json();
         setAssetList(result.data || []);
         if (result.metadata?.stats) {
-          setStats(result.metadata.stats);
+          setStats(result.metadata.stats.filter((s: any) => s.label !== "Storage Available"));
         }
       }
     } catch (error) {
