@@ -7,13 +7,106 @@ import AssetModal from "@/components/assets/AssetModal";
 import { cn } from "@/lib/utils";
 import { Icons } from "@/components/ui/icons";
 import { apiFetch } from "@/lib/api";
+import { metadata } from "../layout";
 
 const categories = ["All Assets", "Images", "Videos", "Graphics", "Audio"];
+
+const assets = [
+  {
+    id: 1,
+    title: "Summer-Hair-Color-1.jpg",
+    imagePath: "/assets/Template images /e014f16d6ac266d999b6cfaa999eceec057a361d.jpg",
+    time: "2 hours ago",
+    members: 3,
+    type: "image",
+    aspectRatio: "portrait"
+  },
+  {
+    id: 2,
+    title: "Product-Cosmetics-Display",
+    imagePath: "/assets/Template images /35282b8da06ec3e8e994540eff7f2fdbc623a01f.jpg",
+    time: "5 hours ago",
+    members: 12,
+    type: "image",
+    aspectRatio: "landscape"
+  },
+  {
+    id: 3,
+    title: "Makeup-Tutorial-Vertical",
+    imagePath: "/assets/Template images /71e298c05e8d785491ebb24678f8c88e1b7194cd.jpg",
+    time: "1 day ago",
+    members: 8,
+    type: "video",
+    aspectRatio: "portrait"
+  },
+  {
+    id: 4,
+    title: "New-Campaign-Audio",
+    imagePath: "",
+    time: "3 days ago",
+    members: 2,
+    type: "audio",
+    aspectRatio: "square"
+  },
+  {
+    id: 5,
+    title: "Brand-Texture-Mac",
+    imagePath: "/assets/Template images /40156466b18f4c31e97beb972b4b9008524c7b98.jpg",
+    time: "4 days ago",
+    members: 5,
+    type: "image",
+    aspectRatio: "square"
+  },
+  {
+    id: 6,
+    title: "Fashion-Shoot-Model",
+    imagePath: "/assets/Template images /5848f944078b1cf8c3d4dc417dae4c9e60024951.jpg",
+    time: "1 week ago",
+    members: 15,
+    type: "video",
+    aspectRatio: "portrait",
+    hasVolume: true
+  },
+  {
+    id: 7,
+    title: "Glossy-Lips-CloseUp",
+    imagePath: "/assets/Template images /76aa3198e62eb617bb9f0d5cafa17ab8b1b1f2e2.jpg",
+    time: "2 weeks ago",
+    members: 4,
+    type: "graphic",
+    aspectRatio: "portrait"
+  },
+  {
+    id: 8,
+    title: "Studio-Portrait-Dark",
+    imagePath: "/assets/Template images /4b7bdcb179e32b9af114fd0170adf50c53a4b060.jpg",
+    time: "3 weeks ago",
+    members: 7,
+    type: "image",
+    aspectRatio: "landscape"
+  },
+  {
+    id: 9,
+    title: "Creative-Vignette-Shot",
+    imagePath: "/assets/Template images /1f26e30e7625c0d9542da3aa237eb1766fd402e0.jpg",
+    time: "1 month ago",
+    members: 9,
+    type: "video",
+    aspectRatio: "portrait",
+    hasVolume: true
+  }
+];
+
+const statsData = [
+  { label: "Total Assets", value: "9" },
+  { label: "Storage Used", value: "5 MB" },
+  { label: "Storage Available", value: "2.45 GB" }
+];
+
 export default function AssetsPage() {
   const [activeCategory, setActiveCategory] = useState("All Assets");
   const [selectedAsset, setSelectedAsset] = useState<any>(null);
   const [assetList, setAssetList] = useState<any[]>([]);
-  const [stats, setStats] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isUploading, setIsUploading] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
@@ -26,9 +119,6 @@ export default function AssetsPage() {
       if (response.ok) {
         const result = await response.json();
         setAssetList(result.data || []);
-        if (result.metadata?.stats) {
-          setStats(result.metadata.stats);
-        }
       }
     } catch (error) {
       console.error("Failed to fetch assets:", error);
@@ -109,7 +199,7 @@ export default function AssetsPage() {
     }
   };
 
-  const filteredAssets = assetList.filter(asset => {
+  const filteredAssets = [...assets, ...assetList].filter(asset => {
     const matchesCategory = activeCategory === "All Assets" || 
       (asset.type || 'image').toLowerCase() === activeCategory.toLowerCase().replace(/s$/, '');
     
@@ -168,12 +258,29 @@ export default function AssetsPage() {
 
         {/* Stats Section */}
         <div className="flex flex-row w-full gap-[12px] overflow-x-auto pb-2 scrollbar-hide">
-          {stats.map((stat, i) => (
-            <div key={i} className="bg-[#F8F8F8] min-w-[200px] flex-1 h-[98px] px-[21px] flex flex-col justify-center rounded-[8px] border border-[#F1F5F9] shadow-sm gap-2">
-              <span className="text-[12px] font-medium text-[#64748B] uppercase tracking-wider">{stat.label}</span>
-              <span className="text-[24px] font-bold text-[#02022C]">{stat.value}</span>
-            </div>
-          ))}
+          {metadata.length > 0 ? (
+            stats.map((stat, i) => (
+              <div key={i} className="bg-[#F8F8F8] min-w-[200px] flex-1 h-[98px] px-[21px] flex flex-col justify-center rounded-[8px] border border-[#F1F5F9] shadow-sm gap-2">
+                <span className="text-[12px] font-medium text-[#64748B] uppercase tracking-wider">{stat.label}</span>
+                <span className="text-[24px] font-bold text-[#02022C]">{stat.value}</span>
+              </div>
+            ))
+          ) : (
+            <>
+              <div className="bg-[#F8F8F8] w-full h-[98px] px-[21px] flex flex-col justify-center rounded-[8px] border border-[#F1F5F9] shadow-sm gap-2">
+                <span className="text-[12px] font-medium text-[#64748B] uppercase tracking-wider">Total Assets</span>
+                <span className="text-[24px] font-bold text-[#02022C]">{assetList.length}</span>
+              </div>
+              <div className="bg-[#F8F8F8] w-full h-[98px] px-[21px] flex flex-col justify-center rounded-[8px] border border-[#F1F5F9] shadow-sm gap-2">
+                <span className="text-[12px] font-medium text-[#64748B] uppercase tracking-wider">Storage Used</span>
+                <span className="text-[24px] font-bold text-[#02022C]">Calculating...</span>
+              </div>
+              <div className="bg-[#F8F8F8] w-full h-[98px] px-[21px] flex flex-col justify-center rounded-[8px] border border-[#F1F5F9] shadow-sm gap-2">
+                <span className="text-[12px] font-medium text-[#64748B] uppercase tracking-wider">Storage Capacity</span>
+                <span className="text-[24px] font-bold text-[#02022C]">1 GB</span>
+              </div>
+            </>
+          )}
         </div>
 </div>
         {/* Content Section */}
