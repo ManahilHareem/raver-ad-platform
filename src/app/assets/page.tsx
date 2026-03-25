@@ -10,96 +10,10 @@ import { apiFetch } from "@/lib/api";
 
 const categories = ["All Assets", "Images", "Videos", "Graphics", "Audio"];
 
-const assets = [
-  {
-    id: 1,
-    title: "Summer-Hair-Color-1.jpg",
-    imagePath: "/assets/Template images /e014f16d6ac266d999b6cfaa999eceec057a361d.jpg",
-    time: "2 hours ago",
-    members: 3,
-    type: "image",
-    aspectRatio: "portrait"
-  },
-  {
-    id: 2,
-    title: "Product-Cosmetics-Display",
-    imagePath: "/assets/Template images /35282b8da06ec3e8e994540eff7f2fdbc623a01f.jpg",
-    time: "5 hours ago",
-    members: 12,
-    type: "image",
-    aspectRatio: "landscape"
-  },
-  {
-    id: 3,
-    title: "Makeup-Tutorial-Vertical",
-    imagePath: "/assets/Template images /71e298c05e8d785491ebb24678f8c88e1b7194cd.jpg",
-    time: "1 day ago",
-    members: 8,
-    type: "video",
-    aspectRatio: "portrait"
-  },
-  {
-    id: 4,
-    title: "New-Campaign-Audio",
-    imagePath: "",
-    time: "3 days ago",
-    members: 2,
-    type: "audio",
-    aspectRatio: "square"
-  },
-  {
-    id: 5,
-    title: "Brand-Texture-Mac",
-    imagePath: "/assets/Template images /40156466b18f4c31e97beb972b4b9008524c7b98.jpg",
-    time: "4 days ago",
-    members: 5,
-    type: "image",
-    aspectRatio: "square"
-  },
-  {
-    id: 6,
-    title: "Fashion-Shoot-Model",
-    imagePath: "/assets/Template images /5848f944078b1cf8c3d4dc417dae4c9e60024951.jpg",
-    time: "1 week ago",
-    members: 15,
-    type: "video",
-    aspectRatio: "portrait",
-    hasVolume: true
-  },
-  {
-    id: 7,
-    title: "Glossy-Lips-CloseUp",
-    imagePath: "/assets/Template images /76aa3198e62eb617bb9f0d5cafa17ab8b1b1f2e2.jpg",
-    time: "2 weeks ago",
-    members: 4,
-    type: "graphic",
-    aspectRatio: "portrait"
-  },
-  {
-    id: 8,
-    title: "Studio-Portrait-Dark",
-    imagePath: "/assets/Template images /4b7bdcb179e32b9af114fd0170adf50c53a4b060.jpg",
-    time: "3 weeks ago",
-    members: 7,
-    type: "image",
-    aspectRatio: "landscape"
-  },
-  {
-    id: 9,
-    title: "Creative-Vignette-Shot",
-    imagePath: "/assets/Template images /1f26e30e7625c0d9542da3aa237eb1766fd402e0.jpg",
-    time: "1 month ago",
-    members: 9,
-    type: "video",
-    aspectRatio: "portrait",
-    hasVolume: true
-  }
-];
-
-const stats = [
-  { label: "Total Assets", value: "9" },
-  { label: "Storage Used", value: "5 MB" },
-  { label: "Storage Available", value: "2.45 GB" }
+const statsData = [
+  { label: "Total Assets", value: "0" },
+  { label: "Storage Used", value: "0 MB" },
+  { label: "Storage Available", value: "Unlimited" }
 ];
 
 export default function AssetsPage() {
@@ -108,6 +22,7 @@ export default function AssetsPage() {
   const [assetList, setAssetList] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isUploading, setIsUploading] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const fetchAssets = async () => {
@@ -177,10 +92,34 @@ export default function AssetsPage() {
     }
   };
 
-  const filteredAssets = assetList.filter(asset => 
-    activeCategory === "All Assets" || 
-    (asset.type || 'image').toLowerCase() === activeCategory.toLowerCase().replace(/s$/, '')
-  );
+  const handleDeleteAsset = async (id: string | number) => {
+    if (!confirm("Are you sure you want to delete this asset?")) return;
+
+    try {
+      const response = await apiFetch(`${process.env.NEXT_PUBLIC_API_URL}/assets/${id}`, {
+        method: "DELETE"
+      });
+
+      if (response.ok) {
+        setAssetList(prev => prev.filter(a => a.id !== id));
+        setSelectedAsset(null);
+      } else {
+        throw new Error("Failed to delete asset");
+      }
+    } catch (error) {
+      console.error("Delete error:", error);
+      alert("Failed to delete asset");
+    }
+  };
+
+  const filteredAssets = assetList.filter(asset => {
+    const matchesCategory = activeCategory === "All Assets" || 
+      (asset.type || 'image').toLowerCase() === activeCategory.toLowerCase().replace(/s$/, '');
+    
+    const matchesSearch = (asset.name || asset.title || "").toLowerCase().includes(searchQuery.toLowerCase());
+    
+    return matchesCategory && matchesSearch;
+  });
 
   return (
     <DashboardLayout>
@@ -194,25 +133,40 @@ export default function AssetsPage() {
               Upload and manage your brand assets, media, and creative files
             </p>
           </div>
-          <button 
-            onClick={handleUploadClick}
-            disabled={isUploading}
-            className="flex items-center gap-2 px-6 py-3 bg-[#02022C] text-white rounded-xl font-bold hover:bg-[#1A1A3F] transition-all shadow-lg active:scale-95 disabled:opacity-50"
-          >
-            {isUploading ? (
-              <Icons.Loader className="w-5 h-5 animate-spin" />
-            ) : (
-              <Icons.Plus className="w-5 h-5" />
-            )}
-            {isUploading ? "Uploading..." : "Upload Asset"}
-          </button>
-          <input 
-            type="file" 
-            ref={fileInputRef} 
-            onChange={handleFileChange} 
-            className="hidden" 
-            accept="image/*,video/*,audio/*"
-          />
+          <div className="flex items-center gap-4 flex-1 max-w-[400px]">
+            <div className="relative w-full">
+              <Icons.Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#64748B]" />
+              <input 
+                type="text" 
+                placeholder="Search assets..." 
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="w-full h-[48px] pl-10 pr-4 bg-[#F8F8F8] border border-[#F1F5F9] rounded-xl text-[14px] focus:outline-none focus:ring-2 focus:ring-[#02022C]/10 transition-all"
+              />
+            </div>
+          </div>
+
+          <div className="flex items-center gap-3">
+            <button 
+              onClick={handleUploadClick}
+              disabled={isUploading}
+              className="flex items-center gap-2 px-6 py-3 bg-[#02022C] text-white rounded-xl font-bold hover:bg-[#1A1A3F] transition-all shadow-lg active:scale-95 disabled:opacity-50"
+            >
+              {isUploading ? (
+                <Icons.Loader className="w-5 h-5 animate-spin" />
+              ) : (
+                <Icons.Plus className="w-5 h-5" />
+              )}
+              {isUploading ? "Uploading..." : "Upload Asset"}
+            </button>
+            <input 
+              type="file" 
+              ref={fileInputRef} 
+              onChange={handleFileChange} 
+              className="hidden" 
+              accept="image/*,video/*,audio/*"
+            />
+          </div>
         </div>
 
         {/* Stats Section */}
@@ -292,6 +246,7 @@ export default function AssetsPage() {
         asset={selectedAsset}
         isOpen={!!selectedAsset}
         onClose={() => setSelectedAsset(null)}
+        onDelete={handleDeleteAsset}
       />
     </DashboardLayout>
   );

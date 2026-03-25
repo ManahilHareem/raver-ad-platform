@@ -26,10 +26,18 @@ interface AssetModalProps {
   asset: Asset | null;
   isOpen: boolean;
   onClose: () => void;
+  onDelete?: (id: string | number) => void;
 }
 
-export default function AssetModal({ asset, isOpen, onClose }: AssetModalProps) {
+export default function AssetModal({ asset, isOpen, onClose, onDelete }: AssetModalProps) {
   if (!isOpen || !asset) return null;
+
+  const handleDownload = () => {
+    const url = asset.url || asset.imagePath;
+    if (url) {
+      window.open(url, '_blank');
+    }
+  };
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm p-4">
@@ -90,12 +98,24 @@ export default function AssetModal({ asset, isOpen, onClose }: AssetModalProps) 
 
           {/* Action Buttons */}
           <div className="flex gap-3 pt-2">
-            <button className="flex-1 h-[48px] bg-white text-[#121212] rounded-[12px] border border-[#E2E8F0] text-[16px] font-bold hover:bg-gray-50 transition-all flex items-center justify-center gap-2">
+            <button 
+              onClick={handleDownload}
+              className="flex-1 h-[48px] bg-white text-[#121212] rounded-[12px] border border-[#E2E8F0] text-[16px] font-bold hover:bg-gray-50 transition-all flex items-center justify-center gap-2"
+            >
               <Icons.Download className="w-5 h-5" /> Download
             </button>
             <button className="flex-[1.5] h-[48px] bg-[linear-gradient(90deg,#01012A_0%,#2E2C66_100%)] text-white rounded-[12px] text-[16px] font-bold hover:opacity-90 transition-all flex items-center justify-center gap-2 shadow-[inset_0px_-5px_5px_0px_#4F569B]">
               <Icons.whiteMagicWand className="w-5 h-5 text-white" /> Use in Project
             </button>
+            {onDelete && (
+              <button 
+                onClick={() => onDelete(asset.id)}
+                className="w-[48px] h-[48px] bg-red-50 text-red-500 rounded-[12px] border border-red-100 flex items-center justify-center hover:bg-red-100 transition-all"
+                title="Delete Asset"
+              >
+                <Icons.Trash className="w-5 h-5" />
+              </button>
+            )}
           </div>
         </div>
       </div>
