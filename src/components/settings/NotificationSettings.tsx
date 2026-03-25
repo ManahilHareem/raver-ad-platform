@@ -7,6 +7,8 @@ interface NotificationSettingsProps {
   onUpdate: () => void;
 }
 
+import { apiFetch } from "@/lib/api";
+
 export default function NotificationSettings({ user, onUpdate }: NotificationSettingsProps) {
   const settings = [
     { id: "campaignUpdates", title: "Campaign updates", description: "Get notified about campaign progress and completion", enabled: user?.campaignUpdates ?? true },
@@ -15,20 +17,12 @@ export default function NotificationSettings({ user, onUpdate }: NotificationSet
     { id: "weeklySummary", title: "Weekly summary", description: "Weekly analytics and performance reports", enabled: user?.weeklySummary ?? true },
   ];
 
-  const getCookie = (name: string) => {
-    const value = `; ${document.cookie}`;
-    const parts = value.split(`; ${name}=`);
-    if (parts.length === 2) return parts.pop()?.split(';').shift();
-  };
-
   const toggle = async (id: string, currentVal: boolean) => {
     try {
-      const token = getCookie("raver_token");
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/users/${user.id}`, {
+      const response = await apiFetch(`${process.env.NEXT_PUBLIC_API_URL}/users/${user.id}`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
-          ...(token ? { "Authorization": `Bearer ${token}` } : {})
         },
         body: JSON.stringify({ [id]: !currentVal }),
       });
@@ -37,6 +31,7 @@ export default function NotificationSettings({ user, onUpdate }: NotificationSet
         onUpdate();
       }
     } catch (err) {
+      if (err instanceof Error && err.message === 'Unauthorized') return;
       console.error("Failed to update notifications:", err);
     }
   };

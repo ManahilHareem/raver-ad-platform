@@ -10,6 +10,8 @@ interface EditProfileModalProps {
   onSuccess: () => void;
 }
 
+import { apiFetch } from "@/lib/api";
+
 export default function EditProfileModal({ isOpen, onClose, user, onSuccess }: EditProfileModalProps) {
   const [formData, setFormData] = useState({
     fullName: "",
@@ -35,24 +37,16 @@ export default function EditProfileModal({ isOpen, onClose, user, onSuccess }: E
 
   if (!isOpen) return null;
 
-  const getCookie = (name: string) => {
-    const value = `; ${document.cookie}`;
-    const parts = value.split(`; ${name}=`);
-    if (parts.length === 2) return parts.pop()?.split(';').shift();
-  };
-
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
     setError("");
 
     try {
-      const token = getCookie("raver_token");
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/users/${user.id}`, {
+      const response = await apiFetch(`${process.env.NEXT_PUBLIC_API_URL}/users/${user.id}`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
-          ...(token ? { "Authorization": `Bearer ${token}` } : {})
         },
         body: JSON.stringify(formData),
       });
@@ -65,6 +59,7 @@ export default function EditProfileModal({ isOpen, onClose, user, onSuccess }: E
         throw new Error(errData.message || "Failed to update profile");
       }
     } catch (err: any) {
+      if (err instanceof Error && err.message === 'Unauthorized') return;
       console.error("Update Profile Error:", err);
       setError(err.message || "An error occurred while updating profile");
     } finally {

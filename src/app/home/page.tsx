@@ -45,30 +45,19 @@ const recentProjects = [
   },
 ];
 
+import { apiFetch } from "@/lib/api";
+
 export default function HomePage() {
   const [dashboardProjects, setDashboardProjects] = useState(recentProjects);
   const [dashboardStats, setDashboardStats] = useState(stats);
 
   useEffect(() => {
-    // Utility to get cookie
-    const getCookie = (name: string) => {
-      const value = `; ${document.cookie}`;
-      const parts = value.split(`; ${name}=`);
-      if (parts.length === 2) return parts.pop()?.split(';').shift();
-    };
-
     // Attempt to fetch live data from the backend
     const fetchDashboardData = async () => {
       try {
-        const token = getCookie("raver_token");
-        const headers = {
-          "Content-Type": "application/json",
-          ...(token ? { "Authorization": `Bearer ${token}` } : {})
-        };
-
         const [projectsRes, statsRes] = await Promise.all([
-          fetch(`${process.env.NEXT_PUBLIC_API_URL}/projects`, { headers }).catch(() => null),
-          fetch(`${process.env.NEXT_PUBLIC_API_URL}/campaigns`, { headers }).catch(() => null)
+          apiFetch(`${process.env.NEXT_PUBLIC_API_URL}/projects`).catch(() => null),
+          apiFetch(`${process.env.NEXT_PUBLIC_API_URL}/campaigns`).catch(() => null)
         ]);
 
         if (projectsRes && projectsRes.ok) {
@@ -84,6 +73,7 @@ export default function HomePage() {
           }
         }
       } catch (err) {
+        if (err instanceof Error && err.message === 'Unauthorized') return;
         console.error("Dashboard API integration error:", err);
       }
     };

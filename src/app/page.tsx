@@ -7,6 +7,8 @@ import AuthLayout from "@/components/AuthLayout";
 import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
 
+import { setToken } from "@/lib/auth";
+
 export default function IndexPage() {
   const router = useRouter();
   const [email, setEmail] = useState('');
@@ -30,18 +32,18 @@ export default function IndexPage() {
         const result = await response.json();
         // Save the JWT token in a cookie so middleware can see it
         if (result.data?.token) {
-          document.cookie = `raver_token=${result.data.token}; path=/; SameSite=Lax`;
+          setToken(result.data.token);
+          router.push("/home");
+        } else {
+          throw new Error("No token received from server");
         }
-        router.push("/home");
       } else {
         const errorData = await response.json();
         throw new Error(errorData.message || "Invalid credentials");
       }
     } catch (err: any) {
-      // For demonstration: even if the backend is off, we let them through to the dashboard for testing UI
-      console.error("Backend API Error:", err);
-      // Fallback router push so the user experience isn't entirely blocked during UI testing
-      router.push("/home");
+      console.error("Login Error:", err);
+      setError(err.message || "An unexpected error occurred");
     } finally {
       setIsLoading(false);
     }

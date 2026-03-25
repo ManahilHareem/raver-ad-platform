@@ -1,12 +1,16 @@
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
 
+const PUBLIC_ROUTES = ['/', '/signup', '/landing', '/favicon.ico'];
+
 export function middleware(request: NextRequest) {
   const token = request.cookies.get('raver_token')?.value;
   const { pathname } = request.nextUrl;
 
-  // Public routes that don't need authentication
-  const isPublicRoute = pathname === '/' || pathname === '/signup' || pathname === '/landing' || pathname.startsWith('/_next') || pathname === '/favicon.ico';
+  // Check if the current route is public
+  const isPublicRoute = PUBLIC_ROUTES.some(route => 
+    pathname === route || pathname.startsWith('/_next')
+  );
 
   if (!token && !isPublicRoute) {
     // Redirect to login if no token is found and trying to access a protected route
@@ -21,7 +25,7 @@ export function middleware(request: NextRequest) {
   return NextResponse.next();
 }
 
-// See "Matching Paths" below to learn more
+// Ensure middleware runs on all routes except static files and special Next.js paths
 export const config = {
-  matcher: ['/home/:path*', '/studio/:path*', '/settings/:path*'],
+  matcher: ['/((?!api|_next/static|_next/image|favicon.ico|sitemap.xml|robots.txt).*)'],
 };

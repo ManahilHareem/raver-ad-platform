@@ -8,6 +8,8 @@ interface AddPaymentMethodModalProps {
   card?: any;
 }
 
+import { apiFetch } from "@/lib/api";
+
 export default function AddPaymentMethodModal({ isOpen, onClose, onSuccess, card }: AddPaymentMethodModalProps) {
   const [formData, setFormData] = useState({
     cardholderName: "",
@@ -40,29 +42,20 @@ export default function AddPaymentMethodModal({ isOpen, onClose, onSuccess, card
 
   if (!isOpen) return null;
 
-  const getCookie = (name: string) => {
-    const value = `; ${document.cookie}`;
-    const parts = value.split(`; ${name}=`);
-    if (parts.length === 2) return parts.pop()?.split(';').shift();
-  };
-
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
     setError("");
 
     try {
-      const token = getCookie("raver_token");
       const url = card 
         ? `${process.env.NEXT_PUBLIC_API_URL}/billing/payment-methods/${card.id}`
         : `${process.env.NEXT_PUBLIC_API_URL}/billing/payment-methods`;
       
-      const method = card ? "PATCH" : "POST";
-      const response = await fetch(url, {
+      const response = await apiFetch(url, {
         method: isEditing ? "PUT" : "POST",
         headers: {
           "Content-Type": "application/json",
-          ...(token ? { "Authorization": `Bearer ${token}` } : {})
         },
         body: JSON.stringify(formData),
       });
@@ -75,6 +68,7 @@ export default function AddPaymentMethodModal({ isOpen, onClose, onSuccess, card
         throw new Error(errData.message || "Failed to save payment method");
       }
     } catch (err: any) {
+      if (err instanceof Error && err.message === 'Unauthorized') return;
       setError(err.message || "An error occurred");
     } finally {
       setIsLoading(false);

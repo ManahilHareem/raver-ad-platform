@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { Icons } from "@/components/ui/icons";
 
+import { apiFetch } from "@/lib/api";
+
 export default function BillingSettings({ 
   onBuyCredits, 
   onAddPayment,
@@ -13,25 +15,15 @@ export default function BillingSettings({
   const [cards, setCards] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
-  const getCookie = (name: string) => {
-    const value = `; ${document.cookie}`;
-    const parts = value.split(`; ${name}=`);
-    if (parts.length === 2) return parts.pop()?.split(';').shift();
-  };
-
   const fetchCards = async () => {
     try {
-      const token = getCookie("raver_token");
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/billing/payment-methods`, {
-        headers: {
-          ...(token ? { "Authorization": `Bearer ${token}` } : {})
-        }
-      });
+      const response = await apiFetch(`${process.env.NEXT_PUBLIC_API_URL}/billing/payment-methods`);
       if (response.ok) {
         const result = await response.json();
         setCards(result.data || []);
       }
     } catch (err) {
+      if (err instanceof Error && err.message === 'Unauthorized') return;
       console.error("Failed to fetch cards:", err);
     } finally {
       setIsLoading(false);

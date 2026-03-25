@@ -13,6 +13,8 @@ interface CreateCampaignModalProps {
   onSuccess?: () => void;
 }
 
+import { apiFetch } from "@/lib/api";
+
 export default function CreateCampaignModal({ isOpen, onClose, onSuccess }: CreateCampaignModalProps) {
   const [step, setStep] = useState(1);
   const [isLoading, setIsLoading] = useState(false);
@@ -34,23 +36,15 @@ export default function CreateCampaignModal({ isOpen, onClose, onSuccess }: Crea
     setCampaignData(prev => ({ ...prev, ...fields }));
   };
 
-  const getCookie = (name: string) => {
-    const value = `; ${document.cookie}`;
-    const parts = value.split(`; ${name}=`);
-    if (parts.length === 2) return parts.pop()?.split(';').shift();
-  };
-
   const handleSubmit = async () => {
     setIsLoading(true);
     setError("");
     
     try {
-      const token = getCookie("raver_token");
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/campaigns`, {
+      const response = await apiFetch(`${process.env.NEXT_PUBLIC_API_URL}/campaigns`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          ...(token ? { "Authorization": `Bearer ${token}` } : {})
         },
         body: JSON.stringify({
           name: campaignData.name,
@@ -75,13 +69,9 @@ export default function CreateCampaignModal({ isOpen, onClose, onSuccess }: Crea
         throw new Error(err.message || "Failed to create campaign");
       }
     } catch (err: any) {
+      if (err instanceof Error && err.message === 'Unauthorized') return;
       console.error("Campaign Creation Error:", err);
       setError(err.message || "An error occurred");
-      // Fallback for UI testing if backend is off
-      setTimeout(() => {
-        if (onSuccess) onSuccess();
-        onClose();
-      }, 1000);
     } finally {
       setIsLoading(false);
     }

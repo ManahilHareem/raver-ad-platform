@@ -3,12 +3,11 @@ import { Icons } from "./ui/icons";
 import { Button } from "./ui/Button";
 import Image from "next/image";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { logout } from "@/lib/auth";
 
 export default function Header() {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
-  const router = useRouter();
 
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
@@ -21,10 +20,7 @@ export default function Header() {
   }, []);
 
   const handleLogout = () => {
-    // Clear the cookie
-    document.cookie = "raver_token=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT";
-    // Redirect to login
-    router.push("/");
+    logout();
   };
 
   return (

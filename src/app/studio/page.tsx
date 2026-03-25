@@ -48,28 +48,19 @@ const insights = [
   { label: "Avg Render Time", value: "4.2m", change: "" },
 ];
 
+import { apiFetch } from "@/lib/api";
+
 function StudioPageContent() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [campaigns, setCampaigns] = useState<Campaign[]>();
-const [Videos, setVideos] = useState<Campaign[]>(activeCampaigns);
+  const [Videos, setVideos] = useState<Campaign[]>(activeCampaigns);
   const [selectedCampaign, setSelectedCampaign] = useState<Campaign | null>(null);
   const searchParams = useSearchParams();
   const router = useRouter();
 
-  const getCookie = (name: string) => {
-    const value = `; ${document.cookie}`;
-    const parts = value.split(`; ${name}=`);
-    if (parts.length === 2) return parts.pop()?.split(";").shift();
-  };
-
   const fetchCampaigns = async () => {
     try {
-      const token = getCookie("raver_token");
-      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/campaigns`, {
-        headers: {
-          ...(token ? { Authorization: `Bearer ${token}` } : {}),
-        },
-      });
+      const res = await apiFetch(`${process.env.NEXT_PUBLIC_API_URL}/campaigns`);
       if (res.ok) {
         const responseData = await res.json();
         if (responseData.success && responseData.data && responseData.data.length > 0) {
@@ -83,6 +74,7 @@ const [Videos, setVideos] = useState<Campaign[]>(activeCampaigns);
         }
       }
     } catch (err) {
+      if (err instanceof Error && err.message === 'Unauthorized') return;
       console.error("Failed to fetch campaigns:", err);
     }
   };
