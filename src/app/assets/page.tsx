@@ -7,7 +7,7 @@ import AssetModal from "@/components/assets/AssetModal";
 import { cn } from "@/lib/utils";
 import { Icons } from "@/components/ui/icons";
 import { apiFetch } from "@/lib/api";
-import { metadata } from "../layout";
+
 
 const categories = ["All Assets", "Images", "Videos", "Graphics", "Audio"];
 
@@ -107,6 +107,7 @@ export default function AssetsPage() {
   const [activeCategory, setActiveCategory] = useState("All Assets");
   const [selectedAsset, setSelectedAsset] = useState<any>(null);
   const [assetList, setAssetList] = useState<any[]>([]);
+  const [stats, setStats] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isUploading, setIsUploading] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
@@ -119,6 +120,9 @@ export default function AssetsPage() {
       if (response.ok) {
         const result = await response.json();
         setAssetList(result.data || []);
+        if (result.metadata?.stats) {
+          setStats(result.metadata.stats);
+        }
       }
     } catch (error) {
       console.error("Failed to fetch assets:", error);
