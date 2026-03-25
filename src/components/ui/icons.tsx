@@ -38,7 +38,8 @@ import {
   PenLine,
   Eye,
   EyeOff,
-  ShieldCheck
+  ShieldCheck,
+  Loader2
 } from "lucide-react";
 import { CustomIcons } from "./custom-icons";
 
@@ -91,5 +92,6 @@ export const Icons = {
   PenLine: PenLine,
   Eye: Eye,
   EyeOff: EyeOff,
-  Shield: ShieldCheck
+  Shield: ShieldCheck,
+  Loader: Loader2
 };

@@ -200,7 +200,7 @@ export default function AssetsPage() {
             className="flex items-center gap-2 px-6 py-3 bg-[#02022C] text-white rounded-xl font-bold hover:bg-[#1A1A3F] transition-all shadow-lg active:scale-95 disabled:opacity-50"
           >
             {isUploading ? (
-              <Icons.Plus className="w-5 h-5 animate-spin" />
+              <Icons.Loader className="w-5 h-5 animate-spin" />
             ) : (
               <Icons.Plus className="w-5 h-5" />
             )}
@@ -255,7 +255,7 @@ export default function AssetsPage() {
           {/* Masonry Grid Implementation */}
           {isLoading ? (
             <div className="flex items-center justify-center py-20">
-              <Icons.Plus className="w-12 h-12 text-[#02022C] animate-spin" />
+              <Icons.Loader className="w-12 h-12 text-[#02022C] animate-spin" />
             </div>
           ) : (
             <div className="columns-1 md:columns-2 lg:columns-3 gap-[16px] space-y-[16px]">
