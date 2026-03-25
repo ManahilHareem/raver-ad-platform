@@ -56,6 +56,19 @@ export default function AssetCard({
                </div>
             </div>
          </div>
+      ) : type === "video" ? (
+        <video 
+          src={imagePath} 
+          muted 
+          playsInline
+          className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+          onMouseOver={(e) => (e.target as HTMLVideoElement).play()}
+          onMouseOut={(e) => {
+            const video = e.target as HTMLVideoElement;
+            video.pause();
+            video.currentTime = 0;
+          }}
+        />
       ) : (
         <Image 
           src={imagePath} 

@@ -58,6 +58,12 @@ export default function AssetModal({ asset, isOpen, onClose, onDelete }: AssetMo
                     <Icons.AudioWave className="w-16 h-16 text-[#02022C]" />
                 </div>
              </div>
+          ) : asset.type === "video" ? (
+            <video 
+              src={asset.url || asset.imagePath || ""} 
+              controls
+              className="w-full h-full object-contain"
+            />
           ) : (
             <Image 
               src={asset.url || asset.imagePath || ""} 
