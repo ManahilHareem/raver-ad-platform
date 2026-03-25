@@ -9,17 +9,11 @@ import { Icons } from "@/components/ui/icons";
 import { apiFetch } from "@/lib/api";
 
 const categories = ["All Assets", "Images", "Videos", "Graphics", "Audio"];
-
-const statsData = [
-  { label: "Total Assets", value: "0" },
-  { label: "Storage Used", value: "0 MB" },
-  { label: "Storage Available", value: "Unlimited" }
-];
-
 export default function AssetsPage() {
   const [activeCategory, setActiveCategory] = useState("All Assets");
   const [selectedAsset, setSelectedAsset] = useState<any>(null);
   const [assetList, setAssetList] = useState<any[]>([]);
+  const [stats, setStats] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isUploading, setIsUploading] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
@@ -32,6 +26,9 @@ export default function AssetsPage() {
       if (response.ok) {
         const result = await response.json();
         setAssetList(result.data || []);
+        if (result.metadata?.stats) {
+          setStats(result.metadata.stats);
+        }
       }
     } catch (error) {
       console.error("Failed to fetch assets:", error);
@@ -170,19 +167,30 @@ export default function AssetsPage() {
         </div>
 
         {/* Stats Section */}
-        <div className="flex flex-row w-full gap-[12px]">
-          <div className="bg-[#F8F8F8] w-full h-[98px] px-[21px] flex flex-col justify-center rounded-[8px] border border-[#F1F5F9] shadow-sm gap-2">
-            <span className="text-[12px] font-medium text-[#64748B] uppercase tracking-wider">Total Assets</span>
-            <span className="text-[24px] font-bold text-[#02022C]">{assetList.length}</span>
-          </div>
-          <div className="bg-[#F8F8F8] w-full h-[98px] px-[21px] flex flex-col justify-center rounded-[8px] border border-[#F1F5F9] shadow-sm gap-2">
-            <span className="text-[12px] font-medium text-[#64748B] uppercase tracking-wider">Storage Used</span>
-            <span className="text-[24px] font-bold text-[#02022C]">Direct Integration</span>
-          </div>
-          <div className="bg-[#F8F8F8] w-full h-[98px] px-[21px] flex flex-col justify-center rounded-[8px] border border-[#F1F5F9] shadow-sm gap-2">
-            <span className="text-[12px] font-medium text-[#64748B] uppercase tracking-wider">Storage Capacity</span>
-            <span className="text-[24px] font-bold text-[#02022C]">Unlimited</span>
-          </div>
+        <div className="flex flex-row w-full gap-[12px] overflow-x-auto pb-2 scrollbar-hide">
+          {stats.length > 0 ? (
+            stats.map((stat, i) => (
+              <div key={i} className="bg-[#F8F8F8] min-w-[200px] flex-1 h-[98px] px-[21px] flex flex-col justify-center rounded-[8px] border border-[#F1F5F9] shadow-sm gap-2">
+                <span className="text-[12px] font-medium text-[#64748B] uppercase tracking-wider">{stat.label}</span>
+                <span className="text-[24px] font-bold text-[#02022C]">{stat.value}</span>
+              </div>
+            ))
+          ) : (
+            <>
+              <div className="bg-[#F8F8F8] w-full h-[98px] px-[21px] flex flex-col justify-center rounded-[8px] border border-[#F1F5F9] shadow-sm gap-2">
+                <span className="text-[12px] font-medium text-[#64748B] uppercase tracking-wider">Total Assets</span>
+                <span className="text-[24px] font-bold text-[#02022C]">{assetList.length}</span>
+              </div>
+              <div className="bg-[#F8F8F8] w-full h-[98px] px-[21px] flex flex-col justify-center rounded-[8px] border border-[#F1F5F9] shadow-sm gap-2">
+                <span className="text-[12px] font-medium text-[#64748B] uppercase tracking-wider">Storage Used</span>
+                <span className="text-[24px] font-bold text-[#02022C]">Calculating...</span>
+              </div>
+              <div className="bg-[#F8F8F8] w-full h-[98px] px-[21px] flex flex-col justify-center rounded-[8px] border border-[#F1F5F9] shadow-sm gap-2">
+                <span className="text-[12px] font-medium text-[#64748B] uppercase tracking-wider">Storage Capacity</span>
+                <span className="text-[24px] font-bold text-[#02022C]">1 GB</span>
+              </div>
+            </>
+          )}
         </div>
 </div>
         {/* Content Section */}
