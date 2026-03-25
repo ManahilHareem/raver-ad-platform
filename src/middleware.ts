@@ -9,7 +9,7 @@ export function middleware(request: NextRequest) {
 
   // Check if the current route is public
   const isPublicRoute = PUBLIC_ROUTES.some(route => 
-    pathname === route || pathname.startsWith('/_next')
+    pathname === route || pathname.startsWith('/_next') || pathname.startsWith('/assets')
   );
 
   if (!token && !isPublicRoute) {
@@ -27,5 +27,5 @@ export function middleware(request: NextRequest) {
 
 // Ensure middleware runs on all routes except static files and special Next.js paths
 export const config = {
-  matcher: ['/((?!api|_next/static|_next/image|favicon.ico|sitemap.xml|robots.txt).*)'],
+  matcher: ['/((?!api|_next/static|_next/image|assets|favicon.ico|sitemap.xml|robots.txt).*)'],
 };
