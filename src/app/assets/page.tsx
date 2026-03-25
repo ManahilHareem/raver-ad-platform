@@ -75,7 +75,9 @@ export default function AssetsPage() {
 
       if (!uploadRes.ok) throw new Error("Failed to get upload URL");
       
-      const { uploadUrl, assetId } = (await uploadRes.json()).data;
+      const { uploadUrl, asset } = (await uploadRes.json()).data;
+      console.log("Assets ID:", asset?.id);
+      console.log("View it here:", asset?.url);
 
       // 2. Upload to S3
       const s3Res = await fetch(uploadUrl, {
