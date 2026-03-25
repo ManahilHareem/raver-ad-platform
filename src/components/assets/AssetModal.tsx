@@ -6,14 +6,20 @@ import { Icons } from "@/components/ui/icons";
 import { cn } from "@/lib/utils";
 
 interface Asset {
-  id: number;
-  title: string;
-  imagePath: string;
-  time: string;
-  members: number;
+  id: string | number;
+  title?: string;
+  name?: string;
+  url?: string;
+  imagePath?: string;
+  time?: string;
+  createdAt?: string;
+  members?: number;
   type: string;
-  aspectRatio: string;
+  aspectRatio?: string;
   hasVolume?: boolean;
+  size?: number;
+  width?: number;
+  height?: number;
 }
 
 interface AssetModalProps {
@@ -46,8 +52,8 @@ export default function AssetModal({ asset, isOpen, onClose }: AssetModalProps) 
              </div>
           ) : (
             <Image 
-              src={asset.imagePath} 
-              alt={asset.title}
+              src={asset.url || asset.imagePath || ""} 
+              alt={asset.name || asset.title || "Asset"}
               fill
               className="object-contain p-4"
               onError={(e) => {
@@ -61,13 +67,13 @@ export default function AssetModal({ asset, isOpen, onClose }: AssetModalProps) 
         {/* Content Section */}
         <div className="flex flex-col gap-4 p-2">
           <div className="flex flex-col gap-1">
-            <h2 className="text-[24px] font-bold text-[#121212] leading-tight">{asset.title}</h2>
+            <h2 className="text-[24px] font-bold text-[#121212] leading-tight">{asset.name || asset.title}</h2>
             <div className="flex items-center gap-2 text-[14px] font-medium text-[#4F4F4F]">
-              <span>1920x1080</span>
+              <span>{asset.width || 1920}x{asset.height || 1080}</span>
               <span>•</span>
-              <span>2.4 MB</span>
+              <span>{asset.size ? (asset.size / (1024 * 1024)).toFixed(1) + " MB" : "Unknown Size"}</span>
               <span>•</span>
-              <span>Uploaded {asset.time}</span>
+              <span>Uploaded {asset.createdAt ? new Date(asset.createdAt).toLocaleDateString() : asset.time}</span>
             </div>
           </div>
 
