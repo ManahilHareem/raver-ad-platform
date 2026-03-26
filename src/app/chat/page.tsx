@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useEffect, useRef } from "react";
+import Image from "next/image";
 import DashboardLayout from "@/components/DashboardLayout";
 import { Icons } from "@/components/ui/icons";
 import { cn } from "@/lib/utils";
@@ -131,7 +132,7 @@ export default function ChatPage() {
         </div>
 
         {/* Message History */}
-        <div className="flex-1 overflow-y-auto p-6 flex flex-col gap-6 custom-scrollbar bg-[#FDFDFF]">
+        <div className="flex-1 overflow-y-auto p-6 flex flex-col gap-8 custom-scrollbar bg-[#FDFDFF]">
           {messages.length === 0 ? (
             <div className="flex-1 flex flex-col items-center justify-center text-center p-10 opacity-30 select-none">
               <Icons.MessageCircle className="w-20 h-20 mb-4 text-[#02022C]" />
@@ -143,26 +144,50 @@ export default function ChatPage() {
               <div 
                 key={m.id} 
                 className={cn(
-                  "flex flex-col max-w-[80%]",
-                  m.role === "user" ? "ml-auto items-end" : "mr-auto items-start"
+                  "flex items-start gap-3 max-w-[85%]",
+                  m.role === "user" ? "flex-row-reverse ml-auto" : "mr-auto"
                 )}
               >
-                <div className={cn(
-                  "px-4 py-3 rounded-2xl text-[14px] leading-relaxed shadow-sm",
-                  m.role === "user" 
-                    ? "bg-[#02022C] text-white rounded-tr-none" 
-                    : "bg-white text-[#121212] border border-slate-100 rounded-tl-none"
-                )}>
-                  {m.content}
+                {/* Avatar */}
+                <div className="relative w-10 h-10 shrink-0 rounded-xl overflow-hidden shadow-sm border border-slate-100">
+                  {m.role === "user" ? (
+                    <Image 
+                      src="/assets/7441684aa4149b2fd6d813ffefd24cdc9a178dba.jpg" 
+                      alt="User" 
+                      fill 
+                      className="object-cover"
+                    />
+                  ) : (
+                    <div className="w-full h-full bg-[#02022C] flex items-center justify-center">
+                      <Icons.CreativeStudio className="text-white w-5 h-5" />
+                    </div>
+                  )}
                 </div>
-                <span className="text-[10px] text-slate-400 mt-1 font-medium px-1">
-                  {m.timestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-                </span>
+
+                <div className={cn(
+                  "flex flex-col",
+                  m.role === "user" ? "items-end" : "items-start"
+                )}>
+                  <div className={cn(
+                    "px-4 py-3 rounded-2xl text-[14px] leading-relaxed shadow-sm",
+                    m.role === "user" 
+                      ? "bg-[linear-gradient(90deg,#01012A_0%,#2E2C66_100%)] text-white rounded-tr-none shadow-[inset_0px_-5px_5px_0px_#4F569B]" 
+                      : "bg-white text-[#121212] border border-slate-100 rounded-tl-none"
+                  )}>
+                    {m.content}
+                  </div>
+                  <span className="text-[10px] text-slate-400 mt-1.5 font-medium px-1 uppercase tracking-wider">
+                    {m.role === "user" ? "You" : "AI Assistant"} • {m.timestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                  </span>
+                </div>
               </div>
             ))
           )}
           {isLoading && (
-            <div className="mr-auto max-w-[80%] flex items-start gap-2">
+            <div className="mr-auto max-w-[80%] flex items-start gap-3">
+              <div className="relative w-10 h-10 shrink-0 rounded-xl overflow-hidden shadow-sm border border-slate-100 bg-[#02022C] flex items-center justify-center">
+                <Icons.CreativeStudio className="text-white w-5 h-5" />
+              </div>
               <div className="bg-white border border-slate-100 p-4 rounded-2xl rounded-tl-none shadow-sm flex items-center gap-1">
                 <div className="w-2 h-2 bg-slate-300 rounded-full animate-bounce [animation-delay:-0.3s]" />
                 <div className="w-2 h-2 bg-slate-300 rounded-full animate-bounce [animation-delay:-0.15s]" />
