@@ -158,9 +158,12 @@ export default function ChatPage() {
                       className="object-cover"
                     />
                   ) : (
-                    <div className="w-full h-full bg-[#02022C] flex items-center justify-center">
-                      <Icons.CreativeStudio className="text-white w-5 h-5" />
-                    </div>
+                    <Image 
+                      src="/assets/ai-assistant-avatar.png" 
+                      alt="AI Assistant" 
+                      fill 
+                      className="object-cover"
+                    />
                   )}
                 </div>
 
@@ -185,8 +188,13 @@ export default function ChatPage() {
           )}
           {isLoading && (
             <div className="mr-auto max-w-[80%] flex items-start gap-3">
-              <div className="relative w-10 h-10 shrink-0 rounded-xl overflow-hidden shadow-sm border border-slate-100 bg-[#02022C] flex items-center justify-center">
-                <Icons.CreativeStudio className="text-white w-5 h-5" />
+              <div className="relative w-10 h-10 shrink-0 rounded-xl overflow-hidden shadow-sm border border-slate-100">
+                <Image 
+                  src="/assets/ai-assistant-avatar.png" 
+                  alt="AI Assistant" 
+                  fill 
+                  className="object-cover"
+                />
               </div>
               <div className="bg-white border border-slate-100 p-4 rounded-2xl rounded-tl-none shadow-sm flex items-center gap-1">
                 <div className="w-2 h-2 bg-slate-300 rounded-full animate-bounce [animation-delay:-0.3s]" />
