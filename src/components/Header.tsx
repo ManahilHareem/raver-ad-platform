@@ -38,7 +38,7 @@ export default function Header() {
       {/* Actions */}
       <div className="flex items-center gap-[16px]">
         <div className="flex items-center gap-2">
-          <Link href="/messages" className="p-2.5 hover:bg-slate-50 rounded-xl transition-colors relative">
+          <Link href="/chat" className="p-2.5 hover:bg-slate-50 rounded-xl transition-colors relative">
             <Icons.MessageCircle className="w-5 h-5 text-[#4F4F4F]" />
           </Link>
           <Link href="/notifications" className="p-2.5 hover:bg-slate-50 rounded-xl transition-colors relative">

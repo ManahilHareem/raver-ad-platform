@@ -9,6 +9,7 @@ const menuItems = [
   { label: "Dashboard", icon: Icons.Dashboard, href: "/home" },
   { label: "AI Creative Studio", icon: Icons.CreativeStudio, href: "/studio" },
   { label: "AI Agents", icon: Icons.AIAgents, href: "/agents" },
+  { label: "AI Chat", icon: Icons.MessageCircle, href: "/chat" },
   { label: "My Projects", icon: Icons.MyProjects, href: "/projects" },
   { label: "Templates Library", icon: Icons.TemplatesLibrary, href: "/templates" },
   { label: "Asset Library", icon: Icons.AssetLibrary, href: "/assets" },
