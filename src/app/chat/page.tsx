@@ -27,6 +27,7 @@ export default function ChatPage() {
   const [inputText, setInputText] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [newUrl, setNewUrl] = useState("");
+  const [showUrlInput, setShowUrlInput] = useState(false);
 
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
@@ -97,6 +98,48 @@ export default function ChatPage() {
       return s;
     }));
     setNewUrl("");
+  };
+
+  const handleExternalAddUrl = () => {
+    if (!newUrl.trim() || !activeSessionId) return;
+    
+    setSessions(prev => prev.map(s => {
+      if (s.id === activeSessionId) {
+        return { ...s, urls: [...s.urls, newUrl.trim()] };
+      }
+      return s;
+    }));
+    setNewUrl("");
+    setShowUrlInput(false);
+  };
+
+  const handleDeleteSession = async (e: React.MouseEvent, sid: string) => {
+    e.stopPropagation(); // Prevent switching to the session before deleting it
+    
+    // Optimistic UI update
+    const previousSessions = [...sessions];
+    setSessions(prev => prev.filter(s => s.id !== sid));
+    if (activeSessionId === sid) {
+      setActiveSessionId("");
+    }
+
+    try {
+      const response = await fetch(`http://localhost:8000/api/chat/history/${sid}`, {
+        method: "DELETE",
+        headers: {
+          "accept": "*/*",
+        },
+      });
+
+      if (!response.ok) throw new Error("Failed to delete session on server");
+    } catch (error) {
+      console.error("Delete Session Error:", error);
+      // Revert on error
+      setSessions(previousSessions);
+      if (activeSessionId === "") {
+        setActiveSessionId(sid);
+      }
+    }
   };
 
   const handleRemoveUrl = (url: string) => {
@@ -205,7 +248,7 @@ export default function ChatPage() {
             >
               <Icons.Plus className="w-4 h-4" /> New Chat
             </button>
-            <div className="h-[1px] bg-slate-200/60" />
+            <div className="h-px bg-slate-200/60" />
           </div>
 
           <div className="flex-1 overflow-y-auto px-3 custom-scrollbar flex flex-col gap-1">
@@ -231,6 +274,13 @@ export default function ChatPage() {
                 )}>
                   {s.title}
                 </span>
+
+                <button 
+                  onClick={(e) => handleDeleteSession(e, s.id)}
+                  className="ml-auto p-1.5 opacity-0 group-hover:opacity-100 text-slate-300 hover:text-red-500 transition-all"
+                >
+                   <Icons.Trash className="w-3.5 h-3.5" />
+                </button>
               </button>
             ))}
             {sessions.length === 0 && (
@@ -239,49 +289,7 @@ export default function ChatPage() {
           </div>
 
           {/* Session Settings / URL Management */}
-          {activeSession && (
-            <div className="p-4 border-t border-slate-100 bg-white/50 backdrop-blur-sm">
-              <div className="flex flex-col gap-3">
-                <div className="flex items-center justify-between">
-                  <span className="text-[11px] font-bold text-slate-400 uppercase tracking-wider">Attached URLs ({activeSession.urls.length})</span>
-                  <Icons.ExternalLink className="w-3 h-3 text-slate-400" />
-                </div>
-                
-                <div className="flex flex-col gap-1.5 max-h-[120px] overflow-y-auto custom-scrollbar">
-                  {activeSession.urls.map((url, i) => (
-                    <div key={i} className="flex items-center justify-between group bg-white border border-slate-100 rounded-lg py-1.5 px-2.5">
-                      <span className="text-[12px] text-slate-600 truncate flex-1">{url}</span>
-                      <button 
-                        onClick={() => handleRemoveUrl(url)}
-                        className="p-1 text-slate-300 hover:text-red-500 transition-colors"
-                      >
-                        <Icons.Plus className="w-3 h-3 rotate-45" />
-                      </button>
-                    </div>
-                  ))}
-                  {activeSession.urls.length === 0 && (
-                    <p className="text-[11px] text-slate-400 italic">No URLs attached</p>
-                  )}
-                </div>
 
-                <form onSubmit={handleAddUrl} className="flex gap-2">
-                  <input 
-                    type="text"
-                    placeholder="Add URL..."
-                    value={newUrl}
-                    onChange={(e) => setNewUrl(e.target.value)}
-                    className="flex-1 bg-white border border-slate-100 rounded-lg px-2.5 py-1.5 text-[12px] outline-none focus:border-[#02022C]/30 transition-all placeholder:text-slate-400"
-                  />
-                  <button 
-                    type="submit"
-                    className="p-1.5 bg-[#02022C] text-white rounded-lg hover:opacity-90 transition-all shadow-sm shadow-[#02022C]/10"
-                  >
-                    <Icons.Plus className="w-4 h-4" />
-                  </button>
-                </form>
-              </div>
-            </div>
-          )}
         </div>
 
         {/* Main Chat Content */}
@@ -311,7 +319,7 @@ export default function ChatPage() {
         ) : (
           <div className="flex-1 flex flex-col relative overflow-hidden bg-[#FDFDFF]">
             {/* Chat Header */}
-            <div className="p-4 border-b border-slate-100 flex items-center justify-between bg-white z-20 shadow-sm shadow-slate-900/[0.02]">
+            <div className="p-4 border-b border-slate-100 flex items-center justify-between bg-white z-20 shadow-sm shadow-slate-900/2">
               <div className="flex items-center gap-3">
                 <div className="relative w-10 h-10 shrink-0 rounded-xl overflow-hidden shadow-sm border border-slate-100">
                   <Image 
@@ -408,12 +416,61 @@ export default function ChatPage() {
 
             {/* Message Input Container */}
             <div className="p-6 bg-white border-t border-slate-100 relative">
+              {/* Inline URL Input (Toggleable) */}
+              {showUrlInput && (
+                <div className="absolute bottom-full left-6 right-6 mb-3 bg-white border border-slate-200 rounded-xl shadow-xl p-3 flex gap-3 animate-in slide-in-from-bottom-2 duration-200">
+                  <div className="p-2 bg-slate-50 rounded-lg text-slate-400">
+                    <Icons.ExternalLink className="w-5 h-5" />
+                  </div>
+                  <input 
+                    type="text"
+                    placeholder="Enter website URL to analyze..."
+                    value={newUrl}
+                    onChange={(e) => setNewUrl(e.target.value)}
+                    className="flex-1 bg-transparent border-none outline-none text-[14px] text-[#121212] font-medium"
+                    autoFocus
+                    onKeyDown={(e) => {
+                      if (e.key === "Enter") {
+                        e.preventDefault();
+                        handleExternalAddUrl();
+                      }
+                      if (e.key === "Escape") setShowUrlInput(false);
+                    }}
+                  />
+                  <button 
+                    onClick={handleExternalAddUrl}
+                    className="bg-[#02022C] text-white px-4 py-1.5 rounded-lg text-[13px] font-bold"
+                  >
+                    Add
+                  </button>
+                  <button 
+                    onClick={() => setShowUrlInput(false)}
+                    className="p-2 text-slate-400 hover:text-[#121212]"
+                  >
+                    <Icons.Plus className="w-5 h-5 rotate-45" />
+                  </button>
+                </div>
+              )}
+
               <form 
                 onSubmit={handleSendMessage}
                 className="flex items-center gap-3 bg-slate-50 border border-slate-200 rounded-[20px] p-2.5 shadow-sm transition-all focus-within:ring-2 focus-within:ring-[#02022C]/5 focus-within:border-[#02022C]/10"
               >
-                <div className="p-2 text-slate-400">
-                   <Icons.MessageCircle className="w-5 h-5" />
+                <div className="flex items-center">
+                  <button 
+                    type="button"
+                    onClick={() => setShowUrlInput(!showUrlInput)}
+                    className={cn(
+                      "p-2 rounded-lg transition-all",
+                      showUrlInput ? "bg-[#02022C] text-white" : "text-slate-400 hover:bg-slate-200/50 hover:text-[#02022C]"
+                    )}
+                  >
+                    <Icons.Plus className="w-5 h-5" />
+                  </button>
+                  <div className="w-px h-6 bg-slate-200 mx-2" />
+                  <div className="p-2 text-slate-400">
+                     <Icons.MessageCircle className="w-5 h-5" />
+                  </div>
                 </div>
                 <input 
                   type="text"
