@@ -4,6 +4,7 @@ import React, { useState, useEffect, useRef } from "react";
 import Image from "next/image";
 import DashboardLayout from "@/components/DashboardLayout";
 import { Icons } from "@/components/ui/icons";
+import { getToken } from '@/lib/auth';
 import { cn } from "@/lib/utils";
 
 interface Message {
@@ -128,6 +129,7 @@ export default function ChatPage() {
         method: "DELETE",
         headers: {
           "accept": "*/*",
+          ...(getToken() ? { "Authorization": `Bearer ${getToken()}` } : {}),
         },
       });
 
@@ -186,6 +188,7 @@ export default function ChatPage() {
         headers: {
           "Content-Type": "application/json",
           "accept": "*/*",
+          ...(getToken() ? { "Authorization": `Bearer ${getToken()}` } : {}),
         },
         body: JSON.stringify({
           session_id: activeSessionId,
@@ -197,13 +200,12 @@ export default function ChatPage() {
       if (!response.ok) throw new Error("Failed to get response");
 
       const data = await response.json();
-      
-      const aiMessage: Message = {
-        id: (Date.now() + 1).toString(),
-        role: "ai",
-        content: data.response || data.message || "I'm here to help!",
-        timestamp: new Date(),
-      };
+            const aiMessage: Message = {
+          id: (Date.now() + 1).toString(),
+          role: "ai",
+          content: (data?.data?.response || data?.response || data?.message || "I'm here to help!"),
+          timestamp: new Date(),
+        };
 
       setSessions(prev => prev.map(s => {
         if (s.id === activeSessionId) {
