@@ -3,13 +3,14 @@
 import React from "react";
 import Image from "next/image";
 import { Icons } from "@/components/ui/icons";
-import { cn } from "@/lib/utils";
+import { cn, formatFileSize } from "@/lib/utils";
 
 interface AssetCardProps {
   title: string;
   imagePath: string;
   time?: string;
   members?: number;
+  fileSize?: number;
   type?: "image" | "video" | "audio" | "graphic";
   onClick?: () => void;
   className?: string;
@@ -24,6 +25,7 @@ export default function AssetCard({
   imagePath, 
   time = "2 hours ago", 
   members = 3, 
+  fileSize,
   type = "image",
   onClick, 
   className, 
@@ -65,14 +67,10 @@ export default function AssetCard({
         <video 
           src={imagePath} 
           muted 
+          autoPlay
+          loop
           playsInline
           className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
-          onMouseOver={(e) => (e.target as HTMLVideoElement).play()}
-          onMouseOut={(e) => {
-            const video = e.target as HTMLVideoElement;
-            video.pause();
-            video.currentTime = 0;
-          }}
         />
       ) : (
         <Image 
@@ -102,6 +100,12 @@ export default function AssetCard({
                 <Icons.User className="w-4 h-4" />
                 <span className="text-[12px] font-regular">{members}</span>
               </div>
+              {fileSize && (
+                <div className="flex items-center gap-1.5">
+                  <Icons.Database className="w-4 h-4" />
+                  <span className="text-[12px] font-regular">{formatFileSize(fileSize)}</span>
+                </div>
+              )}
             </div>
           </div>
 
@@ -116,7 +120,7 @@ export default function AssetCard({
         <div className="bg-[#121212]/50 backdrop-blur-md w-[32px] h-[32px] flex items-center justify-center rounded-[8px] shadow-sm">
           <Icons.Square className={cn("w-4 h-4 text-white", isSelected && "fill-white")} />
         </div>
-        {hasVolume && (
+        {(hasVolume || isVideo) && (
           <div className="bg-[#121212]/50 backdrop-blur-md w-[32px] h-[32px] flex items-center justify-center rounded-[8px] shadow-sm">
             <Icons.Mute className="w-4 h-4 text-white" />
           </div>

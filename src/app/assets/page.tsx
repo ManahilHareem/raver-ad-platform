@@ -4,6 +4,7 @@ import React, { useState, useEffect, useRef } from "react";
 import DashboardLayout from "@/components/DashboardLayout";
 import AssetCard from "@/components/assets/AssetCard";
 import AssetModal from "@/components/assets/AssetModal";
+import ConfirmationModal from "@/components/ui/ConfirmationModal";
 import { cn } from "@/lib/utils";
 import { Icons } from "@/components/ui/icons";
 import { apiFetch } from "@/lib/api";
@@ -27,6 +28,8 @@ export default function AssetsPage() {
   const [isLoading, setIsLoading] = useState(true);
   const [isUploading, setIsUploading] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
+  const [assetToDelete, setAssetToDelete] = useState<any>(null);
+  const [isDeleting, setIsDeleting] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const fetchAssets = async () => {
@@ -103,16 +106,25 @@ export default function AssetsPage() {
     }
   };
 
-  const handleDeleteAsset = async (id: string | number) => {
-    if (!confirm("Are you sure you want to delete this asset?")) return;
+  const handleDeleteAsset = (id: string | number) => {
+    const asset = assetList.find(a => a.id === id);
+    if (asset) {
+      setAssetToDelete(asset);
+    }
+  };
+
+  const confirmDelete = async () => {
+    if (!assetToDelete) return;
 
     try {
-      const response = await apiFetch(`${process.env.NEXT_PUBLIC_API_URL}/assets/${id}`, {
+      setIsDeleting(true);
+      const response = await apiFetch(`${process.env.NEXT_PUBLIC_API_URL}/assets/${assetToDelete.id}`, {
         method: "DELETE"
       });
 
       if (response.ok) {
-        setAssetList(prev => prev.filter(a => a.id !== id));
+        setAssetList(prev => prev.filter(a => a.id !== assetToDelete.id));
+        setAssetToDelete(null);
         setSelectedAsset(null);
       } else {
         throw new Error("Failed to delete asset");
@@ -120,6 +132,8 @@ export default function AssetsPage() {
     } catch (error) {
       console.error("Delete error:", error);
       alert("Failed to delete asset");
+    } finally {
+      setIsDeleting(false);
     }
   };
 
@@ -170,7 +184,14 @@ export default function AssetsPage() {
 
         {/* Stats Section */}
         <div className="flex flex-row w-full gap-[12px] overflow-x-auto pb-2 scrollbar-hide">
-          {stats.length > 0 ? (
+          {isLoading ? (
+            [...Array(3)].map((_, i) => (
+              <div key={i} className="bg-[#F8F8F8] min-w-[200px] flex-1 h-[98px] px-[21px] flex flex-col justify-center rounded-[8px] border border-[#F1F5F9] shadow-sm gap-2 animate-pulse">
+                <div className="h-3 w-20 bg-[#E2E8F0] rounded" />
+                <div className="h-8 w-24 bg-[#E2E8F0] rounded" />
+              </div>
+            ))
+          ) : stats.length > 0 ? (
             stats.map((stat, i) => (
               <div key={i} className="bg-[#F8F8F8] min-w-[200px] flex-1 h-[98px] px-[21px] flex flex-col justify-center rounded-[8px] border border-[#F1F5F9] shadow-sm gap-2">
                 <span className="text-[12px] font-medium text-[#64748B] uppercase tracking-wider">{stat.label}</span>
@@ -210,11 +231,19 @@ export default function AssetsPage() {
 
           {/* Masonry Grid Implementation */}
           {isLoading ? (
-            <div className="flex items-center justify-center py-20">
-              <Icons.Loader className="w-12 h-12 text-[#02022C] animate-spin" />
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-[16px]">
+              {[...Array(6)].map((_, i) => (
+                <div key={i} className="aspect-[3/4] bg-[#F8F8F8] rounded-[16px] animate-pulse flex flex-col justify-end p-6 gap-3">
+                  <div className="h-6 w-3/4 bg-[#E2E8F0] rounded" />
+                  <div className="flex gap-4">
+                    <div className="h-4 w-1/4 bg-[#E2E8F0] rounded" />
+                    <div className="h-4 w-1/4 bg-[#E2E8F0] rounded" />
+                  </div>
+                </div>
+              ))}
             </div>
           ) : (
-            <div className="columns-1 md:columns-2 lg:columns-3 gap-[16px] space-y-[16px]">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-[16px]">
               {filteredAssets.map((asset, index) => (
                 <AssetCard
                   key={asset.id}
@@ -222,6 +251,7 @@ export default function AssetsPage() {
                   imagePath={asset.url || asset.imagePath}
                   time={asset.createdAt ? new Date(asset.createdAt).toLocaleDateString() : (asset.time || "Recently")}
                   members={asset.members || 1}
+                  fileSize={asset.fileSize}
                   type={(asset.type || 'image') as any}
                   aspectRatio={(asset.aspectRatio || 'square') as any}
                   hasVolume={asset.hasVolume}
@@ -233,7 +263,7 @@ export default function AssetsPage() {
             </div>
           )}
 
-          {filteredAssets.length === 0 && (
+          {!isLoading && filteredAssets.length === 0 && (
             <div className="flex flex-col items-center justify-center py-20 gap-4 opacity-50">
               <div className="p-4 bg-gray-100 rounded-full">
                 <Icons.TemplatesLibrary className="w-12 h-12 text-gray-400" />
@@ -249,6 +279,18 @@ export default function AssetsPage() {
         isOpen={!!selectedAsset}
         onClose={() => setSelectedAsset(null)}
         onDelete={handleDeleteAsset}
+      />
+
+      <ConfirmationModal
+        isOpen={!!assetToDelete}
+        onClose={() => setAssetToDelete(null)}
+        onConfirm={confirmDelete}
+        title="Delete Asset"
+        message={`Are you sure you want to delete "${assetToDelete?.name || assetToDelete?.title || 'this asset'}"? This action cannot be undone.`}
+        confirmText="Delete"
+        cancelText="Cancel"
+        variant="danger"
+        isLoading={isDeleting}
       />
     </DashboardLayout>
   );

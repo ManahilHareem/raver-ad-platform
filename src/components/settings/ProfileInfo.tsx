@@ -3,13 +3,15 @@
 import React from "react";
 import Image from "next/image";
 import { Icons } from "@/components/ui/icons";
+import { cn } from "@/lib/utils";
 
 interface ProfileInfoProps {
   user: any;
   onEdit: () => void;
+  isLoading?: boolean;
 }
 
-export default function ProfileInfo({ user, onEdit }: ProfileInfoProps) {
+export default function ProfileInfo({ user, onEdit, isLoading = false }: ProfileInfoProps) {
   return (
     <div className="flex flex-col gap-8">
       <div className="flex flex-col gap-4">
@@ -17,29 +19,47 @@ export default function ProfileInfo({ user, onEdit }: ProfileInfoProps) {
         
         {/* Banner and Avatar section */}
         <div className="relative w-full h-[180px] rounded-[16px] overflow-visible mb-16">
-          <div className="w-full h-full bg-[linear-gradient(90deg,#ABABFC_0%,#C4C4F4_50%,rgba(252,171,236,0.72)_100%)]  rounded-[16px]" />
+          <div className={cn(
+            "w-full h-full rounded-[16px]",
+            isLoading ? "bg-gray-100 animate-pulse" : "bg-[linear-gradient(90deg,#ABABFC_0%,#C4C4F4_50%,rgba(252,171,236,0.72)_100%)]"
+          )} />
           <div className="absolute -bottom-12 left-6 w-[120px] h-[120px] rounded-[24px] border-4 border-white overflow-hidden bg-white shadow-sm">
-            <Image 
-              src="/assets/Template images /5848f944078b1cf8c3d4dc417dae4c9e60024951.jpg" 
-              alt="Avatar"
-              fill
-              className="object-cover"
-            />
+            {isLoading ? (
+              <div className="w-full h-full bg-gray-200 animate-pulse" />
+            ) : (
+              <Image 
+                src="/assets/Template images /5848f944078b1cf8c3d4dc417dae4c9e60024951.jpg" 
+                alt="Avatar"
+                fill
+                className="object-cover"
+              />
+            )}
           </div>
         </div>
 
         <div className="flex items-center justify-between mt-4">
-          <div className="flex flex-col">
-            <h4 className="text-[24px] font-bold text-[#121212]">{user?.fullName || "Hareem Ahsen"}</h4>
-            <span className="text-[14px] text-[#4F4F4F]">{user?.email || "hareem.ahsen@example.com"}</span>
+          <div className="flex flex-col gap-2">
+            {isLoading ? (
+              <>
+                <div className="h-8 w-48 bg-gray-200 rounded animate-pulse" />
+                <div className="h-4 w-64 bg-gray-100 rounded animate-pulse" />
+              </>
+            ) : (
+              <>
+                <h4 className="text-[24px] font-bold text-[#121212]">{user?.fullName || "Hareem Ahsen"}</h4>
+                <span className="text-[14px] text-[#4F4F4F]">{user?.email || "hareem.ahsen@example.com"}</span>
+              </>
+            )}
           </div>
-          <button 
-            onClick={onEdit}
-            className="flex items-center gap-2 px-4 py-2 bg-[#F8F8F8] border border-[#F1F5F9] rounded-[12px] text-[14px] font-medium text-[#121212] hover:bg-gray-50 transition-colors shadow-sm"
-          >
-            <Icons.PenLine className="w-4 h-4 text-[#121212]" />
-            Edit Profile
-          </button>
+          {!isLoading && (
+            <button 
+              onClick={onEdit}
+              className="flex items-center gap-2 px-4 py-2 bg-[#F8F8F8] border border-[#F1F5F9] rounded-[12px] text-[14px] font-medium text-[#121212] hover:bg-gray-50 transition-colors shadow-sm"
+            >
+              <Icons.PenLine className="w-4 h-4 text-[#121212]" />
+              Edit Profile
+            </button>
+          )}
         </div>
       </div>
 
@@ -55,51 +75,40 @@ export default function ProfileInfo({ user, onEdit }: ProfileInfoProps) {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-y-6 gap-x-12">
-          <div className="flex items-start gap-3">
-             <div className="p-2 bg-white rounded-[8px] border border-[#F1F5F9]">
-                <Icons.User className="w-5 h-5 text-[#64748B]" />
-             </div>
-             <div className="flex flex-col">
-                <span className="text-[12px] text-[#4F4F4F] font-regular uppercase tracking-wider">Full Name</span>
-                <span className="text-[16px] font-medium text-[#121212]">{user?.fullName || "Hareem Ahsen"}</span>
-             </div>
-          </div>
-
-          <div className="flex items-start gap-3">
-             <div className="p-2 bg-white rounded-[8px] border border-[#F1F5F9]">
-                <Icons.Mail className="w-5 h-5 text-[#64748B]" />
-             </div>
-             <div className="flex flex-col">
-                <span className="text-[12px] text-[#4F4F4F] font-regular uppercase tracking-wider">Email</span>
-                <span className="text-[16px] font-medium text-[#121212]">{user?.email || "hareem.ahsen@example.com"}</span>
-             </div>
-          </div>
-
-          <div className="flex items-start gap-3">
-             <div className="p-2 bg-white rounded-[8px] border border-[#F1F5F9]">
-                <Icons.MagicWand className="w-5 h-5 text-[#64748B]" />
-             </div>
-             <div className="flex flex-col">
-                <span className="text-[12px] text-[#4F4F4F] font-regular uppercase tracking-wider">Hair Style</span>
-                <span className="text-[16px] font-medium text-[#121212]">{user?.professionalRole || "Hair Stylish"}</span>
-             </div>
-          </div>
-
-          <div className="flex items-start gap-3">
-             <div className="p-2 bg-white rounded-[8px] border border-[#F1F5F9]">
-                <Icons.Instagram className="w-5 h-5 text-[#64748B]" />
-             </div>
-             <div className="flex flex-col">
-                <span className="text-[12px] text-[#4F4F4F] font-regular uppercase tracking-wider">Instagram</span>
-                <span className="text-[16px] font-medium text-[#121212]">{user?.instagram || "Not linked"}</span>
-             </div>
-          </div>
+          {[
+            { label: "Full Name", value: user?.fullName || "Hareem Ahsen", icon: Icons.User },
+            { label: "Email", value: user?.email || "hareem.ahsen@example.com", icon: Icons.Mail },
+            { label: "Hair Style", value: user?.professionalRole || "Hair Stylish", icon: Icons.MagicWand },
+            { label: "Instagram", value: user?.instagram || "Not linked", icon: Icons.Instagram },
+          ].map((field, idx) => (
+            <div key={idx} className="flex items-start gap-3">
+               <div className="p-2 bg-white rounded-[8px] border border-[#F1F5F9]">
+                  <field.icon className="w-5 h-5 text-[#64748B]" />
+               </div>
+               <div className="flex flex-col gap-1">
+                  <span className="text-[12px] text-[#4F4F4F] font-regular uppercase tracking-wider">{field.label}</span>
+                  {isLoading ? (
+                    <div className="h-5 w-32 bg-gray-200 rounded animate-pulse" />
+                  ) : (
+                    <span className="text-[16px] font-medium text-[#121212]">{field.value}</span>
+                  )}
+               </div>
+            </div>
+          ))}
         </div>
 
         <div className="flex flex-col gap-2 mt-2">
-           <div className="p-[20px] bg-white rounded-[16px] border border-[#F1F5F9]  gap-[12px] min-h-[170px]">
+           <div className="p-[20px] bg-white rounded-[16px] border border-[#F1F5F9]  gap-[12px] min-h-[120px]">
               <span className="text-[12px] text-[#4F4F4F] font-regular uppercase tracking-wider block mb-2">Bio</span>
-              <p className="text-[14px] text-[#121212] font-medium">{user?.bio || "Tell us about your beauty expertise..."}</p>
+              {isLoading ? (
+                <div className="flex flex-col gap-2">
+                  <div className="h-4 w-full bg-gray-100 rounded animate-pulse" />
+                  <div className="h-4 w-5/6 bg-gray-100 rounded animate-pulse" />
+                  <div className="h-4 w-4/6 bg-gray-100 rounded animate-pulse" />
+                </div>
+              ) : (
+                <p className="text-[14px] text-[#121212] font-medium">{user?.bio || "Tell us about your beauty expertise..."}</p>
+              )}
            </div>
         </div>
       </div>

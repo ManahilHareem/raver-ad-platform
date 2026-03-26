@@ -3,7 +3,7 @@
 import React from "react";
 import Image from "next/image";
 import { Icons } from "@/components/ui/icons";
-import { cn } from "@/lib/utils";
+import { cn, formatFileSize } from "@/lib/utils";
 
 interface Asset {
   id: string | number;
@@ -17,7 +17,7 @@ interface Asset {
   type: string;
   aspectRatio?: string;
   hasVolume?: boolean;
-  size?: number;
+  fileSize?: number;
   width?: number;
   height?: number;
 }
@@ -91,7 +91,7 @@ export default function AssetModal({ asset, isOpen, onClose, onDelete }: AssetMo
             <div className="flex items-center gap-2 text-[14px] font-medium text-[#4F4F4F]">
               <span>{asset.width || 1920}x{asset.height || 1080}</span>
               <span>•</span>
-              <span>{asset.size ? (asset.size / (1024 * 1024)).toFixed(1) + " MB" : "Unknown Size"}</span>
+              <span>{formatFileSize(asset.fileSize)}</span>
               <span>•</span>
               <span>Uploaded {asset.createdAt ? new Date(asset.createdAt).toLocaleDateString() : asset.time}</span>
             </div>

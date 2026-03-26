@@ -64,9 +64,9 @@ export default function SettingsPage() {
   const renderContent = () => {
     switch (activeTab) {
       case "profile":
-        return <ProfileInfo user={user} onEdit={() => setIsEditProfileOpen(true)} />;
+        return <ProfileInfo user={user} onEdit={() => setIsEditProfileOpen(true)} isLoading={isLoading} />;
       case "notifications":
-        return <NotificationSettings user={user} onUpdate={fetchUser} />;
+        return <NotificationSettings user={user} onUpdate={fetchUser} isLoading={isLoading} />;
       case "billing":
         return <BillingSettings 
           onBuyCredits={() => setIsBuyCreditsOpen(true)} 
@@ -79,13 +79,15 @@ export default function SettingsPage() {
             setIsAddPaymentOpen(true);
           }}
           key={`billing-${billingRefreshKey}`}
+          isLoading={isLoading}
         />;
       case "security":
         return <SecuritySettings 
           onChangePassword={() => setIsChangePasswordOpen(true)}
+          isLoading={isLoading}
         />;
       default:
-        return <ProfileInfo user={user} onEdit={() => setIsEditProfileOpen(true)} />;
+        return <ProfileInfo user={user} onEdit={() => setIsEditProfileOpen(true)} isLoading={isLoading} />;
     }
   };
 
