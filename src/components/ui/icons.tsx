@@ -39,7 +39,8 @@ import {
   Eye,
   EyeOff,
   ShieldCheck,
-  Loader2
+  Loader2,
+  Camera
 } from "lucide-react";
 import { CustomIcons } from "./custom-icons";
 
@@ -93,5 +94,6 @@ export const Icons = {
   Eye: Eye,
   EyeOff: EyeOff,
   Shield: ShieldCheck,
-  Loader: Loader2
+  Loader: Loader2,
+  Camera: Camera
 };

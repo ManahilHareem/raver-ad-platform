@@ -4,9 +4,11 @@ import { Button } from "./ui/Button";
 import Image from "next/image";
 import Link from "next/link";
 import { logout } from "@/lib/auth";
+import { useUser } from "@/context/UserContext";
 
 export default function Header() {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const { user } = useUser();
   const dropdownRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -61,7 +63,7 @@ export default function Header() {
             className="flex items-center gap-3 relative w-10 h-10 rounded-xl overflow-hidden shadow-sm hover:ring-2 hover:ring-indigo-500/20 transition-all border border-transparent focus:border-indigo-500/20 outline-none"
           >
             <Image 
-              src="/assets/7441684aa4149b2fd6d813ffefd24cdc9a178dba.jpg" 
+              src={user?.avatarUrl || "/assets/7441684aa4149b2fd6d813ffefd24cdc9a178dba.jpg"} 
               alt="User" 
               fill 
               className="object-cover"

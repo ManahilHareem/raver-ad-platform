@@ -1,38 +1,106 @@
-"use client";
-
-import React from "react";
+import React, { useRef, useState } from "react";
 import Image from "next/image";
 import { Icons } from "@/components/ui/icons";
 import { cn } from "@/lib/utils";
+import { apiFetch } from "@/lib/api";
 
 interface ProfileInfoProps {
   user: any;
   onEdit: () => void;
+  onAvatarUpdate: () => void;
   isLoading?: boolean;
 }
 
-export default function ProfileInfo({ user, onEdit, isLoading = false }: ProfileInfoProps) {
+export default function ProfileInfo({ user, onEdit, onAvatarUpdate, isLoading = false }: ProfileInfoProps) {
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const [isUploading, setIsUploading] = useState(false);
+
+  const handleAvatarClick = () => {
+    fileInputRef.current?.click();
+  };
+
+  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    setIsUploading(true);
+    try {
+      // 1. Get Pre-signed URL
+      const API_BASE = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000/api";
+      const response = await apiFetch(`${API_BASE}/users/profile-picture/upload`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          fileName: file.name,
+          contentType: file.type,
+        }),
+      });
+
+      if (!response.ok) throw new Error("Failed to get upload URL");
+      const { data } = await response.json();
+      const uploadUrl = data.uploadUrl;
+
+      // 2. Upload to S3 (or compatible backend storage)
+      const uploadRes = await fetch(uploadUrl, {
+        method: "PUT",
+        body: file,
+        headers: {
+          "Content-Type": file.type,
+        },
+      });
+
+      if (!uploadRes.ok) throw new Error("Failed to upload image");
+
+      // 3. Inform parent to refresh
+      onAvatarUpdate();
+    } catch (err) {
+      console.error("Profile Picture Upload Error:", err);
+      alert(err instanceof Error ? err.message : "Failed to upload profile picture");
+    } finally {
+      setIsUploading(false);
+      // Reset input so the same file can be selected again
+      if (fileInputRef.current) fileInputRef.current.value = "";
+    }
+  };
+
   return (
     <div className="flex flex-col gap-8">
       <div className="flex flex-col gap-4">
         <h3 className="text-[18px] font-medium text-[#121212]">Profile Information</h3>
         
-        {/* Banner and Avatar section */}
+        {/* Banner and Avatar section with dynamic upload */}
+        <input 
+          type="file" 
+          ref={fileInputRef} 
+          onChange={handleFileChange} 
+          accept="image/*" 
+          className="hidden" 
+        />
+        
         <div className="relative w-full h-[180px] rounded-[16px] overflow-visible mb-16">
           <div className={cn(
             "w-full h-full rounded-[16px]",
             isLoading ? "bg-gray-100 animate-pulse" : "bg-[linear-gradient(90deg,#ABABFC_0%,#C4C4F4_50%,rgba(252,171,236,0.72)_100%)]"
           )} />
-          <div className="absolute -bottom-12 left-6 w-[120px] h-[120px] rounded-[24px] border-4 border-white overflow-hidden bg-white shadow-sm">
-            {isLoading ? (
-              <div className="w-full h-full bg-gray-200 animate-pulse" />
+          <div className="absolute -bottom-12 left-6 w-[120px] h-[120px] rounded-[24px] border-4 border-white overflow-hidden bg-white shadow-sm group cursor-pointer transition-all hover:scale-[1.02]" onClick={handleAvatarClick}>
+            {isLoading || isUploading ? (
+              <div className="w-full h-full bg-gray-200 animate-pulse flex items-center justify-center">
+                {isUploading && <Icons.Loader className="w-6 h-6 text-slate-400 animate-spin" />}
+              </div>
             ) : (
-              <Image 
-                src="/assets/Template images /5848f944078b1cf8c3d4dc417dae4c9e60024951.jpg" 
-                alt="Avatar"
-                fill
-                className="object-cover"
-              />
+              <>
+                <Image 
+                  src={user?.avatarUrl || "/assets/Template images /5848f944078b1cf8c3d4dc417dae4c9e60024951.jpg"} 
+                  alt="Avatar"
+                  fill
+                  className="object-cover"
+                />
+                <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity">
+                  <Icons.Camera className="w-6 h-6 text-white" />
+                </div>
+              </>
             )}
           </div>
         </div>

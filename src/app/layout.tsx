@@ -17,6 +17,8 @@ export const metadata: Metadata = {
   description: "Generate images, videos, and marketing content with intelligent AI agents.",
 };
 
+import { UserProvider } from "@/context/UserContext";
+
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -27,7 +29,9 @@ export default function RootLayout({
       <body
         className={`${outfit.variable} ${inter.variable} font-sans antialiased`}
       >
-        {children}
+        <UserProvider>
+          {children}
+        </UserProvider>
       </body>
     </html>
   );

@@ -5,6 +5,7 @@ import Image from "next/image";
 import DashboardLayout from "@/components/DashboardLayout";
 import { Icons } from "@/components/ui/icons";
 import { getToken } from '@/lib/auth';
+import { apiFetch } from "@/lib/api";
 import { cn } from "@/lib/utils";
 
 interface Message {
@@ -19,12 +20,16 @@ interface ChatSession {
   title: string;
   messages: Message[];
   urls: string[];
+  tag?: string;
   createdAt: Date;
 }
+
+import { useUser } from "@/context/UserContext";
 
 export default function ChatPage() {
   const [sessions, setSessions] = useState<ChatSession[]>([]);
   const [activeSessionId, setActiveSessionId] = useState<string>("");
+  const { user } = useUser();
   const [inputText, setInputText] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [newUrl, setNewUrl] = useState("");
@@ -362,10 +367,10 @@ export default function ChatPage() {
                     <div className="relative w-10 h-10 shrink-0 rounded-xl overflow-hidden shadow-sm border border-slate-200">
                       {m.role === "user" ? (
                         <Image 
-                          src="/assets/7441684aa4149b2fd6d813ffefd24cdc9a178dba.jpg" 
+                          src={user?.avatarUrl || "/assets/7441684aa4149b2fd6d813ffefd24cdc9a178dba.jpg"} 
                           alt="User" 
                           fill 
-                          className="object-cover"
+                          className="object-cover transition-opacity duration-300"
                         />
                       ) : (
                         <Image 
@@ -474,22 +479,27 @@ export default function ChatPage() {
                      <Icons.MessageCircle className="w-5 h-5" />
                   </div>
                 </div>
-                <input 
-                  type="text"
-                  placeholder="Ask your AI Assistant anything..."
-                  value={inputText}
-                  onChange={(e) => setInputText(e.target.value)}
-                  disabled={isLoading}
-                  className="flex-1 bg-transparent px-2 py-2 text-[14px] text-[#121212] outline-none placeholder:text-slate-400 font-medium"
-                />
-                <button 
-                  type="submit"
-                  disabled={!inputText.trim() || isLoading}
-                  className="h-[44px] px-6 bg-[#02022C] text-white rounded-[14px] flex items-center justify-center gap-2 hover:opacity-90 active:scale-95 transition-all disabled:opacity-50 disabled:active:scale-100 shadow-md shadow-[#02022C]/10 font-bold"
-                >
-                  Ask <Icons.Send className="w-4 h-4 ml-1" />
-                </button>
-              </form>
+            <input 
+                type="text"
+                placeholder={activeSession?.tag === "director" ? "This consultation is in review mode..." : "Reply to AI Director..."}
+                value={inputText}
+                onChange={(e) => setInputText(e.target.value)}
+                disabled={isLoading || !activeSessionId || activeSession?.tag === "director"}
+                className="flex-1 bg-transparent px-3 py-2 text-[14px] text-[#121212] outline-none placeholder:text-slate-400 font-medium disabled:opacity-50"
+              />
+              <button 
+                type="submit"
+                disabled={!inputText.trim() || isLoading || activeSession?.tag === "director"}
+                className="h-[44px] px-6 bg-[#02022C] text-white rounded-xl flex items-center justify-center gap-2 hover:opacity-90 active:scale-95 transition-all disabled:opacity-50 disabled:active:scale-100 shadow-md shadow-[#02022C]/10 font-bold"
+              >
+                Send <Icons.Send className="w-4 h-4 ml-1 text-white" />
+              </button>
+            </form>
+            {activeSession?.tag === "director" && (
+              <p className="text-[11px] text-center text-[#94A3B8] mt-3 font-medium animate-in fade-in slide-in-from-top-1 duration-300">
+                This is a directed consultation. Please continue this conversation in the <span className="text-[#02022C] font-bold">Studio</span> for campaign-specific adjustments.
+              </p>
+            )}
             </div>
           </div>
         )}

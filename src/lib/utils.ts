@@ -12,3 +12,24 @@ export function formatFileSize(bytes?: number): string {
   if (bytes < 1024 * 1024 * 1024) return `${(bytes / (1024 * 1024)).toFixed(2)} MB`;
   return `${(bytes / (1024 * 1024 * 1024)).toFixed(2)} GB`;
 }
+
+export function enrichMessageWithCampaign(message: string, campaign?: any | null): string {
+  if (!campaign) return message;
+  
+  const context = `
+### SYSTEM INSTRUCTION: USE THE FOLLOWING CAMPAIGN CONTEXT FOR YOUR RESPONSE ###
+[CAMPAIGN DATA]
+Title: ${campaign.title}
+Objective: ${campaign.objective || "N/A"}
+Target Audience: ${campaign.audience || "N/A"}
+Format: ${campaign.format || "N/A"}
+Duration: ${campaign.duration || "N/A"}
+Style: ${campaign.visualStyles?.join(", ") || "N/A"}
+Tones: ${campaign.tones?.join(", ") || "N/A"}
+---
+### END CONTEXT ###
+
+[USER MESSAGE]: ${message}
+`;
+  return context.trim();
+}
