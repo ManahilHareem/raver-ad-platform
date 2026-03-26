@@ -91,11 +91,19 @@ export default function ChatPage() {
 
       setMessages((prev) => [...prev, aiMessage]);
     } catch (error) {
-      console.error("Chat Error:", error);
+      console.error("Chat Error details:", error);
+      let errorText = "Sorry, I encountered an error. Please try again later.";
+      
+      if (error instanceof TypeError && error.message === "Failed to fetch") {
+        errorText = "Could not connect to the AI backend at http://localhost:8000. Please ensure your backend server is running.";
+      } else if (error instanceof Error) {
+        errorText = `Error: ${error.message}`;
+      }
+
       const errorMessage: Message = {
         id: (Date.now() + 1).toString(),
         role: "ai",
-        content: "Sorry, I encountered an error. Please try again or check your backend connection.",
+        content: errorText,
         timestamp: new Date(),
       };
       setMessages((prev) => [...prev, errorMessage]);
