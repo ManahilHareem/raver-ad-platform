@@ -13,9 +13,11 @@ interface AgentCardProps {
   imagePath: string;
   isAudio?: boolean;
   onClick?: () => void;
+  actionLabel?: string;
+  onAction?: (e: React.MouseEvent) => void;
 }
 
-export default function AgentCard({ name, role, description, tasksCompleted, imagePath, isAudio, onClick }: AgentCardProps) {
+export default function AgentCard({ name, role, description, tasksCompleted, imagePath, isAudio, onClick, actionLabel, onAction }: AgentCardProps) {
   return (
     <div 
       onClick={onClick}
@@ -57,9 +59,11 @@ export default function AgentCard({ name, role, description, tasksCompleted, ima
           {description}
         </p>
 
-        <div className="mt-auto h-[27px] flex items-center gap-2 text-[#02022C] border-t-[0.35px] border-[#0000001A] ">
-          <Icons.Activity className="w-4 h-4" />
-          <span className="text-[12px] font-medium">{tasksCompleted.toLocaleString()} tasks completed</span>
+        <div className="mt-auto h-[48px] flex items-center justify-between gap-4 border-t-[0.35px] border-[#0000001A]">
+          <div className="flex items-center gap-2 text-[#02022C]">
+            <Icons.Activity className="w-4 h-4" />
+            <span className="text-[12px] font-medium whitespace-nowrap">{tasksCompleted.toLocaleString()} tasks</span>
+          </div>
         </div>
       </div>
     </div>

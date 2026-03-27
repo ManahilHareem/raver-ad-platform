@@ -122,6 +122,13 @@ export default function AgentsPage() {
               key={i} 
               {...agent} 
               onClick={() => setSelectedAgent(agent)}
+              actionLabel={agent.name === "Raver Image Lead" ? "Start Creating" : undefined}
+              onAction={(e) => {
+                if (agent.name === "Raver Image Lead") {
+                  e.stopPropagation();
+                  window.location.href = "/agents/image-lead";
+                }
+              }}
             />
           ))}
         </div>
@@ -166,6 +173,11 @@ export default function AgentsPage() {
         agent={selectedAgent} 
         isOpen={!!selectedAgent} 
         onClose={() => setSelectedAgent(null)} 
+        onAction={() => {
+          if (selectedAgent?.name === "Raver Image Lead") {
+            window.location.href = "/agents/image-lead";
+          }
+        }}
       />
     </DashboardLayout>
   );

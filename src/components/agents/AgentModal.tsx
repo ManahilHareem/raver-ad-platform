@@ -17,9 +17,10 @@ interface AgentModalProps {
   agent: Agent | null;
   isOpen: boolean;
   onClose: () => void;
+  onAction: () => void;
 }
 
-export default function AgentModal({ agent, isOpen, onClose }: AgentModalProps) {
+export default function AgentModal({ agent, isOpen, onClose, onAction }: AgentModalProps) {
   if (!isOpen || !agent) return null;
 
   return (
@@ -87,6 +88,7 @@ export default function AgentModal({ agent, isOpen, onClose }: AgentModalProps) 
           <button 
             className="w-[517px] h-[48px] mt-2 bg-[linear-gradient(90deg,#01012A_0%,#2E2C66_100%)] text-white rounded-[8px] text-[15px] font-bold hover:opacity-90 transition-all flex items-center justify-center gap-[8px] py-[12px] px-[32px]"
             style={{ boxShadow: "inset 0px -5px 5px 0px #4F569B" }}
+            
           >
             Start Creating with {agent.name}
           </button>
