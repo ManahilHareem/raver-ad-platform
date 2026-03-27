@@ -1,6 +1,6 @@
 "use client";
 
-import { Suspense, useState, useEffect } from "react";
+import { Suspense, useState, useEffect, useRef } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import DashboardLayout from "@/components/DashboardLayout";
 import StudioHero from "@/components/studio/StudioHero";
@@ -28,6 +28,9 @@ interface Campaign {
   title: string;
   status: string;
   image: string;
+  sessionId?: string;
+  videoUrl?: string | null;
+  message?: string;
   audience?: string;
   objective?: string;
   format?: string;
@@ -39,23 +42,7 @@ interface Campaign {
   createdAt?: string;
 }
 
-const activeCampaigns = [
-  {
-    title: "Holiday Special Campaign",
-    status: "Ready",
-    image: "/assets/hashtag-campaign.jpg",
-  },
-  {
-    title: "Bridal Package Showcase",
-    status: "In Production",
-    image: "/assets/hashtag-campaign.jpg",
-  },
-  {
-    title: "Nail Art Collection",
-    status: "Ready",
-    image: "/assets/hashtag-campaign.jpg",
-  },
-];
+
 
 const insights = [
   { label: "Campaigns Created", value: "24", change: "+12%" },
@@ -67,7 +54,7 @@ const insights = [
 function StudioPageContent() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [campaigns, setCampaigns] = useState<Campaign[]>();
-  const [Videos, setVideos] = useState<Campaign[]>(activeCampaigns);
+  const [Videos, setVideos] = useState<Campaign[]>([]);
   const [selectedCampaign, setSelectedCampaign] = useState<Campaign | null>(null);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [campaignToDelete, setCampaignToDelete] = useState<Campaign | null>(null);
@@ -84,17 +71,23 @@ function StudioPageContent() {
   const fetchCampaigns = async () => {
     try {
       const API_BASE = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
+      
+      // 1. Fetch campaigns from primary DB
       const res = await apiFetch(`${API_BASE}/campaigns`);
       let mappedCampaigns: Campaign[] = [];
       
       if (res.ok) {
         const responseData = await res.json();
         if (responseData.success && responseData.data && responseData.data.length > 0) {
+          console.log(`Fetched ${responseData.data.length} campaigns from primary DB`);
           mappedCampaigns = responseData.data.map((c: any) => ({
             id: c.id?.toString() || c._id?.toString(),
             title: c.name,
             status: c.status || "Ready",
             image: "/assets/hashtag-campaign.jpg",
+            sessionId: c.session_id || c.sessionId,
+            videoUrl: c.video_url || c.videoUrl,
+            message: c.message,
             audience: c.audience || c.config?.audience,
             objective: c.objective || c.config?.objective,
             format: c.format || c.config?.format,
@@ -108,52 +101,104 @@ function StudioPageContent() {
         }
       }
 
-      // Merge with user-provided mock data to ensure they appear in the UI
-      const userMockData: Campaign[] = [
-        {
-          id: "68f5f617-46f5-4212-b4e4-fbbb769d5918",
-          title: "Summer Glamour Ad Campaign",
-          status: "Draft",
-          image: "/assets/hashtag-campaign.jpg",
-          audience: "teenage and md 20's",
-          objective: "Engagement",
-          format: "Portrait (9:16)",
-          duration: "60 sec",
-          colorScheme: "Monochrome",
-          platforms: ["Instagram", "Facebook", "Tiktok", "YouTube"],
-          tones: ["Friendly", "Inspiring", "Playful", "Sophisticated"],
-          visualStyles: ["Modern & Clean", "Elegant & Luxury", "Vibrant & Bold"],
-          createdAt: "2026-03-18T21:12:46.035Z",
-        },
-        {
-          id: "321e5ed2-9b46-43bd-a1e1-c246d04532ac",
-          title: "Modern Minimalist Showcase",
-          status: "Draft",
-          image: "/assets/hashtag-campaign.jpg",
-          audience: "20 to 40 years",
-          objective: "Lead Generation",
-          format: "Landscape (16:9)",
-          duration: "30 sec",
-          colorScheme: "Neutral",
-          platforms: ["Instagram", "Facebook", "Tiktok", "YouTube"],
-          tones: ["Inspiring", "Friendly", "Playful"],
-          visualStyles: ["Modern & Clean", "Elegant & Luxury", "Vibrant & Bold"],
-          createdAt: "2026-03-19T20:14:15.144Z",
+      // 2. Fetch Sessions from AI Director
+      let allSessions: Campaign[] = [];
+      try {
+        const sessionRes = await apiFetch(`${API_BASE}/ai/director/sessions`, {
+          headers: { "accept": "*/*" }
+        });
+        
+        if (sessionRes.ok) {
+          const sessionData = await sessionRes.json();
+          if (sessionData.success && (Array.isArray(sessionData.data?.sessions) || Array.isArray(sessionData.data))) {
+            const sessionsArray = Array.isArray(sessionData.data?.sessions) ? sessionData.data.sessions : sessionData.data;
+            console.log(`Fetched ${sessionsArray.length} sessions from AI Director`);
+            allSessions = sessionsArray.map((s: any) => ({
+              id: s.campaign_id || s.id,
+              sessionId: s.session_id || s.id,
+              title: s.title || (s.brief_draft?.business_name ? `${s.brief_draft.business_name} Campaign` : `Session ${s.session_id || s.id}`),
+              status: s.status || "queued",
+              message: s.message,
+              videoUrl: s.video_url,
+              image: "/assets/hashtag-campaign.jpg",
+              createdAt: s.created_at
+            }));
+          }
         }
-      ];
+      } catch (err) {
+        console.warn("Sessions fetch failed:", err);
+      }
 
-      // Combine API results with mock data, avoiding duplicates by ID
-      const finalCampaigns = [...mappedCampaigns];
-      userMockData.forEach(mock => {
-        if (!finalCampaigns.find(c => c.id === mock.id)) {
-          finalCampaigns.unshift(mock);
+      // 3. Consolidate and update initial state (progressive loading)
+      const initialVideos = [...allSessions];
+      const activePrimary = mappedCampaigns.filter(c => 
+        ["in_production", "queued", "In Production", "ready_for_human_review", "approved", "delivered", "Ready"].includes(c.status)
+      );
+      
+      activePrimary.forEach(c => {
+        if (!initialVideos.some(v => v.sessionId === c.sessionId || (v.id && c.id && v.id === c.id))) {
+          initialVideos.unshift(c);
         }
       });
 
-      setCampaigns(finalCampaigns);
+      const sortLatest = (list: Campaign[]) => {
+        return list
+          .sort((a, b) => {
+            const timeA = a.createdAt ? new Date(a.createdAt).getTime() : 0;
+            const timeB = b.createdAt ? new Date(b.createdAt).getTime() : 0;
+            if (isNaN(timeA) && isNaN(timeB)) return 0;
+            if (isNaN(timeA)) return 1;
+            if (isNaN(timeB)) return -1;
+            return timeB - timeA;
+          });
+      };
+
+      setVideos(sortLatest(initialVideos));
+      setCampaigns(mappedCampaigns);
+
+      // 4. One-by-one status check for active sessions (deep check)
+      const activeCandidates = allSessions
+        .filter(s => s.status !== "delivered" && s.status !== "Ready" && s.status !== "completed")
+        .sort((a, b) => {
+          const tA = a.createdAt ? new Date(a.createdAt).getTime() : 0;
+          const tB = b.createdAt ? new Date(b.createdAt).getTime() : 0;
+          return tB - tA;
+        })
+        .slice(0, 5);
+
+      if (activeCandidates.length > 0) {
+        const updatedSessions = await Promise.all(activeCandidates.map(async (s) => {
+          try {
+            const updateRes = await apiFetch(`${API_BASE}/ai/director/session/${s.sessionId}/update`);
+            if (updateRes.ok) {
+              const uData = await updateRes.json();
+              if (uData.success && uData.data) {
+                return {
+                  ...s,
+                  status: uData.data.status,
+                  message: uData.data.message,
+                  videoUrl: uData.data.video_url || s.videoUrl
+                };
+              }
+            }
+          } catch (e) {
+            console.warn(`Initial deep check failed for session ${s.sessionId}:`, e);
+          }
+          return s;
+        }));
+
+        // Merge updated data back into final view
+        setVideos(prev => {
+          const updatedList = prev.map(v => {
+            const up = updatedSessions.find(u => u.sessionId === v.sessionId);
+            return up ? { ...v, ...up } : v;
+          });
+          return sortLatest(updatedList);
+        });
+      }
     } catch (err) {
       if (err instanceof Error && err.message === 'Unauthorized') return;
-      console.error("Failed to fetch campaigns:", err);
+      console.error("Critical error in fetchCampaigns:", err);
     }
   };
 
@@ -238,6 +283,22 @@ function StudioPageContent() {
       setAiResponseContent(aiResponse);
       setCurrentSessionId(sessionId);
       setShowAIResponse(true);
+
+      // 4. Update Videos if a campaign was created
+      const campaignStatus = data?.data?.campaign_status;
+      if (campaignStatus === "queued" || campaignStatus === "in_production") {
+        const brief = data?.data?.brief_draft || {};
+        const title = brief.business_name ? `${brief.business_name} Campaign` : prompt.length > 30 ? prompt.substring(0, 30) + "..." : prompt;
+        
+        setVideos(prev => [{
+          id: data?.data?.campaign_id,
+          sessionId: sessionId,
+          title: title,
+          status: campaignStatus,
+          image: "/assets/hashtag-campaign.jpg"
+        }, ...prev]);
+      }
+
       setIsSending(false);
     } catch (err) {
       console.error("AI Director Error:", err);
@@ -276,6 +337,80 @@ function StudioPageContent() {
     }
   };
 
+  // Ref for Videos to avoid stale closures in polling
+  const videosRef = useRef<Campaign[]>(Videos);
+  useEffect(() => {
+    videosRef.current = Videos;
+  }, [Videos]);
+
+  // Polling Effect for running pipelines
+  useEffect(() => {
+    let timeoutId: NodeJS.Timeout;
+    const API_BASE = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
+
+    const poll = async () => {
+      const currentVideos = videosRef.current;
+      const polls = currentVideos.filter(v => 
+        v.sessionId && 
+        v.status !== "completed" && 
+        v.status !== "Ready" && 
+        v.status !== "delivered" && 
+        v.status !== "failed"
+      );
+      
+      if (polls.length > 0) {
+        let newVideos = [...currentVideos];
+        let hasChanges = false;
+
+        for (const v of polls) {
+          try {
+            const res = await apiFetch(`${API_BASE}/ai/director/session/${v.sessionId}/update`, {
+              headers: { "accept": "*/*" }
+            });
+            if (res.ok) {
+              const resData = await res.json();
+              const updateData = resData.data;
+              
+              if (updateData) {
+                const index = newVideos.findIndex(vid => vid.sessionId === v.sessionId);
+                if (index !== -1) {
+                  if (
+                    newVideos[index].status !== updateData.status || 
+                    newVideos[index].message !== updateData.message || 
+                    newVideos[index].videoUrl !== updateData.video_url
+                  ) {
+                    if (index === 0) {
+                      console.log("Latest Pipeline Update:", updateData.status, updateData.message);
+                    }
+                    newVideos[index] = {
+                      ...newVideos[index],
+                      status: updateData.status,
+                      message: updateData.message,
+                      videoUrl: updateData.video_url,
+                    };
+                    hasChanges = true;
+                  }
+                }
+              }
+            }
+          } catch (e) {
+            console.error("Polling error for", v.sessionId, e);
+          }
+        }
+        
+        if (hasChanges) {
+          setVideos(newVideos);
+        }
+      }
+
+      timeoutId = setTimeout(poll, 5000); // Poll every 5 seconds for more responsiveness
+    };
+
+    poll();
+
+    return () => clearTimeout(timeoutId);
+  }, []);
+
   useEffect(() => {
     fetchCampaigns();
   }, []);
@@ -307,39 +442,49 @@ function StudioPageContent() {
         />
 
         {/* Active Campaigns Section */}
-        <div className="flex flex-col gap-[16px] bg-[#FFFFFF] border-[0.35px]-[#0000001A] rounded-[12px] p-[16px]">
+        <div className="flex flex-col gap-[16px] bg-[#FFFFFF] border-[0.35px] border-[#0000001A] rounded-[12px] p-[16px]">
           <div className="flex items-center justify-between">
             <h2 className="text-[18px] font-semibold text-[#121212]">
               Active Campaigns
             </h2>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-[12px]">
-            {Videos.map((campaign, i) => (
-              <CampaignCard 
-                key={i} 
-                {...campaign} 
-                onDelete={() => handleDeleteCampaign(campaign)}
-              />
-            ))}
+            {Videos.length > 0 ? (
+              Videos.slice(0, 3).map((campaign, i) => (
+                <CampaignCard 
+                  key={i} 
+                  {...campaign} 
+                  onDelete={() => handleDeleteCampaign(campaign)}
+                />
+              ))
+            ) : (
+              <div className="col-span-full h-[150px] flex flex-col items-center justify-center bg-[#F8FAFC] border border-dashed border-slate-200 rounded-[12px] gap-2">
+                <Icons.Activity className="w-8 h-8 text-slate-300" />
+                <p className="text-[13px] font-bold text-slate-400 uppercase tracking-widest">No active campaigns right now</p>
+              </div>
+            )}
           </div>
         </div>
 
         {/* Production Pipeline */}
-        <div className="flex flex-col gap-4 bg-[#FFFFFF] border-[0.35px]-[#0000001A] rounded-[12px] p-[16px]">
+        <div className="flex flex-col gap-4 bg-[#FFFFFF] border-[0.35px] border-[#0000001A] rounded-[12px] p-[16px]">
           <h2 className="text-[18px] font-medium text-[#121212]">
             AI Production Pipeline
           </h2>
-          <ProductionPipeline />
+          <ProductionPipeline 
+            status={Videos[0]?.status || "Draft"} 
+            message={Videos[0]?.message || ""} 
+          />
         </div>
 
         {/* Insights Section */}
-        <div className="flex flex-col gap-4 bg-[#FFFFFF] border-[0.35px]-[#0000001A] rounded-[12px] p-[16px]">
+        <div className="flex flex-col gap-4 bg-[#FFFFFF] border-[0.35px] border-[#0000001A] rounded-[12px] p-[16px]">
           <h2 className="text-[18px] font-medium text-[#121212]">Insights</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
             {insights.map((insight, i) => (
               <div
                 key={i}
-                className="bg-[#F8F8F8] p-5 rounded-[8px] border-[0.35px]-[#0000001A] shadow-sm flex flex-col gap-2"
+                className="bg-[#F8F8F8] p-5 rounded-[8px] border-[0.35px] border-[#0000001A] shadow-sm flex flex-col gap-2"
               >
                 <span className="text-[12px] text-[#4F4F4F] font-medium">
                   {insight.label}
@@ -409,6 +554,9 @@ function StudioPageContent() {
         initialAIResponse={aiResponseContent}
         sessionId={currentSessionId}
         selectedCampaign={selectedCampaign}
+        onCampaignStart={(campaign) => {
+          setVideos(prev => [campaign, ...prev]);
+        }}
       />
     </DashboardLayout>
   );

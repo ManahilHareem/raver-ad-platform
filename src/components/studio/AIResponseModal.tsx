@@ -22,6 +22,7 @@ interface AIResponseModalProps {
   initialAIResponse: string;
   sessionId: string;
   selectedCampaign?: any | null;
+  onCampaignStart?: (campaign: any) => void;
 }
 
 import { useUser } from "@/context/UserContext";
@@ -32,7 +33,8 @@ export default function AIResponseModal({
   initialUserMessage,
   initialAIResponse,
   sessionId,
-  selectedCampaign
+  selectedCampaign,
+  onCampaignStart
 }: AIResponseModalProps) {
   const router = useRouter();
   const [messages, setMessages] = useState<Message[]>([]);
@@ -111,6 +113,21 @@ export default function AIResponseModal({
       if (!response.ok) throw new Error("AI Director Communication Failed");
       const data = await response.json();
       const aiResponseContent = data?.data?.response || data?.response || data?.message || "I'm still processing your request. How else can I help?";
+      
+      const campaignStatus = data?.data?.campaign_status;
+      if (campaignStatus === "queued" || campaignStatus === "in_production") {
+        const brief = data?.data?.brief_draft || {};
+        const title = brief.business_name ? `${brief.business_name} Campaign` : userMsgContent.length > 30 ? userMsgContent.substring(0, 30) + "..." : userMsgContent;
+        if (onCampaignStart) {
+          onCampaignStart({
+            id: data?.data?.campaign_id,
+            sessionId: sessionId,
+            title: title,
+            status: campaignStatus,
+            image: "/assets/hashtag-campaign.jpg"
+          });
+        }
+      }
 
       const aiMsg: Message = {
         id: (Date.now() + 1).toString(),
