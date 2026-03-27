@@ -239,7 +239,10 @@ function ImageLeadContent() {
         <div className="flex flex-col gap-2">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-4">
-              <Icons.MagicWand className="w-10 h-10 text-[#02022C]" />
+              <Link href="/agents">
+                <Icons.ArrowLeft className="w-4 h-4 text-[#02022C]" />
+              </Link>
+              <Icons.MagicWand className="w-4 h-4 text-[#02022C]" />
               <div className="flex flex-col">
                 <h1 className="text-3xl font-extrabold text-[#02022C] tracking-tight lowercase">raver ai image lead</h1>
                 <div className="flex items-center gap-2">
@@ -250,10 +253,10 @@ function ImageLeadContent() {
             </div>
             <div className="flex items-center gap-3">
              
-              <div className="flex items-center gap-2 px-3 py-1.5 bg-slate-100 rounded-lg">
+             {sessionId && <div className="flex items-center gap-2 px-3 py-1.5 bg-slate-100 rounded-lg">
                 <span className="text-[10px] font-bold text-[#64748B] uppercase">Active Session:</span>
                 <span className="text-[10px] font-bold text-[#02022C] truncate max-w-[150px]">{sessionId}</span>
-              </div>
+              </div>}
             </div>
           </div>
         </div>

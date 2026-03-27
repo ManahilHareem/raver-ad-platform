@@ -64,6 +64,7 @@ export default function AgentCard({ name, role, description, tasksCompleted, ima
             <Icons.Activity className="w-4 h-4" />
             <span className="text-[12px] font-medium whitespace-nowrap">{tasksCompleted.toLocaleString()} tasks</span>
           </div>
+         
         </div>
       </div>
     </div>
