@@ -130,7 +130,8 @@ export default function ChatPage() {
     }
 
     try {
-      const response = await fetch(`http://localhost:8000/api/chat/history/${sid}`, {
+      const API_BASE = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000/api";
+      const response = await fetch(`${API_BASE}/chat/history/${sid}`, {
         method: "DELETE",
         headers: {
           "accept": "*/*",
@@ -188,7 +189,8 @@ export default function ChatPage() {
 
     try {
       const currentSession = updatedSessions.find(s => s.id === activeSessionId);
-      const response = await fetch("http://localhost:8000/api/chat", {
+      const API_BASE = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000/api";
+      const response = await fetch(`${API_BASE}/chat`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -220,9 +222,10 @@ export default function ChatPage() {
       }));
     } catch (error) {
       console.error("Chat Error:", error);
+      const API_BASE = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000/api";
       let errorText = "Sorry, I encountered an error. Please try again later.";
       if (error instanceof TypeError && error.message === "Failed to fetch") {
-        errorText = "Could not connect to the AI backend at http://localhost:8000. Please ensure your backend server is running.";
+        errorText = `Could not connect to the AI backend at ${API_BASE}. Please ensure your backend server is running.`;
       }
 
       const errorMessage: Message = {

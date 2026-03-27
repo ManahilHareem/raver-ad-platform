@@ -57,9 +57,10 @@ export default function HomePage() {
     // Attempt to fetch live data from the backend
     const fetchDashboardData = async () => {
       try {
+        const API_BASE = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000/api";
         const [projectsRes, statsRes] = await Promise.all([
-          apiFetch(`${process.env.NEXT_PUBLIC_API_URL}/projects`).catch(() => null),
-          apiFetch(`${process.env.NEXT_PUBLIC_API_URL}/campaigns`).catch(() => null)
+          apiFetch(`${API_BASE}/projects`).catch(() => null),
+          apiFetch(`${API_BASE}/campaigns`).catch(() => null)
         ]);
         
         if (projectsRes && projectsRes.ok) {

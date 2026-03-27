@@ -35,7 +35,8 @@ export default function AssetsPage() {
   const fetchAssets = async () => {
     try {
       setIsLoading(true);
-      const response = await apiFetch(`${process.env.NEXT_PUBLIC_API_URL}/assets`);
+      const API_BASE = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000/api";
+      const response = await apiFetch(`${API_BASE}/assets`);
       if (response.ok) {
         const result = await response.json();
         setAssetList(result.data || []);
@@ -66,7 +67,8 @@ export default function AssetsPage() {
       setIsUploading(true);
       
       // 1. Get pre-signed URL
-      const uploadRes = await apiFetch(`${process.env.NEXT_PUBLIC_API_URL}/assets/upload`, {
+      const API_BASE = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000/api";
+      const uploadRes = await apiFetch(`${API_BASE}/assets/upload`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -118,7 +120,8 @@ export default function AssetsPage() {
 
     try {
       setIsDeleting(true);
-      const response = await apiFetch(`${process.env.NEXT_PUBLIC_API_URL}/assets/${assetToDelete.id}`, {
+      const API_BASE = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000/api";
+      const response = await apiFetch(`${API_BASE}/assets/${assetToDelete.id}`, {
         method: "DELETE"
       });
 

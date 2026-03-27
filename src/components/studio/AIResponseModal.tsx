@@ -207,7 +207,7 @@ export default function AIResponseModal({
               )}
             >
               <div className={cn(
-                "w-8 h-8 rounded-lg overflow-hidden shrink-0 border border-slate-100 shadow-sm flex items-center justify-center",
+                "relative w-8 h-8 rounded-lg overflow-hidden shrink-0 border border-slate-100 shadow-sm flex items-center justify-center",
                 m.role === "ai" ? "bg-[#02022C]" : "bg-[#F1F5F9]"
               )}>
                 {m.role === "user" ? (

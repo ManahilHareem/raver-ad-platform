@@ -83,7 +83,8 @@ function StudioPageContent() {
 
   const fetchCampaigns = async () => {
     try {
-      const res = await apiFetch(`${process.env.NEXT_PUBLIC_API_URL}/campaigns`);
+      const API_BASE = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
+      const res = await apiFetch(`${API_BASE}/campaigns`);
       let mappedCampaigns: Campaign[] = [];
       
       if (res.ok) {
@@ -251,7 +252,8 @@ function StudioPageContent() {
     setIsDeleting(true);
     try {
       if (campaignToDelete.id) {
-        const res = await apiFetch(`${process.env.NEXT_PUBLIC_API_URL}/campaigns/${campaignToDelete.id}`, {
+        const API_BASE = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
+        const res = await apiFetch(`${API_BASE}/campaigns/${campaignToDelete.id}`, {
           method: "DELETE",
         });
         if (!res.ok) throw new Error("Failed to delete campaign");
