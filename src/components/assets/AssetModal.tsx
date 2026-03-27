@@ -3,27 +3,47 @@
 import React from "react";
 import Image from "next/image";
 import { Icons } from "@/components/ui/icons";
-import { cn } from "@/lib/utils";
+import { cn, formatFileSize } from "@/lib/utils";
 
 interface Asset {
-  id: number;
-  title: string;
-  imagePath: string;
-  time: string;
-  members: number;
+  id: string | number;
+  title?: string;
+  name?: string;
+  url?: string;
+  imagePath?: string;
+  time?: string;
+  createdAt?: string;
+  members?: number;
   type: string;
-  aspectRatio: string;
+  aspectRatio?: string;
   hasVolume?: boolean;
+  fileSize?: number;
+  width?: number;
+  height?: number;
 }
 
 interface AssetModalProps {
   asset: Asset | null;
   isOpen: boolean;
   onClose: () => void;
+  onDelete?: (id: string | number) => void;
 }
 
-export default function AssetModal({ asset, isOpen, onClose }: AssetModalProps) {
+export default function AssetModal({ asset, isOpen, onClose, onDelete }: AssetModalProps) {
   if (!isOpen || !asset) return null;
+
+  const handleDownload = () => {
+    const url = asset.url || asset.imagePath;
+    if (url) {
+      window.open(url, '_blank');
+    }
+  };
+
+  const assetUrl = asset.url || asset.imagePath || "";
+  const isVideo = asset.type === "video" || 
+    assetUrl.toLowerCase().split('?')[0].endsWith(".mp4") || 
+    assetUrl.toLowerCase().split('?')[0].endsWith(".webm") || 
+    assetUrl.toLowerCase().split('?')[0].endsWith(".mov");
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm p-4">
@@ -44,10 +64,16 @@ export default function AssetModal({ asset, isOpen, onClose }: AssetModalProps) 
                     <Icons.AudioWave className="w-16 h-16 text-[#02022C]" />
                 </div>
              </div>
+          ) : isVideo ? (
+            <video 
+              src={assetUrl} 
+              controls
+              className="w-full h-full object-contain"
+            />
           ) : (
             <Image 
-              src={asset.imagePath} 
-              alt={asset.title}
+              src={assetUrl} 
+              alt={asset.name || asset.title || "Asset"}
               fill
               className="object-contain p-4"
               onError={(e) => {
@@ -61,13 +87,13 @@ export default function AssetModal({ asset, isOpen, onClose }: AssetModalProps) 
         {/* Content Section */}
         <div className="flex flex-col gap-4 p-2">
           <div className="flex flex-col gap-1">
-            <h2 className="text-[24px] font-bold text-[#121212] leading-tight">{asset.title}</h2>
+            <h2 className="text-[24px] font-bold text-[#121212] leading-tight">{asset.name || asset.title}</h2>
             <div className="flex items-center gap-2 text-[14px] font-medium text-[#4F4F4F]">
-              <span>1920x1080</span>
+              <span>{asset.width || 1920}x{asset.height || 1080}</span>
               <span>•</span>
-              <span>2.4 MB</span>
+              <span>{formatFileSize(asset.fileSize)}</span>
               <span>•</span>
-              <span>Uploaded {asset.time}</span>
+              <span>Uploaded {asset.createdAt ? new Date(asset.createdAt).toLocaleDateString() : asset.time}</span>
             </div>
           </div>
 
@@ -84,12 +110,24 @@ export default function AssetModal({ asset, isOpen, onClose }: AssetModalProps) 
 
           {/* Action Buttons */}
           <div className="flex gap-3 pt-2">
-            <button className="flex-1 h-[48px] bg-white text-[#121212] rounded-[12px] border border-[#E2E8F0] text-[16px] font-bold hover:bg-gray-50 transition-all flex items-center justify-center gap-2">
+            <button 
+              onClick={handleDownload}
+              className="flex-1 h-[48px] bg-white text-[#121212] rounded-[12px] border border-[#E2E8F0] text-[16px] font-bold hover:bg-gray-50 transition-all flex items-center justify-center gap-2"
+            >
               <Icons.Download className="w-5 h-5" /> Download
             </button>
             <button className="flex-[1.5] h-[48px] bg-[linear-gradient(90deg,#01012A_0%,#2E2C66_100%)] text-white rounded-[12px] text-[16px] font-bold hover:opacity-90 transition-all flex items-center justify-center gap-2 shadow-[inset_0px_-5px_5px_0px_#4F569B]">
               <Icons.whiteMagicWand className="w-5 h-5 text-white" /> Use in Project
             </button>
+            {onDelete && (
+              <button 
+                onClick={() => onDelete(asset.id)}
+                className="w-[48px] h-[48px] bg-red-50 text-red-500 rounded-[12px] border border-red-100 flex items-center justify-center hover:bg-red-100 transition-all"
+                title="Delete Asset"
+              >
+                <Icons.Trash className="w-5 h-5" />
+              </button>
+            )}
           </div>
         </div>
       </div>

@@ -19,7 +19,7 @@ const tabs = [
   { id: "security", label: "Security" },
 ];
 
-import { apiFetch } from "@/lib/api";
+import { useUser } from "@/context/UserContext";
 
 export default function SettingsPage() {
   const [activeTab, setActiveTab] = useState("profile");
@@ -30,27 +30,7 @@ export default function SettingsPage() {
   const [billingRefreshKey, setBillingRefreshKey] = useState(0);
   const [editingCard, setEditingCard] = useState<any>(null);
   
-  const [user, setUser] = useState<any>(null);
-  const [isLoading, setIsLoading] = useState(true);
-
-  const fetchUser = async () => {
-    try {
-      const res = await apiFetch(`${process.env.NEXT_PUBLIC_API_URL}/users/me`);
-      if (res.ok) {
-        const result = await res.json();
-        setUser(result.data);
-      }
-    } catch (err) {
-      if (err instanceof Error && err.message === 'Unauthorized') return;
-      console.error("Failed to fetch user:", err);
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  useEffect(() => {
-    fetchUser();
-  }, []);
+  const { user, isLoading, refreshUser } = useUser();
 
   const handleGlobalSave = () => {
     if (activeTab === "profile") {
@@ -64,9 +44,9 @@ export default function SettingsPage() {
   const renderContent = () => {
     switch (activeTab) {
       case "profile":
-        return <ProfileInfo user={user} onEdit={() => setIsEditProfileOpen(true)} />;
+        return <ProfileInfo user={user} onEdit={() => setIsEditProfileOpen(true)} onAvatarUpdate={refreshUser} isLoading={isLoading} />;
       case "notifications":
-        return <NotificationSettings user={user} onUpdate={fetchUser} />;
+        return <NotificationSettings user={user} onUpdate={refreshUser} isLoading={isLoading} />;
       case "billing":
         return <BillingSettings 
           onBuyCredits={() => setIsBuyCreditsOpen(true)} 
@@ -79,13 +59,15 @@ export default function SettingsPage() {
             setIsAddPaymentOpen(true);
           }}
           key={`billing-${billingRefreshKey}`}
+          isLoading={isLoading}
         />;
       case "security":
         return <SecuritySettings 
           onChangePassword={() => setIsChangePasswordOpen(true)}
+          isLoading={isLoading}
         />;
       default:
-        return <ProfileInfo user={user} onEdit={() => setIsEditProfileOpen(true)} />;
+        return <ProfileInfo user={user} onEdit={() => setIsEditProfileOpen(true)} onAvatarUpdate={refreshUser} isLoading={isLoading} />;
     }
   };
 
@@ -166,7 +148,7 @@ export default function SettingsPage() {
         isOpen={isEditProfileOpen}
         user={user}
         onClose={() => setIsEditProfileOpen(false)}
-        onSuccess={fetchUser}
+        onSuccess={refreshUser}
       />
     </DashboardLayout>
   );

@@ -1,5 +1,6 @@
 "use client";
 
+import React from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
@@ -19,10 +20,11 @@ const menuItems = [
 export default function Sidebar() {
   const pathname = usePathname();
 
+
   return (
     <aside className="w-[280px] h-screen bg-white border-r border-slate-100 flex flex-col">
       {/* Header / Logo Section */}
-      <Link 
+      <Link
         href="/home"
         className="w-[227px] h-[78px] pt-[16px] pb-[16px] px-[16px] flex items-center justify-center gap-[10px] border-b border-[#0000000D] mx-auto hover:opacity-80 transition-opacity"
       >
@@ -32,32 +34,34 @@ export default function Sidebar() {
         <span className="text-xl font-bold text-[#02022C] tracking-tight">raver</span>
       </Link>
 
-      <div className="p-6 flex flex-col gap-8">
+      <div className="p-6 flex flex-col gap-8 flex-1 overflow-y-auto">
         {/* Navigation */}
-      <nav className="flex flex-col gap-1">
-        {menuItems.map((item) => {
-          const isActive = pathname === item.href;
-          return (
-            <Link
-              key={item.href}
-              href={item.href}
-              className={cn(
-                "flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all duration-200 group",
-                isActive 
-                  ? "bg-[#02022C] text-white shadow-lg shadow-[#02022C]/10" 
-                  : "text-[#02022C] hover:bg-[#02022C] hover:text-white"
-              )}
-            >
-              <item.icon className={cn(
-                "w-5 h-5 transition-all duration-200",
-                isActive ? "brightness-0 invert" : "brightness-0 group-hover:invert"
-              )} />
-              <span className="text-[14px] font-medium leading-[20px] tracking-[-0.15px]">{item.label}</span>
-            </Link>
-          );
-        })}
-      </nav>
+        <nav className="flex flex-col gap-1">
+          {menuItems.map((item) => {
+            const isActive = pathname.startsWith(item.href);
+            return (
+              <Link
+                key={item.href}
+                href={item.href}
+                className={cn(
+                  "flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all duration-200 group",
+                  isActive
+                    ? "bg-[#02022C] text-white shadow-lg shadow-[#02022C]/10"
+                    : "text-[#02022C] hover:bg-[#02022C] hover:text-white"
+                )}
+              >
+                <item.icon className={cn(
+                  "w-5 h-5 transition-all duration-200",
+                  isActive ? "brightness-0 invert" : "brightness-0 group-hover:invert"
+                )} />
+                <span className="text-[14px] font-medium leading-[20px] tracking-[-0.15px]">{item.label}</span>
+              </Link>
+            );
+          })}
+        </nav>
       </div>
+
+
     </aside>
   );
 }

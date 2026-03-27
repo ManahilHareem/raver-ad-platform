@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
+import { useRouter } from "next/navigation";
 import AgentCard from "@/components/agents/AgentCard";
 import AgentModal from "@/components/agents/AgentModal";
 import DashboardLayout from "@/components/DashboardLayout";
@@ -81,6 +82,7 @@ const agents = [
 ];
 
 export default function AgentsPage() {
+  const router = useRouter();
   const [selectedAgent, setSelectedAgent] = useState<typeof agents[0] | null>(null);
 
   return (
@@ -122,6 +124,13 @@ export default function AgentsPage() {
               key={i} 
               {...agent} 
               onClick={() => setSelectedAgent(agent)}
+              actionLabel={agent.name === "Raver Image Lead" ? "Start Creating" : undefined}
+              onAction={(e) => {
+                if (agent.name === "Raver Image Lead") {
+                  e.stopPropagation();
+                  router.push("/agents/image-lead");
+                }
+              }}
             />
           ))}
         </div>
@@ -166,6 +175,11 @@ export default function AgentsPage() {
         agent={selectedAgent} 
         isOpen={!!selectedAgent} 
         onClose={() => setSelectedAgent(null)} 
+        onAction={() => {
+          if (selectedAgent?.name === "Raver Image Lead") {
+            router.push("/agents/image-lead");
+          }
+        }}
       />
     </DashboardLayout>
   );

@@ -6,9 +6,19 @@ import { useState } from "react";
 import CampaignSelectionModal from "./CampaignSelectionModal";
 
 interface Campaign {
+  id?: string;
   title: string;
   status: string;
   image: string;
+  audience?: string;
+  objective?: string;
+  format?: string;
+  duration?: string;
+  colorScheme?: string;
+  platforms?: string[];
+  tones?: string[];
+  visualStyles?: string[];
+  createdAt?: string;
 }
 
 interface StudioHeroProps {
@@ -16,6 +26,10 @@ interface StudioHeroProps {
   campaigns?: Campaign[];
   onCampaignSelect?: (campaign: Campaign | null) => void;
   selectedCampaign?: Campaign | null;
+  onCampaignDelete?: (campaign: Campaign) => void;
+  onViewDetails?: (campaign: Campaign) => void;
+  onSend?: (prompt: string) => void;
+  isSending?: boolean;
 }
 
 const quickPrompts = [
@@ -29,7 +43,11 @@ export default function StudioHero({
   onCreateClick, 
   campaigns = [], 
   onCampaignSelect,
-  selectedCampaign 
+  selectedCampaign,
+  onCampaignDelete,
+  onViewDetails,
+  onSend,
+  isSending
 }: StudioHeroProps) {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [prompt, setPrompt] = useState("");
@@ -83,8 +101,21 @@ export default function StudioHero({
             </button>
           </div>
           <div className="absolute right-4 bottom-4">
-            <button className="w-8 h-8 rounded-lg bg-[#F8FAFC] flex items-center justify-center text-[#94A3B8] hover:text-[#121212] transition-colors">
-              <Icons.Send className="w-4 h-4" />
+            <button 
+              onClick={() => {
+                if (prompt.trim()) {
+                  onSend?.(prompt.trim());
+                  setPrompt("");
+                }
+              }}
+              disabled={isSending || !prompt.trim()}
+              className="w-8 h-8 rounded-lg bg-[#F8FAFC] flex items-center justify-center text-[#94A3B8] hover:text-[#121212] transition-colors disabled:opacity-50"
+            >
+              {isSending ? (
+                <Icons.Loader className="w-4 h-4 animate-spin" />
+              ) : (
+                <Icons.Send className="w-4 h-4" />
+              )}
             </button>
           </div>
         </div>
@@ -113,13 +144,30 @@ export default function StudioHero({
                 <button
                   key={i}
                   onClick={() => onCampaignSelect?.(campaign)}
-                  className={`px-3 py-1.5 border rounded-lg text-[11px] font-medium transition-all ${
+                  className={`px-3 py-1.5 border rounded-lg text-[11px] flex font-medium transition-all ${
                     selectedCampaign?.title === campaign.title 
                       ? "bg-[#02022C] border-[#02022C] text-white" 
                       : "bg-white border-[#E2E8F0] text-[#475569] hover:border-[#02022C] hover:text-[#02022C]"
                   }`}
                 >
-                  {campaign.title}
+                  {campaign.title} 
+                <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onViewDetails?.(campaign);
+                }}
+                className="ml-2 text-[#64748B] hover:text-[#02022C] transition-colors"
+                >
+                  <Icons.Eye className="w-3.5 h-3.5" />
+                </button>
+                
+                  <button onClick={(e) => {
+                    e.stopPropagation();
+                    onCampaignDelete?.(campaign);
+                  }} className="ml-2 hover:text-red-500 transition-colors">
+                    <Icons.Trash className="w-3 h-3" />
+                  </button>
+                
                 </button>
               ))}
             </div>

@@ -38,7 +38,9 @@ import {
   PenLine,
   Eye,
   EyeOff,
-  ShieldCheck
+  ShieldCheck,
+  Loader2,
+  Camera
 } from "lucide-react";
 import { CustomIcons } from "./custom-icons";
 
@@ -71,7 +73,7 @@ export const Icons = {
   Download: Download,
   Trash: Trash2,
   Mic: CustomIcons.Mic,
-  Send: CustomIcons.Sent,
+  Send: Send,
   Success: CustomIcons.Success,
   ArrowLeft: ArrowLeft,
   ArrowRight: ArrowRight,
@@ -91,5 +93,7 @@ export const Icons = {
   PenLine: PenLine,
   Eye: Eye,
   EyeOff: EyeOff,
-  Shield: ShieldCheck
+  Shield: ShieldCheck,
+  Loader: Loader2,
+  Camera: Camera
 };

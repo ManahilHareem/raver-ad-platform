@@ -4,12 +4,14 @@ import Image from "next/image";
 import { Icons } from "@/components/ui/icons";
 
 interface CampaignCardProps {
+  id?: string;
   title: string;
   status: string;
   image: string;
+  onDelete?: () => void;
 }
 
-export default function CampaignCard({ title, status, image }: CampaignCardProps) {
+export default function CampaignCard({ id, title, status, image, onDelete }: CampaignCardProps) {
   const isReady = status === "Ready";
 
   return (
@@ -38,7 +40,13 @@ export default function CampaignCard({ title, status, image }: CampaignCardProps
           <button className="w-[36px] h-[36px] bg-white flex items-center justify-center border border-[#F1F5F9] rounded-[5px] text-[#121212] hover:text-[#02022C] transition-colors">
             <Icons.Download className="w-4 h-4" />
           </button>
-          <button className="w-[36px] h-[36px] bg-white flex items-center justify-center border border-[#F1F5F9] rounded-[5px] text-[#121212] hover:text-red-500 transition-colors">
+          <button 
+            onClick={(e) => {
+              e.stopPropagation();
+              onDelete?.();
+            }}
+            className="w-[36px] h-[36px] bg-white flex items-center justify-center border border-[#F1F5F9] rounded-[5px] text-[#121212] hover:text-red-500 transition-colors"
+          >
             <Icons.Trash className="w-4 h-4" />
           </button>
         </div>

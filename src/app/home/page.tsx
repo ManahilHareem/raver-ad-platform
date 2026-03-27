@@ -46,24 +46,26 @@ const recentProjects = [
 ];
 
 import { apiFetch } from "@/lib/api";
+import { useUser } from "@/context/UserContext";
 
 export default function HomePage() {
   const [dashboardProjects, setDashboardProjects] = useState(recentProjects);
   const [dashboardStats, setDashboardStats] = useState(stats);
+  const { user } = useUser();
 
   useEffect(() => {
     // Attempt to fetch live data from the backend
     const fetchDashboardData = async () => {
       try {
+        const API_BASE = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000/api";
         const [projectsRes, statsRes] = await Promise.all([
-          apiFetch(`${process.env.NEXT_PUBLIC_API_URL}/projects`).catch(() => null),
-          apiFetch(`${process.env.NEXT_PUBLIC_API_URL}/campaigns`).catch(() => null)
+          apiFetch(`${API_BASE}/projects`).catch(() => null),
+          apiFetch(`${API_BASE}/campaigns`).catch(() => null)
         ]);
-
+        
         if (projectsRes && projectsRes.ok) {
           const responseData = await projectsRes.json();
           if (responseData.success && responseData.data && responseData.data.length > 0) {
-            // Map the API data to matching project card props
             setDashboardProjects(responseData.data.slice(0, 3).map((p: any) => ({
               title: p.name,
               time: "Just now",
@@ -85,7 +87,9 @@ export default function HomePage() {
       <div className="flex flex-col bg-[#FFFFFF] gap-[16px] rounded-[12px]  mx-auto p-[16px]">
         {/* Welcome Section */}
         <div className="flex flex-col gap-[2px]">
-          <h1 className="text-[30px] font-bold text-[#121212]">Welcome back!</h1>
+          <h1 className="text-[30px] font-bold text-[#121212]">
+            Welcome back, {user?.fullName?.split(' ')[0] || "there"}!
+          </h1>
           <p className="text-[16px] text-[#4F4F4F]">Here&apos;s an overview of your workspace.</p>
         </div>
 
