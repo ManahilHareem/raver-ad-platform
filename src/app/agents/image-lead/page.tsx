@@ -185,12 +185,27 @@ function ImageLeadContent() {
         setSessionId(newSessionId);
         setIsModalOpen(false);
         
-        // Refresh vault with the NEW session ID
+        // Initial quick check
         const vResponse = await apiFetch(`${API_BASE}/ai/image-lead/vault/${newSessionId}`);
         if (vResponse.ok) {
           const vData = await vResponse.json();
           setVault(Array.isArray(vData?.data?.images) ? vData.data.images : []);
         }
+
+        // 5-second delayed check as requested
+        setTimeout(async () => {
+          try {
+            const delayedRes = await apiFetch(`${API_BASE}/ai/image-lead/vault/${newSessionId}`);
+            if (delayedRes.ok) {
+              const delayedData = await delayedRes.json();
+              if (delayedData?.data?.images) {
+                setVault(delayedData.data.images);
+              }
+            }
+          } catch (err) {
+            console.warn("Delayed vault check failed:", err);
+          }
+        }, 5000);
       } else {
         alert("Failed to generate images. Please check your inputs.");
       }
