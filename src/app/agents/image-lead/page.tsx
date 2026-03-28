@@ -147,6 +147,37 @@ function ImageLeadContent() {
     const timestamp = new Date().getTime();
     const newSessionId = `raver_campaign_${timestamp}`;
     
+    const startVaultMonitoring = async (sid: string) => {
+        setSessionId(sid);
+        setIsModalOpen(false);
+        
+        // Initial quick check
+        try {
+            const vResponse = await apiFetch(`${API_BASE}/ai/image-lead/vault/${sid}`);
+            if (vResponse.ok) {
+                const vData = await vResponse.json();
+                setVault(Array.isArray(vData?.data?.images) ? vData.data.images : []);
+            }
+        } catch (err) {
+            console.warn("Initial vault check failed:", err);
+        }
+
+        // 5-second delayed check
+        setTimeout(async () => {
+            try {
+                const delayedRes = await apiFetch(`${API_BASE}/ai/image-lead/vault/${sid}`);
+                if (delayedRes.ok) {
+                    const delayedData = await delayedRes.json();
+                    if (delayedData?.data?.images) {
+                        setVault(delayedData.data.images);
+                    }
+                }
+            } catch (err) {
+                console.warn("Delayed vault check failed:", err);
+            }
+        }, 5000);
+    };
+
     setIsLoading(true);
     try {
       const activeScenes = scenes.filter(s => s.visual_prompt.trim() !== "").map(s => ({
@@ -168,6 +199,9 @@ function ImageLeadContent() {
         session_id: newSessionId
       };
 
+      // Save prompt details in history immediately
+      updateSessionHistory(newSessionId, payload);
+
       const response = await apiFetch(`${API_BASE}/ai/image-lead/generate`, {
         method: "POST",
         headers: { 
@@ -178,39 +212,16 @@ function ImageLeadContent() {
       });
 
       if (response.ok) {
-        // Save prompt details in history
-        updateSessionHistory(newSessionId, payload);
-        
-        // Update local session state and refresh vault
-        setSessionId(newSessionId);
-        setIsModalOpen(false);
-        
-        // Initial quick check
-        const vResponse = await apiFetch(`${API_BASE}/ai/image-lead/vault/${newSessionId}`);
-        if (vResponse.ok) {
-          const vData = await vResponse.json();
-          setVault(Array.isArray(vData?.data?.images) ? vData.data.images : []);
-        }
-
-        // 5-second delayed check as requested
-        setTimeout(async () => {
-          try {
-            const delayedRes = await apiFetch(`${API_BASE}/ai/image-lead/vault/${newSessionId}`);
-            if (delayedRes.ok) {
-              const delayedData = await delayedRes.json();
-              if (delayedData?.data?.images) {
-                setVault(delayedData.data.images);
-              }
-            }
-          } catch (err) {
-            console.warn("Delayed vault check failed:", err);
-          }
-        }, 5000);
+        await startVaultMonitoring(newSessionId);
       } else {
-        alert("Failed to generate images. Please check your inputs.");
+        // Even if not OK (like a 504 Gateway Timeout), still monitor since backend might be processing
+        console.warn("Generation API returned non-ok response, attempting vault monitor anyway.");
+        await startVaultMonitoring(newSessionId);
       }
     } catch (err) {
-      console.error("Generation error:", err);
+      console.error("Generation error (potential timeout):", err);
+      // Resilience: even on fetch error/timeout, start checking the vault with the intended session ID
+      await startVaultMonitoring(newSessionId);
     } finally {
       setIsLoading(false);
     }
