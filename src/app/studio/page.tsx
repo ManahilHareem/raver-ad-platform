@@ -30,6 +30,9 @@ interface Campaign {
   image: string;
   sessionId?: string;
   videoUrl?: string | null;
+  voiceoverUrl?: string | null;
+  musicUrl?: string | null;
+  script?: string | null;
   message?: string;
   audience?: string;
   objective?: string;
@@ -87,6 +90,9 @@ function StudioPageContent() {
             image: "/assets/hashtag-campaign.jpg",
             sessionId: c.session_id || c.sessionId,
             videoUrl: c.video_url || c.videoUrl,
+            voiceoverUrl: c.voiceover_url || c.voiceoverUrl,
+            musicUrl: c.music_url || c.musicUrl,
+            script: c.script,
             message: c.message,
             audience: c.audience || c.config?.audience,
             objective: c.objective || c.config?.objective,
@@ -120,6 +126,9 @@ function StudioPageContent() {
               status: s.status || "queued",
               message: s.message,
               videoUrl: s.video_url,
+              voiceoverUrl: s.voiceover_url,
+              musicUrl: s.music_url,
+              script: s.script,
               image: "/assets/hashtag-campaign.jpg",
               createdAt: s.created_at
             }));
@@ -177,7 +186,10 @@ function StudioPageContent() {
                   ...s,
                   status: uData.data.status,
                   message: uData.data.message,
-                  videoUrl: uData.data.video_url || s.videoUrl
+                  videoUrl: uData.data.video_url || s.videoUrl,
+                  voiceoverUrl: uData.data.voiceover_url || s.voiceoverUrl,
+                  musicUrl: uData.data.music_url || s.musicUrl,
+                  script: uData.data.script || s.script
                 };
               }
             }
@@ -387,6 +399,9 @@ function StudioPageContent() {
                       status: updateData.status,
                       message: updateData.message,
                       videoUrl: updateData.video_url,
+                      voiceoverUrl: updateData.voiceover_url,
+                      musicUrl: updateData.music_url,
+                      script: updateData.script
                     };
                     hasChanges = true;
                   }
@@ -454,6 +469,9 @@ function StudioPageContent() {
                 <CampaignCard 
                   key={i} 
                   {...campaign} 
+                  videoUrl={campaign.videoUrl}
+                  voiceover_url={campaign.voiceoverUrl}
+                  music_url={campaign.musicUrl}
                   onDelete={() => handleDeleteCampaign(campaign)}
                 />
               ))
