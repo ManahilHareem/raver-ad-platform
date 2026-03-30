@@ -7,6 +7,7 @@ import { useState, useEffect, useRef } from "react";
 import { getToken } from "@/lib/auth";
 import { apiFetch } from "@/lib/api";
 import { cn, enrichMessageWithCampaign } from "@/lib/utils";
+import { MarkdownRenderer } from "@/components/ui/MarkdownRenderer";
 
 interface Message {
   id: string;
@@ -21,6 +22,7 @@ interface AIResponseModalProps {
   initialUserMessage: string;
   initialAIResponse: string;
   sessionId: string;
+  initialHistory?: { role: string; content: string }[] | null;
   selectedCampaign?: any | null;
   onCampaignStart?: (campaign: any) => void;
 }
@@ -33,6 +35,7 @@ export default function AIResponseModal({
   initialUserMessage,
   initialAIResponse,
   sessionId,
+  initialHistory,
   selectedCampaign,
   onCampaignStart
 }: AIResponseModalProps) {
@@ -45,27 +48,50 @@ export default function AIResponseModal({
 
   // Initialize messages when modal opens
   useEffect(() => {
-    if (isOpen && initialUserMessage && initialAIResponse && messages.length === 0) {
-      setMessages([
-        {
-          id: "initial-user",
-          role: "user",
-          content: initialUserMessage,
-          timestamp: new Date()
-        },
-        {
-          id: "initial-ai",
-          role: "ai",
-          content: initialAIResponse,
-          timestamp: new Date()
-        }
-      ]);
+    if (isOpen && messages.length === 0) {
+      if (initialHistory && initialHistory.length > 0) {
+        // Load from existing history
+        const historicalMessages: Message[] = initialHistory.map((m: { role: string; content: string }, i: number) => {
+          let content = m.content;
+          // Robustly parse JSON-wrapped responses if they exist in history
+          if (content.trim().startsWith("{") && content.trim().endsWith("}")) {
+            try {
+              const parsed = JSON.parse(content);
+              content = parsed.response || parsed.message || parsed.ai_message || content;
+            } catch (e) { /* fallback to raw content */ }
+          }
+          
+          return {
+            id: `hist-${i}-${Date.now()}`,
+            role: (m.role === "assistant" || m.role === "ai") ? "ai" : "user",
+            content: content,
+            timestamp: new Date()
+          };
+        });
+        setMessages(historicalMessages);
+      } else if (initialUserMessage && initialAIResponse) {
+        // Fallback to initial exchange
+        setMessages([
+          {
+            id: "initial-user",
+            role: "user",
+            content: initialUserMessage,
+            timestamp: new Date()
+          },
+          {
+            id: "initial-ai",
+            role: "ai",
+            content: initialAIResponse,
+            timestamp: new Date()
+          }
+        ]);
+      }
     } else if (!isOpen) {
       setMessages([]);
       setInputText("");
       setIsGenerating(false);
     }
-  }, [isOpen, initialUserMessage, initialAIResponse]);
+  }, [isOpen, initialUserMessage, initialAIResponse, initialHistory]);
 
   // Auto-scroll to bottom
   useEffect(() => {
@@ -112,15 +138,18 @@ export default function AIResponseModal({
 
       if (!response.ok) throw new Error("AI Director Communication Failed");
       const data = await response.json();
-      const aiResponseContent = data?.data?.response || data?.response || data?.message || "I'm still processing your request. How else can I help?";
       
-      const campaignStatus = data?.data?.campaign_status;
+      // Robustly extract from potentially array-wrapped or nested data
+      const responseData = Array.isArray(data?.data) ? data.data[0] : (data?.data || data);
+      const aiResponseContent = responseData?.response || responseData?.message || responseData?.ai_message || "I'm still processing your request. How else can I help?";
+      
+      const campaignStatus = responseData?.campaign_status;
       if (campaignStatus === "queued" || campaignStatus === "in_production") {
-        const brief = data?.data?.brief_draft || {};
+        const brief = responseData?.brief_draft || {};
         const title = brief.business_name ? `${brief.business_name} Campaign` : userMsgContent.length > 30 ? userMsgContent.substring(0, 30) + "..." : userMsgContent;
         if (onCampaignStart) {
           onCampaignStart({
-            id: data?.data?.campaign_id,
+            id: responseData?.campaign_id,
             sessionId: sessionId,
             title: title,
             status: campaignStatus,
@@ -246,12 +275,27 @@ export default function AIResponseModal({
                   "px-4 py-3 rounded-2xl text-[14px] leading-relaxed shadow-sm transition-all",
                   m.role === "user" 
                     ? "bg-[linear-gradient(90deg,#01012A_0%,#2E2C66_100%)] text-white rounded-tr-none shadow-[inset_0px_-5px_5px_0px_#4F569B]" 
-                    : "bg-white text-[#334155] border border-slate-100 rounded-tl-none"
+                    : "bg-white text-[#121212] border border-slate-100 rounded-tl-none shadow-[0_4px_12px_-4px_rgba(0,0,0,0.04)]"
                 )}>
-                  {m.content}
+                  {(() => {
+                    let content = m.content;
+                    if (m.role === "ai") {
+                      if (content.includes("[USER MESSAGE]:")) {
+                        content = content.split("[USER MESSAGE]:").pop() || content;
+                      }
+                      const trimmed = content.trim();
+                      if (trimmed.startsWith("{") && trimmed.endsWith("}")) {
+                        try {
+                          const parsed = JSON.parse(trimmed);
+                          content = parsed.response || parsed.message || parsed.ai_message || content;
+                        } catch (e) { /* fallback to original content if parse fails */ }
+                      }
+                    }
+                    return <MarkdownRenderer content={content.trim()} isUser={m.role === "user"} />;
+                  })()}
                 </div>
                 <span className="text-[9px] text-slate-400 mt-1.5 font-bold uppercase tracking-widest px-1">
-                  {m.role === "user" ? "YOU" : "AI"} • {m.timestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                  {m.role === "user" ? "YOU" : "AI DIRECTOR"} • {m.timestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                 </span>
               </div>
             </div>

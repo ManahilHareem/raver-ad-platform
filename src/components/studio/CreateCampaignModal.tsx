@@ -99,7 +99,7 @@ export default function CreateCampaignModal({ isOpen, onClose, onSuccess }: Crea
           <div className="flex gap-2 mb-4 ">
             {[1, 2, 3, 4].map((i) => (
               <div key={i} className={`h-[3px] flex-1 rounded-full transition-all duration-500 ${
-                i <= step ? "bg-gradient-to-r from-[#01012A] to-[#2E2C66]" : "bg-[#E2E8F0]"
+                i <= step ? "bg-linear-to-r from-[#01012A] to-[#2E2C66]" : "bg-[#E2E8F0]"
               }`} />
             ))}
           </div>
@@ -127,7 +127,7 @@ export default function CreateCampaignModal({ isOpen, onClose, onSuccess }: Crea
           {step < 4 ? (
             <button 
               onClick={() => setStep(step + 1)}
-              className="flex items-center gap-2 px-10 py-2.5 bg-gradient-to-r from-[#01012A] to-[#2E2C66] text-white rounded-[8px] text-[14px] font-bold shadow-lg shadow-[#01012A]/10 active:scale-95 transition-all"
+              className="flex items-center gap-2 px-10 py-2.5 bg-linear-to-r from-[#01012A] to-[#2E2C66] text-white rounded-[8px] text-[14px] font-bold shadow-lg shadow-[#01012A]/10 active:scale-95 transition-all"
             >
               Next <Icons.ArrowRight className="w-4 h-4" />
             </button>
@@ -135,7 +135,7 @@ export default function CreateCampaignModal({ isOpen, onClose, onSuccess }: Crea
             <button 
               onClick={handleSubmit}
               disabled={isLoading}
-              className="flex items-center gap-2 px-10 py-2.5 bg-gradient-to-r from-[#01012A] to-[#2E2C66] text-white rounded-[8px] text-[14px] font-bold shadow-lg shadow-[#01012A]/10 active:scale-95 transition-all disabled:opacity-50"
+              className="flex items-center gap-2 px-10 py-2.5 bg-linear-to-r from-[#01012A] to-[#2E2C66] text-white rounded-[8px] text-[14px] font-bold shadow-lg shadow-[#01012A]/10 active:scale-95 transition-all disabled:opacity-50"
             >
               {isLoading ? "Generating..." : "Generate Campaign"} <Icons.Send className="w-4 h-4 ml-1" />
             </button>

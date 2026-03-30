@@ -236,7 +236,7 @@ export default function AssetsPage() {
           {isLoading ? (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-[16px]">
               {[...Array(6)].map((_, i) => (
-                <div key={i} className="aspect-[3/4] bg-[#F8F8F8] rounded-[16px] animate-pulse flex flex-col justify-end p-6 gap-3">
+                <div key={i} className="aspect-3/4 bg-[#F8F8F8] rounded-[16px] animate-pulse flex flex-col justify-end p-6 gap-3">
                   <div className="h-6 w-3/4 bg-[#E2E8F0] rounded" />
                   <div className="flex gap-4">
                     <div className="h-4 w-1/4 bg-[#E2E8F0] rounded" />

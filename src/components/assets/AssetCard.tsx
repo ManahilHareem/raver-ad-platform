@@ -35,7 +35,7 @@ export default function AssetCard({
   isSelected = false
 }: AssetCardProps) {
   const aspectClasses = {
-    portrait: "aspect-[3/4]",
+    portrait: "aspect-3/4",
     landscape: "aspect-[4/3]",
     square: "aspect-square",
   };

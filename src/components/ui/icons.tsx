@@ -40,11 +40,13 @@ import {
   EyeOff,
   ShieldCheck,
   Loader2,
-  Camera
+  Camera,
+  CheckCircle
 } from "lucide-react";
 import { CustomIcons } from "./custom-icons";
 
 export const Icons = {
+  CheckCircle: CheckCircle,
   Logo: CustomIcons.Logo,
   Dashboard: LayoutDashboard,
   CreativeStudio: CustomIcons.MagicWand,

@@ -7,6 +7,7 @@ import { Icons } from "@/components/ui/icons";
 import { getToken } from '@/lib/auth';
 import { apiFetch } from "@/lib/api";
 import { cn } from "@/lib/utils";
+import { MarkdownRenderer } from "@/components/ui/MarkdownRenderer";
 
 interface Message {
   id: string;
@@ -395,7 +396,7 @@ export default function ChatPage() {
                           ? "bg-[linear-gradient(90deg,#01012A_0%,#2E2C66_100%)] text-white rounded-tr-none shadow-[inset_0px_-5px_5px_0px_#4F569B]" 
                           : "bg-white text-[#121212] border border-slate-200 rounded-tl-none"
                       )}>
-                        {m.content}
+                        <MarkdownRenderer content={m.content} isUser={m.role === "user"} />
                       </div>
                       <span className="text-[9px] text-slate-400 mt-1.5 font-bold uppercase tracking-widest px-1">
                         {m.role === "user" ? "YOU" : "AI"} • {m.timestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}

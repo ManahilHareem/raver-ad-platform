@@ -14,7 +14,8 @@ export function formatFileSize(bytes?: number): string {
 }
 
 export function enrichMessageWithCampaign(message: string, campaign?: any | null): string {
-  if (!campaign) return message;
+  const hasBrief = campaign?.briefDraft && Object.keys(campaign.briefDraft).length > 0;
+  if (!hasBrief) return message;
   
   const context = `
 ### SYSTEM INSTRUCTION: USE THE FOLLOWING CAMPAIGN CONTEXT FOR YOUR RESPONSE ###

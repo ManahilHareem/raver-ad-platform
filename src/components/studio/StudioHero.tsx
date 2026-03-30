@@ -65,13 +65,6 @@ export default function StudioHero({
             <h1 className="text-[30px] font-bold text-[#4F4F4F] leading-tight mb-2">
               Hi, Hareem <span className="text-[#121212]">Ready To Achieve Great Things?</span>
             </h1>
-            <button 
-              onClick={onCreateClick}
-              className="transition-all active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed bg-gradient-to-r from-[#01012A] to-[#2E2C66] text-white text-[18px] font-bold leading-none shadow-[inset_0px_-5px_5px_0px_#4F569B] justify-center py-[14px] w-[144px] h-[48px] px-6 rounded-xl flex items-center gap-2"
-            >
-              <Icons.Plus className="w-5 h-5" />
-              <span>Create</span>
-            </button>
           </div>
         </div>
         <div className="relative w-[296px] h-[242px] hidden lg:block shrink-0">
@@ -134,7 +127,7 @@ export default function StudioHero({
               <span className="text-[13px] font-semibold text-[#64748B]">Reference Campaign:</span>
               <button 
                 onClick={() => setIsModalOpen(true)}
-                className="px-2.5 py-1 rounded-lg text-[12px] font-bold text-[#121212] transition-all flex items-center gap-1 group hover:bg-gradient-to-r hover:from-[#01012A] hover:to-[#2E2C66] hover:text-white active:scale-95"
+                className="px-2.5 py-1 rounded-lg text-[12px] font-bold text-[#121212] transition-all flex items-center gap-1 group hover:bg-linear-to-r hover:from-[#01012A] hover:to-[#2E2C66] hover:text-white active:scale-95"
               >
                 View More <Icons.ArrowRight className="w-3 h-3 transition-transform group-hover:translate-x-0.5" />
               </button>

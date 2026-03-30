@@ -8,6 +8,7 @@ import CampaignSelectionModal from "@/components/studio/CampaignSelectionModal";
 import CampaignCard from "@/components/studio/CampaignCard";
 import ProductionPipeline from "@/components/studio/ProductionPipeline";
 import CreateCampaignModal from "@/components/studio/CreateCampaignModal";
+import CampaignPreviewModal from "@/components/studio/CampaignPreviewModal";
 import AIResponseModal from "@/components/studio/AIResponseModal";
 import ConfirmationModal from "@/components/ui/ConfirmationModal";
 import { Icons } from "@/components/ui/icons";
@@ -43,6 +44,8 @@ interface Campaign {
   tones?: string[];
   visualStyles?: string[];
   createdAt?: string;
+  history?: { role: string; content: string }[] | null;
+  prompt?: string | null;
 }
 
 
@@ -61,6 +64,7 @@ function StudioPageContent() {
   const [isDeleting, setIsDeleting] = useState(false);
   const [isSending, setIsSending] = useState(false);
   const [showAIResponse, setShowAIResponse] = useState(false);
+  const [isPreviewOpen, setIsPreviewOpen] = useState(false);
   const [aiResponseContent, setAiResponseContent] = useState("");
   const [initialUserPrompt, setInitialUserPrompt] = useState("");
   const [currentSessionId, setCurrentSessionId] = useState("");
@@ -148,7 +152,9 @@ function StudioPageContent() {
                 tones: brief.tones,
                 visualStyles: brief.visual_style || brief.visualStyles,
                 image: "/assets/hashtag-campaign.jpg",
-                createdAt: s.created_at
+                createdAt: s.created_at,
+                history: s.history,
+                prompt: s.prompt
               };
             });
           }
@@ -220,14 +226,17 @@ function StudioPageContent() {
             if (updateRes.ok) {
               const uData = await updateRes.json();
               if (uData.success && uData.data) {
+                const updateData = uData.data;
                 return {
                   ...s,
-                  status: uData.data.status,
-                  message: uData.data.message,
-                  videoUrl: uData.data.video_url || s.videoUrl,
-                  voiceoverUrl: uData.data.voiceover_url || s.voiceoverUrl,
-                  musicUrl: uData.data.music_url || s.musicUrl,
-                  script: uData.data.script || s.script
+                  status: updateData.status,
+                  message: updateData.message,
+                  videoUrl: updateData.video_url || s.videoUrl,
+                  voiceoverUrl: updateData.voiceover_url || s.voiceoverUrl,
+                  musicUrl: updateData.music_url || s.musicUrl,
+                  script: updateData.script || s.script,
+                  history: updateData.history || s.history,
+                  prompt: updateData.prompt || s.prompt
                 };
               }
             }
@@ -258,8 +267,11 @@ function StudioPageContent() {
   };
 
   const handleViewDetails = (campaign: Campaign) => {
+    // Ensure selection/preview modal exclusivity
+    setIsModalOpen(false);
+    setShowAIResponse(false);
     setCampaignToView(campaign);
-    setIsSelectionModalOpen(true);
+    setIsPreviewOpen(true);
   };
 
   const handlePromptSend = async (prompt: string) => {
@@ -290,7 +302,10 @@ function StudioPageContent() {
 
       if (!response.ok) throw new Error("Failed to communicate with AI Director");
       const data = await response.json();
-      const aiResponse = data?.data?.response || data?.response || data?.message || "I've analyzed your requirements. Let's start building your campaign.";
+      
+      // Robustly extract response from potentially array-wrapped or nested data
+      const responseData = Array.isArray(data?.data) ? data.data[0] : (data?.data || data);
+      const aiResponse = responseData?.response || responseData?.message || responseData?.ai_message || "I've analyzed your requirements. Let's start building your campaign.";
 
       // 2. Persist to chat history in localStorage (matching ChatPage structure)
       const userMessage = {
@@ -332,16 +347,20 @@ function StudioPageContent() {
       setInitialUserPrompt(enrichedMessage);
       setAiResponseContent(aiResponse);
       setCurrentSessionId(sessionId);
+      
+      // Mutual exclusivity for consultation modals
+      setIsSelectionModalOpen(false);
+      setIsModalOpen(false);
       setShowAIResponse(true);
 
       // 4. Update Videos if a campaign was created
-      const campaignStatus = data?.data?.campaign_status;
+      const campaignStatus = responseData?.campaign_status;
       if (campaignStatus === "queued" || campaignStatus === "in_production") {
-        const brief = data?.data?.brief_draft || {};
+        const brief = responseData?.brief_draft || {};
         const title = brief.business_name ? `${brief.business_name} Campaign` : prompt.length > 30 ? prompt.substring(0, 30) + "..." : prompt;
         
         setVideos(prev => [{
-          id: data?.data?.campaign_id,
+          id: responseData?.campaign_id,
           sessionId: sessionId,
           title: title,
           status: campaignStatus,
@@ -454,7 +473,9 @@ function StudioPageContent() {
                       videoUrl: updateData.video_url || newVideos[index].videoUrl,
                       voiceoverUrl: updateData.voiceover_url || newVideos[index].voiceoverUrl,
                       musicUrl: updateData.music_url || newVideos[index].musicUrl,
-                      script: updateData.script || newVideos[index].script
+                      script: updateData.script || newVideos[index].script,
+                      history: updateData.history || newVideos[index].history,
+                      prompt: updateData.prompt || newVideos[index].prompt
                     };
                     hasChanges = true;
                   }
@@ -510,7 +531,12 @@ function StudioPageContent() {
       <div className="flex flex-col gap-[12px]  mx-auto p-4 lg:p-6">
         {/* Hero Section */}
         <StudioHero
-          onCreateClick={() => setIsModalOpen(true)}
+          onCreateClick={() => {
+            // Mutual exclusivity for major modals
+            setIsSelectionModalOpen(false);
+            setShowAIResponse(false);
+            setIsModalOpen(true);
+          }}
           campaigns={campaigns}
           selectedCampaign={selectedCampaign}
           onCampaignSelect={setSelectedCampaign}
@@ -527,8 +553,8 @@ function StudioPageContent() {
               Active Campaigns
             </h2>
             <button 
-              onClick={() => router.push("/studio/all-campaigns")}
-              className="px-3 py-1.5 rounded-lg text-[13px] font-bold text-[#121212] transition-all flex items-center gap-1.5 group hover:bg-gradient-to-r hover:from-[#01012A] hover:to-[#2E2C66] hover:text-white active:scale-95"
+              onClick={() => router.push("/projects")}
+              className="px-3 py-1.5 rounded-lg text-[13px] font-bold text-[#121212] transition-all flex items-center gap-1.5 group hover:bg-linear-to-r hover:from-[#01012A] hover:to-[#2E2C66] hover:text-white active:scale-95"
             >
               View More 
               <Icons.ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-0.5" />
@@ -599,7 +625,7 @@ function StudioPageContent() {
         </div>
       </div>
 
-      <button className="fixed bottom-6 right-8 w-[60px] h-[60px] bg-gradient-to-r from-[#01012A] to-[#2E2C66] text-white rounded-full flex items-center justify-center shadow-2xl hover:scale-110 active:scale-95 transition-all z-40 shadow-[#01012A]/20">
+      <button className="fixed bottom-6 right-8 w-[60px] h-[60px] bg-linear-to-r from-[#01012A] to-[#2E2C66] text-white rounded-full flex items-center justify-center shadow-2xl hover:scale-110 active:scale-95 transition-all z-40 shadow-[#01012A]/20">
         <Icons.MessageCircle className="w-6 h-6" />
       </button>
 
@@ -635,20 +661,26 @@ function StudioPageContent() {
         initialSelectedCampaign={campaignToView}
       />
 
-      <CampaignSelectionModal 
-        isOpen={isSelectionModalOpen}
-        onClose={() => {
-          setIsSelectionModalOpen(false);
-          setCampaignToView(null);
-        }}
-        campaigns={campaigns || []}
-        onSelect={(c: Campaign) => setSelectedCampaign(c)}
-        onCreateNew={() => {
-          setIsSelectionModalOpen(false);
-          setIsModalOpen(true);
-        }}
-        initialSelectedCampaign={campaignToView}
-      />
+       <CampaignPreviewModal 
+              isOpen={isPreviewOpen}
+              onClose={() => {
+                setIsPreviewOpen(false);
+                setCampaignToView(null);
+              }}
+              campaignData={campaignToView ? {
+                title: campaignToView.title,
+                session_id: campaignToView.sessionId,
+                status: campaignToView.status,
+                message: campaignToView.message,
+                video_url: campaignToView.videoUrl,
+                voiceover_url: campaignToView.voiceoverUrl,
+                music_url: campaignToView.musicUrl,
+                script: campaignToView.script,
+                history: campaignToView.history,
+                prompt: campaignToView.prompt
+              } : null}
+              showHistory={false}
+            />
 
       <AIResponseModal 
         isOpen={showAIResponse}
@@ -662,7 +694,7 @@ function StudioPageContent() {
         initialAIResponse={aiResponseContent}
         sessionId={currentSessionId}
         selectedCampaign={selectedCampaign}
-        onCampaignStart={(campaign) => {
+        onCampaignStart={(campaign: Campaign) => {
           setVideos(prev => [campaign, ...prev]);
         }}
       />
