@@ -48,50 +48,134 @@ export default function ChatPage() {
     scrollToBottom();
   }, [activeSession?.messages, isLoading]);
 
-  // Load sessions from local storage
   useEffect(() => {
-    const savedSessions = localStorage.getItem("chat_sessions");
-    if (savedSessions) {
-      try {
-        const parsed = JSON.parse(savedSessions);
-        // Convert string timestamps back to Date objects
-        const hydrated = parsed.map((s: any) => ({
-          ...s,
-          createdAt: new Date(s.createdAt),
-          messages: s.messages.map((m: any) => ({
-            ...m,
-            timestamp: new Date(m.timestamp)
-          }))
-        }));
-        setSessions(hydrated);
-        if (hydrated.length > 0) {
-          setActiveSessionId(hydrated[0].id);
-        }
-      } catch (e) {
-        console.error("Failed to hydrate sessions:", e);
-      }
-    }
+    fetchSessions();
   }, []);
 
-  // Sync to local storage on change
-  useEffect(() => {
-    if (sessions.length > 0) {
-      localStorage.setItem("chat_sessions", JSON.stringify(sessions));
+  const fetchSessions = async () => {
+    setIsLoading(true);
+    try {
+      const API_BASE = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000/api";
+      const response = await apiFetch(`${API_BASE}/chat/sessions`);
+      if (response.ok) {
+        const data = await response.json();
+        
+        // Extract sessions array from various possible structures
+        let sessionsArray = [];
+        if (data.data && Array.isArray(data.data.sessions)) {
+          sessionsArray = data.data.sessions;
+        } else if (Array.isArray(data.data)) {
+          sessionsArray = data.data;
+        } else if (Array.isArray(data.sessions)) {
+          sessionsArray = data.sessions;
+        }
+        
+        const hydrated = sessionsArray.map((s: any) => {
+          const firstMsg = s.messages?.[0]?.content || s.history?.[0]?.content || s.metadata?.history?.[0]?.content || "";
+          return {
+            id: s.id || s.session_id || s.sessionId || `session-${Math.random()}`,
+            title: s.title || (firstMsg ? (firstMsg.substring(0, 30) + "...") : "New Chat"),
+            messages: [], 
+            urls: s.website_url ? (typeof s.website_url === "string" ? s.website_url.split(", ") : s.website_url) : [],
+            tag: s.tag,
+            createdAt: new Date(s.created_at || s.createdAt || Date.now())
+          };
+        });
+        
+        setSessions(hydrated);
+        
+        // If there's an active session, fetch its history
+        if (hydrated.length > 0 && !activeSessionId) {
+          setActiveSessionId(hydrated[0].id);
+        }
+      }
+    } catch (e) {
+      console.error("Failed to fetch sessions:", e);
+    } finally {
+      setIsLoading(false);
     }
-  }, [sessions]);
+  };
 
-  const handleNewChat = () => {
-    const newId = Date.now().toString();
-    const newSess: ChatSession = {
-      id: newId,
-      title: "New Chat",
-      messages: [],
-      urls: [],
-      createdAt: new Date()
-    };
-    setSessions(prev => [newSess, ...prev]);
-    setActiveSessionId(newId);
-    setInputText("");
+  const fetchChatHistory = async (sessionId: string) => {
+    if (!sessionId) return;
+    try {
+      const API_BASE = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000/api";
+      const response = await apiFetch(`${API_BASE}/chat/history/${sessionId}`);
+      if (response.ok) {
+        const data = await response.json();
+        // Handle nested data.data.history or data.history or data.data
+        let history = [];
+        if (data.data && Array.isArray(data.data.history)) {
+          history = data.data.history;
+        } else if (Array.isArray(data.data)) {
+          history = data.data;
+        } else if (Array.isArray(data.history)) {
+          history = data.history;
+        }
+        
+        const messages: Message[] = history.map((m: any, i: number) => {
+          let content = m.content;
+          // Robustly parse JSON-wrapped responses if they exist in history
+          if (content.trim().startsWith("{") && content.trim().endsWith("}")) {
+            try {
+              const parsed = JSON.parse(content);
+              content = parsed.response || parsed.message || parsed.ai_message || content;
+            } catch (e) { /* fallback to raw content */ }
+          }
+          
+          return {
+            id: `hist-${i}-${Date.now()}`,
+            role: (m.role === "assistant" || m.role === "ai") ? "ai" : "user",
+            content: content,
+            timestamp: new Date(m.created_at || m.timestamp || Date.now())
+          };
+        });
+
+        setSessions(prev => prev.map(s => 
+          s.id === sessionId ? { ...s, messages } : s
+        ));
+      }
+    } catch (e) {
+      console.error("Failed to fetch history:", e);
+    }
+  };
+
+  useEffect(() => {
+    if (activeSessionId) {
+      const session = sessions.find(s => s.id === activeSessionId);
+      // Only fetch if history is empty OR we just initialized it with messages: []
+      if (session && session.messages.length === 0) {
+        fetchChatHistory(activeSessionId);
+      }
+    }
+  }, [activeSessionId]); // Only trigger on session switch
+
+  const handleNewChat = async () => {
+    setIsLoading(true);
+    try {
+      const API_BASE = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000/api";
+      const response = await apiFetch(`${API_BASE}/chat/new`, { method: "POST" });
+      if (response.ok) {
+        const data = await response.json();
+        const newSession = data.data;
+        
+        const hydrated: ChatSession = {
+          id: newSession.session_id || newSession.id,
+          title: "New Chat",
+          messages: [],
+          urls: [],
+          createdAt: new Date()
+        };
+        
+        setSessions(prev => [hydrated, ...prev]);
+        setActiveSessionId(hydrated.id);
+        setInputText("");
+      }
+    } catch (e) {
+      console.error("Failed to create new chat:", e);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const handleAddUrl = (e: React.FormEvent) => {
@@ -121,7 +205,7 @@ export default function ChatPage() {
   };
 
   const handleDeleteSession = async (e: React.MouseEvent, sid: string) => {
-    e.stopPropagation(); // Prevent switching to the session before deleting it
+    e.stopPropagation();
     
     // Optimistic UI update
     const previousSessions = [...sessions];
@@ -132,12 +216,8 @@ export default function ChatPage() {
 
     try {
       const API_BASE = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000/api";
-      const response = await fetch(`${API_BASE}/chat/history/${sid}`, {
+      const response = await apiFetch(`${API_BASE}/chat/history/${sid}`, {
         method: "DELETE",
-        headers: {
-          "accept": "*/*",
-          ...(getToken() ? { "Authorization": `Bearer ${getToken()}` } : {}),
-        },
       });
 
       if (!response.ok) throw new Error("Failed to delete session on server");
@@ -189,31 +269,33 @@ export default function ChatPage() {
     setIsLoading(true);
 
     try {
-      const currentSession = updatedSessions.find(s => s.id === activeSessionId);
       const API_BASE = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000/api";
-      const response = await fetch(`${API_BASE}/chat`, {
+      const currentSession = updatedSessions.find(s => s.id === activeSessionId);
+      
+      const response = await apiFetch(`${API_BASE}/chat`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
           "accept": "*/*",
-          ...(getToken() ? { "Authorization": `Bearer ${getToken()}` } : {}),
         },
         body: JSON.stringify({
           session_id: activeSessionId,
           message: userMessage.content,
-          website_url: currentSession?.urls.join(", ") || "string",
+          website_url: currentSession?.urls.join(", ") || "",
         }),
       });
 
       if (!response.ok) throw new Error("Failed to get response");
 
       const data = await response.json();
-            const aiMessage: Message = {
-          id: (Date.now() + 1).toString(),
-          role: "ai",
-          content: (data?.data?.response || data?.response || data?.message || "I'm here to help!"),
-          timestamp: new Date(),
-        };
+      const aiResponseContent = data.data?.response || data.response || data.message || "I'm here to help!";
+      
+      const aiMessage: Message = {
+        id: (Date.now() + 1).toString(),
+        role: "ai",
+        content: aiResponseContent,
+        timestamp: new Date(),
+      };
 
       setSessions(prev => prev.map(s => {
         if (s.id === activeSessionId) {
@@ -223,16 +305,10 @@ export default function ChatPage() {
       }));
     } catch (error) {
       console.error("Chat Error:", error);
-      const API_BASE = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000/api";
-      let errorText = "Sorry, I encountered an error. Please try again later.";
-      if (error instanceof TypeError && error.message === "Failed to fetch") {
-        errorText = `Could not connect to the AI backend at ${API_BASE}. Please ensure your backend server is running.`;
-      }
-
       const errorMessage: Message = {
         id: (Date.now() + 1).toString(),
         role: "ai",
-        content: errorText,
+        content: "Sorry, I encountered an error. Please try again later.",
         timestamp: new Date(),
       };
       setSessions(prev => prev.map(s => {

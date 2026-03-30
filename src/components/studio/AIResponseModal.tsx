@@ -225,12 +225,6 @@ export default function AIResponseModal({
           </div>
           <div className="flex items-center gap-2">
             <button 
-              onClick={() => router.push(`/chat?session_id=${sessionId}`)}
-              className="px-4 py-2 bg-slate-50 text-[#475569] rounded-xl text-[13px] font-bold hover:bg-[#F1F5F9] transition-all flex items-center gap-2 border border-[#F1F5F9]"
-            >
-              Full History <Icons.ExternalLink className="w-3.5 h-3.5" />
-            </button>
-            <button 
               onClick={onClose} 
               className="p-2 hover:bg-[#F1F5F9] rounded-full transition-colors group"
             >
