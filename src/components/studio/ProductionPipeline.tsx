@@ -8,9 +8,10 @@ import { cn } from "@/lib/utils"; // Assuming cn utility is available here
 interface ProductionPipelineProps {
   status: string;
   message: string;
+  videoUrl?: string | null;
 }
 
-export default function ProductionPipeline({ status, message }: ProductionPipelineProps) {
+export default function ProductionPipeline({ status, message, videoUrl }: ProductionPipelineProps) {
   const getStepStatus = (label: string): "completed" | "active" | "pending" => {
     const s = status?.toLowerCase();
     if (s === "delivered" || s === "ready" || s === "completed") return "completed";
@@ -43,17 +44,19 @@ export default function ProductionPipeline({ status, message }: ProductionPipeli
 
       case "Editor":
         if (s === "in_production" && msg.includes("video")) return "active";
-        if (s === "ready_for_human_review" || s === "approved") return "completed";
-        return "pending";
-
-      case "Quality Check":
-        if (s === "ready_for_human_review") return "active";
-        if (s === "approved" || s === "delivered") return "completed";
+        if (s === "ready_for_human_review" || s === "approved" || s === "delivered" || videoUrl) return "completed";
         return "pending";
 
       case "Rendering":
-        if (s === "approved") return "active";
-        if (s === "delivered") return "completed";
+        if (s === "in_production" && msg.includes("render")) return "active";
+        if (videoUrl || s === "ready_for_human_review" || s === "approved" || s === "delivered") return "completed";
+        return "pending";
+
+      case "Quality Check":
+        if (s === "ready_for_human_review" || s === "approved") return "active";
+        // If video exists but status hasn't caught up, it's effectively in quality check
+        if (videoUrl && s === "in_production") return "active";
+        if (s === "delivered" || s === "ready") return "completed";
         return "pending";
 
       default:
@@ -68,8 +71,8 @@ export default function ProductionPipeline({ status, message }: ProductionPipeli
     { label: "Copy Generation", status: getStepStatus("Copy Generation") },
     { label: "Audio Generation", status: getStepStatus("Audio Generation") },
     { label: "Editor", status: getStepStatus("Editor") },
-    { label: "Quality Check", status: getStepStatus("Quality Check") },
     { label: "Rendering", status: getStepStatus("Rendering") },
+    { label: "Quality Check", status: getStepStatus("Quality Check") },
   ];
 
   return (

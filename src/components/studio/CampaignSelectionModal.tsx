@@ -41,6 +41,7 @@ export default function CampaignSelectionModal({
 
   useEffect(() => {
     if (isOpen && initialSelectedCampaign) {
+      console.log("Selection Modal - Initial Campaign Data:", initialSelectedCampaign);
       setSelectedCampaignDetail(initialSelectedCampaign);
     } else if (!isOpen) {
       setSelectedCampaignDetail(null);
@@ -130,6 +131,28 @@ export default function CampaignSelectionModal({
                     <span className="text-[11px] text-[#94A3B8] font-bold uppercase">Duration</span>
                     <span className="text-[14px] font-semibold text-[#121212]">{selectedCampaignDetail.duration || "N/A"}</span>
                   </div>
+                  <div className="flex flex-col gap-1">
+                    <span className="text-[11px] text-[#94A3B8] font-bold uppercase">Color Scheme</span>
+                    <div className="flex items-center gap-2">
+                      <span className="text-[14px] font-semibold text-[#121212]">{selectedCampaignDetail.colorScheme || "N/A"}</span>
+                      {selectedCampaignDetail.colorScheme && (
+                        <div className="flex gap-1">
+                          {(
+                            {
+                              "Warm Tones": ["#F97066", "#FBAD37", "#F79009"],
+                              "Cool Tones": ["#53B1FD", "#7F56D9", "#2E90FA"],
+                              "Neutral": ["#344054", "#667085", "#D0D5DD"],
+                              "Pastel": ["#FEE4E2", "#D1E9FF", "#D1FADF"],
+                              "Earth Tones": ["#7A5E43", "#A67C52", "#D4A373"],
+                              "Monochrome": ["#000000", "#4B4B4B", "#9E9E9E"]
+                            }[selectedCampaignDetail.colorScheme] || []
+                          ).map((c, i) => (
+                            <div key={i} className="w-2.5 h-2.5 rounded-full shadow-sm" style={{ backgroundColor: c }} />
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                  </div>
                 </div>
 
                 <div className="flex flex-col gap-3">
@@ -181,7 +204,7 @@ export default function CampaignSelectionModal({
               </button>
               <button 
                 onClick={() => handleConfirmSelect(selectedCampaignDetail)}
-                className="flex-1 h-[48px] bg-[#02022C] text-white rounded-xl font-bold text-[15px] hover:bg-[#1A1A3F] shadow-lg shadow-[#02022C]/10 transition-all flex items-center justify-center gap-2"
+                className="flex-1 h-[48px] bg-gradient-to-r from-[#01012A] to-[#2E2C66] text-white rounded-xl font-bold text-[15px] shadow-lg shadow-[#01012A]/10 active:scale-95 transition-all flex items-center justify-center gap-2"
               >
                 Select Campaign <Icons.ArrowRight className="w-4 h-4" />
               </button>
@@ -232,7 +255,7 @@ export default function CampaignSelectionModal({
                           onCreateNew();
                           onClose();
                         }}
-                        className="flex items-center gap-2 px-6 py-2 bg-[#02022C] text-white rounded-lg text-[14px] font-bold hover:bg-[#1A1A3F] transition-all"
+                        className="flex items-center gap-2 px-6 py-2 bg-gradient-to-r from-[#01012A] to-[#2E2C66] text-white rounded-lg text-[14px] font-bold shadow-lg shadow-[#01012A]/10 active:scale-95 transition-all"
                       >
                         <Icons.Plus className="w-4 h-4" /> Create New Campaign
                       </button>

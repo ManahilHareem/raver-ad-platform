@@ -27,7 +27,7 @@ export default function CreateCampaignModal({ isOpen, onClose, onSuccess }: Crea
     visualStyles: [] as string[],
     tones: [] as string[],
     colorScheme: "",
-    platforms: ["Instagram"] as string[],
+    platforms: [] as string[],
     duration: "15 sec",
     format: "Square (1:1)"
   });
@@ -48,7 +48,8 @@ export default function CreateCampaignModal({ isOpen, onClose, onSuccess }: Crea
         },
         body: JSON.stringify({
           name: campaignData.name,
-          platform: campaignData.platforms[0] || "Instagram", // Simple mapping for now
+          platform: campaignData.platforms[0] || "Instagram", // Primary platform for backward compatibility
+          platforms: campaignData.platforms, // Full array of platforms
           budget: 0, // Placeholder
           config: campaignData // Store the full wizard data in the JSONB config field
         }),
@@ -62,7 +63,7 @@ export default function CreateCampaignModal({ isOpen, onClose, onSuccess }: Crea
         setCampaignData({
           name: "", objective: "Brand Awareness", audience: "",
           visualStyles: [], tones: [], colorScheme: "",
-          platforms: ["Instagram"], duration: "15 sec", format: "Square (1:1)"
+          platforms: [], duration: "15 sec", format: "Square (1:1)"
         });
       } else {
         const err = await response.json();
@@ -98,7 +99,7 @@ export default function CreateCampaignModal({ isOpen, onClose, onSuccess }: Crea
           <div className="flex gap-2 mb-4 ">
             {[1, 2, 3, 4].map((i) => (
               <div key={i} className={`h-[3px] flex-1 rounded-full transition-all duration-500 ${
-                i <= step ? "bg-[linear-gradient(90deg,#01012A_0%,#2E2C66_100%)] " : "bg-[#E2E8F0]"
+                i <= step ? "bg-gradient-to-r from-[#01012A] to-[#2E2C66]" : "bg-[#E2E8F0]"
               }`} />
             ))}
           </div>
@@ -126,7 +127,7 @@ export default function CreateCampaignModal({ isOpen, onClose, onSuccess }: Crea
           {step < 4 ? (
             <button 
               onClick={() => setStep(step + 1)}
-              className="flex items-center gap-2 px-10 py-2.5 bg-[#02022C] text-white rounded-[8px] text-[14px] font-bold hover:bg-[#1A1A3F] transition-all"
+              className="flex items-center gap-2 px-10 py-2.5 bg-gradient-to-r from-[#01012A] to-[#2E2C66] text-white rounded-[8px] text-[14px] font-bold shadow-lg shadow-[#01012A]/10 active:scale-95 transition-all"
             >
               Next <Icons.ArrowRight className="w-4 h-4" />
             </button>
@@ -134,7 +135,7 @@ export default function CreateCampaignModal({ isOpen, onClose, onSuccess }: Crea
             <button 
               onClick={handleSubmit}
               disabled={isLoading}
-              className="flex items-center gap-2 px-10 py-2.5 bg-[#02022C] text-white rounded-[8px] text-[14px] font-bold hover:bg-[#1A1A3F] transition-all"
+              className="flex items-center gap-2 px-10 py-2.5 bg-gradient-to-r from-[#01012A] to-[#2E2C66] text-white rounded-[8px] text-[14px] font-bold shadow-lg shadow-[#01012A]/10 active:scale-95 transition-all disabled:opacity-50"
             >
               {isLoading ? "Generating..." : "Generate Campaign"} <Icons.Send className="w-4 h-4 ml-1" />
             </button>

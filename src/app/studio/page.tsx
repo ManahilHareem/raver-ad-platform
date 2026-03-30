@@ -47,12 +47,6 @@ interface Campaign {
 
 
 
-const insights = [
-  { label: "Campaigns Created", value: "24", change: "+12%" },
-  { label: "Credit Remaining", value: "250", change: "-12%" },
-  { label: "Avg Quality Score", value: "94%", change: "+5%" },
-  { label: "Avg Render Time", value: "4.2m", change: "" },
-];
 
 function StudioPageContent() {
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -60,6 +54,8 @@ function StudioPageContent() {
   const [Videos, setVideos] = useState<Campaign[]>([]);
   const [selectedCampaign, setSelectedCampaign] = useState<Campaign | null>(null);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [isSelectionModalOpen, setIsSelectionModalOpen] = useState(false);
+  const [insights, setInsights] = useState<any[]>([]);
   const [campaignToDelete, setCampaignToDelete] = useState<Campaign | null>(null);
   const [campaignToView, setCampaignToView] = useState<Campaign | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
@@ -81,29 +77,41 @@ function StudioPageContent() {
       
       if (res.ok) {
         const responseData = await res.json();
-        if (responseData.success && responseData.data && responseData.data.length > 0) {
-          console.log(`Fetched ${responseData.data.length} campaigns from primary DB`);
-          mappedCampaigns = responseData.data.map((c: any) => ({
-            id: c.id?.toString() || c._id?.toString(),
-            title: c.name,
-            status: c.status || "Ready",
-            image: "/assets/hashtag-campaign.jpg",
-            sessionId: c.session_id || c.sessionId,
-            videoUrl: c.video_url || c.videoUrl,
-            voiceoverUrl: c.voiceover_url || c.voiceoverUrl,
-            musicUrl: c.music_url || c.musicUrl,
-            script: c.script,
-            message: c.message,
-            audience: c.audience || c.config?.audience,
-            objective: c.objective || c.config?.objective,
-            format: c.format || c.config?.format,
-            duration: c.duration || c.config?.duration,
-            colorScheme: c.colorScheme || c.config?.colorScheme,
-            platforms: c.platforms || c.config?.platforms,
-            tones: c.tones || c.config?.tones,
-            visualStyles: c.visualStyles || c.config?.visualStyles,
-            createdAt: c.createdAt,
-          }));
+        if (responseData.success && responseData.data && (Array.isArray(responseData.data) || typeof responseData.data === 'object')) {
+          const rawData = Array.isArray(responseData.data) ? responseData.data : [responseData.data];
+          console.log(`Fetched ${rawData.length} campaigns from primary DB`, rawData);
+          
+          mappedCampaigns = rawData.map((c: any) => {
+            // Robust config parsing
+            let config = c.config;
+            if (typeof config === "string") {
+              try { config = JSON.parse(config); } catch (e) { console.warn("Failed to parse config string", e); }
+            }
+            
+            const m = {
+              id: c.id?.toString() || c._id?.toString(),
+              title: c.name || c.title || "Untitled",
+              status: c.status || "Ready",
+              image: "/assets/hashtag-campaign.jpg",
+              sessionId: c.session_id || c.sessionId,
+              videoUrl: c.video_url || c.videoUrl,
+              voiceoverUrl: c.voiceover_url || c.voiceoverUrl,
+              musicUrl: c.music_url || c.musicUrl,
+              script: c.script,
+              message: c.message,
+              audience: config?.audience || c.audience,
+              objective: config?.objective || c.objective,
+              format: config?.format || c.format,
+              duration: config?.duration || c.duration,
+              colorScheme: config?.color_scheme || config?.colorScheme || c.colorScheme,
+              platforms: config?.platforms || (Array.isArray(c.platforms) && c.platforms.length > 0 ? c.platforms : (c.platform ? [c.platform] : [])),
+              tones: config?.tones || c.tones,
+              visualStyles: config?.visual_style || config?.visualStyles || c.visualStyles,
+              createdAt: c.createdAt || c.created_at,
+            };
+            return m;
+          });
+          console.log("Mapped primary campaigns:", mappedCampaigns);
         }
       }
 
@@ -119,26 +127,50 @@ function StudioPageContent() {
           if (sessionData.success && (Array.isArray(sessionData.data?.sessions) || Array.isArray(sessionData.data))) {
             const sessionsArray = Array.isArray(sessionData.data?.sessions) ? sessionData.data.sessions : sessionData.data;
             console.log(`Fetched ${sessionsArray.length} sessions from AI Director`);
-            allSessions = sessionsArray.map((s: any) => ({
-              id: s.campaign_id || s.id,
-              sessionId: s.session_id || s.id,
-              title: s.title || (s.brief_draft?.business_name ? `${s.brief_draft.business_name} Campaign` : `Session ${s.session_id || s.id}`),
-              status: s.status || "queued",
-              message: s.message,
-              videoUrl: s.video_url,
-              voiceoverUrl: s.voiceover_url,
-              musicUrl: s.music_url,
-              script: s.script,
-              image: "/assets/hashtag-campaign.jpg",
-              createdAt: s.created_at
-            }));
+            allSessions = sessionsArray.map((s: any) => {
+              const brief = s.brief_draft || {};
+              return {
+                id: s.campaign_id || s.id,
+                sessionId: s.session_id || s.id,
+                title: s.title || (brief.business_name ? `${brief.business_name} Campaign` : `Session ${s.session_id || s.id}`),
+                status: s.status || "queued",
+                message: s.message,
+                videoUrl: s.video_url,
+                voiceoverUrl: s.voiceover_url,
+                musicUrl: s.music_url,
+                script: s.script,
+                audience: brief.audience,
+                objective: brief.objective,
+                format: brief.format,
+                duration: brief.duration,
+                colorScheme: brief.color_scheme || brief.colorScheme,
+                platforms: brief.platforms || (brief.platform ? [brief.platform] : []),
+                tones: brief.tones,
+                visualStyles: brief.visual_style || brief.visualStyles,
+                image: "/assets/hashtag-campaign.jpg",
+                createdAt: s.created_at
+              };
+            });
           }
         }
       } catch (err) {
         console.warn("Sessions fetch failed:", err);
       }
 
-      // 3. Consolidate and update initial state (progressive loading)
+      // 3. Fetch AI Director Insights
+      try {
+        const insightRes = await apiFetch(`${API_BASE}/ai/insights/director`);
+        if (insightRes.ok) {
+          const insightData = await insightRes.json();
+          if (insightData.success && insightData.data?.metrics) {
+            setInsights(insightData.data.metrics);
+          }
+        }
+      } catch (err) {
+        console.error("Failed to fetch insights:", err);
+      }
+
+      // 4. Consolidate and update initial state (progressive loading)
       const initialVideos = [...allSessions];
       const activePrimary = mappedCampaigns.filter(c => 
         ["in_production", "queued", "In Production", "ready_for_human_review", "approved", "delivered", "Ready"].includes(c.status)
@@ -162,12 +194,18 @@ function StudioPageContent() {
           });
       };
 
-      setVideos(sortLatest(initialVideos));
+      // Filter out any sessions without a status (invalid or non-synced)
+      const validInitialVideos = initialVideos.filter(v => v.status);
+      setVideos(sortLatest(validInitialVideos));
       setCampaigns(mappedCampaigns);
 
       // 4. One-by-one status check for active sessions (deep check)
+      const terminalStatuses = ["completed", "Ready", "delivered", "failed", "ready_for_human_review", "approved"];
       const activeCandidates = allSessions
-        .filter(s => s.status !== "delivered" && s.status !== "Ready" && s.status !== "completed")
+        .filter(s => {
+          const status = s.status?.toLowerCase() || "";
+          return !terminalStatuses.some(ts => status.includes(ts.toLowerCase()));
+        })
         .sort((a, b) => {
           const tA = a.createdAt ? new Date(a.createdAt).getTime() : 0;
           const tB = b.createdAt ? new Date(b.createdAt).getTime() : 0;
@@ -221,7 +259,7 @@ function StudioPageContent() {
 
   const handleViewDetails = (campaign: Campaign) => {
     setCampaignToView(campaign);
-    setIsModalOpen(true);
+    setIsSelectionModalOpen(true);
   };
 
   const handlePromptSend = async (prompt: string) => {
@@ -355,6 +393,9 @@ function StudioPageContent() {
     videosRef.current = Videos;
   }, [Videos]);
 
+  // Failure tracking for sessions to prevent infinite polling on non-existent IDs
+  const sessionFailuresRef = useRef<Record<string, number>>({});
+
   // Polling Effect for running pipelines
   useEffect(() => {
     let timeoutId: NodeJS.Timeout;
@@ -362,27 +403,42 @@ function StudioPageContent() {
 
     const poll = async () => {
       const currentVideos = videosRef.current;
-      const polls = currentVideos.filter(v => 
-        v.sessionId && 
-        v.status !== "completed" && 
-        v.status !== "Ready" && 
-        v.status !== "delivered" && 
-        v.status !== "failed"
-      );
+      
+      // Specifically target active statuses for polling
+      const activeStatuses = ["queued", "in_production", "pipeline_running", "In Production", "processing", "rendering"];
+      const terminalStatuses = ["completed", "Ready", "delivered", "failed", "ready_for_human_review", "approved"];
+
+      const polls = currentVideos.filter(v => {
+        if (!v.sessionId) return false;
+        
+        const status = v.status?.toLowerCase() || "";
+        const isTerminal = terminalStatuses.some(s => status.includes(s.toLowerCase()));
+        const isActive = activeStatuses.some(s => status.includes(s.toLowerCase())) || (!isTerminal && status !== "");
+        
+        // Don't poll if it's already terminal or if it's failed too many times
+        const failureCount = sessionFailuresRef.current[v.sessionId] || 0;
+        return isActive && !isTerminal && failureCount < 5;
+      });
       
       if (polls.length > 0) {
         let newVideos = [...currentVideos];
         let hasChanges = false;
 
         for (const v of polls) {
+          if (!v.sessionId) continue;
+
           try {
             const res = await apiFetch(`${API_BASE}/ai/director/session/${v.sessionId}/update`, {
               headers: { "accept": "*/*" }
             });
+
             if (res.ok) {
               const resData = await res.json();
               const updateData = resData.data;
               
+              // Reset failures on success
+              sessionFailuresRef.current[v.sessionId] = 0;
+
               if (updateData) {
                 const index = newVideos.findIndex(vid => vid.sessionId === v.sessionId);
                 if (index !== -1) {
@@ -391,25 +447,33 @@ function StudioPageContent() {
                     newVideos[index].message !== updateData.message || 
                     newVideos[index].videoUrl !== updateData.video_url
                   ) {
-                    if (index === 0) {
-                      console.log("Latest Pipeline Update:", updateData.status, updateData.message);
-                    }
                     newVideos[index] = {
                       ...newVideos[index],
                       status: updateData.status,
                       message: updateData.message,
-                      videoUrl: updateData.video_url,
-                      voiceoverUrl: updateData.voiceover_url,
-                      musicUrl: updateData.music_url,
-                      script: updateData.script
+                      videoUrl: updateData.video_url || newVideos[index].videoUrl,
+                      voiceoverUrl: updateData.voiceover_url || newVideos[index].voiceoverUrl,
+                      musicUrl: updateData.music_url || newVideos[index].musicUrl,
+                      script: updateData.script || newVideos[index].script
                     };
                     hasChanges = true;
                   }
                 }
               }
+            } else if (res.status === 404) {
+              // ID doesn't exist on backend (e.g. mock or ancient), increment failure
+              sessionFailuresRef.current[v.sessionId] = (sessionFailuresRef.current[v.sessionId] || 0) + 1;
             }
           } catch (e) {
-            console.error("Polling error for", v.sessionId, e);
+            // Network error (Failed to fetch)
+            const isNetworkError = e instanceof TypeError && e.message.includes("fetch");
+            if (isNetworkError) {
+              console.warn(`Polling network issue for ${v.sessionId}. Backend might be down.`);
+            } else {
+              console.error("Polling error for", v.sessionId, e);
+            }
+            // Increment failure count for this session
+            sessionFailuresRef.current[v.sessionId] = (sessionFailuresRef.current[v.sessionId] || 0) + 1;
           }
         }
         
@@ -418,7 +482,7 @@ function StudioPageContent() {
         }
       }
 
-      timeoutId = setTimeout(poll, 5000); // Poll every 5 seconds for more responsiveness
+      timeoutId = setTimeout(poll, 5000);
     };
 
     poll();
@@ -462,12 +526,19 @@ function StudioPageContent() {
             <h2 className="text-[18px] font-semibold text-[#121212]">
               Active Campaigns
             </h2>
+            <button 
+              onClick={() => router.push("/studio/all-campaigns")}
+              className="px-3 py-1.5 rounded-lg text-[13px] font-bold text-[#121212] transition-all flex items-center gap-1.5 group hover:bg-gradient-to-r hover:from-[#01012A] hover:to-[#2E2C66] hover:text-white active:scale-95"
+            >
+              View More 
+              <Icons.ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-0.5" />
+            </button>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-[12px]">
-            {Videos.length > 0 ? (
-              Videos.slice(0, 3).map((campaign, i) => (
+            {Videos.filter(v => v.status).length > 0 ? (
+              Videos.filter(v => v.status).slice(0, 3).map((campaign, i) => (
                 <CampaignCard 
-                  key={i} 
+                  key={campaign.sessionId || campaign.id || i} 
                   {...campaign} 
                   videoUrl={campaign.videoUrl}
                   voiceover_url={campaign.voiceoverUrl}
@@ -492,6 +563,7 @@ function StudioPageContent() {
           <ProductionPipeline 
             status={Videos[0]?.status || "Draft"} 
             message={Videos[0]?.message || ""} 
+            videoUrl={Videos[0]?.videoUrl}
           />
         </div>
 
@@ -527,7 +599,7 @@ function StudioPageContent() {
         </div>
       </div>
 
-      <button className="fixed bottom-6 right-8 w-[60px] h-[60px] bg-[#02022C] text-white rounded-full flex items-center justify-center shadow-2xl hover:scale-110 transition-all z-40">
+      <button className="fixed bottom-6 right-8 w-[60px] h-[60px] bg-gradient-to-r from-[#01012A] to-[#2E2C66] text-white rounded-full flex items-center justify-center shadow-2xl hover:scale-110 active:scale-95 transition-all z-40 shadow-[#01012A]/20">
         <Icons.MessageCircle className="w-6 h-6" />
       </button>
 
@@ -549,14 +621,32 @@ function StudioPageContent() {
       />
 
       <CampaignSelectionModal 
-        isOpen={isModalOpen}
+        isOpen={isSelectionModalOpen}
         onClose={() => {
-          setIsModalOpen(false);
+          setIsSelectionModalOpen(false);
           setCampaignToView(null);
         }}
         campaigns={campaigns || []}
         onSelect={(c: Campaign) => setSelectedCampaign(c)}
-        onCreateNew={() => setIsModalOpen(true)}
+        onCreateNew={() => {
+          setIsSelectionModalOpen(false);
+          setIsModalOpen(true);
+        }}
+        initialSelectedCampaign={campaignToView}
+      />
+
+      <CampaignSelectionModal 
+        isOpen={isSelectionModalOpen}
+        onClose={() => {
+          setIsSelectionModalOpen(false);
+          setCampaignToView(null);
+        }}
+        campaigns={campaigns || []}
+        onSelect={(c: Campaign) => setSelectedCampaign(c)}
+        onCreateNew={() => {
+          setIsSelectionModalOpen(false);
+          setIsModalOpen(true);
+        }}
         initialSelectedCampaign={campaignToView}
       />
 

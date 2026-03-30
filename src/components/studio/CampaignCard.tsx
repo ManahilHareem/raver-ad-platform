@@ -155,7 +155,7 @@ export default function CampaignCard({
               : isInProduction ? "bg-white text-[#02022C] animate-pulse" 
               : "bg-[linear-gradient(135deg,#AD46FF_0%,#2B7FFF_100%)] text-white"
             )}>
-              {status.replace("_", " ")}
+              {(status || "Draft").replace("_", " ")}
             </span>
           </div>
         </div>

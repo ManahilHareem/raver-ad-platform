@@ -264,11 +264,11 @@ export default function ChatPage() {
           <div className="flex-1 overflow-y-auto px-3 custom-scrollbar flex flex-col gap-1">
             <span className="text-[11px] font-bold text-slate-400 uppercase tracking-wider px-2 mb-1">Previous Chats</span>
             {sessions.map((s) => (
-              <button
+              <div
                 key={s.id}
                 onClick={() => setActiveSessionId(s.id)}
                 className={cn(
-                  "flex items-center gap-3 px-3 py-3 rounded-xl transition-all group text-left",
+                  "flex items-center gap-3 px-3 py-3 rounded-xl transition-all group text-left cursor-pointer",
                   activeSessionId === s.id 
                     ? "bg-white border border-slate-100 shadow-sm" 
                     : "hover:bg-white/50"
@@ -291,7 +291,7 @@ export default function ChatPage() {
                 >
                    <Icons.Trash className="w-3.5 h-3.5" />
                 </button>
-              </button>
+              </div>
             ))}
             {sessions.length === 0 && (
               <p className="text-[12px] text-slate-400 px-3 py-4 text-center italic">No history yet</p>

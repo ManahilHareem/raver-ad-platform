@@ -46,12 +46,11 @@ export default function CampaignStep2({ data, updateData }: CampaignStep2Props) 
             {["Modern & Clean", "Elegant & Luxury", "Vibrant & Bold", "Minimalist", "Natural & Organic", "Dramatic"].map((s) => {
               const isSelected = data.visualStyles?.includes(s);
               return (
-                <button 
-                  key={s} 
+                <button
+                  key={s}
                   onClick={() => toggleStyle(s)}
-                  className={`px-4 py-2 rounded-xl text-[13px] font-medium transition-all ${
-                    isSelected ? "text-[#02022C]" : "bg-white border text-[#475569] border-[#E2E8F0] hover:border-[#02022C]"
-                  }`}
+                  className={`px-4 py-2 rounded-xl text-[13px] font-medium transition-all ${isSelected ? "text-[#02022C]" : "bg-white border text-[#475569] border-[#E2E8F0] hover:border-[#02022C]"
+                    }`}
                   style={isSelected ? {
                     border: '1px solid transparent',
                     background: 'linear-gradient(white, white) padding-box, linear-gradient(90deg, #01012A 0%, #2E2C66 100%) border-box'
@@ -71,12 +70,11 @@ export default function CampaignStep2({ data, updateData }: CampaignStep2Props) 
             {["Professional", "Friendly", "Inspiring", "Playful", "Sophisticated", "Educational"].map((t) => {
               const isSelected = data.tones?.includes(t);
               return (
-                <button 
-                  key={t} 
+                <button
+                  key={t}
                   onClick={() => toggleTone(t)}
-                  className={`px-4 py-2 rounded-xl text-[13px] font-medium transition-all ${
-                    isSelected ? "text-[#02022C]" : "bg-white border text-[#475569] border-[#E2E8F0] hover:border-[#02022C]"
-                  }`}
+                  className={`px-4 py-2 rounded-xl text-[13px] font-medium transition-all ${isSelected ? "text-[#02022C]" : "bg-white border text-[#475569] border-[#E2E8F0] hover:border-[#02022C]"
+                    }`}
                   style={isSelected ? {
                     border: '1px solid transparent',
                     background: 'linear-gradient(white, white) padding-box, linear-gradient(90deg, #01012A 0%, #2E2C66 100%) border-box'
@@ -96,12 +94,11 @@ export default function CampaignStep2({ data, updateData }: CampaignStep2Props) 
             {colorSchemes.map((scheme) => {
               const isSelected = data.colorScheme === scheme.label;
               return (
-                <button 
-                  key={scheme.label} 
+                <button
+                  key={scheme.label}
                   onClick={() => toggleColorScheme(scheme.label)}
-                  className={`flex flex-wrap items-center justify-center px-[16px] py-[8px] w-[122px] h-[56px] rounded-[12px] transition-all bg-white border ${
-                    isSelected ? "border-transparent" : "border-[#E2E8F0] hover:border-[#02022C]"
-                  }`}
+                  className={`flex flex-wrap items-center justify-center px-[16px] py-[8px] w-[122px] h-[56px] rounded-[12px] transition-all bg-white border ${isSelected ? "border-transparent" : "border-[#E2E8F0] hover:border-[#02022C]"
+                    }`}
                   style={isSelected ? {
                     border: '1px solid transparent',
                     background: 'linear-gradient(white, white) padding-box, linear-gradient(90deg, #01012A 0%, #2E2C66 100%) border-box'

@@ -62,9 +62,16 @@ export default function StudioHero({
         {/* Left Content Stack */}
         <div className="flex flex-col gap-6 max-w-[379px] flex-1">
           <div className="flex flex-col gap-2">
-            <h1 className="text-[30px] font-bold text-[#4F4F4F] leading-tight">
+            <h1 className="text-[30px] font-bold text-[#4F4F4F] leading-tight mb-2">
               Hi, Hareem <span className="text-[#121212]">Ready To Achieve Great Things?</span>
             </h1>
+            <button 
+              onClick={onCreateClick}
+              className="transition-all active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed bg-gradient-to-r from-[#01012A] to-[#2E2C66] text-white text-[18px] font-bold leading-none shadow-[inset_0px_-5px_5px_0px_#4F569B] justify-center py-[14px] w-[144px] h-[48px] px-6 rounded-xl flex items-center gap-2"
+            >
+              <Icons.Plus className="w-5 h-5" />
+              <span>Create</span>
+            </button>
           </div>
         </div>
         <div className="relative w-[296px] h-[242px] hidden lg:block shrink-0">
@@ -127,48 +134,54 @@ export default function StudioHero({
               <span className="text-[13px] font-semibold text-[#64748B]">Reference Campaign:</span>
               <button 
                 onClick={() => setIsModalOpen(true)}
-                className="text-[12px] font-bold text-[#02022C] hover:underline flex items-center gap-1"
+                className="px-2.5 py-1 rounded-lg text-[12px] font-bold text-[#121212] transition-all flex items-center gap-1 group hover:bg-gradient-to-r hover:from-[#01012A] hover:to-[#2E2C66] hover:text-white active:scale-95"
               >
-                View More <Icons.ArrowRight className="w-3 h-3" />
+                View More <Icons.ArrowRight className="w-3 h-3 transition-transform group-hover:translate-x-0.5" />
               </button>
             </div>
             <div className="flex flex-wrap gap-2">
               <button
                 onClick={onCreateClick}
-                className="px-3 py-1.5 bg-[#F8FAFC] border border-dashed border-[#CBD5E1] rounded-lg text-[11px] font-bold text-[#64748B] hover:border-[#02022C] hover:text-[#02022C] transition-all flex items-center gap-1.5"
+                className="px-3 py-1.5 bg-white border border-[#E2E8F0] rounded-lg text-[11px] font-bold text-[#02022C] hover:border-[#02022C] hover:bg-[#F8FAFC] transition-all flex items-center gap-1.5 shadow-sm active:scale-95"
               >
                 <Icons.Plus className="w-3 h-3" />
                 Create New
               </button>
               {campaigns.slice(0, 4).map((campaign, i) => (
-                <button
+                <div
                   key={i}
                   onClick={() => onCampaignSelect?.(campaign)}
-                  className={`px-3 py-1.5 border rounded-lg text-[11px] flex font-medium transition-all ${
+                  className={`px-3 py-1.5 border rounded-lg text-[11px] flex items-center font-medium transition-all cursor-pointer ${
                     selectedCampaign?.title === campaign.title 
                       ? "bg-[#02022C] border-[#02022C] text-white" 
                       : "bg-white border-[#E2E8F0] text-[#475569] hover:border-[#02022C] hover:text-[#02022C]"
                   }`}
                 >
-                  {campaign.title} 
-                <button
-                onClick={(e) => {
-                  e.stopPropagation();
-                  onViewDetails?.(campaign);
-                }}
-                className="ml-2 text-[#64748B] hover:text-[#02022C] transition-colors"
-                >
-                  <Icons.Eye className="w-3.5 h-3.5" />
-                </button>
-                
-                  <button onClick={(e) => {
-                    e.stopPropagation();
-                    onCampaignDelete?.(campaign);
-                  }} className="ml-2 hover:text-red-500 transition-colors">
+                  <span className="truncate max-w-[120px]">{campaign.title}</span>
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      onViewDetails?.(campaign);
+                    }}
+                    className={`ml-2 transition-colors ${
+                      selectedCampaign?.title === campaign.title ? "text-white/70 hover:text-white" : "text-[#64748B] hover:text-[#02022C]"
+                    }`}
+                  >
+                    <Icons.Eye className="w-3.5 h-3.5" />
+                  </button>
+                  
+                  <button 
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      onCampaignDelete?.(campaign);
+                    }} 
+                    className={`ml-2 transition-colors ${
+                      selectedCampaign?.title === campaign.title ? "text-white/70 hover:text-red-400" : "hover:text-red-500 text-[#64748B]"
+                    }`}
+                  >
                     <Icons.Trash className="w-3 h-3" />
                   </button>
-                
-                </button>
+                </div>
               ))}
             </div>
           </div>
