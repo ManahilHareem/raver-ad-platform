@@ -11,6 +11,8 @@ import Image from "next/image";
 
 import ImageLeadModal from "@/components/agents/ImageLeadModal";
 import ImageViewerModal from "@/components/agents/ImageViewerModal";
+import { SessionBrowser } from "@/components/agents/image-lead/SessionBrowser";
+import { MediaVault } from "@/components/agents/image-lead/MediaVault";
 
 interface ImageAsset {
   filename: string;
@@ -323,19 +325,14 @@ function ImageLeadContent() {
         <div className="flex flex-col gap-6  p-5 sm:p-8 relative overflow-hidden">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-4">
-              <Link href="/agents">
-                <Icons.ArrowLeft className="w-4 h-4 text-[#0A0A0A]" />
+              <Link 
+                href="/agents" 
+                className="p-2 rounded-[10px] hover:bg-slate-100 transition-all active:scale-90 group"
+              >
+                <Icons.ArrowLeft className="w-6 h-6 text-[#0A0A0A] group-hover:-translate-x-0.5 transition-transform" />
               </Link>
-              <Icons.MagicWand className="w-4 h-4 text-[#0A0A0A]" />
               <div className="flex flex-col">
                  <h1 className="text-4xl font-black text-[#0A0A0A] tracking-tight lowercase">raver ai image lead</h1>
-                 <div className="flex items-center gap-3">
-                   <div className="relative">
-                     <div className="absolute inset-0 bg-green-500 blur-sm rounded-full animate-pulse opacity-50" />
-                     <div className="relative w-2 h-2 bg-green-500 rounded-full" />
-                   </div>
-                   <span className="text-[11px] font-black text-[#64748B] uppercase tracking-[0.3em]">Neural Engine Operational</span>
-                 </div>
                </div>
             </div>
             <div className="flex items-center gap-2 sm:gap-3">
@@ -349,64 +346,22 @@ function ImageLeadContent() {
         </div>
 
         {/* Session Selector */}
-        {sessions.length > 0 && (
-          <div className="flex flex-col gap-4">
-            <div className="flex items-center gap-4 overflow-x-auto pb-4 scrollbar-hide">
-              {sessions
-                .filter((s) => (sessionId ? s.sessionId === sessionId : true))
-                .map((s) => (
-                <button
-                  key={s.sessionId}
-                  onClick={() => {
-                    setSessionId(s.sessionId);
-                    if (s.metadata?.scenes) {
-                      const sceneImages = s.metadata.scenes.map((scene: any) => ({
-                        filename: scene.label || s.sessionId,
-                        url: scene.url,
-                        label: scene.label || "Scene Asset"
-                      }));
-                      setVault(sceneImages);
-                    }
-                  }}
-                  onDoubleClick={() => {
-                    setSessionId("");
-                  }}
-                  className={cn(
-                    "group flex flex-col gap-2 p-4 rounded-2xl border transition-all min-w-[180px] text-left relative overflow-hidden",
-                    sessionId === s.sessionId 
-                      ? "bg-[#0A0A0A] text-white border-[#0A0A0A] translate-y-[-2px]" 
-                      : "bg-white text-slate-600 border-slate-100 hover:border-slate-300 hover:bg-slate-50"
-                  )}
-                >
-                  <div className="flex items-center justify-between">
-                    <Icons.Clock className={cn("w-3.5 h-3.5", sessionId === s.sessionId ? "opacity-100" : "opacity-30")} />
-                    {s.createdAt && (
-                      <span className="text-[9px] font-bold opacity-40 uppercase tracking-tighter">
-                        {new Date(s.createdAt).toLocaleDateString([], { month: 'short', day: 'numeric' })}
-                      </span>
-                    )}
-                  </div>
-                  <span className="text-[12px] font-black truncate tracking-tighter uppercase">
-                    {s.tag || s.sessionId.replace("raver_campaign_", "")}
-                  </span>
-                  {sessionId === s.sessionId && (
-                    <div className="absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-transparent via-white/20 to-transparent" />
-                  )}
-                </button>
-              ))}
-
-              {/* View All Sessions Button */}
-              {sessionId && (
-                <button 
-                  onClick={() => setSessionId("")}
-                  className="text-xs font-bold text-slate-500 hover:text-[#0A0A0A] underline ml-2 whitespace-nowrap transition-colors"
-                >
-                  View All Sessions
-                </button>
-              )}
-            </div>
-          </div>
-        )}
+        <SessionBrowser 
+          sessions={sessions}
+          activeSessionId={sessionId}
+          onSelect={(s) => {
+            setSessionId(s.sessionId);
+            if (s.metadata?.scenes) {
+              const sceneImages = s.metadata.scenes.map((scene: any) => ({
+                filename: scene.label || s.sessionId,
+                url: scene.url,
+                label: scene.label || "Scene Asset"
+              }));
+              setVault(sceneImages);
+            }
+          }}
+          onReset={() => setSessionId("")}
+        />
 
         {/* Media Vault Section */}
         <div className="bg-white rounded-[32px] p-5 sm:p-8 border border-[#F1F5F9] shadow-sm flex flex-col gap-8 scroll-mt-6">
@@ -419,7 +374,7 @@ function ImageLeadContent() {
               <button 
                 onClick={() => { setModalTab("generate"); setIsModalOpen(true); }}
                 disabled={isLoading}
-                className="h-14 px-10 bg-gradient-to-br from-[#0A0A0A] via-[#0A0A0A] to-[#334155] text-white rounded-[24px] font-black text-sm flex items-center gap-3 transition-all disabled:opacity-70 disabled:cursor-not-allowed border border-white/5 hover:scale-[1.02] active:scale-95 group"
+                className="h-14 px-10 bg-linear-to-br from-[#0A0A0A] via-[#0A0A0A] to-[#334155] text-white rounded-[24px] font-black text-sm flex items-center gap-3 transition-all disabled:opacity-70 disabled:cursor-not-allowed border border-white/5 hover:scale-[1.02] active:scale-95 group"
               >
                 {isLoading ? (
                   <div className="flex items-center gap-3">
@@ -436,84 +391,15 @@ function ImageLeadContent() {
             </div>
           </div>
 
-          {(!vault.length && !isLoading) ? (
-            <div className="flex flex-col items-center justify-center p-10 sm:p-20 bg-[#F8FAFC] border border-dashed rounded-3xl text-center">
-              <Icons.Image className="w-10 h-10 text-slate-300 mb-4" />
-              <h4 className="font-bold text-slate-900 text-sm sm:text-base">
-                {sessions.length ? "No assets in this session" : "No sessions found. Start a new generation."}
-              </h4>
-              {!sessions.length && <p className="text-slate-400 text-[10px] sm:text-xs mt-1">Your creative generations will appear here.</p>}
-            </div>
-          ) : (
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-6">
-              {vault.map((asset) => {
-                const rawUrl = asset?.url || "";
-                if (!rawUrl || typeof rawUrl !== "string") return null;
-
-                const imageUrl = rawUrl.startsWith("http") 
-                  ? rawUrl 
-                  : `https://apiplatform.raver.ai${rawUrl.startsWith("/") ? "" : "/"}${rawUrl}`;
-
-                // Use the selected generation aspect ratio for the container, fallback to 16:9
-                const ratioClassMap: Record<string, string> = {
-                  "16:9": "aspect-video",
-                  "9:16": "aspect-[9/16]",
-                  "1:1": "aspect-square"
-                };
-                const currentRatioClass = ratioClassMap[aspectRatio] || "aspect-video";
-
-                return (
-                  <div 
-                    key={asset.filename + asset.url} 
-                    onMouseEnter={() => {
-                      if (imageUrl && imageUrl.startsWith("http")) {
-                        const img = new (window as any).Image();
-                        img.src = imageUrl;
-                      }
-                    }}
-                    onClick={() => { 
-                      if (imageUrl && imageUrl.startsWith("http")) {
-                        setSelectedImage(imageUrl); 
-                        setIsPreviewOpen(true); 
-                      }
-                    }}
-                    className={cn(
-                      "group relative bg-[#0A0A0A] rounded-[24px] overflow-hidden border border-white/5 transition-all duration-300 cursor-pointer select-none",
-                      currentRatioClass
-                    )}
-                  >
-                    {imageUrl && imageUrl.startsWith("http") ? (
-                      <Image 
-                        src={imageUrl}
-                        alt={asset.label || "Production Asset"}
-                        fill
-                        sizes="(max-width: 640px) 100vw, (max-width: 768px) 50vw, (max-width: 1280px) 33vw, 25vw"
-                        className="object-cover group-hover:scale-[1.05] transition-transform duration-[1.5s]"
-                      />
-                    ) : (
-                      <div className="absolute inset-0 flex items-center justify-center bg-slate-900">
-                        <Icons.Loader className="w-6 h-6 animate-spin text-white/20" />
-                      </div>
-                    )}
-                    
-                    {/* Discrete Scene Tag - Only on hover */}
-                    <div className="absolute top-4 left-4 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none">
-                       <span className="px-3 py-1 bg-black/60 border border-white/10 rounded-lg text-[8px] font-black text-white/60 uppercase tracking-[0.2em]">
-                         {asset.label || "Scene Asset"}
-                       </span>
-                    </div>
-
-                    {/* High-Contrast Search Icon - Optimized for Scroll */}
-                    <div className="absolute inset-0 bg-[#0A0A0A]/40 opacity-0 group-hover:opacity-100 transition-opacity duration-200 flex items-center justify-center pointer-events-none">
-                       <div className="w-12 h-12 bg-white/10 rounded-full flex items-center justify-center border border-white/20 scale-90 group-hover:scale-100 transition-transform duration-200">
-                          <Icons.Search className="w-5 h-5 text-white" />
-                       </div>
-                    </div>
-                  </div>
-                );
-              })}
-            </div>
-          )}
+          <MediaVault 
+            vault={vault}
+            aspectRatio={aspectRatio}
+            onAssetClick={(url) => {
+              setSelectedImage(url);
+              setIsPreviewOpen(true);
+            }}
+            hasSessions={sessions.length > 0}
+          />
         </div>
       </div>
 

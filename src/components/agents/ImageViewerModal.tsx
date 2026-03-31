@@ -21,7 +21,7 @@ export default function ImageViewerModal({
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-[110] flex items-center justify-center overflow-hidden bg-black animate-in fade-in duration-500">
+    <div className="fixed inset-0 z-110 flex items-center justify-center overflow-hidden bg-black animate-in fade-in duration-500">
       {/* Cinematic Backdrop */}
       <div className="absolute inset-0 cursor-zoom-out" onClick={onClose} />
       

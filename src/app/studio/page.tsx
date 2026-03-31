@@ -48,8 +48,88 @@ interface Campaign {
   prompt?: string | null;
 }
 
+function StudioLoadingState() {
+  return (
+    <DashboardLayout>
+      <div className="flex flex-col items-center justify-center min-h-[70vh] gap-8 px-4">
+        <div className="relative flex items-center justify-center">
+          <div className="w-24 h-24 border-[2.5px] border-slate-100 border-t-[#01012A] rounded-full animate-spin duration-[1.5s]"></div>
+          <div className="absolute inset-0 flex items-center justify-center">
+            <div className="w-12 h-12 bg-linear-to-br from-[#01012A] to-[#2E2C66] rounded-full flex items-center justify-center shadow-lg shadow-[#01012A]/20">
+              <Icons.Loader className="w-6 h-6 text-white animate-spin duration-[2s]" />
+            </div>
+          </div>
+          <div className="absolute w-32 h-32 border border-[#01012A]/10 rounded-full animate-ping opacity-30"></div>
+        </div>
+        <div className="flex flex-col items-center gap-3 text-center max-w-sm">
+          <h3 className="text-[22px] font-bold tracking-tight bg-linear-to-r from-[#01012A] to-[#2E2C66] bg-clip-text text-transparent">
+            Initializing Studio
+          </h3>
+          <p className="text-slate-500 text-[15px] leading-relaxed font-medium">
+            Synchronizing your latest campaigns and preparing the AI production pipeline...
+          </p>
+        </div>
+      </div>
+    </DashboardLayout>
+  );
+}
 
+function ActiveCampaignsGrid({ campaigns, onDelete, onViewMore, activeIndex, onSelect }: any) {
+  return (
+    <div className="flex flex-col gap-[16px] bg-[#FFFFFF] border-[0.35px] border-[#0000001A] rounded-[12px] p-[16px]">
+      <div className="flex items-center justify-between">
+        <h2 className="text-[18px] font-semibold text-[#121212]">Active Campaigns</h2>
+        <button 
+          onClick={onViewMore}
+          className="px-3 py-1.5 rounded-lg text-[13px] font-bold text-[#121212] transition-all flex items-center gap-1.5 group hover:bg-linear-to-r hover:from-[#01012A] hover:to-[#2E2C66] hover:text-white active:scale-95"
+        >
+          View More 
+          <Icons.ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-0.5" />
+        </button>
+      </div>
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-[12px]">
+        {campaigns.length > 0 ? (
+          campaigns.slice(0, 3).map((campaign: any, i: number) => (
+            <CampaignCard 
+              key={campaign.sessionId || campaign.id || i} 
+              {...campaign} 
+              videoUrl={campaign.videoUrl}
+              voiceover_url={campaign.voiceoverUrl}
+              music_url={campaign.musicUrl}
+              onDelete={() => onDelete(campaign)}
+              isSelected={i === activeIndex}
+              onClick={() => onSelect(i)}
+            />
+          ))
+        ) : (
+          <div className="col-span-full h-[150px] flex flex-col items-center justify-center bg-[#F8FAFC] border border-dashed border-slate-200 rounded-[12px] gap-2">
+            <Icons.Activity className="w-8 h-8 text-slate-300" />
+            <p className="text-[13px] font-bold text-slate-400 uppercase tracking-widest">No active campaigns right now</p>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
 
+function CampaignInsights({ insights }: any) {
+  return (
+    <div className="flex flex-col gap-4 bg-[#FFFFFF] border-[0.35px] border-[#0000001A] rounded-[12px] p-[16px]">
+      <h2 className="text-[18px] font-medium text-[#121212]">Insights</h2>
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+        {insights.map((insight: any, i: number) => (
+          <div key={i} className="bg-[#F8F8F8] p-5 rounded-[8px] border-[0.35px] border-[#0000001A] shadow-sm flex flex-col gap-2">
+            <span className="text-[12px] text-[#4F4F4F] font-medium">{insight.label}</span>
+            <div className="flex items-end justify-between">
+              <span className="text-[24px] font-bold text-[#02022C] leading-none">{insight.value}</span>
+              {insight.change && <span className="text-[12px] font-semibold mb-1 text-[#02022C]">{insight.change}</span>}
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
 
 function StudioPageContent() {
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -78,7 +158,6 @@ function StudioPageContent() {
     try {
       const API_BASE = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
       
-      // 1. Fetch campaigns from primary DB
       const res = await apiFetch(`${API_BASE}/campaigns`);
       let mappedCampaigns: Campaign[] = [];
       
@@ -86,16 +165,13 @@ function StudioPageContent() {
         const responseData = await res.json();
         if (responseData.success && responseData.data && (Array.isArray(responseData.data) || typeof responseData.data === 'object')) {
           const rawData = Array.isArray(responseData.data) ? responseData.data : [responseData.data];
-          console.log(`Fetched ${rawData.length} campaigns from primary DB`, rawData);
-          
           mappedCampaigns = rawData.map((c: any) => {
-            // Robust config parsing
             let config = c.config;
             if (typeof config === "string") {
               try { config = JSON.parse(config); } catch (e) { console.warn("Failed to parse config string", e); }
             }
             
-            const m = {
+            return {
               id: c.id?.toString() || c._id?.toString(),
               title: c.name || c.title || "Untitled",
               status: c.status || "Ready",
@@ -116,13 +192,10 @@ function StudioPageContent() {
               visualStyles: config?.visual_style || config?.visualStyles || c.visualStyles,
               createdAt: c.createdAt || c.created_at,
             };
-            return m;
           });
-          console.log("Mapped primary campaigns:", mappedCampaigns);
         }
       }
 
-      // 2. Fetch Sessions from AI Director
       let allSessions: Campaign[] = [];
       try {
         const sessionRes = await apiFetch(`${API_BASE}/ai/director/sessions`, {
@@ -133,7 +206,6 @@ function StudioPageContent() {
           const sessionData = await sessionRes.json();
           if (sessionData.success && (Array.isArray(sessionData.data?.sessions) || Array.isArray(sessionData.data))) {
             const sessionsArray = Array.isArray(sessionData.data?.sessions) ? sessionData.data.sessions : sessionData.data;
-            console.log(`Fetched ${sessionsArray.length} sessions from AI Director`);
             allSessions = sessionsArray.map((s: any) => {
               const brief = s.brief_draft || {};
               return {
@@ -166,7 +238,6 @@ function StudioPageContent() {
         console.warn("Sessions fetch failed:", err);
       }
 
-      // 3. Fetch AI Director Insights
       try {
         const insightRes = await apiFetch(`${API_BASE}/ai/insights/director`);
         if (insightRes.ok) {
@@ -179,7 +250,6 @@ function StudioPageContent() {
         console.error("Failed to fetch insights:", err);
       }
 
-      // 4. Consolidate and update initial state (progressive loading)
       const initialVideos = [...allSessions];
       const activePrimary = mappedCampaigns.filter(c => 
         ["in_production", "queued", "In Production", "ready_for_human_review", "approved", "delivered", "Ready"].includes(c.status)
@@ -203,12 +273,10 @@ function StudioPageContent() {
           });
       };
 
-      // Filter out any sessions without a status (invalid or non-synced)
       const validInitialVideos = initialVideos.filter(v => v.status);
       setVideos(sortLatest(validInitialVideos));
       setCampaigns(mappedCampaigns);
 
-      // 4. One-by-one status check for active sessions (deep check)
       const terminalStatuses = ["completed", "Ready", "delivered", "failed", "ready_for_human_review", "approved"];
       const activeCandidates = allSessions
         .filter(s => {
@@ -249,7 +317,6 @@ function StudioPageContent() {
           return s;
         }));
 
-        // Merge updated data back into final view
         setVideos(prev => {
           const updatedList = prev.map(v => {
             const up = updatedSessions.find(u => u.sessionId === v.sessionId);
@@ -272,7 +339,6 @@ function StudioPageContent() {
   };
 
   const handleViewDetails = (campaign: Campaign) => {
-    // Ensure selection/preview modal exclusivity
     setIsModalOpen(false);
     setShowAIResponse(false);
     setCampaignToView(campaign);
@@ -286,11 +352,9 @@ function StudioPageContent() {
     const sessionId = Date.now().toString();
     const API_BASE = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
 
-    // Enrich message with campaign context if available
     const enrichedMessage = enrichMessageWithCampaign(prompt, selectedCampaign);
 
     try {
-      // 1. Call AI Director API
       const response = await apiFetch(`${API_BASE}/ai/director/chat`, {
         method: "POST",
         headers: {
@@ -300,7 +364,7 @@ function StudioPageContent() {
         body: JSON.stringify({
           session_id: sessionId,
           message: enrichedMessage,
-          professional_name: "", // Using name from UI
+          professional_name: "",
           tag: "director"
         }),
       });
@@ -308,15 +372,13 @@ function StudioPageContent() {
       if (!response.ok) throw new Error("Failed to communicate with AI Director");
       const data = await response.json();
       
-      // Robustly extract response from potentially array-wrapped or nested data
       const responseData = Array.isArray(data?.data) ? data.data[0] : (data?.data || data);
       const aiResponse = responseData?.response || responseData?.message || responseData?.ai_message || "I've analyzed your requirements. Let's start building your campaign.";
 
-      // 2. Persist to chat history in localStorage (matching ChatPage structure)
       const userMessage = {
         id: Date.now().toString(),
         role: "user",
-        content: enrichedMessage, // Saving the full enriched prompt for transparency
+        content: enrichedMessage,
         timestamp: new Date().toISOString()
       };
 
@@ -348,17 +410,14 @@ function StudioPageContent() {
 
       localStorage.setItem("chat_sessions", JSON.stringify([newSession, ...existingSessions]));
 
-      // 3. Show local AI response instead of redirecting
       setInitialUserPrompt(enrichedMessage);
       setAiResponseContent(aiResponse);
       setCurrentSessionId(sessionId);
       
-      // Mutual exclusivity for consultation modals
       setIsSelectionModalOpen(false);
       setIsModalOpen(false);
       setShowAIResponse(true);
 
-      // 4. Update Videos if a campaign was created
       const campaignStatus = responseData?.campaign_status;
       if (campaignStatus === "queued" || campaignStatus === "in_production") {
         const brief = responseData?.brief_draft || {};
@@ -371,7 +430,7 @@ function StudioPageContent() {
           status: campaignStatus,
           image: "/assets/hashtag-campaign.jpg"
         }, ...prev]);
-        setActivePipelineIndex(0); // Select the newest campaign
+        setActivePipelineIndex(0);
       }
 
       setIsSending(false);
@@ -395,7 +454,6 @@ function StudioPageContent() {
         if (!res.ok) throw new Error("Failed to delete campaign");
       }
       
-      // Update local state regardless of whether it had an ID (for mock data)
       setCampaigns(prev => prev?.filter(c => (c.id && campaignToDelete.id && c.id !== campaignToDelete.id) || (c.title !== campaignToDelete.title)));
       setVideos(prev => prev.filter(v => (v.id && campaignToDelete.id && v.id !== campaignToDelete.id) || (v.title !== campaignToDelete.title)));
       
@@ -404,7 +462,7 @@ function StudioPageContent() {
       }
       setIsDeleteModalOpen(false);
       setCampaignToDelete(null);
-      setActivePipelineIndex(0); // Reset to first item
+      setActivePipelineIndex(0);
     } catch (err) {
       console.error("Delete failed:", err);
       alert("Failed to delete campaign. Please try again.");
@@ -413,35 +471,27 @@ function StudioPageContent() {
     }
   };
 
-  // Ref for Videos to avoid stale closures in polling
   const videosRef = useRef<Campaign[]>(Videos);
   useEffect(() => {
     videosRef.current = Videos;
   }, [Videos]);
 
-  // Failure tracking for sessions to prevent infinite polling on non-existent IDs
   const sessionFailuresRef = useRef<Record<string, number>>({});
 
-  // Polling Effect for running pipelines
   useEffect(() => {
     let timeoutId: NodeJS.Timeout;
     const API_BASE = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
 
     const poll = async () => {
       const currentVideos = videosRef.current;
-      
-      // Specifically target active statuses for polling
       const activeStatuses = ["queued", "in_production", "pipeline_running", "In Production", "processing", "rendering"];
       const terminalStatuses = ["completed", "Ready", "delivered", "failed", "ready_for_human_review", "approved"];
 
       const polls = currentVideos.filter(v => {
         if (!v.sessionId) return false;
-        
         const status = v.status?.toLowerCase() || "";
         const isTerminal = terminalStatuses.some(s => status.includes(s.toLowerCase()));
         const isActive = activeStatuses.some(s => status.includes(s.toLowerCase())) || (!isTerminal && status !== "");
-        
-        // Don't poll if it's already terminal or if it's failed too many times
         const failureCount = sessionFailuresRef.current[v.sessionId] || 0;
         return isActive && !isTerminal && failureCount < 5;
       });
@@ -452,7 +502,6 @@ function StudioPageContent() {
 
         for (const v of polls) {
           if (!v.sessionId) continue;
-
           try {
             const res = await apiFetch(`${API_BASE}/ai/director/session/${v.sessionId}/update`, {
               headers: { "accept": "*/*" }
@@ -461,8 +510,6 @@ function StudioPageContent() {
             if (res.ok) {
               const resData = await res.json();
               const updateData = resData.data;
-              
-              // Reset failures on success
               sessionFailuresRef.current[v.sessionId] = 0;
 
               if (updateData) {
@@ -489,32 +536,19 @@ function StudioPageContent() {
                 }
               }
             } else if (res.status === 404) {
-              // ID doesn't exist on backend (e.g. mock or ancient), increment failure
               sessionFailuresRef.current[v.sessionId] = (sessionFailuresRef.current[v.sessionId] || 0) + 1;
             }
           } catch (e) {
-            // Network error (Failed to fetch)
             const isNetworkError = e instanceof TypeError && e.message.includes("fetch");
-            if (isNetworkError) {
-              console.warn(`Polling network issue for ${v.sessionId}. Backend might be down.`);
-            } else {
-              console.error("Polling error for", v.sessionId, e);
-            }
-            // Increment failure count for this session
+            if (!isNetworkError) console.error("Polling error for", v.sessionId, e);
             sessionFailuresRef.current[v.sessionId] = (sessionFailuresRef.current[v.sessionId] || 0) + 1;
           }
         }
-        
-        if (hasChanges) {
-          setVideos(newVideos);
-        }
+        if (hasChanges) setVideos(newVideos);
       }
-
       timeoutId = setTimeout(poll, 5000);
     };
-
     poll();
-
     return () => clearTimeout(timeoutId);
   }, []);
 
@@ -525,7 +559,6 @@ function StudioPageContent() {
   useEffect(() => {
     if (searchParams.get("create") === "true") {
       setIsModalOpen(true);
-      // Clean up the URL after opening the modal
       const newParams = new URLSearchParams(searchParams.toString());
       newParams.delete("create");
       const newUrl = `${window.location.pathname}${newParams.toString() ? `?${newParams.toString()}` : ""}`;
@@ -534,35 +567,7 @@ function StudioPageContent() {
   }, [searchParams, router]);
 
   if (isLoading && (!Videos || Videos.length === 0)) {
-    return (
-      <DashboardLayout>
-        <div className="flex flex-col items-center justify-center min-h-[70vh] gap-8 px-4">
-          <div className="relative flex items-center justify-center">
-            {/* Outer spinning ring - elegant and slow */}
-            <div className="w-24 h-24 border-[2.5px] border-slate-100 border-t-[#01012A] rounded-full animate-spin duration-[1.5s]"></div>
-            
-            {/* Inner pulsing icon - matching brand colors */}
-            <div className="absolute inset-0 flex items-center justify-center">
-              <div className="w-12 h-12 bg-linear-to-br from-[#01012A] to-[#2E2C66] rounded-full flex items-center justify-center shadow-lg shadow-[#01012A]/20">
-                <Icons.Loader className="w-6 h-6 text-white animate-spin duration-[2s]" />
-              </div>
-            </div>
-
-            {/* Decorative expanding waves */}
-            <div className="absolute w-32 h-32 border border-[#01012A]/10 rounded-full animate-ping opacity-30"></div>
-          </div>
-
-          <div className="flex flex-col items-center gap-3 text-center max-w-sm">
-            <h3 className="text-[22px] font-bold tracking-tight bg-linear-to-r from-[#01012A] to-[#2E2C66] bg-clip-text text-transparent">
-              Initializing Studio
-            </h3>
-            <p className="text-slate-500 text-[15px] leading-relaxed font-medium">
-              Synchronizing your latest campaigns and preparing the AI production pipeline...
-            </p>
-          </div>
-        </div>
-      </DashboardLayout>
-    );
+    return <StudioLoadingState />;
   }
 
   const activeVideos = Videos.filter(v => v.status);
@@ -571,10 +576,8 @@ function StudioPageContent() {
   return (
     <DashboardLayout>
       <div className="flex flex-col gap-[12px]  mx-auto p-4 lg:p-6">
-        {/* Hero Section */}
         <StudioHero
           onCreateClick={() => {
-            // Mutual exclusivity for major modals
             setIsSelectionModalOpen(false);
             setShowAIResponse(false);
             setIsModalOpen(true);
@@ -588,44 +591,14 @@ function StudioPageContent() {
           isSending={isSending}
         />
 
-        {/* Active Campaigns Section */}
-        <div className="flex flex-col gap-[16px] bg-[#FFFFFF] border-[0.35px] border-[#0000001A] rounded-[12px] p-[16px]">
-          <div className="flex items-center justify-between">
-            <h2 className="text-[18px] font-semibold text-[#121212]">
-              Active Campaigns
-            </h2>
-            <button 
-              onClick={() => router.push("/projects")}
-              className="px-3 py-1.5 rounded-lg text-[13px] font-bold text-[#121212] transition-all flex items-center gap-1.5 group hover:bg-linear-to-r hover:from-[#01012A] hover:to-[#2E2C66] hover:text-white active:scale-95"
-            >
-              View More 
-              <Icons.ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-0.5" />
-            </button>
-          </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-[12px]">
-            {activeVideos.length > 0 ? (
-              activeVideos.slice(0, 3).map((campaign, i) => (
-                <CampaignCard 
-                  key={campaign.sessionId || campaign.id || i} 
-                  {...campaign} 
-                  videoUrl={campaign.videoUrl}
-                  voiceover_url={campaign.voiceoverUrl}
-                  music_url={campaign.musicUrl}
-                  onDelete={() => handleDeleteCampaign(campaign)}
-                  isSelected={i === activePipelineIndex}
-                  onClick={() => setActivePipelineIndex(i)}
-                />
-              ))
-            ) : (
-              <div className="col-span-full h-[150px] flex flex-col items-center justify-center bg-[#F8FAFC] border border-dashed border-slate-200 rounded-[12px] gap-2">
-                <Icons.Activity className="w-8 h-8 text-slate-300" />
-                <p className="text-[13px] font-bold text-slate-400 uppercase tracking-widest">No active campaigns right now</p>
-              </div>
-            )}
-          </div>
-        </div>
+        <ActiveCampaignsGrid 
+          campaigns={activeVideos}
+          onDelete={handleDeleteCampaign}
+          onViewMore={() => router.push("/projects")}
+          activeIndex={activePipelineIndex}
+          onSelect={setActivePipelineIndex}
+        />
 
-        {/* Production Pipeline */}
         <div className="flex flex-col gap-4 bg-[#FFFFFF] border-[0.35px] border-[#0000001A] rounded-[12px] p-[16px]">
           <div className="flex items-center justify-between">
             <h2 className="text-[18px] font-medium text-[#121212]">
@@ -644,36 +617,7 @@ function StudioPageContent() {
           />
         </div>
 
-        {/* Insights Section */}
-        <div className="flex flex-col gap-4 bg-[#FFFFFF] border-[0.35px] border-[#0000001A] rounded-[12px] p-[16px]">
-          <h2 className="text-[18px] font-medium text-[#121212]">Insights</h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-            {insights.map((insight, i) => (
-              <div
-                key={i}
-                className="bg-[#F8F8F8] p-5 rounded-[8px] border-[0.35px] border-[#0000001A] shadow-sm flex flex-col gap-2"
-              >
-                <span className="text-[12px] text-[#4F4F4F] font-medium">
-                  {insight.label}
-                </span>
-                <div className="flex items-end justify-between">
-                  <span className="text-[24px] font-bold text-[#02022C] leading-none">
-                    {insight.value}
-                  </span>
-                  {insight.change && (
-                    <span
-                      className={cn(
-                        "text-[12px] font-semibold mb-1 text-[#02022C]",
-                      )}
-                    >
-                      {insight.change}
-                    </span>
-                  )}
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
+        <CampaignInsights insights={insights} />
       </div>
 
       <button className="fixed bottom-6 right-8 w-[60px] h-[60px] bg-linear-to-r from-[#01012A] to-[#2E2C66] text-white rounded-full flex items-center justify-center shadow-2xl hover:scale-110 active:scale-95 transition-all z-40 shadow-[#01012A]/20">
