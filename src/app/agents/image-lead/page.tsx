@@ -13,6 +13,7 @@ import ImageLeadModal from "@/components/agents/ImageLeadModal";
 import ImageViewerModal from "@/components/agents/ImageViewerModal";
 import { SessionBrowser } from "@/components/agents/image-lead/SessionBrowser";
 import { MediaVault } from "@/components/agents/image-lead/MediaVault";
+import { RaverLoadingState } from "@/components/ui/RaverLoadingState";
 
 interface ImageAsset {
   filename: string;
@@ -33,6 +34,7 @@ function ImageLeadContent() {
   );
   const [vault, setVault] = useState<ImageAsset[]>([]);
   const [sessions, setSessions] = useState<any[]>([]);
+  const [isSyncing, setIsSyncing] = useState(true);
   const [isLoading, setIsLoading] = useState(false);
   const [isEnhancing, setIsEnhancing] = useState(false);
   const [statusMessage, setStatusMessage] = useState("System Standby");
@@ -65,6 +67,7 @@ function ImageLeadContent() {
   const API_BASE = process.env.NEXT_PUBLIC_API_URL || "https://apiplatform.raver.ai/api";
 
   const fetchSessions = async () => {
+    setIsSyncing(true);
     try {
       const response = await apiFetch(`${API_BASE}/ai/image-lead/sessions`);
       if (response.ok) {
@@ -90,6 +93,8 @@ function ImageLeadContent() {
       }
     } catch (err) {
       console.warn("Failed to fetch sessions:", err);
+    } finally {
+      setIsSyncing(false);
     }
     return [];
   };
@@ -318,6 +323,15 @@ function ImageLeadContent() {
     }
   }, [sessionId, sessions]);
 
+  if (isSyncing && sessions.length === 0) {
+    return (
+      <RaverLoadingState 
+        title="Synchronizing Matrix" 
+        description="Fetching your creative history and preparing the neural asset vault..." 
+      />
+    );
+  }
+
   return (
     <DashboardLayout>
       <div className="flex flex-col gap-6 sm:gap-8 p-4 sm:p-8 mx-auto bg-white rounded-3xl">
@@ -379,7 +393,7 @@ function ImageLeadContent() {
                 {isLoading ? (
                   <div className="flex items-center gap-3">
                     <Icons.Loader className="w-5 h-5 animate-spin" />
-                    <span className="uppercase tracking-widest text-[11px]">Synchronizing Matrix...</span>
+                    <span className="uppercase tracking-widest text-[11px]">Neural Audit...</span>
                   </div>
                 ) : (
                   <div className="flex items-center gap-3">
