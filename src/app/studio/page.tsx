@@ -62,16 +62,19 @@ function StudioPageContent() {
   const [campaignToDelete, setCampaignToDelete] = useState<Campaign | null>(null);
   const [campaignToView, setCampaignToView] = useState<Campaign | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
   const [isSending, setIsSending] = useState(false);
   const [showAIResponse, setShowAIResponse] = useState(false);
   const [isPreviewOpen, setIsPreviewOpen] = useState(false);
   const [aiResponseContent, setAiResponseContent] = useState("");
   const [initialUserPrompt, setInitialUserPrompt] = useState("");
   const [currentSessionId, setCurrentSessionId] = useState("");
+  const [activePipelineIndex, setActivePipelineIndex] = useState(0);
   const searchParams = useSearchParams();
   const router = useRouter();
 
   const fetchCampaigns = async () => {
+    setIsLoading(true);
     try {
       const API_BASE = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
       
@@ -258,6 +261,8 @@ function StudioPageContent() {
     } catch (err) {
       if (err instanceof Error && err.message === 'Unauthorized') return;
       console.error("Critical error in fetchCampaigns:", err);
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -366,6 +371,7 @@ function StudioPageContent() {
           status: campaignStatus,
           image: "/assets/hashtag-campaign.jpg"
         }, ...prev]);
+        setActivePipelineIndex(0); // Select the newest campaign
       }
 
       setIsSending(false);
@@ -398,6 +404,7 @@ function StudioPageContent() {
       }
       setIsDeleteModalOpen(false);
       setCampaignToDelete(null);
+      setActivePipelineIndex(0); // Reset to first item
     } catch (err) {
       console.error("Delete failed:", err);
       alert("Failed to delete campaign. Please try again.");
@@ -526,6 +533,41 @@ function StudioPageContent() {
     }
   }, [searchParams, router]);
 
+  if (isLoading && (!Videos || Videos.length === 0)) {
+    return (
+      <DashboardLayout>
+        <div className="flex flex-col items-center justify-center min-h-[70vh] gap-8 px-4">
+          <div className="relative flex items-center justify-center">
+            {/* Outer spinning ring - elegant and slow */}
+            <div className="w-24 h-24 border-[2.5px] border-slate-100 border-t-[#01012A] rounded-full animate-spin duration-[1.5s]"></div>
+            
+            {/* Inner pulsing icon - matching brand colors */}
+            <div className="absolute inset-0 flex items-center justify-center">
+              <div className="w-12 h-12 bg-linear-to-br from-[#01012A] to-[#2E2C66] rounded-full flex items-center justify-center shadow-lg shadow-[#01012A]/20">
+                <Icons.Loader className="w-6 h-6 text-white animate-spin duration-[2s]" />
+              </div>
+            </div>
+
+            {/* Decorative expanding waves */}
+            <div className="absolute w-32 h-32 border border-[#01012A]/10 rounded-full animate-ping opacity-30"></div>
+          </div>
+
+          <div className="flex flex-col items-center gap-3 text-center max-w-sm">
+            <h3 className="text-[22px] font-bold tracking-tight bg-linear-to-r from-[#01012A] to-[#2E2C66] bg-clip-text text-transparent">
+              Initializing Studio
+            </h3>
+            <p className="text-slate-500 text-[15px] leading-relaxed font-medium">
+              Synchronizing your latest campaigns and preparing the AI production pipeline...
+            </p>
+          </div>
+        </div>
+      </DashboardLayout>
+    );
+  }
+
+  const activeVideos = Videos.filter(v => v.status);
+  const currentPipelineCampaign = activeVideos[activePipelineIndex] || activeVideos[0];
+
   return (
     <DashboardLayout>
       <div className="flex flex-col gap-[12px]  mx-auto p-4 lg:p-6">
@@ -561,8 +603,8 @@ function StudioPageContent() {
             </button>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-[12px]">
-            {Videos.filter(v => v.status).length > 0 ? (
-              Videos.filter(v => v.status).slice(0, 3).map((campaign, i) => (
+            {activeVideos.length > 0 ? (
+              activeVideos.slice(0, 3).map((campaign, i) => (
                 <CampaignCard 
                   key={campaign.sessionId || campaign.id || i} 
                   {...campaign} 
@@ -570,6 +612,8 @@ function StudioPageContent() {
                   voiceover_url={campaign.voiceoverUrl}
                   music_url={campaign.musicUrl}
                   onDelete={() => handleDeleteCampaign(campaign)}
+                  isSelected={i === activePipelineIndex}
+                  onClick={() => setActivePipelineIndex(i)}
                 />
               ))
             ) : (
@@ -583,13 +627,20 @@ function StudioPageContent() {
 
         {/* Production Pipeline */}
         <div className="flex flex-col gap-4 bg-[#FFFFFF] border-[0.35px] border-[#0000001A] rounded-[12px] p-[16px]">
-          <h2 className="text-[18px] font-medium text-[#121212]">
-            AI Production Pipeline
-          </h2>
+          <div className="flex items-center justify-between">
+            <h2 className="text-[18px] font-medium text-[#121212]">
+              AI Production Pipeline
+            </h2>
+            {currentPipelineCampaign && (
+              <span className="text-[12px] font-bold text-[#121212] uppercase tracking-wider">
+                {currentPipelineCampaign.title}
+              </span>
+            )}
+          </div>
           <ProductionPipeline 
-            status={Videos[0]?.status || "Draft"} 
-            message={Videos[0]?.message || ""} 
-            videoUrl={Videos[0]?.videoUrl}
+            status={currentPipelineCampaign?.status || "Draft"} 
+            message={currentPipelineCampaign?.message || ""} 
+            videoUrl={currentPipelineCampaign?.videoUrl}
           />
         </div>
 

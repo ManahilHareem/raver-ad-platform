@@ -153,7 +153,7 @@ export default function CampaignPreviewModal({ isOpen, onClose, campaignData, sh
             <div className="space-y-4">
               <h3 className="text-[12px] font-black text-[#02022C] uppercase tracking-[0.2em] opacity-40">Initial Campaign Concept</h3>
               <div className="bg-[#F8FAFC] text-[#4F4F4F] italic border border-[#F1F5F9] rounded-[32px] p-8 shadow-sm">
-                 <MarkdownRenderer content={`"${campaignData.prompt || campaignData.message}"`} isUser={false} />
+                 <MarkdownRenderer content={`"${campaignData.message || campaignData.prompt}"`} isUser={false} />
               </div>
             </div>
           )}

@@ -21,6 +21,8 @@ interface CampaignCardProps {
   script?: string | null;
   session_id?: string;
   campaign_id?: string;
+  isSelected?: boolean;
+  onClick?: () => void;
 }
 
 export default function CampaignCard({ 
@@ -35,7 +37,9 @@ export default function CampaignCard({
   music_url,
   script,
   session_id,
-  campaign_id
+  campaign_id,
+  isSelected,
+  onClick
 }: CampaignCardProps) {
   const [isPreviewOpen, setIsPreviewOpen] = useState(false);
   const [isFetching, setIsFetching] = useState(false);
@@ -111,7 +115,13 @@ export default function CampaignCard({
 
   return (
     <>
-      <div className="flex flex-col bg-[#F8F8F8] rounded-[12px] p-[8px] overflow-hidden  border-[0.35px] border-[#0000001A] shadow-sm group hover:shadow-md transition-all">
+      <div 
+        onClick={onClick}
+        className={cn(
+          "flex flex-col bg-[#F8F8F8] rounded-[12px] p-[8px] overflow-hidden border-[0.35px] border-[#0000001A] shadow-sm transition-all cursor-pointer group hover:shadow-md",
+          isSelected && "border-[#121212] border-2 shadow-md hover:shadow-lg scale-[1.02]"
+        )}
+      >
         <div className="relative aspect-video w-full overflow-hidden rounded-md bg-slate-100">
           {videoUrl ? (
             <video 
@@ -163,7 +173,10 @@ export default function CampaignCard({
           <h3 className="text-[16px] font-semibold text-[#121212]">{title}</h3>
           <div className="flex items-center gap-[4px]">
             <button 
-              onClick={handlePreviewClick}
+              onClick={(e) => {
+                e.stopPropagation();
+                handlePreviewClick();
+              }}
               disabled={isInProduction}
               className="flex-1 h-[36px] bg-white border border-[#F1F5F9] rounded-[5px] text-[12px] font-medium text-[#121212] hover:bg-[#F8FAFC] transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
             >
@@ -171,6 +184,7 @@ export default function CampaignCard({
               Preview
             </button>
             <button 
+              onClick={(e) => e.stopPropagation()}
               disabled={isInProduction}
               className="w-[36px] h-[36px] bg-white flex items-center justify-center border border-[#F1F5F9] rounded-[5px] text-[#121212] hover:text-[#02022C] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
             >
