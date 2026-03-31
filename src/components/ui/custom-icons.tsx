@@ -155,4 +155,9 @@ export const CustomIcons = {
       />
     </div>
   ),
+  Tiktok: (props: React.SVGProps<SVGSVGElement>) => (
+    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" {...props}>
+      <path d="M19.589 6.686a4.793 4.793 0 0 1-3.77-4.245V2h-3.445v13.672a2.896 2.896 0 0 1-5.201 1.743l-.002-.001.002.001a2.895 2.895 0 0 1 3.183-4.51v-3.5a6.329 6.329 0 0 0-3.932 1.321 6.33 6.33 0 0 0-2.316 8.528 6.331 6.331 0 0 0 8.528 2.316 6.33 6.33 0 0 0 2.316-8.528V8.034c.769.548 1.696.868 2.693.896l.445.012V5.5l-.5-.014z" fill="currentColor" />
+    </svg>
+  ),
 };

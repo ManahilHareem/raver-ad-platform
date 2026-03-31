@@ -346,7 +346,7 @@ function ImageLeadContent() {
                 <Icons.ArrowLeft className="w-6 h-6 text-[#0A0A0A] group-hover:-translate-x-0.5 transition-transform" />
               </Link>
               <div className="flex flex-col">
-                 <h1 className="text-4xl font-black text-[#0A0A0A] tracking-tight lowercase">raver ai image lead</h1>
+                 <h1 className="text-[30px] font-bold text-[#121212] tracking-tight lowercase">raver ai image lead</h1>
                </div>
             </div>
             <div className="flex items-center gap-2 sm:gap-3">

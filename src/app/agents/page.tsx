@@ -124,11 +124,14 @@ export default function AgentsPage() {
               key={i} 
               {...agent} 
               onClick={() => setSelectedAgent(agent)}
-              actionLabel={agent.name === "Raver Image Lead" ? "Start Creating" : undefined}
+              actionLabel={(agent.name === "Raver Image Lead" || agent.name === "Raver Producer") ? "Start Creating" : undefined}
               onAction={(e) => {
                 if (agent.name === "Raver Image Lead") {
                   e.stopPropagation();
                   router.push("/agents/image-lead");
+                } else if (agent.name === "Raver Producer") {
+                  e.stopPropagation();
+                  router.push("/agents/producer");
                 }
               }}
             />
@@ -178,6 +181,8 @@ export default function AgentsPage() {
         onAction={() => {
           if (selectedAgent?.name === "Raver Image Lead") {
             router.push("/agents/image-lead");
+          } else if (selectedAgent?.name === "Raver Producer") {
+            router.push("/agents/producer");
           }
         }}
       />

@@ -41,7 +41,13 @@ import {
   ShieldCheck,
   Loader2,
   Camera,
-  CheckCircle
+  CheckCircle,
+  Rocket,
+  History,
+  Monitor,
+  Smartphone,
+  Activity as LucideActivityIcon,
+  ChevronDown as ArrowDown
 } from "lucide-react";
 import { CustomIcons } from "./custom-icons";
 
@@ -82,7 +88,8 @@ export const Icons = {
   Instagram: Instagram,
   Facebook: Facebook,
   Youtube: Youtube,
-  Activity: Zap,
+  Tiktok: CustomIcons.Tiktok,
+  Activity: LucideActivityIcon,
   AudioWave: LucideActivity,
   whiteMagicWand: CustomIcons.whiteMagicWand,
   Volume: Volume2,
@@ -97,5 +104,11 @@ export const Icons = {
   EyeOff: EyeOff,
   Shield: ShieldCheck,
   Loader: Loader2,
-  Camera: Camera
+  Camera: Camera,
+  Rocket: Rocket,
+  History: History,
+  Monitor: Monitor,
+  Smartphone: Smartphone,
+  Files: Files,
+  ArrowDown: ArrowDown
 };
