@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { useState } from "react";
 import Image from "next/image";
 import { Icons } from "@/components/ui/icons";
 import { cn } from "@/lib/utils";
@@ -18,6 +18,12 @@ export default function ImageViewerModal({
   imageUrl,
   onEnhance
 }: ImageViewerModalProps) {
+  const [isImageLoading, setIsImageLoading] = useState(true);
+
+  React.useEffect(() => {
+    if (isOpen) setIsImageLoading(true);
+  }, [imageUrl, isOpen]);
+
   if (!isOpen) return null;
 
   return (
@@ -29,14 +35,24 @@ export default function ImageViewerModal({
       <div className="relative w-full h-full flex items-center justify-center p-2 sm:p-20 pointer-events-none transition-all duration-700">
          <div className="relative w-full h-full max-w-screen-2xl max-h-screen pointer-events-auto">
             {imageUrl && imageUrl.startsWith("http") ? (
-              <Image 
-                src={imageUrl} 
-                alt="Asset Audit" 
-                fill 
-                className="object-contain animate-in zoom-in-95 duration-500" 
-                priority 
-                loading="eager"
-              />
+              <>
+                {isImageLoading && (
+                  <div className="absolute inset-0 flex items-center justify-center">
+                    <Icons.Loader className="w-12 h-12 animate-spin text-white/20" />
+                  </div>
+                )}
+                <Image 
+                  src={imageUrl} 
+                  alt="Asset Audit" 
+                  fill 
+                  className={cn(
+                    "object-contain transition-all duration-700",
+                    isImageLoading ? "opacity-0 scale-95" : "opacity-100 scale-100"
+                  )} 
+                  priority 
+                  onLoadingComplete={() => setIsImageLoading(false)}
+                />
+              </>
             ) : (
               <div className="flex flex-col items-center justify-center h-full text-white/10 gap-4">
                  <Icons.Image className="w-20 h-20" />

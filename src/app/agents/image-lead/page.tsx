@@ -407,7 +407,6 @@ function ImageLeadContent() {
 
           <MediaVault 
             vault={vault}
-            aspectRatio={aspectRatio}
             onAssetClick={(url) => {
               setSelectedImage(url);
               setIsPreviewOpen(true);
