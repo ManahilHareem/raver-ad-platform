@@ -30,6 +30,7 @@ interface StudioHeroProps {
   onViewDetails?: (campaign: Campaign) => void;
   onSend?: (prompt: string) => void;
   isSending?: boolean;
+
 }
 
 const quickPrompts = [

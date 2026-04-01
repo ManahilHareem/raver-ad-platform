@@ -15,55 +15,26 @@ interface PipelineStep {
 export function LiveProductionTracker({ 
   campaignId, 
   status = "in_production", 
-  statusMessage = "Image Generation",
-  pipelineMessage = "Attempt 1/3"
+  nodes = {},
+  pipelineMessage = "Matrix Initialized"
 }: any) {
   
-  const getStepStatus = (label: string): "done" | "running" | "pending" => {
-    const s = status?.toLowerCase();
-    const msg = statusMessage?.toLowerCase() || "";
+  const getNodeStatus = (nodeKey: string): "done" | "running" | "pending" => {
+    const node = nodes[nodeKey];
+    if (!node) return "pending";
     
-    if (s === "delivered" || s === "completed") return "done";
-    
-    switch (label) {
-      case "Prompt":
-      case "Creative Brief":
-        return "done";
-      case "Image Generation":
-        if (msg.includes("image")) return "running";
-        if (s === "ready_for_human_review" || s === "completed" || s === "delivered") return "done";
-        return "pending";
-      case "Copy Generation":
-        if (msg.includes("copy")) return "running";
-        if (s === "ready_for_human_review" || s === "completed" || s === "delivered") return "done";
-        return "pending";
-      case "Audio Generation":
-        if (msg.includes("audio")) return "running";
-        if (s === "ready_for_human_review" || s === "completed" || s === "delivered") return "done";
-        return "pending";
-      case "Editor":
-        if (msg.includes("video") || msg.includes("editor")) return "running";
-        if (s === "completed" || s === "delivered") return "done";
-        return "pending";
-      case "Quality Check":
-      case "Rendering":
-        if (msg.includes("render") || msg.includes("quality")) return "running";
-        if (s === "delivered" || s === "completed") return "done";
-        return "pending";
-      default:
-        return "pending";
-    }
+    if (node.status === "completed" || node.status === "success") return "done";
+    if (node.status === "running" || node.status === "processing" || node.status === "started") return "running";
+    return "pending";
   };
 
   const steps: PipelineStep[] = [
-    { id: "prompt", label: "Prompt", icon: "Mic", status: "done" },
-    { id: "brief", label: "Creative Brief", icon: "AssetLibrary", status: "done" },
-    { id: "image", label: "Image Generation", icon: "Image", status: getStepStatus("Image Generation"), metadata: "Attempt 1/3" },
-    { id: "copy", label: "Copy Generation", icon: "Send", status: getStepStatus("Copy Generation") },
-    { id: "audio", label: "Audio Generation", icon: "AudioWave", status: getStepStatus("Audio Generation") },
-    { id: "editor", label: "Editor", icon: "Monitor", status: getStepStatus("Editor") },
-    { id: "quality", label: "Quality Check", icon: "Success", status: getStepStatus("Quality Check") },
-    { id: "render", label: "Rendering", icon: "Video", status: getStepStatus("Rendering") },
+    { id: "text", label: "Narrative Synthesis", icon: "Mic", status: getNodeStatus("generate_text") },
+    { id: "image", label: "Visual Matrix Generation", icon: "Image", status: getNodeStatus("generate_image") },
+    { id: "voice", label: "Neural Voice Synthesis", icon: "AudioWave", status: getNodeStatus("generate_voice") },
+    { id: "music", label: "Atmospheric Score", icon: "AudioWave", status: getNodeStatus("generate_music") },
+    { id: "render", label: "Kling-Video Rendering", icon: "Video", status: getNodeStatus("render") },
+    { id: "quality", label: "Final Quality Audit", icon: "Success", status: getNodeStatus("score_quality") },
   ];
 
   if (!campaignId) return (

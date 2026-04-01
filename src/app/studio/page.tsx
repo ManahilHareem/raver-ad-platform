@@ -47,6 +47,7 @@ interface Campaign {
   createdAt?: string;
   history?: { role: string; content: string }[] | null;
   prompt?: string | null;
+  completed_nodes?: string[];
 }
 
 function StudioLoadingState() {
@@ -151,6 +152,8 @@ function StudioPageContent() {
   const [initialUserPrompt, setInitialUserPrompt] = useState("");
   const [currentSessionId, setCurrentSessionId] = useState("");
   const [activePipelineIndex, setActivePipelineIndex] = useState(0);
+  const [selectedVoice, setSelectedVoice] = useState<string>("");
+  const [showVoices, setShowVoices] = useState<Array<any>>([]);
   const searchParams = useSearchParams();
   const router = useRouter();
 
@@ -192,6 +195,7 @@ function StudioPageContent() {
               tones: config?.tones || c.tones,
               visualStyles: config?.visual_style || config?.visualStyles || c.visualStyles,
               createdAt: c.createdAt || c.created_at,
+              completed_nodes: c.completed_nodes || [],
             };
           });
         }
@@ -230,7 +234,8 @@ function StudioPageContent() {
                 image: "/assets/hashtag-campaign.jpg",
                 createdAt: s.created_at,
                 history: s.history,
-                prompt: s.prompt
+                prompt: s.prompt,
+                completed_nodes: s.completed_nodes || []
               };
             });
           }
@@ -308,7 +313,8 @@ function StudioPageContent() {
                   musicUrl: updateData.music_url || s.musicUrl,
                   script: updateData.script || s.script,
                   history: updateData.history || s.history,
-                  prompt: updateData.prompt || s.prompt
+                  prompt: updateData.prompt || s.prompt,
+                  completed_nodes: updateData.completed_nodes || []
                 };
               }
             }
@@ -346,6 +352,10 @@ function StudioPageContent() {
     setIsPreviewOpen(true);
   };
 
+  const handleSelectVoice = (voice: string) => {
+    setSelectedVoice(voice);
+  };
+  
   const handlePromptSend = async (prompt: string) => {
     if (isSending) return;
     setIsSending(true);
@@ -530,7 +540,8 @@ function StudioPageContent() {
                       musicUrl: updateData.music_url || newVideos[index].musicUrl,
                       script: updateData.script || newVideos[index].script,
                       history: updateData.history || newVideos[index].history,
-                      prompt: updateData.prompt || newVideos[index].prompt
+                      prompt: updateData.prompt || newVideos[index].prompt,
+                      completed_nodes: updateData.completed_nodes || []
                     };
                     hasChanges = true;
                   }
@@ -566,6 +577,8 @@ function StudioPageContent() {
       router.replace(newUrl);
     }
   }, [searchParams, router]);
+
+
 
   if (isLoading && (!Videos || Videos.length === 0)) {
     return <StudioLoadingState />;
@@ -615,6 +628,7 @@ function StudioPageContent() {
             status={currentPipelineCampaign?.status || "Draft"} 
             message={currentPipelineCampaign?.message || ""} 
             videoUrl={currentPipelineCampaign?.videoUrl}
+            completedNodes={currentPipelineCampaign?.completed_nodes}
           />
         </div>
 
@@ -676,6 +690,7 @@ function StudioPageContent() {
                 prompt: campaignToView.prompt
               } : null}
               showHistory={false}
+              onSelectVoice={handleSelectVoice}
             />
 
       <AIResponseModal 

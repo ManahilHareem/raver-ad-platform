@@ -1,6 +1,4 @@
-"use client";
-
-import React, { useState } from "react";
+import Link from "next/link";
 import { Icons } from "@/components/ui/icons";
 import { cn } from "@/lib/utils";
 
@@ -9,8 +7,6 @@ interface CampaignHistoryListProps {
 }
 
 export function CampaignHistoryList({ history }: CampaignHistoryListProps) {
-  const [expandedId, setExpandedId] = useState<string | null>(null);
-
   if (!history.length) return null;
 
   return (
@@ -35,19 +31,20 @@ export function CampaignHistoryList({ history }: CampaignHistoryListProps) {
         {history.map((campaign) => (
           <div 
             key={campaign.id}
-            className="group bg-white rounded-[32px] border border-slate-100 p-8 hover:border-slate-300 hover:shadow-2xl hover:shadow-slate-200/50 transition-all duration-500 flex flex-col gap-6 relative overflow-hidden"
+            className="group bg-white rounded-[32px] border border-slate-100 p-8 hover:border-slate-300 hover:shadow-2xl hover:shadow-slate-200/50 transition-all duration-500 flex flex-col relative overflow-hidden"
           >
             {/* Subtle card highlight */}
             <div className="absolute top-0 right-0 w-32 h-32 bg-slate-50 rounded-full -mr-16 -mt-16 group-hover:scale-110 transition-transform duration-700" />
             
-            <div className="flex items-center justify-between relative z-10">
+            {/* Header Section */}
+            <div className="flex items-center justify-between relative z-10 mb-6">
               <div className="flex flex-col gap-1">
                  <span className="text-[10px] font-black uppercase tracking-widest text-slate-400">Merchant Identity</span>
                  <h4 className="text-xl font-black text-[#01012A] tracking-tighter lowercase">{campaign.name || "unnamed_brief"}</h4>
               </div>
               <div className={cn(
                 "px-3 py-1 rounded-lg text-[9px] font-black uppercase tracking-widest border",
-                campaign.status === "delivered" || campaign.status === "completed" 
+                campaign.status === "delivered" || campaign.status === "completed" || campaign.status === "ready_for_human_review"
                   ? "bg-emerald-50 text-emerald-600 border-emerald-100" 
                   : "bg-slate-50 text-[#01012A] border-slate-100"
               )}>
@@ -55,11 +52,12 @@ export function CampaignHistoryList({ history }: CampaignHistoryListProps) {
               </div>
             </div>
 
-            <div className="grid grid-cols-2 gap-4 relative z-10">
+            {/* Content Section - Grow to push footer down */}
+            <div className="grid grid-cols-2 gap-4 relative z-10 mb-8 flex-grow">
                <div className="p-4 bg-slate-50/50 rounded-2xl border border-slate-100/50 flex flex-col gap-1">
                   <span className="text-[8px] font-black uppercase text-slate-400 tracking-tighter">Timeline</span>
                   <span className="text-[11px] font-bold text-[#0A0A0A] italic">
-                    {new Date(campaign.created_at).toLocaleDateString()}
+                    {new Date(campaign.createdAt || campaign.created_at).toLocaleDateString()}
                   </span>
                </div>
                <div className="p-4 bg-slate-50/50 rounded-2xl border border-slate-100/50 flex flex-col gap-1">
@@ -68,31 +66,16 @@ export function CampaignHistoryList({ history }: CampaignHistoryListProps) {
                </div>
             </div>
 
-            <div className="flex flex-col gap-4 relative z-10">
-               <button 
-                 onClick={() => setExpandedId(expandedId === campaign.id ? null : campaign.id)}
-                 className="w-full h-12 bg-slate-50 hover:bg-slate-100 rounded-2xl flex items-center justify-between px-6 transition-all group/btn"
+            {/* Footer Action */}
+            <div className="relative z-10 pt-2">
+               <Link 
+                 href={`/agents/producer/campaign/${campaign.id}`}
+                 className="w-full h-12 bg-[#01012A] text-white rounded-2xl flex items-center justify-between px-6 transition-all hover:bg-[#2E2C66] active:scale-95 group/btn"
                >
-                  <span className="text-[10px] font-black uppercase tracking-widest text-slate-500">View Dossier Brief</span>
-                  <Icons.ArrowDown className={cn(
-                    "w-4 h-4 text-slate-400 transition-transform duration-500",
-                    expandedId === campaign.id && "rotate-180"
-                  )} />
-               </button>
-
-               {expandedId === campaign.id && (
-                 <div className="p-6 bg-[#0A0A0A] rounded-2xl">
-                    <pre className="text-[10px] font-mono text-emerald-400/90 whitespace-pre-wrap leading-relaxed overflow-x-auto">
-                      {JSON.stringify(campaign.brief, null, 2)}
-                    </pre>
-                 </div>
-               )}
+                  <span className="text-[10px] font-black uppercase tracking-widest">Review Full Audit</span>
+                  <Icons.ArrowRight className="w-4 h-4 text-white/50 group-hover/btn:translate-x-1 transition-transform" />
+               </Link>
             </div>
-
-            <button className="h-14 bg-white border-2 border-slate-100 hover:border-[#01012A] hover:bg-linear-to-r hover:from-[#01012A] hover:to-[#2E2C66] hover:text-white rounded-[20px] transition-all duration-500 flex items-center justify-center gap-3 relative z-10 group/launch">
-               <Icons.Rocket className="w-5 h-5 text-slate-300 group-hover/launch:text-white transition-colors" />
-               <span className="text-xs font-black uppercase tracking-widest">Reproduction Request</span>
-            </button>
           </div>
         ))}
       </div>

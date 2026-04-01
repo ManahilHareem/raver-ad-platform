@@ -103,10 +103,9 @@ export function ProducerModal({
                      </button>
                   </div>
                   <LiveProductionTracker 
-                    campaignId={activeCampaign?.id || "PENDING"}
+                    campaignId={activeCampaign?.campaign_id || activeCampaign?.id || "PENDING"}
                     status={activeCampaign?.status || "in_production"}
-                    statusMessage={activeCampaign?.message || "Igniting Neural Engines..."}
-                    pipelineMessage={activeCampaign?.pipeline || "Attempt 1/1"}
+                    nodes={activeCampaign?.config?.nodes}
                   />
                 </div>
              </div>

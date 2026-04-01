@@ -22,64 +22,93 @@ function ProducerContent() {
   const [history, setHistory] = useState<any[]>([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
-  // Simulation data for initial load
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      setIsSyncing(false);
-      // Fallback example history
-      setHistory([
-        {
-          id: "f8dd0923-5f3e-4a1b-8a7c-c44700051968",
-          name: "shipera",
-          status: "in_production",
-          created_at: new Date().toISOString(),
-          brief: {
-            business_name: "shipera",
-            product_description: "hair styling",
-            target_audience: "Women 25-40",
-            mood: "elegant",
-            platform: "instagram",
-            tone: "elegant",
-            num_scenes: 7,
-            voice: "oversea_male1",
-            format: "9:16",
-            video_model: "kling-video"
-          }
+  const fetchHistory = async () => {
+    try {
+      const response = await apiFetch(`${process.env.NEXT_PUBLIC_API_URL}/ai/producer/campaigns`);
+      if (response.ok) {
+        const data = await response.json();
+        if (data.success && Array.isArray(data.data)) {
+          setHistory(data.data);
+          return data.data;
         }
-      ]);
-      setActiveCampaign({
-        id: "f8dd0923-5f3e-4a1b-8a7c-c44700051968",
-        status: "in_production",
-        message: "Image Generation",
-        pipeline: "Attempt 1/3"
-      });
-    }, 2000);
-    return () => clearTimeout(timer);
+      }
+    } catch (err) {
+      console.warn("Failed to fetch campaign history:", err);
+    }
+    return [];
+  };
+
+  const fetchCampaignStatus = async (id: string) => {
+    try {
+      const response = await apiFetch(`${process.env.NEXT_PUBLIC_API_URL}/ai/producer/campaign/${id}`);
+      if (response.ok) {
+        const data = await response.json();
+        if (data.success && data.data) {
+          setActiveCampaign(data.data);
+          
+          // If the campaign is completed or failed, refresh the history and stop polling
+          if (data.data.status === "completed" || data.data.status === "delivered" || data.data.status === "failed") {
+            fetchHistory();
+            return false; // Stop polling
+          }
+          return true; // Continue polling
+        }
+      }
+    } catch (err) {
+      console.warn(`Failed to fetch status for campaign ${id}:`, err);
+    }
+    return true;
+  };
+
+  // Initial load
+  useEffect(() => {
+    const init = async () => {
+      await fetchHistory();
+      setIsSyncing(false);
+    };
+    init();
   }, []);
+
+  // Polling for active campaign
+  useEffect(() => {
+    let interval: NodeJS.Timeout;
+    if (activeCampaign && (activeCampaign.status === "queued" || activeCampaign.status === "in_production")) {
+      interval = setInterval(() => {
+        fetchCampaignStatus(activeCampaign.campaign_id || activeCampaign.id);
+      }, 3000);
+    }
+    return () => {
+      if (interval) clearInterval(interval);
+    };
+  }, [activeCampaign?.campaign_id, activeCampaign?.id, activeCampaign?.status]);
 
   const handleLaunch = async (formData: any) => {
     setIsLoading(true);
     try {
-      // Simulate launching
-      await new Promise(resolve => setTimeout(resolve, 2500));
-      const newId = `raver_prod_${new Date().getTime()}`;
-      const newCampaign = {
-        id: newId,
-        name: formData.business_name,
-        status: "in_production",
-        created_at: new Date().toISOString(),
-        brief: formData
+      const payload = {
+        brief: { ...formData, animate_scenes: true },
+        session_id: `raver_prod_${new Date().getTime()}`
       };
       
-      setActiveCampaign({
-        id: newId,
-        status: "in_production",
-        message: "Prompt Engine",
-        pipeline: "Matrix Initialized"
+      const response = await apiFetch(`${process.env.NEXT_PUBLIC_API_URL}/ai/producer/campaign`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload)
       });
-      setHistory(prev => [newCampaign, ...prev]);
+
+      if (response.ok) {
+        const data = await response.json();
+        if (data.success && data.data) {
+          setActiveCampaign(data.data);
+          setIsModalOpen(false);
+          fetchHistory(); // Refresh list immediately
+        }
+      } else {
+        alert("Launch failed: Matrix infrastructure busy.");
+      }
     } catch (err) {
-      console.error("Launch failed:", err);
+      console.error("Launch error:", err);
+      alert("Launch error: Neural thread synchronization failed.");
     } finally {
       setIsLoading(false);
     }
@@ -96,7 +125,7 @@ function ProducerContent() {
 
   return (
     <DashboardLayout>
-      <div className="min-h-screen bg-white relative overflow-hidden">
+      <div className="min-h-screen bg-white relative overflow-hidden rounded-[10px]">
         {/* Subtle Mesh Background Orchestration */}
         <div className="absolute inset-0 pointer-events-none overflow-hidden">
            <div className="absolute -top-[20%] -left-[10%] w-[60%] h-[60%] bg-white/5 blur-[120px] rounded-full" />
@@ -105,7 +134,7 @@ function ProducerContent() {
 
         <div className="flex flex-col gap-8 sm:gap-12 p-4 sm:p-10 mx-auto relative z-10 max-w-[1600px]">
           {/* Header - Orchestration Hub */}
-          <div className="flex flex-col gap-8 p-6 sm:p-10 bg-white/40 backdrop-blur-md rounded-[40px] border border-white/40 shadow-sm">
+          <div className="flex flex-col gap-8 p-6 sm:p-10 rounded-[40px] ">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-6">
                 <div>
@@ -118,10 +147,6 @@ function ProducerContent() {
                 </div>
                 <div className="flex flex-col">
                    <h1 className="text-[30px] font-bold text-[#121212] tracking-tighter lowercase leading-none">Raver Producer</h1>
-                   <div className="flex items-center gap-2 mt-2">
-                     <span className="w-2 h-2 rounded-full bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.4)]" />
-                     <p className="text-[10px] font-black uppercase tracking-[0.3em] text-slate-400">Operational Hub</p>
-                   </div>
                  </div>
               </div>
 
@@ -138,22 +163,21 @@ function ProducerContent() {
             </div>
           </div>
 
-          {/* Main Orchestration Grid */}
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-start">
-            {/* Real-time Status Tracker - Neural Pulse */}
-            <div className="lg:col-span-12">
-              <LiveProductionTracker 
-                campaignId={activeCampaign?.id}
-                status={activeCampaign?.status}
-                statusMessage={activeCampaign?.message}
-                pipelineMessage={activeCampaign?.pipeline}
-              />
-            </div>
-          </div>
+          {/* // <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-start">
+           //   <div className="lg:col-span-12"> 
+          //     <LiveProductionTracker  
+          //       campaignId={activeCampaign?.campaign_id || activeCampaign?.id}
+          //       status={activeCampaign?.status}
+          //       nodes={activeCampaign?.config?.nodes || activeCampaign?.nodes}
+          //     />
+          //   </div>
+          // </div> */}
 
           {/* Archive Matrix - Dossier Feed */}
           <div className="pt-8">
-             <CampaignHistoryList history={history} />
+             <CampaignHistoryList 
+               history={history} 
+             />
           </div>
         </div>
 
