@@ -22,6 +22,7 @@ interface CampaignCardProps {
   session_id?: string;
   campaign_id?: string;
   voice?: string | null;
+  campaign_status?: string | null;
   isSelected?: boolean;
   onClick?: () => void;
   onRefresh?: () => void;
@@ -41,6 +42,7 @@ export default function CampaignCard({
   session_id,
   campaign_id,
   voice,
+  campaign_status,
   isSelected,
   onClick,
   onRefresh
@@ -59,7 +61,9 @@ export default function CampaignCard({
     voiceover_url: voiceover_url,
     music_url: music_url,
     script: script,
-    voice_id: voice
+    voice_id: voice,
+    campaign_status: campaign_status,
+    completed_nodes: [] as string[]
   });
 
   // Sync with props initially
@@ -74,9 +78,11 @@ export default function CampaignCard({
       voiceover_url: voiceover_url,
       music_url: music_url,
       script: script,
-      voice_id: voice
+      voice_id: voice,
+      campaign_status: campaign_status,
+      completed_nodes: [] as string[]
     });
-  }, [title, session_id, id, message, status, campaign_id, videoUrl, voiceover_url, music_url, script, voice]);
+  }, [title, session_id, id, message, status, campaign_id, videoUrl, voiceover_url, music_url, script, voice, campaign_status]);
 
   const handlePreviewClick = async () => {
     setIsPreviewOpen(true);
@@ -97,19 +103,31 @@ export default function CampaignCard({
         const updateData = resData.data;
         if (updateData) {
           console.log("Update Data:", updateData);
-          setLocalData(prev => ({
-            ...prev,
-            title: updateData.title || prev.title,
-            status: updateData.status || prev.status,
-            message: updateData.message || prev.message,
-            campaign_id: updateData.campaign_id || prev.campaign_id,
-            video_url: updateData.video_url || prev.video_url,
-            voiceover_url: updateData.voiceover_url || prev.voiceover_url,
-            music_url: updateData.music_url || prev.music_url,
-            script: updateData.script || prev.script,
-            session_id: updateData.session_id || prev.session_id,
-            voice_id: updateData.voice || updateData.brief_draft?.voice || prev.voice_id
-          }));
+          const isInvalidStatus = !updateData.status || updateData.status.toLowerCase() === 'failed';
+
+          setLocalData(prev => {
+            const prevInProduction = 
+              prev.status?.toLowerCase() === "in_production" || 
+              prev.status?.toLowerCase() === "queued" || 
+              prev.campaign_status?.toLowerCase() === "in_production";
+            
+            const nextStatus = (isInvalidStatus && prevInProduction) ? prev.status : (updateData.status || prev.status);
+
+            return {
+              ...prev,
+              title: updateData.title || prev.title,
+              status: nextStatus,
+              message: updateData.message || prev.message,
+              campaign_id: updateData.campaign_id || prev.campaign_id,
+              video_url: updateData.video_url || prev.video_url,
+              voiceover_url: updateData.voiceover_url || prev.voiceover_url,
+              music_url: updateData.music_url || prev.music_url,
+              script: updateData.script || prev.script,
+              session_id: updateData.session_id || prev.session_id,
+              voice_id: updateData.voice || updateData.brief_draft?.voice || prev.voice_id,
+              campaign_status: updateData.campaign_status || prev.campaign_status
+            };
+          });
         }
       }
 
@@ -122,7 +140,75 @@ export default function CampaignCard({
   };
 
   const isReady = status === "Ready" || status === "completed" || status === "delivered";
-  const isInProduction = status === "in_production" || status === "queued" || status === "In Production";
+  const isInProduction =
+    status === "in_production" ||
+    status === "queued" ||
+    status === "In Production" ||
+    campaign_status === "in_production";
+  
+  useEffect(() => {
+    let timeoutId: NodeJS.Timeout;
+    const targetId = localData.session_id || localData.campaign_id || id;
+    
+    if (!isInProduction || !targetId) return;
+
+    const poll = async () => {
+      try {
+        const API_BASE = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
+        const response = await apiFetch(`${API_BASE}/ai/director/session/${targetId}/update`, {
+          headers: { "accept": "*/*" }
+        });
+
+        if (response.ok) {
+          const resData = await response.json();
+          const updateData = resData.data;
+          
+          if (updateData) {
+            // Check if status is same to decide whether to poll again
+            const isStatusSame = updateData.status === localData.status;
+            
+            const isInvalidStatus = !updateData.status || updateData.status.toLowerCase() === 'failed';
+            
+            setLocalData(prev => {
+              const prevInProduction = 
+                prev.status?.toLowerCase() === "in_production" || 
+                prev.status?.toLowerCase() === "queued" || 
+                prev.campaign_status?.toLowerCase() === "in_production";
+              
+              const nextStatus = (isInvalidStatus && prevInProduction) ? prev.status : (updateData.status || prev.status);
+
+              return {
+                ...prev,
+                status: nextStatus,
+                message: updateData.message || prev.message,
+                video_url: updateData.video_url || prev.video_url,
+                completed_nodes: updateData.completed_nodes || prev.completed_nodes
+              };
+            });
+
+            if (isStatusSame) {
+              // Status is same, call again in 5s
+              timeoutId = setTimeout(poll, 5000);
+            } else {
+              // Status changed, don't call again and refresh dashboard
+              if (onRefresh) onRefresh();
+            }
+          }
+        }
+      } catch (e) {
+        console.warn("Polling failed for card:", targetId, e);
+        // On error, maybe retry once more after a delay
+        timeoutId = setTimeout(poll, 10000);
+      }
+    };
+
+    // Initial delay before starting the loop to avoid immediate redundant calls
+    timeoutId = setTimeout(poll, 5000);
+
+    return () => {
+      if (timeoutId) clearTimeout(timeoutId);
+    };
+  }, [isInProduction, localData.status, localData.session_id, localData.campaign_id, id, onRefresh]);
 
   return (
     <>

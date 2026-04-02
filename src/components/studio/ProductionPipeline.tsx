@@ -10,9 +10,10 @@ interface ProductionPipelineProps {
   message: string;
   videoUrl?: string | null;
   completedNodes?: string[];
+  campaignStatus?: string | null;
 }
 
-export default function ProductionPipeline({ status, message, videoUrl, completedNodes = [] }: ProductionPipelineProps) {
+export default function ProductionPipeline({ status, message, videoUrl, completedNodes = [], campaignStatus }: ProductionPipelineProps) {
   const getStepStatus = (label: string): "completed" | "active" | "pending" => {
     const s = status?.toLowerCase() || "";
     const msg = message?.toLowerCase() || "";
@@ -29,7 +30,9 @@ export default function ProductionPipeline({ status, message, videoUrl, complete
 
     // Terminal statuses that mean everything is done
     const terminalStatuses = ["delivered", "ready", "completed", "ready_for_human_review", "ready for human review", "approved", "shipped"];
-    const isTerminal = terminalStatuses.some(ts => s === ts || s.includes(ts) || s.replace(/_/g, ' ') === ts);
+    const isTerminal = 
+      terminalStatuses.some(ts => s === ts || s.includes(ts) || s.replace(/_/g, ' ') === ts) && 
+      campaignStatus !== "in_production";
 
     // Define step order for waterfall logic
     const stepOrder = [

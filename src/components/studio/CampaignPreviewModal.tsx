@@ -301,7 +301,7 @@ export default function CampaignPreviewModal({
                 Initial Campaign Concept
               </h3>
               <div className="bg-[#F8FAFC] text-[#4F4F4F] italic border border-[#F1F5F9] rounded-[32px] p-8 shadow-sm">
-                <MarkdownRenderer content={`"${campaignData.prompt || campaignData.message}"`} isUser={false} />
+                <MarkdownRenderer content={`"${campaignData.message || campaignData.prompt}"`} isUser={false} />
               </div>
             </div>
           )}

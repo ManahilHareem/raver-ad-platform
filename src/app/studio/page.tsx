@@ -49,6 +49,7 @@ interface Campaign {
   prompt?: string | null;
   completed_nodes?: string[];
   voice?: string | null;
+  campaign_status?: string | null;
 }
 
 function StudioLoadingState() {
@@ -241,7 +242,8 @@ function StudioPageContent() {
                 history: s.history,
                 prompt: s.prompt,
                 completed_nodes: s.completed_nodes || [],
-                voice: s.voice || brief.voice
+                voice: s.voice || brief.voice,
+                campaign_status: s.campaign_status
               };
             });
           }
@@ -321,7 +323,8 @@ function StudioPageContent() {
                   history: updateData.history || s.history,
                   prompt: updateData.prompt || s.prompt,
                   completed_nodes: updateData.completed_nodes || [],
-                  voice: updateData.voice || updateData.brief_draft?.voice || s.voice
+                  voice: updateData.voice || updateData.brief_draft?.voice || s.voice,
+                  campaign_status: updateData.campaign_status || s.campaign_status
                 };
               }
             }
@@ -475,7 +478,16 @@ function StudioPageContent() {
         const res = await apiFetch(`${API_BASE}/campaigns/${campaignToDelete.id}`, {
           method: "DELETE",
         });
-        if (!res.ok) throw new Error("Failed to delete campaign");
+        if (!res.ok) throw new Error("Failed to delete campaign block");
+      }
+
+      // Explicitly delete from the AI director if there's a session ID,
+      // because sometimes the session ID (e.g., a timestamp) doesn't match the DB campaign ID cleanly.
+      if (campaignToDelete.sessionId) {
+        const API_BASE = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
+        await apiFetch(`${API_BASE}/ai/director/session/${campaignToDelete.sessionId}`, {
+          method: "DELETE",
+        }).catch(err => console.warn("Failed to delete orphaned AI session:", err));
       }
 
       setCampaigns(prev => prev?.filter(c => (c.id && campaignToDelete.id && c.id !== campaignToDelete.id) || (c.title !== campaignToDelete.title)));
@@ -544,10 +556,16 @@ function StudioPageContent() {
                     newVideos[index].message !== updateData.message ||
                     newVideos[index].videoUrl !== updateData.video_url
                   ) {
+                    const isInvalidStatus = !updateData.status || updateData.status.toLowerCase() === 'failed';
+                    const prevStatus = newVideos[index].status?.toLowerCase() || "";
+                    const prevInProduction = prevStatus === "in_production" || prevStatus === "queued";
+                    
+                    const nextStatus = (isInvalidStatus && prevInProduction) ? newVideos[index].status : (updateData.status || newVideos[index].status);
+
                     newVideos[index] = {
                       ...newVideos[index],
-                      status: updateData.status,
-                      message: updateData.message,
+                      status: nextStatus,
+                      message: updateData.message || newVideos[index].message,
                       videoUrl: updateData.video_url || newVideos[index].videoUrl,
                       voiceoverUrl: updateData.voiceover_url || updateData.audio_url || newVideos[index].voiceoverUrl,
                       musicUrl: updateData.music_url || newVideos[index].musicUrl,
@@ -643,6 +661,7 @@ function StudioPageContent() {
             message={currentPipelineCampaign?.message || ""}
             videoUrl={currentPipelineCampaign?.videoUrl}
             completedNodes={currentPipelineCampaign?.completed_nodes}
+            campaignStatus={currentPipelineCampaign?.campaign_status}
           />
         </div>
 
@@ -704,6 +723,7 @@ function StudioPageContent() {
           prompt: campaignToView.prompt,
           voice_id: campaignToView.voice,
           campaign_id: campaignToView.id,
+          campaign_status: campaignToView.campaign_status,
         } : null}
         showHistory={false}
         onSelectVoice={handleSelectVoice}
