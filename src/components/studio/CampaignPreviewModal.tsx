@@ -25,6 +25,8 @@ interface CampaignPreviewModalProps {
     voice_id?: string | null;          // Added: voice_id from campaign
   } | null;
   showHistory?: boolean;
+  onRefresh?: () => void;
+  onSelectVoice?: (voice: string) => void;
 }
 
 // Voice options (ElevenLabs Premade Voices)
@@ -79,6 +81,8 @@ export default function CampaignPreviewModal({
   onClose,
   campaignData,
   showHistory = false,
+  onRefresh,
+  onSelectVoice,
 }: CampaignPreviewModalProps) {
   const { user } = useUser();
   const [localHistory, setLocalHistory] = useState<{ role: string; content: string }[]>([]);
@@ -164,7 +168,10 @@ export default function CampaignPreviewModal({
       
       // Clear editing states
       setIsEditingScript(false);
-      // window.location.reload();
+
+      // Refresh the session list in parent and close modal
+      if (onRefresh) onRefresh();
+      onClose();
     } catch (error: any) {
       console.error("Apply changes error:", error);
       alert(`Failed to apply changes: ${error.message || 'Please try again.'}`);

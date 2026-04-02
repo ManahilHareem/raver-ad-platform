@@ -24,6 +24,7 @@ interface CampaignCardProps {
   voice?: string | null;
   isSelected?: boolean;
   onClick?: () => void;
+  onRefresh?: () => void;
 }
 
 export default function CampaignCard({
@@ -41,7 +42,8 @@ export default function CampaignCard({
   campaign_id,
   voice,
   isSelected,
-  onClick
+  onClick,
+  onRefresh
 }: CampaignCardProps) {
   const [isPreviewOpen, setIsPreviewOpen] = useState(false);
   const [isFetching, setIsFetching] = useState(false);
@@ -216,6 +218,7 @@ export default function CampaignCard({
         isOpen={isPreviewOpen}
         onClose={() => setIsPreviewOpen(false)}
         campaignData={localData}
+        onRefresh={onRefresh}
       />
     </>
   );

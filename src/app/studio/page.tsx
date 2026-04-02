@@ -77,7 +77,7 @@ function StudioLoadingState() {
   );
 }
 
-function ActiveCampaignsGrid({ campaigns, onDelete, onViewMore, activeIndex, onSelect }: any) {
+function ActiveCampaignsGrid({ campaigns, onDelete, onViewMore, activeIndex, onSelect, onRefresh }: any) {
   console.log("Campaigns:", campaigns);
   return (
     <div className="flex flex-col gap-[16px] bg-[#FFFFFF] border-[0.35px] border-[#0000001A] rounded-[12px] p-[16px]">
@@ -104,6 +104,7 @@ function ActiveCampaignsGrid({ campaigns, onDelete, onViewMore, activeIndex, onS
               onDelete={() => onDelete(campaign)}
               isSelected={i === activeIndex}
               onClick={() => onSelect(i)}
+              onRefresh={onRefresh}
             />
           ))
         ) : (
@@ -623,6 +624,7 @@ function StudioPageContent() {
           onViewMore={() => router.push("/projects")}
           activeIndex={activePipelineIndex}
           onSelect={setActivePipelineIndex}
+          onRefresh={fetchCampaigns}
         />
 
         <div className="flex flex-col gap-4 bg-[#FFFFFF] border-[0.35px] border-[#0000001A] rounded-[12px] p-[16px]">
@@ -705,6 +707,7 @@ function StudioPageContent() {
         } : null}
         showHistory={false}
         onSelectVoice={handleSelectVoice}
+        onRefresh={fetchCampaigns}
       />
 
       <AIResponseModal
