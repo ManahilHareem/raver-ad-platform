@@ -25,17 +25,60 @@ interface CampaignPreviewModalProps {
     voice_id?: string | null;          // Added: voice_id from campaign
   } | null;
   showHistory?: boolean;
-  voiceOptions?: any[];
-  onSelectVoice?: (voice: any) => void;
 }
+
+// Voice options (ElevenLabs Premade Voices)
+const voiceOptions = [
+  // Professional Male Narrators
+  { id: "adam", name: "Adam - Deep Casual American (Default)", category: "Male - Professional", accent: "American" },
+  { id: "arnold", name: "Arnold - Crisp Calm Narrator", category: "Male - Professional", accent: "American" },
+  { id: "callum", name: "Callum - Strong Middle-Aged", category: "Male - Professional", accent: "American" },
+  { id: "clyde", name: "Clyde - American Narrator", category: "Male - Professional", accent: "American" },
+  { id: "daniel", name: "Daniel - Deep Authoritative", category: "Male - Professional", accent: "British" },
+  { id: "george", name: "George - Warm Narrator", category: "Male - Professional", accent: "British" },
+  { id: "james", name: "James - Professional Calm", category: "Male - Professional", accent: "British" },
+  { id: "joseph", name: "Joseph - Professional British", category: "Male - Professional", accent: "British" },
+  { id: "liam", name: "Liam - Neutral Professional", category: "Male - Professional", accent: "American" },
+  { id: "michael", name: "Michael - Deep American", category: "Male - Professional", accent: "American" },
+
+  // Casual/Young Male
+  { id: "antoni", name: "Antoni - Well-Rounded Warm", category: "Male - Casual", accent: "American" },
+  { id: "charlie", name: "Charlie - Casual Australian", category: "Male - Casual", accent: "Australian" },
+  { id: "drew", name: "Drew - Young Energetic", category: "Male - Casual", accent: "American" },
+  { id: "ethan", name: "Ethan - Conversational", category: "Male - Casual", accent: "American" },
+  { id: "fin", name: "Fin - Warm Irish", category: "Male - Casual", accent: "Irish" },
+  { id: "harry", name: "Harry - British Young", category: "Male - Casual", accent: "British" },
+  { id: "jeremy", name: "Jeremy - Animated Irish", category: "Male - Casual", accent: "Irish" },
+  { id: "josh", name: "Josh - Young American", category: "Male - Casual", accent: "American" },
+  { id: "patrick", name: "Patrick - Conversational", category: "Male - Casual", accent: "American" },
+  { id: "sam", name: "Sam - Raspy American", category: "Male - Casual", accent: "American" },
+  { id: "thomas", name: "Thomas - Young Energetic", category: "Male - Casual", accent: "American" },
+
+  // Professional Female
+  { id: "charlotte", name: "Charlotte - Clear British Narrator", category: "Female - Professional", accent: "British" },
+  { id: "domi", name: "Domi - Strong Confident", category: "Female - Professional", accent: "American" },
+  { id: "dorothy", name: "Dorothy - Warm Pleasant", category: "Female - Professional", accent: "British" },
+  { id: "emily", name: "Emily - Calm Professional", category: "Female - Professional", accent: "American" },
+  { id: "rachel", name: "Rachel - Calm Narrator", category: "Female - Professional", accent: "American" },
+  { id: "sarah", name: "Sarah - Soft Professional", category: "Female - Professional", accent: "American" },
+  { id: "alice", name: "Alice - Confident British", category: "Female - Professional", accent: "British" },
+  { id: "matilda", name: "Matilda - Warm American", category: "Female - Professional", accent: "American" },
+
+  // Casual/Young Female
+  { id: "elli", name: "Elli - Emotional Young", category: "Female - Casual", accent: "American" },
+  { id: "freya", name: "Freya - Young Expressive", category: "Female - Casual", accent: "American" },
+  { id: "gigi", name: "Gigi - Upbeat", category: "Female - Casual", accent: "American" },
+  { id: "grace", name: "Grace - Soft Southern", category: "Female - Casual", accent: "American Southern" },
+  { id: "jessica", name: "Jessica - Young American", category: "Female - Casual", accent: "American" },
+  { id: "lily", name: "Lily - British Conversational", category: "Female - Casual", accent: "British" },
+  { id: "nicole", name: "Nicole - Whisper Soft", category: "Female - Casual", accent: "American" },
+];
 
 export default function CampaignPreviewModal({
   isOpen,
   onClose,
   campaignData,
   showHistory = false,
-  voiceOptions,
-  onSelectVoice,
 }: CampaignPreviewModalProps) {
   const { user } = useUser();
   const [localHistory, setLocalHistory] = useState<{ role: string; content: string }[]>([]);
@@ -49,11 +92,11 @@ export default function CampaignPreviewModal({
   const [selectedVoice, setSelectedVoice] = useState<string>("adam");
   const [musicPrompt, setMusicPrompt] = useState("");
   const [isApplyingChanges, setIsApplyingChanges] = useState(false);
-  const [showVoices, setShowVoices] = useState<any[]>([]);
+
   // Get the name of the selected voice for display
   const selectedVoiceName =
-    voiceOptions?.find((v) => v.voice_id === selectedVoice)?.name || "None selected";
-  console.log(campaignData)
+    voiceOptions.find((v) => v.id.toLowerCase() === selectedVoice?.toLowerCase())?.name || "None selected";
+  console.log("Modal Campaign Data:", campaignData);
   // Initialize and sync history & script
   useEffect(() => {
     if (isOpen && campaignData) {
@@ -66,13 +109,11 @@ export default function CampaignPreviewModal({
       // Initialize selected voice from campaign data, if available
       if (campaignData.voice_id) {
         setSelectedVoice(campaignData.voice_id);
-      } else if (voiceOptions && voiceOptions.length > 0) {
-        setSelectedVoice(voiceOptions[0].voice_id);
       } else {
         setSelectedVoice("adam");
       }
     }
-  }, [isOpen, campaignData, voiceOptions]);
+  }, [isOpen, campaignData]);
 
   const handleApplyChanges = async () => {
     if (!campaignData?.session_id && !campaignData?.campaign_id) return;
@@ -80,9 +121,6 @@ export default function CampaignPreviewModal({
     setIsApplyingChanges(true);
     try {
       const API_BASE = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
-
-      // Use campaign_id if available, fallback to session_id
-      const id = campaignData.campaign_id || campaignData.session_id;
 
       // Build the change request message
       let changeMessage = "I need you to regenerate this campaign with the following changes:\n\n";
@@ -92,8 +130,7 @@ export default function CampaignPreviewModal({
       }
 
       if (selectedVoice && selectedVoice !== "adam") {
-        const voiceName = voiceOptions?.find((v) => v.voice_id === selectedVoice)?.name || selectedVoice;
-        changeMessage += `Use voice: ${selectedVoice} (${voiceName})\n\n`;
+        changeMessage += `Use voice: ${selectedVoice}\n\n`;
       }
 
       if (musicPrompt) {
@@ -107,75 +144,36 @@ export default function CampaignPreviewModal({
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          ...(getToken() ? { Authorization: `Bearer ${getToken()}` } : {}),
+          ...(getToken() ? { "Authorization": `Bearer ${getToken()}` } : {}),
         },
         body: JSON.stringify({
-          session_id: campaignData.session_id,
-          script: changeMessage,
-          voice_id: selectedVoice,
-          musicPrompt: musicPrompt,
-          tag: "director",
+          session_id: campaignData.campaign_id,
+          campaign_id: campaignData.campaign_id,
+          message: changeMessage + `voice of the script ${selectedVoice} and background music style ${musicPrompt}`,
+          tag: "director"
         }),
       });
 
       if (!response.ok) {
-        const errorData = await response.json();
+        const errorData = await response.json().catch(() => ({}));
         throw new Error(errorData.message || "Failed to apply changes");
       }
 
-      const data = await response.json();
-
-      console.log("Director response:", data);
-
-      // Check if regeneration was triggered
-      const directorResponse = data?.data?.response || data?.response || "";
-      const wasTriggered =
-        directorResponse.toLowerCase().includes("re-running") ||
-        directorResponse.toLowerCase().includes("regenerat") ||
-        data?.data?.campaign_status === "in_production";
-
-      if (wasTriggered) {
-        alert(
-          "✅ Changes submitted! Your video is being regenerated. Refresh the page in 2-5 minutes to see the updated video."
-        );
-        setLocalStatus("in_production");
-      } else {
-        alert(
-          "⚠️ Request received but regeneration may not have started. Director says: " + directorResponse
-        );
-      }
-
-      // Add message to local history
-      setLocalHistory((prev) => [
-        ...prev,
-        { role: "user", content: changeMessage },
-        { role: "assistant", content: directorResponse },
-      ]);
-
-      // Close edit mode
+      // If the request was successful, assume it has been triggered
+      setLocalStatus("in_production");
+      
+      // Clear editing states
       setIsEditingScript(false);
+      // window.location.reload();
     } catch (error: any) {
       console.error("Apply changes error:", error);
-      alert(`Failed to apply changes: ${error.message || "Please try again."}`);
+      alert(`Failed to apply changes: ${error.message || 'Please try again.'}`);
     } finally {
       setIsApplyingChanges(false);
     }
   };
 
 
-  useEffect(() => {
-    const fetchVoices = async () => {
-      const API_BASE = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
-      const res = await apiFetch(`${API_BASE}/voice/get-voices`, {
-        headers: { "accept": "*/*" }
-      });
-      if (res.ok) {
-        const data = await res.json();
-        setShowVoices(data.data);
-      }
-    };
-    fetchVoices();
-  }, []);
 
   // Auto-scroll chat
   useEffect(() => {
@@ -305,21 +303,9 @@ export default function CampaignPreviewModal({
           <div className="space-y-4">
             <div className="flex items-center justify-between">
               <h3 className="text-[12px] font-black text-[#02022C] uppercase tracking-[0.2em]">Visual & Video</h3>
-              {localStatus === "in_production" && (
-                <div className="flex items-center gap-2 px-3 py-1 bg-blue-50 border border-blue-200 rounded-full">
-                  <Icons.Loader className="w-3 h-3 animate-spin text-blue-600" />
-                  <span className="text-[10px] font-bold text-blue-600 uppercase">Regenerating...</span>
-                </div>
-              )}
             </div>
             <div className="relative aspect-video rounded-3xl overflow-hidden bg-slate-100 border border-[#F1F5F9] shadow-inner group">
-              {localStatus === "in_production" ? (
-                <div className="absolute inset-0 flex flex-col items-center justify-center text-slate-400 gap-4 bg-gradient-to-br from-blue-50 to-purple-50">
-                  <Icons.Loader className="w-16 h-16 animate-spin text-blue-500" />
-                  <p className="text-sm font-bold uppercase tracking-widest">Regenerating with new settings...</p>
-                  <p className="text-xs text-slate-500">This takes 2-5 minutes. Refresh to see progress.</p>
-                </div>
-              ) : campaignData.video_url ? (
+              {campaignData.video_url ? (
                 <video src={campaignData.video_url} controls className="w-full h-full object-cover" />
               ) : (
                 <div className="absolute inset-0 flex flex-col items-center justify-center text-slate-300 gap-4">
@@ -392,8 +378,7 @@ export default function CampaignPreviewModal({
             {/* Voice Selection */}
             <div className="space-y-4">
               <h3 className="text-[12px] font-black text-[#02022C] uppercase tracking-[0.2em]">Voice Selection</h3>
-
-              {showVoices && showVoices.length > 0 ? (
+              {voiceOptions && voiceOptions.length > 0 ? (
                 <>
                   <div className="relative">
                     <select
@@ -401,9 +386,8 @@ export default function CampaignPreviewModal({
                       onChange={(e) => setSelectedVoice(e.target.value)}
                       className="w-full p-4 bg-white border border-[#E2E8F0] rounded-2xl text-[13px] font-medium text-[#334155] outline-none focus:border-[#02022C] transition-colors appearance-none cursor-pointer"
                     >
-
-                      {showVoices.map((voice) => (
-                        <option key={voice.voice_id} value={voice.voice_id}>
+                      {voiceOptions.map((voice) => (
+                        <option key={voice.id} value={voice.id}>
                           {voice.name}
                         </option>
                       ))}
@@ -416,7 +400,7 @@ export default function CampaignPreviewModal({
                 </>
               ) : (
                 <div className="p-4 bg-gray-50 border border-[#E2E8F0] rounded-2xl text-[13px] text-[#64748B]">
-                  ⚠️ No voice options available. Please check your ElevenLabs API key or network connection.
+                  ⚠️ No voice options available.
                 </div>
               )}
             </div>

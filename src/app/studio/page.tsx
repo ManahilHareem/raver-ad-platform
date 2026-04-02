@@ -48,6 +48,7 @@ interface Campaign {
   history?: { role: string; content: string }[] | null;
   prompt?: string | null;
   completed_nodes?: string[];
+  voice?: string | null;
 }
 
 function StudioLoadingState() {
@@ -198,6 +199,7 @@ function StudioPageContent() {
               visualStyles: config?.visual_style || config?.visualStyles || c.visualStyles,
               createdAt: c.createdAt || c.created_at,
               completed_nodes: c.completed_nodes || [],
+              voice: config?.voice || c.voice
             };
           });
         }
@@ -237,7 +239,8 @@ function StudioPageContent() {
                 createdAt: s.created_at,
                 history: s.history,
                 prompt: s.prompt,
-                completed_nodes: s.completed_nodes || []
+                completed_nodes: s.completed_nodes || [],
+                voice: s.voice || brief.voice
               };
             });
           }
@@ -316,7 +319,8 @@ function StudioPageContent() {
                   script: updateData.script || s.script,
                   history: updateData.history || s.history,
                   prompt: updateData.prompt || s.prompt,
-                  completed_nodes: updateData.completed_nodes || []
+                  completed_nodes: updateData.completed_nodes || [],
+                  voice: updateData.voice || updateData.brief_draft?.voice || s.voice
                 };
               }
             }
@@ -695,7 +699,9 @@ function StudioPageContent() {
           music_url: campaignToView.musicUrl,
           script: campaignToView.script,
           history: campaignToView.history,
-          prompt: campaignToView.prompt
+          prompt: campaignToView.prompt,
+          voice_id: campaignToView.voice,
+          campaign_id: campaignToView.id,
         } : null}
         showHistory={false}
         onSelectVoice={handleSelectVoice}

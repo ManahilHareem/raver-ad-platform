@@ -21,6 +21,7 @@ interface CampaignCardProps {
   script?: string | null;
   session_id?: string;
   campaign_id?: string;
+  voice?: string | null;
   isSelected?: boolean;
   onClick?: () => void;
 }
@@ -38,6 +39,7 @@ export default function CampaignCard({
   script,
   session_id,
   campaign_id,
+  voice,
   isSelected,
   onClick
 }: CampaignCardProps) {
@@ -54,7 +56,8 @@ export default function CampaignCard({
     video_url: videoUrl,
     voiceover_url: voiceover_url,
     music_url: music_url,
-    script: script
+    script: script,
+    voice_id: voice
   });
 
   // Sync with props initially
@@ -68,9 +71,10 @@ export default function CampaignCard({
       video_url: videoUrl,
       voiceover_url: voiceover_url,
       music_url: music_url,
-      script: script
+      script: script,
+      voice_id: voice
     });
-  }, [title, session_id, id, message, status, campaign_id, videoUrl, voiceover_url, music_url, script]);
+  }, [title, session_id, id, message, status, campaign_id, videoUrl, voiceover_url, music_url, script, voice]);
 
   const handlePreviewClick = async () => {
     setIsPreviewOpen(true);
@@ -101,7 +105,8 @@ export default function CampaignCard({
             voiceover_url: updateData.voiceover_url || prev.voiceover_url,
             music_url: updateData.music_url || prev.music_url,
             script: updateData.script || prev.script,
-            session_id: updateData.session_id || prev.session_id
+            session_id: updateData.session_id || prev.session_id,
+            voice_id: updateData.voice || updateData.brief_draft?.voice || prev.voice_id
           }));
         }
       }

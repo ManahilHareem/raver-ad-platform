@@ -23,8 +23,7 @@ export default function ProductionPipeline({ status, message, videoUrl, complete
       "Copy Generation": ["generate_text", "generate_script", "generate-copy"],
       "Voice Generation": ["generate_voice", "generate-voice"],
       "Music Generation": ["generate_music", "generate-music"],
-      "Editor": ["render", "assemble_video", "build_video"], 
-      "Rendering": ["render", "video_render"],
+      "Rendering": ["render", "video_render", "assemble_video", "build_video"],
       "Quality Check": ["score_quality", "check_quality", "guardrails"]
     };
 
@@ -40,7 +39,6 @@ export default function ProductionPipeline({ status, message, videoUrl, complete
       "Copy Generation",
       "Voice Generation",
       "Music Generation",
-      "Editor",
       "Rendering",
       "Quality Check"
     ];
@@ -56,7 +54,7 @@ export default function ProductionPipeline({ status, message, videoUrl, complete
       if (isTerminal) return true;
 
       // Special case: if videoUrl exists, everything up to Rendering is done
-      if (videoUrl && (laterLabel === "Rendering" || laterLabel === "Editor")) return true;
+      if (videoUrl && (laterLabel === "Rendering")) return true;
 
       return false;
     });
@@ -96,13 +94,8 @@ export default function ProductionPipeline({ status, message, videoUrl, complete
         if (s === "ready_for_human_review" || s === "approved") return "completed";
         break;
 
-      case "Editor":
-        if (s === "in_production" && (msg.includes("video") || msg.includes("editing") || msg.includes("assemble"))) return "active";
-        if (s === "ready_for_human_review" || s === "approved" || videoUrl) return "completed";
-        break;
-
       case "Rendering":
-        if (s === "in_production" && (msg.includes("render") || msg.includes("encoding"))) return "active";
+        if (s === "in_production" && (msg.includes("render") || msg.includes("encoding") || msg.includes("video") || msg.includes("editing") || msg.includes("assemble"))) return "active";
         if (videoUrl || s === "ready_for_human_review" || s === "approved") return "completed";
         break;
 
@@ -123,7 +116,6 @@ export default function ProductionPipeline({ status, message, videoUrl, complete
     { label: "Copy Generation", status: getStepStatus("Copy Generation") },
     { label: "Voice Generation", status: getStepStatus("Voice Generation") },
     { label: "Music Generation", status: getStepStatus("Music Generation") },
-    { label: "Editor", status: getStepStatus("Editor") },
     { label: "Rendering", status: getStepStatus("Rendering") },
     { label: "Quality Check", status: getStepStatus("Quality Check") },
   ];
