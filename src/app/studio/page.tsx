@@ -349,7 +349,7 @@ function StudioPageContent() {
     setIsModalOpen(false);
     setShowAIResponse(false);
     setCampaignToView(campaign);
-    setIsPreviewOpen(true);
+   setIsSelectionModalOpen(true); 
   };
 
   const handleSelectVoice = (voice: string) => {
