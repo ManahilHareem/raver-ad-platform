@@ -23,6 +23,7 @@ interface CampaignPreviewModalProps {
     history?: { role: string; content: string }[] | null;
     prompt?: string | null;
     voice_id?: string | null;          // Added: voice_id from campaign
+    campaign_status?: string | null;
   } | null;
   showHistory?: boolean;
   onRefresh?: () => void;
@@ -165,7 +166,7 @@ export default function CampaignPreviewModal({
 
       // If the request was successful, assume it has been triggered
       setLocalStatus("in_production");
-      
+
       // Clear editing states
       setIsEditingScript(false);
 
@@ -431,7 +432,7 @@ export default function CampaignPreviewModal({
               <button
                 onClick={handleApplyChanges}
                 disabled={isApplyingChanges}
-                className="px-8 py-4 bg-gradient-to-r from-[#01012A] to-[#2E2C66] text-white rounded-xl font-bold text-[13px] uppercase tracking-wider hover:shadow-xl hover:-translate-y-px transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+                className="px-8 py-4 bg-linear-to-r from-[#01012A] to-[#2E2C66] text-white rounded-xl font-bold text-[13px] uppercase tracking-wider hover:shadow-xl hover:-translate-y-px transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
               >
                 {isApplyingChanges ? (
                   <>

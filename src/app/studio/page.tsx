@@ -591,7 +591,8 @@ function StudioPageContent() {
       }
       timeoutId = setTimeout(poll, 5000);
     };
-    poll();
+    // Initial delay before starting the loop to avoid immediate redundant calls
+    timeoutId = setTimeout(poll, 5000);
     return () => clearTimeout(timeoutId);
   }, []);
 

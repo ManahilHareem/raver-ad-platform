@@ -45,7 +45,7 @@ function ProducerContent() {
         const data = await response.json();
         if (data.success && data.data) {
           setActiveCampaign(data.data);
-          
+
           // If the campaign is completed or failed, refresh the history and stop polling
           if (data.data.status === "completed" || data.data.status === "delivered" || data.data.status === "failed") {
             fetchHistory();
@@ -89,7 +89,7 @@ function ProducerContent() {
         brief: { ...formData, animate_scenes: true },
         session_id: `raver_prod_${new Date().getTime()}`
       };
-      
+
       const response = await apiFetch(`${process.env.NEXT_PUBLIC_API_URL}/ai/producer/campaign`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -116,9 +116,9 @@ function ProducerContent() {
 
   if (isSyncing) {
     return (
-      <RaverLoadingState 
-        title="Calibrating Neural Producer" 
-        description="Synchronizing Matrix infrastructure and preparing high-fidelity Kling AI configuration..." 
+      <RaverLoadingState
+        title="Calibrating Neural Producer"
+        description="Synchronizing Matrix infrastructure and preparing high-fidelity Kling AI configuration..."
       />
     );
   }
@@ -128,8 +128,8 @@ function ProducerContent() {
       <div className="min-h-screen bg-white relative overflow-hidden rounded-[10px]">
         {/* Subtle Mesh Background Orchestration */}
         <div className="absolute inset-0 pointer-events-none overflow-hidden">
-           <div className="absolute -top-[20%] -left-[10%] w-[60%] h-[60%] bg-white/5 blur-[120px] rounded-full" />
-           <div className="absolute -bottom-[20%] -right-[10%] w-[50%] h-[50%] bg-[#01012A]/5 blur-[100px] rounded-full" />
+          <div className="absolute -top-[20%] -left-[10%] w-[60%] h-[60%] bg-white/5 blur-[120px] rounded-full" />
+          <div className="absolute -bottom-[20%] -right-[10%] w-[50%] h-[50%] bg-[#01012A]/5 blur-[100px] rounded-full" />
         </div>
 
         <div className="flex flex-col gap-8 sm:gap-12 p-4 sm:p-10 mx-auto relative z-10 max-w-[1600px]">
@@ -138,27 +138,27 @@ function ProducerContent() {
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-6">
                 <div>
-                  <Link 
-                    href="/agents" 
+                  <Link
+                    href="/agents"
                     className="w-12 h-12 bg-white rounded-2xl flex items-center justify-center border border-slate-100 hover:border-slate-300 shadow-sm transition-all"
                   >
                     <Icons.ArrowLeft className="w-5 h-5 text-[#01012A]" />
                   </Link>
                 </div>
                 <div className="flex flex-col">
-                   <h1 className="text-[30px] font-bold text-[#121212] tracking-tighter lowercase leading-none">Raver Producer</h1>
-                 </div>
+                  <h1 className="text-[30px] font-bold text-[#121212] tracking-tighter lowercase leading-none">Raver Producer</h1>
+                </div>
               </div>
 
               <div className="hidden sm:flex items-center gap-4">
-                <button 
+                <button
                   onClick={() => setIsModalOpen(true)}
                   className="h-14 px-10  text-[#01012A] border border-slate-100 rounded-[24px] font-black text-xs flex items-center gap-3 transition-all bg-linear-to-r from-[#01012A] to-[#2E2C66] text-white hover:border-transparent active:scale-95 group shadow-xl shadow-black/5"
                 >
-                   <Icons.Plus className="w-5 h-5 transition-transform group-hover:rotate-180 duration-500" />
-                   <span className="uppercase tracking-widest text-[11px]">Initiate Master Production</span>
+                  <Icons.Plus className="w-5 h-5 transition-transform group-hover:rotate-180 duration-500" />
+                  <span className="uppercase tracking-widest text-[11px]">Initiate Master Production</span>
                 </button>
-                
+
               </div>
             </div>
           </div>
@@ -175,15 +175,15 @@ function ProducerContent() {
 
           {/* Archive Matrix - Dossier Feed */}
           <div className="pt-8">
-             <CampaignHistoryList 
-               history={history} 
-             />
+            <CampaignHistoryList
+              history={history}
+            />
           </div>
         </div>
 
         {/* Orchestration Suite Modal Overlay */}
         {isModalOpen && (
-          <ProducerModal 
+          <ProducerModal
             isOpen={isModalOpen}
             onClose={() => setIsModalOpen(false)}
             onLaunch={handleLaunch}
@@ -202,8 +202,8 @@ export default function ProducerPage() {
       <DashboardLayout>
         <div className="p-8 flex items-center justify-center min-h-[600px]">
           <div className="flex flex-col items-center gap-6">
-             <div className="w-16 h-16 border-4 border-slate-100 border-t-[#0A0A0A] rounded-full animate-spin" />
-             <p className="text-xs font-black uppercase tracking-[0.4em] text-slate-400">Initializing Matrix...</p>
+            <div className="w-16 h-16 border-4 border-slate-100 border-t-[#0A0A0A] rounded-full animate-spin" />
+            <p className="text-xs font-black uppercase tracking-[0.4em] text-slate-400">Initializing Matrix...</p>
           </div>
         </div>
       </DashboardLayout>

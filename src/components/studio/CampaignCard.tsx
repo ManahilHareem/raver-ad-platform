@@ -139,12 +139,19 @@ export default function CampaignCard({
     }
   };
 
-  const isReady = status === "Ready" || status === "completed" || status === "delivered";
-  const isInProduction =
-    status === "in_production" ||
-    status === "queued" ||
-    status === "In Production" ||
-    campaign_status === "in_production";
+  const currentStatus = localData.status;
+  const currentCampaignStatus = localData.campaign_status;
+
+  const terminalStatuses = ["completed", "delivered", "ready_for_human_review", "approved", "ready"];
+  const isTerminal = currentStatus && terminalStatuses.some(ts => currentStatus.toLowerCase() === ts || currentStatus.toLowerCase().includes(ts));
+
+  const isReady = isTerminal || currentStatus === "Ready" || currentStatus === "ready";
+  const isInProduction = !isTerminal && (
+    currentStatus === "in_production" ||
+    currentStatus === "queued" ||
+    currentStatus === "In Production" ||
+    currentCampaignStatus === "in_production"
+  );
   
   useEffect(() => {
     let timeoutId: NodeJS.Timeout;
@@ -175,7 +182,7 @@ export default function CampaignCard({
                 prev.status?.toLowerCase() === "queued" || 
                 prev.campaign_status?.toLowerCase() === "in_production";
               
-              const nextStatus = (isInvalidStatus && prevInProduction) ? prev.status : (updateData.status || prev.status);
+              const nextStatus = (isInvalidStatus && prevInProduction && !isTerminal) ? prev.status : (updateData.status || prev.status);
 
               return {
                 ...prev,
