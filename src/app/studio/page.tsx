@@ -77,24 +77,26 @@ function StudioLoadingState() {
 }
 
 function ActiveCampaignsGrid({ campaigns, onDelete, onViewMore, activeIndex, onSelect }: any) {
+  console.log("Campaigns:", campaigns);
   return (
     <div className="flex flex-col gap-[16px] bg-[#FFFFFF] border-[0.35px] border-[#0000001A] rounded-[12px] p-[16px]">
       <div className="flex items-center justify-between">
         <h2 className="text-[18px] font-semibold text-[#121212]">Active Campaigns</h2>
-        <button 
+        <button
           onClick={onViewMore}
           className="px-3 py-1.5 rounded-lg text-[13px] font-bold text-[#121212] transition-all flex items-center gap-1.5 group hover:bg-linear-to-r hover:from-[#01012A] hover:to-[#2E2C66] hover:text-white active:scale-95"
         >
-          View More 
+          View More
           <Icons.ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-0.5" />
         </button>
       </div>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-[12px]">
         {campaigns.length > 0 ? (
           campaigns.slice(0, 3).map((campaign: any, i: number) => (
-            <CampaignCard 
-              key={campaign.sessionId || campaign.id || i} 
-              {...campaign} 
+            <CampaignCard
+              key={campaign.sessionId || campaign.id || i}
+              {...campaign}
+              session_id={campaign.sessionId}
               videoUrl={campaign.videoUrl}
               voiceover_url={campaign.voiceoverUrl}
               music_url={campaign.musicUrl}
@@ -161,10 +163,10 @@ function StudioPageContent() {
     setIsLoading(true);
     try {
       const API_BASE = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
-      
+
       const res = await apiFetch(`${API_BASE}/campaigns`);
       let mappedCampaigns: Campaign[] = [];
-      
+
       if (res.ok) {
         const responseData = await res.json();
         if (responseData.success && responseData.data && (Array.isArray(responseData.data) || typeof responseData.data === 'object')) {
@@ -174,7 +176,7 @@ function StudioPageContent() {
             if (typeof config === "string") {
               try { config = JSON.parse(config); } catch (e) { console.warn("Failed to parse config string", e); }
             }
-            
+
             return {
               id: c.id?.toString() || c._id?.toString(),
               title: c.name || c.title || "Untitled",
@@ -206,7 +208,7 @@ function StudioPageContent() {
         const sessionRes = await apiFetch(`${API_BASE}/ai/director/sessions`, {
           headers: { "accept": "*/*" }
         });
-        
+
         if (sessionRes.ok) {
           const sessionData = await sessionRes.json();
           if (sessionData.success && (Array.isArray(sessionData.data?.sessions) || Array.isArray(sessionData.data))) {
@@ -220,7 +222,7 @@ function StudioPageContent() {
                 status: s.status || "queued",
                 message: s.message,
                 videoUrl: s.video_url,
-                voiceoverUrl: s.voiceover_url,
+                voiceoverUrl: s.voiceover_url || s.audio_url,
                 musicUrl: s.music_url,
                 script: s.script,
                 audience: brief.audience,
@@ -257,10 +259,10 @@ function StudioPageContent() {
       }
 
       const initialVideos = [...allSessions];
-      const activePrimary = mappedCampaigns.filter(c => 
+      const activePrimary = mappedCampaigns.filter(c =>
         ["in_production", "queued", "In Production", "ready_for_human_review", "approved", "delivered", "Ready"].includes(c.status)
       );
-      
+
       activePrimary.forEach(c => {
         if (!initialVideos.some(v => v.sessionId === c.sessionId || (v.id && c.id && v.id === c.id))) {
           initialVideos.unshift(c);
@@ -309,7 +311,7 @@ function StudioPageContent() {
                   status: updateData.status,
                   message: updateData.message,
                   videoUrl: updateData.video_url || s.videoUrl,
-                  voiceoverUrl: updateData.voiceover_url || s.voiceoverUrl,
+                  voiceoverUrl: updateData.voiceover_url || updateData.audio_url || s.voiceoverUrl,
                   musicUrl: updateData.music_url || s.musicUrl,
                   script: updateData.script || s.script,
                   history: updateData.history || s.history,
@@ -349,13 +351,19 @@ function StudioPageContent() {
     setIsModalOpen(false);
     setShowAIResponse(false);
     setCampaignToView(campaign);
-   setIsSelectionModalOpen(true); 
+
+    // Intelligently route based on whether it's an active campaign session
+    if (campaign.sessionId) {
+      setIsPreviewOpen(true);
+    } else {
+      setIsSelectionModalOpen(true);
+    }
   };
 
   const handleSelectVoice = (voice: string) => {
     setSelectedVoice(voice);
   };
-  
+
   const handlePromptSend = async (prompt: string) => {
     if (isSending) return;
     setIsSending(true);
@@ -382,7 +390,7 @@ function StudioPageContent() {
 
       if (!response.ok) throw new Error("Failed to communicate with AI Director");
       const data = await response.json();
-      
+
       const responseData = Array.isArray(data?.data) ? data.data[0] : (data?.data || data);
       const aiResponse = responseData?.response || responseData?.message || responseData?.ai_message || "I've analyzed your requirements. Let's start building your campaign.";
 
@@ -424,7 +432,7 @@ function StudioPageContent() {
       setInitialUserPrompt(enrichedMessage);
       setAiResponseContent(aiResponse);
       setCurrentSessionId(sessionId);
-      
+
       setIsSelectionModalOpen(false);
       setIsModalOpen(false);
       setShowAIResponse(true);
@@ -433,7 +441,7 @@ function StudioPageContent() {
       if (campaignStatus === "queued" || campaignStatus === "in_production") {
         const brief = responseData?.brief_draft || {};
         const title = brief.business_name ? `${brief.business_name} Campaign` : prompt.length > 30 ? prompt.substring(0, 30) + "..." : prompt;
-        
+
         setVideos(prev => [{
           id: responseData?.campaign_id,
           sessionId: sessionId,
@@ -454,7 +462,7 @@ function StudioPageContent() {
 
   const confirmDeleteCampaign = async () => {
     if (!campaignToDelete) return;
-    
+
     setIsDeleting(true);
     try {
       if (campaignToDelete.id) {
@@ -464,10 +472,10 @@ function StudioPageContent() {
         });
         if (!res.ok) throw new Error("Failed to delete campaign");
       }
-      
+
       setCampaigns(prev => prev?.filter(c => (c.id && campaignToDelete.id && c.id !== campaignToDelete.id) || (c.title !== campaignToDelete.title)));
       setVideos(prev => prev.filter(v => (v.id && campaignToDelete.id && v.id !== campaignToDelete.id) || (v.title !== campaignToDelete.title)));
-      
+
       if (selectedCampaign?.title === campaignToDelete.title) {
         setSelectedCampaign(null);
       }
@@ -506,7 +514,7 @@ function StudioPageContent() {
         const failureCount = sessionFailuresRef.current[v.sessionId] || 0;
         return isActive && !isTerminal && failureCount < 5;
       });
-      
+
       if (polls.length > 0) {
         let newVideos = [...currentVideos];
         let hasChanges = false;
@@ -527,8 +535,8 @@ function StudioPageContent() {
                 const index = newVideos.findIndex(vid => vid.sessionId === v.sessionId);
                 if (index !== -1) {
                   if (
-                    newVideos[index].status !== updateData.status || 
-                    newVideos[index].message !== updateData.message || 
+                    newVideos[index].status !== updateData.status ||
+                    newVideos[index].message !== updateData.message ||
                     newVideos[index].videoUrl !== updateData.video_url
                   ) {
                     newVideos[index] = {
@@ -536,7 +544,7 @@ function StudioPageContent() {
                       status: updateData.status,
                       message: updateData.message,
                       videoUrl: updateData.video_url || newVideos[index].videoUrl,
-                      voiceoverUrl: updateData.voiceover_url || newVideos[index].voiceoverUrl,
+                      voiceoverUrl: updateData.voiceover_url || updateData.audio_url || newVideos[index].voiceoverUrl,
                       musicUrl: updateData.music_url || newVideos[index].musicUrl,
                       script: updateData.script || newVideos[index].script,
                       history: updateData.history || newVideos[index].history,
@@ -605,7 +613,7 @@ function StudioPageContent() {
           isSending={isSending}
         />
 
-        <ActiveCampaignsGrid 
+        <ActiveCampaignsGrid
           campaigns={activeVideos}
           onDelete={handleDeleteCampaign}
           onViewMore={() => router.push("/projects")}
@@ -624,9 +632,9 @@ function StudioPageContent() {
               </span>
             )}
           </div>
-          <ProductionPipeline 
-            status={currentPipelineCampaign?.status || "Draft"} 
-            message={currentPipelineCampaign?.message || ""} 
+          <ProductionPipeline
+            status={currentPipelineCampaign?.status || "Draft"}
+            message={currentPipelineCampaign?.message || ""}
             videoUrl={currentPipelineCampaign?.videoUrl}
             completedNodes={currentPipelineCampaign?.completed_nodes}
           />
@@ -656,7 +664,7 @@ function StudioPageContent() {
         isLoading={isDeleting}
       />
 
-      <CampaignSelectionModal 
+      <CampaignSelectionModal
         isOpen={isSelectionModalOpen}
         onClose={() => {
           setIsSelectionModalOpen(false);
@@ -671,29 +679,29 @@ function StudioPageContent() {
         initialSelectedCampaign={campaignToView}
       />
 
-       <CampaignPreviewModal 
-              isOpen={isPreviewOpen}
-              onClose={() => {
-                setIsPreviewOpen(false);
-                setCampaignToView(null);
-              }}
-              campaignData={campaignToView ? {
-                title: campaignToView.title,
-                session_id: campaignToView.sessionId,
-                status: campaignToView.status,
-                message: campaignToView.message,
-                video_url: campaignToView.videoUrl,
-                voiceover_url: campaignToView.voiceoverUrl,
-                music_url: campaignToView.musicUrl,
-                script: campaignToView.script,
-                history: campaignToView.history,
-                prompt: campaignToView.prompt
-              } : null}
-              showHistory={false}
-              onSelectVoice={handleSelectVoice}
-            />
+      <CampaignPreviewModal
+        isOpen={isPreviewOpen}
+        onClose={() => {
+          setIsPreviewOpen(false);
+          setCampaignToView(null);
+        }}
+        campaignData={campaignToView ? {
+          title: campaignToView.title,
+          session_id: campaignToView.sessionId,
+          status: campaignToView.status,
+          message: campaignToView.message,
+          video_url: campaignToView.videoUrl,
+          voiceover_url: campaignToView.voiceoverUrl,
+          music_url: campaignToView.musicUrl,
+          script: campaignToView.script,
+          history: campaignToView.history,
+          prompt: campaignToView.prompt
+        } : null}
+        showHistory={false}
+        onSelectVoice={handleSelectVoice}
+      />
 
-      <AIResponseModal 
+      <AIResponseModal
         isOpen={showAIResponse}
         onClose={() => {
           setShowAIResponse(false);

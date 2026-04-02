@@ -25,13 +25,13 @@ interface CampaignCardProps {
   onClick?: () => void;
 }
 
-export default function CampaignCard({ 
-  id, 
-  title, 
-  status, 
-  image, 
-  videoUrl, 
-  message, 
+export default function CampaignCard({
+  id,
+  title,
+  status,
+  image,
+  videoUrl,
+  message,
   onDelete,
   voiceover_url,
   music_url,
@@ -43,7 +43,7 @@ export default function CampaignCard({
 }: CampaignCardProps) {
   const [isPreviewOpen, setIsPreviewOpen] = useState(false);
   const [isFetching, setIsFetching] = useState(false);
-  
+
   // Local state to store potentially fresher data from API
   const [localData, setLocalData] = useState({
     title: title || "Campaign Preview",
@@ -75,21 +75,22 @@ export default function CampaignCard({
   const handlePreviewClick = async () => {
     setIsPreviewOpen(true);
     if (!session_id && !id) return;
-    
+
     setIsFetching(true);
     try {
       const API_BASE = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
       const targetId = session_id || id;
-      
+
       const response = await apiFetch(`${API_BASE}/ai/director/session/${targetId}/update`, {
+        method: "GET",
         headers: { "accept": "*/*" }
       });
 
       if (response.ok) {
         const resData = await response.json();
         const updateData = resData.data;
-        
         if (updateData) {
+          console.log("Update Data:", updateData);
           setLocalData(prev => ({
             ...prev,
             title: updateData.title || prev.title,
@@ -99,10 +100,13 @@ export default function CampaignCard({
             video_url: updateData.video_url || prev.video_url,
             voiceover_url: updateData.voiceover_url || prev.voiceover_url,
             music_url: updateData.music_url || prev.music_url,
-            script: updateData.script || prev.script
+            script: updateData.script || prev.script,
+            session_id: updateData.session_id || prev.session_id
           }));
         }
       }
+
+      console.log("Local Data:", localData);
     } catch (e) {
       console.warn("Manual preview refresh failed:", e);
     } finally {
@@ -115,7 +119,7 @@ export default function CampaignCard({
 
   return (
     <>
-      <div 
+      <div
         onClick={onClick}
         className={cn(
           "flex flex-col bg-[#F8F8F8] rounded-[12px] p-[8px] overflow-hidden border-[0.35px] border-[#0000001A] shadow-sm transition-all cursor-pointer group hover:shadow-md",
@@ -124,19 +128,19 @@ export default function CampaignCard({
       >
         <div className="relative aspect-video w-full overflow-hidden rounded-md bg-slate-100">
           {videoUrl ? (
-            <video 
-              src={videoUrl} 
-              autoPlay 
-              loop 
-              muted 
-              playsInline 
-              className="object-cover w-full h-full group-hover:scale-105 transition-transform duration-500" 
+            <video
+              src={videoUrl}
+              autoPlay
+              loop
+              muted
+              playsInline
+              className="object-cover w-full h-full group-hover:scale-105 transition-transform duration-500"
             />
           ) : (
-            <Image 
-              src={image} 
-              alt={title} 
-              fill 
+            <Image
+              src={image}
+              alt={title}
+              fill
               className={cn(
                 "object-cover transition-transform duration-500",
                 isInProduction ? "scale-105 blur-sm" : "group-hover:scale-105"
@@ -161,9 +165,9 @@ export default function CampaignCard({
           <div className="absolute top-3 right-3 z-20">
             <span className={cn(
               "px-[8px] py-[4px] rounded-[4px] text-[11px] font-bold uppercase tracking-wider shadow-sm",
-              isReady ? "bg-[linear-gradient(90deg,#01012A_0%,#2E2C66_100%)] text-white shadow-lg shadow-[#01012A]/10" 
-              : isInProduction ? "bg-white text-[#02022C] animate-pulse" 
-              : "bg-[linear-gradient(135deg,#AD46FF_0%,#2B7FFF_100%)] text-white"
+              isReady ? "bg-[linear-gradient(90deg,#01012A_0%,#2E2C66_100%)] text-white shadow-lg shadow-[#01012A]/10"
+                : isInProduction ? "bg-white text-[#02022C] animate-pulse"
+                  : "bg-[linear-gradient(135deg,#AD46FF_0%,#2B7FFF_100%)] text-white"
             )}>
               {(status || "Draft").replace("_", " ")}
             </span>
@@ -172,7 +176,7 @@ export default function CampaignCard({
         <div className="flex flex-col gap-[4px] pt-[12px] pb-[4px]">
           <h3 className="text-[16px] font-semibold text-[#121212]">{title}</h3>
           <div className="flex items-center gap-[4px]">
-            <button 
+            <button
               onClick={(e) => {
                 e.stopPropagation();
                 handlePreviewClick();
@@ -183,14 +187,14 @@ export default function CampaignCard({
               {isFetching && <Icons.Loader className="w-3 h-3 animate-spin" />}
               Preview
             </button>
-            <button 
+            <button
               onClick={(e) => e.stopPropagation()}
               disabled={isInProduction}
               className="w-[36px] h-[36px] bg-white flex items-center justify-center border border-[#F1F5F9] rounded-[5px] text-[#121212] hover:text-[#02022C] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
             >
               <Icons.Download className="w-4 h-4" />
             </button>
-            <button 
+            <button
               onClick={(e) => {
                 e.stopPropagation();
                 onDelete?.();
@@ -203,9 +207,9 @@ export default function CampaignCard({
         </div>
       </div>
 
-      <CampaignPreviewModal 
-        isOpen={isPreviewOpen} 
-        onClose={() => setIsPreviewOpen(false)} 
+      <CampaignPreviewModal
+        isOpen={isPreviewOpen}
+        onClose={() => setIsPreviewOpen(false)}
         campaignData={localData}
       />
     </>

@@ -53,7 +53,7 @@ export default function CampaignPreviewModal({
   // Get the name of the selected voice for display
   const selectedVoiceName =
     voiceOptions?.find((v) => v.voice_id === selectedVoice)?.name || "None selected";
-
+  console.log(campaignData)
   // Initialize and sync history & script
   useEffect(() => {
     if (isOpen && campaignData) {
@@ -258,6 +258,9 @@ export default function CampaignPreviewModal({
                 <div className="flex items-center gap-1.5">
                   <span className="text-[9px] text-[#64748B] font-bold uppercase tracking-widest">
                     SID: {campaignData.session_id}
+                  </span>
+                  <span className="text-[9px] text-[#64748B] font-bold uppercase tracking-widest">
+                    CID: {campaignData.campaign_id}
                   </span>
                 </div>
                 {localStatus && (

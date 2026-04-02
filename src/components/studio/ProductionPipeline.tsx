@@ -21,7 +21,8 @@ export default function ProductionPipeline({ status, message, videoUrl, complete
     const nodeMap: Record<string, string[]> = {
       "Image Generation": ["generate_image", "generate_images", "generate-images"],
       "Copy Generation": ["generate_text", "generate_script", "generate-copy"],
-      "Audio Generation": ["generate_voice", "generate_music", "generate-audio"],
+      "Voice Generation": ["generate_voice", "generate-voice"],
+      "Music Generation": ["generate_music", "generate-music"],
       "Editor": ["render", "assemble_video", "build_video"], 
       "Rendering": ["render", "video_render"],
       "Quality Check": ["score_quality", "check_quality", "guardrails"]
@@ -37,7 +38,8 @@ export default function ProductionPipeline({ status, message, videoUrl, complete
       "Creative Brief",
       "Image Generation",
       "Copy Generation",
-      "Audio Generation",
+      "Voice Generation",
+      "Music Generation",
       "Editor",
       "Rendering",
       "Quality Check"
@@ -84,8 +86,13 @@ export default function ProductionPipeline({ status, message, videoUrl, complete
         if (s === "ready_for_human_review" || s === "approved") return "completed";
         break;
 
-      case "Audio Generation":
-        if (s === "in_production" && (msg.includes("audio") || msg.includes("voice") || msg.includes("music"))) return "active";
+      case "Voice Generation":
+        if (s === "in_production" && (msg.includes("voice") || msg.includes("vocal"))) return "active";
+        if (s === "ready_for_human_review" || s === "approved") return "completed";
+        break;
+
+      case "Music Generation":
+        if (s === "in_production" && msg.includes("music")) return "active";
         if (s === "ready_for_human_review" || s === "approved") return "completed";
         break;
 
@@ -114,7 +121,8 @@ export default function ProductionPipeline({ status, message, videoUrl, complete
     { label: "Creative Brief", status: getStepStatus("Creative Brief") },
     { label: "Image Generation", status: getStepStatus("Image Generation") },
     { label: "Copy Generation", status: getStepStatus("Copy Generation") },
-    { label: "Audio Generation", status: getStepStatus("Audio Generation") },
+    { label: "Voice Generation", status: getStepStatus("Voice Generation") },
+    { label: "Music Generation", status: getStepStatus("Music Generation") },
     { label: "Editor", status: getStepStatus("Editor") },
     { label: "Rendering", status: getStepStatus("Rendering") },
     { label: "Quality Check", status: getStepStatus("Quality Check") },
