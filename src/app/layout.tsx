@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import { Outfit, Inter } from "next/font/google";
 import "./globals.css";
+import "react-toastify/dist/ReactToastify.css";
+import { ToastContainer } from "react-toastify";
 
 const outfit = Outfit({
   variable: "--font-outfit",
@@ -31,6 +33,18 @@ export default function RootLayout({
       >
         <UserProvider>
           {children}
+          <ToastContainer
+            position="top-right"
+            autoClose={3000}
+            hideProgressBar={false}
+            newestOnTop
+            closeOnClick
+            rtl={false}
+            pauseOnFocusLoss
+            draggable
+            pauseOnHover
+            theme="colored"
+          />
         </UserProvider>
       </body>
     </html>

@@ -3,11 +3,12 @@
 import { Icons } from "@/components/ui/icons";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import { getToken } from "@/lib/auth";
 import { apiFetch } from "@/lib/api";
 import { cn, enrichMessageWithCampaign } from "@/lib/utils";
 import { MarkdownRenderer } from "@/components/ui/MarkdownRenderer";
+import { useVoiceInput } from "@/hooks/useVoiceInput";
 
 interface Message {
   id: string;
@@ -45,6 +46,23 @@ export default function AIResponseModal({
   const { user } = useUser();
   const [isGenerating, setIsGenerating] = useState(false);
   const scrollRef = useRef<HTMLDivElement>(null);
+
+  // Voice input for chat
+  const handleVoiceResult = useCallback((text: string) => {
+    setInputText((prev) => (prev + " " + text).trim());
+  }, []);
+  const { isListening, interimText, startListening, stopListening } = useVoiceInput(handleVoiceResult);
+
+  const handleMicClick = () => {
+    if (isListening) {
+      stopListening();
+    } else {
+      startListening();
+    }
+  };
+
+  // Display value includes interim (not-yet-committed) speech
+  const chatDisplayValue = inputText + (interimText ? " " + interimText : "");
 
   // Initialize messages when modal opens
   useEffect(() => {
@@ -313,16 +331,36 @@ export default function AIResponseModal({
         <div className="p-6 bg-white border-t border-[#F1F5F9]">
           <form 
             onSubmit={handleSendMessage}
-            className="flex items-center gap-3 bg-slate-50 border border-slate-200 rounded-2xl p-1.5 shadow-inner transition-all focus-within:ring-2 focus-within:ring-[#02022C]/5 focus-within:border-[#02022C]/10"
+            className="flex items-center gap-2 bg-slate-50 border border-slate-200 rounded-2xl p-1.5 shadow-inner transition-all focus-within:ring-2 focus-within:ring-[#02022C]/5 focus-within:border-[#02022C]/10"
           >
-            <input 
-              type="text"
-              placeholder="Ask your AI Director a follow-up question..."
-              value={inputText}
-              onChange={(e) => setInputText(e.target.value)}
-              disabled={isGenerating}
-              className="flex-1 bg-transparent px-3 py-2 text-[14px] text-[#121212] outline-none placeholder:text-slate-400 font-medium"
-            />
+            {/* Mic Button */}
+            <button
+              type="button"
+              onClick={handleMicClick}
+              className={`h-[44px] w-[44px] shrink-0 rounded-xl flex items-center justify-center transition-all ${
+                isListening
+                  ? "bg-red-500 text-white animate-pulse shadow-lg shadow-red-500/30"
+                  : "bg-white text-[#94A3B8] hover:text-[#121212] hover:bg-[#F1F5F9] border border-slate-200"
+              }`}
+              title={isListening ? "Stop listening" : "Voice input"}
+            >
+              <Icons.Mic className="w-4 h-4" />
+            </button>
+            <div className="flex-1 relative">
+              <input 
+                type="text"
+                placeholder={isListening ? "Listening... speak now" : "Ask your AI Director a follow-up question..."}
+                value={chatDisplayValue}
+                onChange={(e) => setInputText(e.target.value)}
+                disabled={isGenerating}
+                className="w-full bg-transparent px-3 py-2 text-[14px] text-[#121212] outline-none placeholder:text-slate-400 font-medium"
+              />
+              {isListening && (
+                <span className="absolute right-2 top-1/2 -translate-y-1/2 text-[10px] text-red-500 font-bold animate-pulse">
+                  ● REC
+                </span>
+              )}
+            </div>
             <button 
               type="submit"
               disabled={!inputText.trim() || isGenerating}

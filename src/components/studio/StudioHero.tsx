@@ -2,8 +2,33 @@
 
 import Image from "next/image";
 import { Icons } from "@/components/ui/icons";
-import { useState } from "react";
+import { useState, useCallback } from "react";
 import CampaignSelectionModal from "./CampaignSelectionModal";
+import { useVoiceInput } from "@/hooks/useVoiceInput";
+
+// Voice options (ElevenLabs Premade Voices) — same list surfaced in preview modal
+const voiceOptions = [
+  { id: "adam", name: "Adam - Deep Casual American", category: "Male" },
+  { id: "arnold", name: "Arnold - Crisp Calm Narrator", category: "Male" },
+  { id: "callum", name: "Callum - Strong Middle-Aged", category: "Male" },
+  { id: "daniel", name: "Daniel - Deep Authoritative", category: "Male" },
+  { id: "george", name: "George - Warm Narrator", category: "Male" },
+  { id: "james", name: "James - Professional Calm", category: "Male" },
+  { id: "liam", name: "Liam - Neutral Professional", category: "Male" },
+  { id: "charlie", name: "Charlie - Casual Australian", category: "Male" },
+  { id: "ethan", name: "Ethan - Conversational", category: "Male" },
+  { id: "josh", name: "Josh - Young American", category: "Male" },
+  { id: "charlotte", name: "Charlotte - Clear British", category: "Female" },
+  { id: "domi", name: "Domi - Strong Confident", category: "Female" },
+  { id: "emily", name: "Emily - Calm Professional", category: "Female" },
+  { id: "rachel", name: "Rachel - Calm Narrator", category: "Female" },
+  { id: "sarah", name: "Sarah - Soft Professional", category: "Female" },
+  { id: "alice", name: "Alice - Confident British", category: "Female" },
+  { id: "matilda", name: "Matilda - Warm American", category: "Female" },
+  { id: "freya", name: "Freya - Young Expressive", category: "Female" },
+  { id: "gigi", name: "Gigi - Upbeat", category: "Female" },
+  { id: "jessica", name: "Jessica - Young American", category: "Female" },
+];
 
 interface Campaign {
   id?: string;
@@ -30,7 +55,6 @@ interface StudioHeroProps {
   onViewDetails?: (campaign: Campaign) => void;
   onSend?: (prompt: string) => void;
   isSending?: boolean;
-
 }
 
 const quickPrompts = [
@@ -40,9 +64,9 @@ const quickPrompts = [
   "Holiday campaign for Christmas hair makeovers",
 ];
 
-export default function StudioHero({ 
-  onCreateClick, 
-  campaigns = [], 
+export default function StudioHero({
+  onCreateClick,
+  campaigns = [],
   onCampaignSelect,
   selectedCampaign,
   onCampaignDelete,
@@ -52,10 +76,48 @@ export default function StudioHero({
 }: StudioHeroProps) {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [prompt, setPrompt] = useState("");
+  const [selectedVoice, setSelectedVoice] = useState("");
+  const [voiceError, setVoiceError] = useState(false);
+
+  // Real-time voice input
+  const handleVoiceResult = useCallback((text: string) => {
+    setPrompt((prev) => (prev + " " + text).trim());
+  }, []);
+
+  const { isListening, interimText, startListening, stopListening } = useVoiceInput(handleVoiceResult);
+
+  const handleMicClick = () => {
+    if (isListening) {
+      stopListening();
+    } else {
+      startListening();
+    }
+  };
 
   const handlePromptSelect = (text: string) => {
     setPrompt(text);
   };
+
+  const handleSend = () => {
+    if (!prompt.trim()) return;
+
+    // Voice is mandatory — validate
+    if (!selectedVoice || selectedVoice === "") {
+      setVoiceError(true);
+      return;
+    }
+    setVoiceError(false);
+
+    // Append voice selection to the prompt so AI Director knows
+    const voiceName = voiceOptions.find(v => v.id === selectedVoice)?.name || selectedVoice;
+    const enrichedPrompt = `${prompt.trim()}\n\n[Voice: ${selectedVoice} (${voiceName})]`;
+
+    onSend?.(enrichedPrompt);
+    setPrompt("");
+  };
+
+  // Compose display value: committed text + interim (greyed) text
+  const displayValue = prompt + (interimText ? " " + interimText : "");
 
   return (
     <div className="bg-white rounded-3xl p-8 overflow-hidden min-h-[340px] border border-[#F1F5F9] shadow-sm relative flex flex-col gap-[16px]">
@@ -80,14 +142,14 @@ export default function StudioHero({
       <div className="relative group flex flex-col gap-5">
         <div className="relative">
           <textarea
-            value={prompt}
+            value={displayValue}
             onChange={(e) => setPrompt(e.target.value)}
             placeholder={selectedCampaign ? `Prompt for: ${selectedCampaign.title}` : "Create a summer balayage instagram promotion"}
-            className="w-full h-[120px] bg-white rounded-2xl p-5 text-[15px] text-[#121212] placeholder:text-[#94A3B8] border border-[#02022C] transition-all resize-none outline-none"
+            className="w-full h-[120px] bg-white rounded-2xl p-5 pr-14 text-[15px] text-[#121212] placeholder:text-[#94A3B8] border border-[#02022C] transition-all resize-none outline-none"
           />
           {selectedCampaign && (
             <div className="absolute top-2 right-4 flex items-center gap-2 px-3 py-1 bg-[#F1F5F9] rounded-full">
-              <span className="text-[11px] font-bold text-[#02022C] uppercase forced-colors:">Active: {selectedCampaign.title}</span>
+              <span className="text-[11px] font-bold text-[#02022C] uppercase">Active: {selectedCampaign.title}</span>
               <button 
                 onClick={() => onCampaignSelect?.(null)}
                 className="hover:text-red-500 transition-colors"
@@ -96,19 +158,29 @@ export default function StudioHero({
               </button>
             </div>
           )}
+          {/* Mic Button */}
           <div className="absolute left-4 bottom-4">
-            <button className="w-8 h-8 rounded-lg bg-[#F8FAFC] flex items-center justify-center text-[#94A3B8] hover:text-[#121212] transition-colors">
+            <button
+              onClick={handleMicClick}
+              className={`w-8 h-8 rounded-lg flex items-center justify-center transition-all ${
+                isListening
+                  ? "bg-red-500 text-white animate-pulse shadow-lg shadow-red-500/30"
+                  : "bg-[#F8FAFC] text-[#94A3B8] hover:text-[#121212] hover:bg-[#F1F5F9]"
+              }`}
+              title={isListening ? "Click to stop listening" : "Click to start voice input"}
+            >
               <Icons.Mic className="w-4 h-4" />
             </button>
+            {isListening && (
+              <span className="absolute -bottom-6 left-0 text-[10px] text-red-500 font-bold animate-pulse whitespace-nowrap">
+                Listening...
+              </span>
+            )}
           </div>
+          {/* Send Button */}
           <div className="absolute right-4 bottom-4">
             <button 
-              onClick={() => {
-                if (prompt.trim()) {
-                  onSend?.(prompt.trim());
-                  setPrompt("");
-                }
-              }}
+              onClick={handleSend}
               disabled={isSending || !prompt.trim()}
               className="w-8 h-8 rounded-lg bg-[#F8FAFC] flex items-center justify-center text-[#94A3B8] hover:text-[#121212] transition-colors disabled:opacity-50"
             >
@@ -119,6 +191,53 @@ export default function StudioHero({
               )}
             </button>
           </div>
+        </div>
+
+        {/* Voice Selection — Mandatory */}
+        <div className="flex flex-col gap-2">
+          <div className="flex items-center gap-2">
+            <Icons.Mic className="w-3.5 h-3.5 text-[#02022C]" />
+            <span className="text-[13px] font-semibold text-[#64748B]">
+              Voice Selection <span className="text-red-500">*</span>
+            </span>
+            <span className="text-[10px] font-bold text-[#94A3B8] uppercase tracking-wider">(Required)</span>
+          </div>
+          <div className="flex items-center gap-3">
+            <div className="relative flex-1">
+              <select
+                value={selectedVoice}
+                onChange={(e) => {
+                  setSelectedVoice(e.target.value);
+                  setVoiceError(false);
+                }}
+                className={`w-full px-4 py-2.5 bg-white border rounded-xl text-[12px] font-medium outline-none transition-colors appearance-none cursor-pointer ${
+                  voiceError ? "border-red-400 ring-2 ring-red-100 text-[#334155]" : selectedVoice ? "border-[#E2E8F0] focus:border-[#02022C] text-[#334155]" : "border-[#E2E8F0] focus:border-[#02022C] text-[#94A3B8]"
+                }`}
+              >
+                <option value="" disabled>Select a voice for your campaign...</option>
+                {voiceOptions.map((voice) => (
+                  <option key={voice.id} value={voice.id}>
+                    {voice.name} ({voice.category})
+                  </option>
+                ))}
+              </select>
+              <Icons.ChevronRight className="w-3.5 h-3.5 text-[#94A3B8] absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none rotate-90" />
+            </div>
+            {/* Current voice badge */}
+            <div className={`px-3 py-2 border rounded-xl flex items-center gap-2 shrink-0 ${
+              selectedVoice ? "bg-[#02022C]/5 border-[#02022C]/10" : "bg-red-50 border-red-200"
+            }`}>
+              <div className={`w-2 h-2 rounded-full ${selectedVoice ? "bg-green-500 animate-pulse" : "bg-red-400"}`} />
+              <span className={`text-[10px] font-black uppercase tracking-wider ${selectedVoice ? "text-[#02022C]" : "text-red-500"}`}>
+                {selectedVoice ? voiceOptions.find(v => v.id === selectedVoice)?.name.split(" - ")[0] : "Not Selected"}
+              </span>
+            </div>
+          </div>
+          {voiceError && (
+            <p className="text-[11px] text-red-500 font-medium animate-in fade-in duration-200">
+              ⚠️ Please select a voice before sending your prompt.
+            </p>
+          )}
         </div>
 
         <div className="flex flex-col gap-6">

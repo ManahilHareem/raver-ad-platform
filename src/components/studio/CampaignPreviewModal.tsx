@@ -6,6 +6,7 @@ import { useUser } from "@/context/UserContext";
 import { MarkdownRenderer } from "@/components/ui/MarkdownRenderer";
 import { apiFetch } from "@/lib/api";
 import { getToken } from "@/lib/auth";
+import { toast } from "react-toastify";
 
 interface CampaignPreviewModalProps {
   isOpen: boolean;
@@ -100,7 +101,7 @@ export default function CampaignPreviewModal({
 
   // Get the name of the selected voice for display
   const selectedVoiceName =
-    voiceOptions.find((v) => v.id.toLowerCase() === selectedVoice?.toLowerCase())?.name || "None selected";
+    voiceOptions.find((v) => v.id.toLowerCase() === selectedVoice?.toLowerCase())?.name || "adam";
   console.log("Modal Campaign Data:", campaignData);
   // Initialize and sync history & script
   useEffect(() => {
@@ -111,11 +112,11 @@ export default function CampaignPreviewModal({
       setLocalStatus(campaignData.status);
       setEditedScript(campaignData.script || "");
 
-      // Initialize selected voice from campaign data, if available
+      // Initialize selected voice from campaign data, if available — otherwise leave empty so user must choose
       if (campaignData.voice_id) {
         setSelectedVoice(campaignData.voice_id);
       } else {
-        setSelectedVoice("adam");
+        setSelectedVoice("");
       }
     }
   }, [isOpen, campaignData]);
@@ -124,6 +125,12 @@ export default function CampaignPreviewModal({
     if (!campaignData?.session_id && !campaignData?.campaign_id) return;
 
     setIsApplyingChanges(true);
+    const toastId = toast.info("🚀 Sending regeneration request to AI Director...", {
+      autoClose: false,
+      closeOnClick: false,
+      draggable: false,
+    });
+
     try {
       const API_BASE = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
 
@@ -134,7 +141,7 @@ export default function CampaignPreviewModal({
         changeMessage += `Change the script to: "${editedScript}"\n\n`;
       }
 
-      if (selectedVoice && selectedVoice !== "adam") {
+      if (selectedVoice) {
         changeMessage += `Use voice: ${selectedVoice}\n\n`;
       }
 
@@ -143,6 +150,11 @@ export default function CampaignPreviewModal({
       }
 
       changeMessage += "Please apply these changes and regenerate the video now.";
+
+      toast.update(toastId, {
+        render: "⏳ AI Director is processing your changes...",
+        type: "info",
+      });
 
       // Send message to Director AI to handle regeneration
       const response = await apiFetch(`${API_BASE}/ai/director/regenerate-chat`, {
@@ -164,18 +176,28 @@ export default function CampaignPreviewModal({
         throw new Error(errorData.message || "Failed to apply changes");
       }
 
-      // If the request was successful, assume it has been triggered
-      setLocalStatus("in_production");
+      toast.update(toastId, {
+        render: "✅ Regeneration started! Pipeline is now running.",
+        type: "success",
+        autoClose: 3000,
+      });
 
-      // Clear editing states
+      setLocalStatus("in_production");
       setIsEditingScript(false);
 
-      // Refresh the session list in parent and close modal
+      // Give the user time to see the success toast, then close and reload
+      await new Promise(resolve => setTimeout(resolve, 2000));
+
       if (onRefresh) onRefresh();
       onClose();
+      window.location.reload();
     } catch (error: any) {
       console.error("Apply changes error:", error);
-      alert(`Failed to apply changes: ${error.message || 'Please try again.'}`);
+      toast.update(toastId, {
+        render: `❌ ${error.message || "Failed to apply changes. Please try again."}`,
+        type: "error",
+        autoClose: 5000,
+      });
     } finally {
       setIsApplyingChanges(false);
     }
@@ -392,8 +414,11 @@ export default function CampaignPreviewModal({
                     <select
                       value={selectedVoice}
                       onChange={(e) => setSelectedVoice(e.target.value)}
-                      className="w-full p-4 bg-white border border-[#E2E8F0] rounded-2xl text-[13px] font-medium text-[#334155] outline-none focus:border-[#02022C] transition-colors appearance-none cursor-pointer"
+                      className={`w-full p-4 bg-white border rounded-2xl text-[13px] font-medium outline-none transition-colors appearance-none cursor-pointer ${
+                        selectedVoice ? "border-[#E2E8F0] focus:border-[#02022C] text-[#334155]" : "border-amber-300 focus:border-[#02022C] text-[#94A3B8]"
+                      }`}
                     >
+                      <option value="adam">Adam - Deep Casual American (Default)</option>
                       {voiceOptions.map((voice) => (
                         <option key={voice.id} value={voice.id}>
                           {voice.name}
@@ -403,7 +428,7 @@ export default function CampaignPreviewModal({
                     <Icons.ChevronRight className="w-4 h-4 text-[#94A3B8] absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none rotate-90" />
                   </div>
                   <p className="text-xs text-[#64748B] mt-1 ml-1">
-                    Current voice: <span className="font-medium text-[#02022C]">{selectedVoiceName}</span>
+                    Current voice: <span className={`font-medium ${selectedVoice ? "text-[#02022C]" : "text-amber-500"}`}>{selectedVoice ? selectedVoiceName : "⚠️ Please select a voice"}</span>
                   </p>
                 </>
               ) : (
@@ -426,8 +451,8 @@ export default function CampaignPreviewModal({
             </div>
           </div>
 
-          {/* Apply Changes Button */}
-          {(isEditingScript || selectedVoice !== "adam" || musicPrompt) && (
+          {/* Apply Changes Button — always shown since voice must be selected */}
+          {(isEditingScript || selectedVoice || musicPrompt) && (
             <div className="flex justify-end">
               <button
                 onClick={handleApplyChanges}
