@@ -196,7 +196,6 @@ export default function StudioHero({
         {/* Voice Selection — Mandatory */}
         <div className="flex flex-col gap-2">
           <div className="flex items-center gap-2">
-            <Icons.Mic className="w-3.5 h-3.5 text-[#02022C]" />
             <span className="text-[13px] font-semibold text-[#64748B]">
               Voice Selection <span className="text-red-500">*</span>
             </span>
