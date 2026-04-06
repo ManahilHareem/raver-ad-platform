@@ -322,6 +322,7 @@ export default function StudioHero({
         campaigns={campaigns}
         onSelect={(c) => onCampaignSelect?.(c)}
         onCreateNew={onCreateClick}
+        onDelete={onCampaignDelete}
       />
     </div>
   );

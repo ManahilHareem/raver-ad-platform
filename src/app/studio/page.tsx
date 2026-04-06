@@ -497,6 +497,7 @@ function StudioPageContent() {
         setSelectedCampaign(null);
       }
       setIsDeleteModalOpen(false);
+      setCampaignToView(null);
       setCampaignToDelete(null);
       setActivePipelineIndex(0);
     } catch (err) {
@@ -702,6 +703,7 @@ function StudioPageContent() {
           setIsSelectionModalOpen(false);
           setIsModalOpen(true);
         }}
+        onDelete={handleDeleteCampaign}
         initialSelectedCampaign={campaignToView}
       />
 
@@ -728,6 +730,10 @@ function StudioPageContent() {
         } : null}
         showHistory={false}
         onSelectVoice={handleSelectVoice}
+        onSwitchCampaign={() => {
+          setIsPreviewOpen(false);
+          setIsSelectionModalOpen(true);
+        }}
         onRefresh={fetchCampaigns}
       />
 

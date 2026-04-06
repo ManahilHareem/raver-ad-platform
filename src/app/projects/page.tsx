@@ -198,6 +198,7 @@ function ProjectsContent() {
       }
       setCampaigns(prev => prev.filter(c => c.id !== campaignToDelete.id && c.sessionId !== campaignToDelete.sessionId));
       setIsDeleteModalOpen(false);
+      setCampaignToView(null);
     } catch (err) {
       console.error("Delete failed:", err);
     } finally {
@@ -332,6 +333,7 @@ function ProjectsContent() {
           setIsSelectionModalOpen(false);
           setIsModalOpen(true);
         }}
+        onDelete={handleDeleteCampaign}
         initialSelectedCampaign={campaignToView}
       />
 
@@ -356,6 +358,10 @@ function ProjectsContent() {
           voice_id: campaignToView.voiceId
         } : null}
         showHistory={true}
+        onSwitchCampaign={() => {
+          setIsPreviewOpen(false);
+          setIsSelectionModalOpen(true);
+        }}
         onRefresh={fetchCampaigns}
       />
 

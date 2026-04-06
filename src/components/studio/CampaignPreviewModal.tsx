@@ -29,6 +29,7 @@ interface CampaignPreviewModalProps {
   showHistory?: boolean;
   onRefresh?: () => void;
   onSelectVoice?: (voice: string) => void;
+  onSwitchCampaign?: () => void;
 }
 
 // Voice options (ElevenLabs Premade Voices)
@@ -85,6 +86,7 @@ export default function CampaignPreviewModal({
   showHistory = false,
   onRefresh,
   onSelectVoice,
+  onSwitchCampaign,
 }: CampaignPreviewModalProps) {
   const { user } = useUser();
   const [localHistory, setLocalHistory] = useState<{ role: string; content: string }[]>([]);
@@ -103,7 +105,7 @@ export default function CampaignPreviewModal({
   // Get the name of the selected voice for display
   const selectedVoiceName =
     voiceOptions.find((v) => v.id.toLowerCase() === selectedVoice?.toLowerCase())?.name || "adam";
-  console.log("Modal Campaign Data:", campaignData);
+
   // Initialize and sync history & script
   useEffect(() => {
     if (isOpen && campaignData) {
@@ -251,8 +253,6 @@ export default function CampaignPreviewModal({
     }
   };
 
-
-
   // Auto-scroll chat
   useEffect(() => {
     if (chatEndRef.current) {
@@ -359,12 +359,23 @@ export default function CampaignPreviewModal({
               </div>
             </div>
           </div>
-          <button
-            onClick={onClose}
-            className="p-2 hover:bg-[#F1F5F9] rounded-full transition-colors group"
-          >
-            <Icons.Plus className="w-5 h-5 rotate-45 text-[#94A3B8] group-hover:text-[#121212]" />
-          </button>
+          <div className="flex items-center gap-2">
+            {onSwitchCampaign && (
+              <button
+                onClick={onSwitchCampaign}
+                className="h-10 px-4 bg-[#F1F5F9] text-[#475569] hover:bg-[#E2E8F0] rounded-xl text-[12px] font-bold transition-all flex items-center gap-2"
+                title="Swith to another campaign"
+              >
+                <Icons.Library className="w-4 h-4" /> Switch
+              </button>
+            )}
+            <button
+              onClick={onClose}
+              className="p-2 hover:bg-[#F1F5F9] rounded-full transition-colors group"
+            >
+              <Icons.Plus className="w-5 h-5 rotate-45 text-[#94A3B8] group-hover:text-[#121212]" />
+            </button>
+          </div>
         </div>
 
         {/* Content */}

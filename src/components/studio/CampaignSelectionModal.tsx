@@ -25,6 +25,7 @@ interface CampaignSelectionModalProps {
   campaigns: Campaign[];
   onSelect: (campaign: Campaign) => void;
   onCreateNew?: () => void;
+  onDelete?: (campaign: Campaign) => void;
   initialSelectedCampaign?: Campaign | null;
 }
 
@@ -34,16 +35,16 @@ export default function CampaignSelectionModal({
   campaigns, 
   onSelect,
   onCreateNew,
+  onDelete,
   initialSelectedCampaign
 }: CampaignSelectionModalProps) {
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCampaignDetail, setSelectedCampaignDetail] = useState<Campaign | null>(null);
 
   useEffect(() => {
-    if (isOpen && initialSelectedCampaign) {
-      console.log("Selection Modal - Initial Campaign Data:", initialSelectedCampaign);
-      setSelectedCampaignDetail(initialSelectedCampaign);
-    } else if (!isOpen) {
+    if (isOpen) {
+      setSelectedCampaignDetail(initialSelectedCampaign || null);
+    } else {
       setSelectedCampaignDetail(null);
     }
   }, [isOpen, initialSelectedCampaign]);
@@ -88,19 +89,6 @@ export default function CampaignSelectionModal({
           /* Detailed View */
           <div className="flex-1 overflow-y-auto flex flex-col custom-scrollbar">
             <div className="p-6 flex flex-col gap-6">
-              {/* Large Preview */}
-              <div className="relative aspect-video w-full rounded-2xl overflow-hidden border border-[#E2E8F0] shadow-sm">
-                <img 
-                  src={selectedCampaignDetail.image} 
-                  alt={selectedCampaignDetail.title} 
-                  className="w-full h-full object-cover"
-                />
-                <div className="absolute top-4 right-4">
-                  <span className="px-3 py-1.5 bg-[#02022C] text-white text-[11px] font-bold rounded-lg shadow-lg uppercase tracking-wider">
-                    {selectedCampaignDetail.status}
-                  </span>
-                </div>
-              </div>
 
               {/* Info Stack */}
               <div className="flex flex-col gap-4">
@@ -200,11 +188,25 @@ export default function CampaignSelectionModal({
                 onClick={handleBackToList}
                 className="flex-1 h-[48px] bg-white border border-[#E2E8F0] text-[#475569] rounded-xl font-bold text-[15px] hover:bg-[#F1F5F9] transition-all flex items-center justify-center gap-2"
               >
-                <Icons.ArrowLeft className="w-4 h-4" /> Back to List
+                <Icons.ArrowLeft className="w-4 h-4" /> Back
               </button>
+              
+              {onDelete && (
+                <button 
+                  onClick={() => {
+                    onDelete(selectedCampaignDetail);
+                    onClose();
+                  }}
+                  className="h-[48px] px-4 bg-red-50 border border-red-100 text-red-600 rounded-xl font-bold text-[15px] hover:bg-red-100 transition-all flex items-center justify-center gap-2"
+                  title="Delete Campaign"
+                >
+                  <Icons.Trash className="w-4 h-4" />
+                </button>
+              )}
+
               <button 
                 onClick={() => handleConfirmSelect(selectedCampaignDetail)}
-                className="flex-1 h-[48px] bg-linear-to-r from-[#01012A] to-[#2E2C66] text-white rounded-xl font-bold text-[15px] shadow-lg shadow-[#01012A]/10 active:scale-95 transition-all flex items-center justify-center gap-2"
+                className="flex-2 h-[48px] bg-linear-to-r from-[#01012A] to-[#2E2C66] text-white rounded-xl font-bold text-[15px] shadow-lg shadow-[#01012A]/10 active:scale-95 transition-all flex items-center justify-center gap-2"
               >
                 Select Campaign <Icons.ArrowRight className="w-4 h-4" />
               </button>
@@ -229,10 +231,10 @@ export default function CampaignSelectionModal({
             <div className="flex-1 overflow-y-auto p-4 custom-scrollbar">
               <div className="grid grid-cols-1 gap-3">
                 {filteredCampaigns.map((campaign, i) => (
-                  <button
+                  <div
                     key={i}
                     onClick={() => setSelectedCampaignDetail(campaign)}
-                    className="flex items-center gap-4 p-3 rounded-xl border border-[#F1F5F9] hover:border-[#02022C] hover:bg-[#F8FAFC] transition-all group"
+                    className="flex items-center gap-4 p-3 rounded-xl border border-[#F1F5F9] hover:border-[#02022C] hover:bg-[#F8FAFC] cursor-pointer transition-all group"
                   >
                     <div className="w-[60px] h-[40px] rounded-lg overflow-hidden shrink-0 border border-[#E2E8F0]">
                       <img src={campaign.image} alt={campaign.title} className="w-full h-full object-cover" />
@@ -241,10 +243,25 @@ export default function CampaignSelectionModal({
                       <h4 className="text-[14px] font-semibold text-[#121212] group-hover:text-[#02022C] line-clamp-1">{campaign.title}</h4>
                       <span className="text-[11px] text-[#64748B] uppercase font-bold">{campaign.status}</span>
                     </div>
-                    <div className="w-6 h-6 rounded-full border border-[#E2E8F0] flex items-center justify-center group-hover:bg-[#02022C] group-hover:border-[#02022C] transition-all">
-                      <Icons.ArrowRight className="w-3 h-3 text-[#94A3B8] group-hover:text-white" />
+                    <div className="flex items-center gap-2">
+                       {onDelete && (
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            onDelete(campaign);
+                            onClose();
+                          }}
+                          className="w-8 h-8 rounded-lg flex items-center justify-center text-[#94A3B8] hover:text-red-500 hover:bg-red-50 transition-all opacity-0 group-hover:opacity-100"
+                          title="Delete Campaign"
+                        >
+                          <Icons.Trash className="w-3.5 h-3.5" />
+                        </button>
+                      )}
+                      <div className="w-6 h-6 rounded-full border border-[#E2E8F0] flex items-center justify-center group-hover:bg-[#02022C] group-hover:border-[#02022C] transition-all">
+                        <Icons.ArrowRight className="w-3 h-3 text-[#94A3B8] group-hover:text-white" />
+                      </div>
                     </div>
-                  </button>
+                  </div>
                 ))}
                 {filteredCampaigns.length === 0 && (
                   <div className="text-center py-12 flex flex-col items-center gap-4">
