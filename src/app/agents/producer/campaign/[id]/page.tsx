@@ -222,7 +222,7 @@ export default function CampaignDetailPage() {
                       playsInline
                       className={cn(
                         "max-h-full rounded-[24px] md:rounded-[40px] shadow-2xl border border-white/10 object-contain h-full bg-black/60 transition-transform duration-700 group-hover:scale-[1.01]",
-                        brief.format === "9:16" ? "aspect-[9/16]" :
+                        brief.format === "9:16" ? "aspect-9/16" :
                           brief.format === "1:1" ? "aspect-square" :
                             "aspect-video"
                       )}
@@ -285,7 +285,7 @@ export default function CampaignDetailPage() {
                     orchestration_thread
                   </h4>
                   <div className="flex flex-col gap-6 md:gap-8 relative z-10">
-                    <div className="absolute left-[13.5px] top-6 bottom-6 w-[1px] bg-white/10" />
+                    <div className="absolute left-[13.5px] top-6 bottom-6 w-px bg-white/10" />
                     {steps.map((step) => {
                       const status = getNodeStatus(step.id);
                       const isDone = status === "done";

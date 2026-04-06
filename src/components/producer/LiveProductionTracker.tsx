@@ -41,7 +41,7 @@ export function LiveProductionTracker({
     <div
       className="bg-white rounded-[32px] p-12 border border-slate-100 border-dashed flex flex-col items-center justify-center text-center gap-6 min-h-[460px] shadow-sm relative overflow-hidden"
     >
-      <div className="absolute inset-x-0 bottom-0 h-32 bg-gradient-to-t from-slate-50 to-transparent pointer-events-none" />
+      <div className="absolute inset-x-0 bottom-0 h-32 bg-linear-to-t from-slate-50 to-transparent pointer-events-none" />
       <div className="relative">
         <div className="absolute inset-0 bg-slate-400/10 blur-2xl rounded-full scale-150 animate-pulse" />
         <div className="w-20 h-20 bg-white rounded-[24px] flex items-center justify-center relative border border-slate-100 shadow-xl shadow-slate-100/50">
@@ -89,7 +89,7 @@ export function LiveProductionTracker({
         <div className="flex flex-col gap-7 relative pl-1">
           {/* Neural Thread Line */}
           <div className="absolute left-[15.5px] top-4 bottom-4 w-px bg-slate-100 overflow-hidden">
-            <div className="absolute inset-0 w-full h-[30%] bg-gradient-to-b from-transparent via-blue-400 to-transparent animate-pulse" />
+            <div className="absolute inset-0 w-full h-[30%] bg-linear-to-b from-transparent via-blue-400 to-transparent animate-pulse" />
           </div>
 
           {steps.map((step, idx) => {

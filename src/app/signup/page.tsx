@@ -39,7 +39,7 @@ export default function SignupPage() {
 
       if (response.ok) {
         const result = await response.json();
-        // Save the JWT token in a cookie so middleware can see it
+        // Save the JWT token in a cookie so proxy can see it
         if (result.data?.token) {
           setToken(result.data.token);
           router.push("/home");

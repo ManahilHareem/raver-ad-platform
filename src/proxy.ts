@@ -3,7 +3,7 @@ import type { NextRequest } from 'next/server';
 
 const PUBLIC_ROUTES = ['/', '/signup', '/landing', '/favicon.ico'];
 
-export function middleware(request: NextRequest) {
+export function proxy(request: NextRequest) {
   const token = request.cookies.get('raver_token')?.value;
   const { pathname } = request.nextUrl;
 
@@ -25,7 +25,7 @@ export function middleware(request: NextRequest) {
   return NextResponse.next();
 }
 
-// Ensure middleware runs on all routes except static files and special Next.js paths
+// Ensure proxy runs on all routes except static files and special Next.js paths
 export const config = {
   matcher: ['/((?!api|_next/static|_next/image|assets|favicon.ico|sitemap.xml|robots.txt).*)'],
 };
