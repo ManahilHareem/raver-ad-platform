@@ -360,15 +360,6 @@ export default function CampaignPreviewModal({
             </div>
           </div>
           <div className="flex items-center gap-2">
-            {onSwitchCampaign && (
-              <button
-                onClick={onSwitchCampaign}
-                className="h-10 px-4 bg-[#F1F5F9] text-[#475569] hover:bg-[#E2E8F0] rounded-xl text-[12px] font-bold transition-all flex items-center gap-2"
-                title="Swith to another campaign"
-              >
-                <Icons.Library className="w-4 h-4" /> Switch
-              </button>
-            )}
             <button
               onClick={onClose}
               className="p-2 hover:bg-[#F1F5F9] rounded-full transition-colors group"
