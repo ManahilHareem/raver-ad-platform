@@ -27,6 +27,7 @@ interface Campaign {
   briefDraft?: any;
   prompt?: string;
   message?: string;
+  voiceId?: string | null;
   createdAt?: string;
 }
 
@@ -74,6 +75,7 @@ function ProjectsContent() {
               history: s.history,
               briefDraft: s.brief_draft,
               prompt: s.prompt,
+              voiceId: s.voice || s.voice_id || s.production?.voice || s.brief_draft?.voice,
               image: "/assets/hashtag-campaign.jpg",
               createdAt: s.created_at
             }));
@@ -154,7 +156,8 @@ function ProjectsContent() {
                       videoUrl: updateData.video_url || newCampaigns[index].videoUrl,
                       voiceoverUrl: updateData.voiceover_url || newCampaigns[index].voiceoverUrl,
                       musicUrl: updateData.music_url || newCampaigns[index].musicUrl,
-                      script: updateData.script || newCampaigns[index].script
+                      script: updateData.script || newCampaigns[index].script,
+                      voiceId: updateData.voice || updateData.voice_id || updateData.brief_draft?.voice || newCampaigns[index].voiceId
                     };
                     hasChanges = true;
                   }
@@ -348,7 +351,9 @@ function ProjectsContent() {
           music_url: campaignToView.musicUrl,
           script: campaignToView.script,
           history: campaignToView.history,
-          prompt: campaignToView.prompt
+          prompt: campaignToView.prompt,
+          campaign_id: campaignToView.id,
+          voice_id: campaignToView.voiceId
         } : null}
         showHistory={true}
       />

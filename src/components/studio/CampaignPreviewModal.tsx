@@ -95,7 +95,7 @@ export default function CampaignPreviewModal({
   // Editing states
   const [isEditingScript, setIsEditingScript] = useState(false);
   const [editedScript, setEditedScript] = useState(campaignData?.script || "");
-  const [selectedVoice, setSelectedVoice] = useState<string>("adam");
+  const [selectedVoice, setSelectedVoice] = useState<string>(campaignData?.voice_id?.toLowerCase() || "adam");
   const [musicPrompt, setMusicPrompt] = useState("");
   const [isApplyingChanges, setIsApplyingChanges] = useState(false);
 
@@ -112,11 +112,11 @@ export default function CampaignPreviewModal({
       setLocalStatus(campaignData.status);
       setEditedScript(campaignData.script || "");
 
-      // Initialize selected voice from campaign data, if available — otherwise leave empty so user must choose
+      // Initialize selected voice from campaign data, if available — otherwise default to 'adam'
       if (campaignData.voice_id) {
-        setSelectedVoice(campaignData.voice_id);
+        setSelectedVoice(campaignData.voice_id.toLowerCase());
       } else {
-        setSelectedVoice("");
+        setSelectedVoice("adam");
       }
     }
   }, [isOpen, campaignData]);
@@ -263,11 +263,12 @@ export default function CampaignPreviewModal({
   };
 
   if (!isOpen || !campaignData) return null;
-  const isLaunched = ["in_production", "queued", "In Production", "Ready", "completed", "delivered", "ready"].includes(
+  const isLaunched = ["in_production", "queued", "In Production", "Ready", "completed", "delivered", "ready", "approved"].includes(
     localStatus || ""
   );
+  const isApproved = (localStatus?.toLowerCase() === "approved" || localStatus?.toLowerCase() === "delivered");
   const isDraft = localStatus === "ready_for_human_review";
-  const canChat = !isLaunched || isDraft; // Allow chat during review to request revisions
+  const canChat = (!isLaunched || isDraft) && !isApproved; // Allow chat during review to request revisions
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-sm animate-in fade-in duration-200">
@@ -296,11 +297,14 @@ export default function CampaignPreviewModal({
                     <div
                       className={cn(
                         "w-1.5 h-1.5 rounded-full",
-                        !isLaunched ? "bg-amber-500 animate-pulse" : "bg-green-500"
+                        !isLaunched ? "bg-amber-500 animate-pulse" : (isApproved ? "bg-emerald-500" : "bg-green-500")
                       )}
                     />
-                    <span className="text-[9px] text-[#2E3A59] font-black uppercase tracking-widest">
-                      {!isLaunched ? (isDraft ? "In Review" : "Consultation") : localStatus === "ready" ? "Ready" : "Processing"}
+                    <span className={cn(
+                      "text-[9px] font-black uppercase tracking-widest",
+                      isApproved ? "text-emerald-600" : "text-[#2E3A59]"
+                    )}>
+                      {isApproved ? "Approved" : (!isLaunched ? (isDraft ? "In Review" : "Consultation") : localStatus === "ready" ? "Ready" : "Processing")}
                     </span>
                   </div>
                 )}
@@ -352,9 +356,17 @@ export default function CampaignPreviewModal({
               <h3 className="text-[12px] font-black text-[#02022C] uppercase tracking-[0.2em]">Voiceover</h3>
               <div className="p-4 bg-white border border-[#F1F5F9] rounded-2xl shadow-sm flex flex-col gap-3">
                 {campaignData.voiceover_url ? (
-                  <audio src={campaignData.voiceover_url} controls className="w-full h-8" />
+                  <>
+                    <audio src={campaignData.voiceover_url} controls className="w-full h-8" />
+                    <div className="flex items-center gap-2 mt-1">
+                      <Icons.Mic className="w-3.5 h-3.5 text-slate-400" />
+                      <span className="text-[10px] font-black text-[#64748B] uppercase tracking-widest">
+                        Profile: {selectedVoice ? selectedVoiceName : "Neural Casting"}
+                      </span>
+                    </div>
+                  </>
                 ) : (
-                  <div className="text-[11px] text-[#94A3B8] font-medium">No voiceover track available</div>
+                  <div className="text-[11px] text-[#94A3B8] font-medium italic">Synchronizing neural voice track...</div>
                 )}
               </div>
             </div>
@@ -375,13 +387,13 @@ export default function CampaignPreviewModal({
           <div className="space-y-4">
             <div className="flex items-center justify-between">
               <h3 className="text-[12px] font-black text-[#02022C] uppercase tracking-[0.2em]">Campaign Script</h3>
-              <button
+              {!isApproved && <button
                 onClick={() => setIsEditingScript(!isEditingScript)}
                 className="text-[11px] font-bold text-[#02022C] hover:text-[#4F569B] transition-colors flex items-center gap-1"
               >
                 <Icons.PenLine className="w-3.5 h-3.5" />
                 {isEditingScript ? "Cancel" : "Edit Script"}
-              </button>
+              </button>}
             </div>
             <div className="p-6 bg-[#02022C]/2 border border-[#F1F5F9] rounded-[24px] relative group overflow-hidden">
               <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
@@ -404,7 +416,8 @@ export default function CampaignPreviewModal({
 
           {/* Voice & Music Controls */}
           {/* Voice & Music Controls */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        {!isApproved && <> 
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {/* Voice Selection */}
             <div className="space-y-4">
               <h3 className="text-[12px] font-black text-[#02022C] uppercase tracking-[0.2em]">Voice Selection</h3>
@@ -414,10 +427,9 @@ export default function CampaignPreviewModal({
                     <select
                       value={selectedVoice}
                       onChange={(e) => setSelectedVoice(e.target.value)}
-                      className={`w-full p-4 bg-white border rounded-2xl text-[13px] font-medium outline-none transition-colors appearance-none cursor-pointer ${
-                        selectedVoice ? "border-[#E2E8F0] focus:border-[#02022C] text-[#334155]" : "border-amber-300 focus:border-[#02022C] text-[#94A3B8]"
-                      }`}
+                      className="w-full p-4 bg-white border border-[#E2E8F0] focus:border-[#02022C] text-[#334155] rounded-2xl text-[13px] font-medium outline-none transition-colors appearance-none cursor-pointer"
                     >
+                      <option value="" disabled>Select Voice Casting...</option>
                       <option value="adam">Adam - Deep Casual American (Default)</option>
                       {voiceOptions.map((voice) => (
                         <option key={voice.id} value={voice.id}>
@@ -428,7 +440,7 @@ export default function CampaignPreviewModal({
                     <Icons.ChevronRight className="w-4 h-4 text-[#94A3B8] absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none rotate-90" />
                   </div>
                   <p className="text-xs text-[#64748B] mt-1 ml-1">
-                    Current voice: <span className={`font-medium ${selectedVoice ? "text-[#02022C]" : "text-amber-500"}`}>{selectedVoice ? selectedVoiceName : "⚠️ Please select a voice"}</span>
+                    Active voice: <span className="font-bold text-[#02022C]">{selectedVoiceName}</span>
                   </p>
                 </>
               ) : (
@@ -473,6 +485,8 @@ export default function CampaignPreviewModal({
               </button>
             </div>
           )}
+          </>
+          }
 
           {/* Interactive Chat & Session History */}
           {showHistory && (
@@ -616,5 +630,6 @@ export default function CampaignPreviewModal({
         </div>
       </div>
     </div>
+    
   );
 }

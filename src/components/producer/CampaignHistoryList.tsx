@@ -53,7 +53,7 @@ export function CampaignHistoryList({ history }: CampaignHistoryListProps) {
             </div>
 
             {/* Content Section - Grow to push footer down */}
-            <div className="grid grid-cols-2 gap-4 relative z-10 mb-8 flex-grow">
+            <div className="flex flex-col gap-6 relative z-10 mb-8 grow">
               <div className="p-4 bg-slate-50/50 rounded-2xl border border-slate-100/50 flex flex-col gap-1">
                 <span className="text-[8px] font-black uppercase text-slate-400 tracking-tighter">Timeline</span>
                 <span className="text-[11px] font-bold text-[#0A0A0A] italic">

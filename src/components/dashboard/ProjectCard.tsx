@@ -26,7 +26,7 @@ export default function ProjectCard({
   onPreview,
   onHistory
 }: ProjectCardProps) {
-  const isReady = status === "Ready" || status === "completed" || status === "delivered";
+  const isReady = status === "Ready" || status === "completed" || status === "delivered" || status?.toLowerCase() === "approved";
   const isInProduction = status === "in_production" || status === "queued" || status === "In Production";
 
   return (
@@ -73,7 +73,7 @@ export default function ProjectCard({
           <div className="absolute top-2 right-2 z-20">
             <span className={cn(
               "px-[6px] py-[3px] rounded-[4px] text-[9px] font-bold uppercase tracking-wider shadow-sm",
-              isReady ? "bg-linear-to-r from-[#01012A] to-[#2E2C66] text-white shadow-lg shadow-[#01012A]/10" 
+              isReady ? "bg-linear-to-r from-[#059669] to-[#10B981] text-white shadow-lg shadow-emerald-500/20" 
               : isInProduction ? "bg-white text-[#02022C] animate-pulse" 
               : "bg-linear-to-r from-[#AD46FF] to-[#2B7FFF] text-white"
             )}>
