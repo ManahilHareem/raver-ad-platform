@@ -2,6 +2,7 @@ import Image from "next/image";
 import { Icons } from "@/components/ui/icons";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
+import { toast } from "react-toastify";
 
 interface ProjectCardProps {
   title: string;
@@ -29,12 +30,29 @@ export default function ProjectCard({
   const isReady = status === "Ready" || status === "completed" || status === "delivered" || status?.toLowerCase() === "approved";
   const isInProduction = status === "in_production" || status === "queued" || status === "In Production";
 
+  const handleDownload = async (e: React.MouseEvent) => {
+    e.stopPropagation();
+    const url = videoUrl || image;
+    if (!url) return;
+
+    toast.info('Preparing secure download...');
+    const fileName = title.toLowerCase().replace(/\s+/g, '-');
+    const downloadUrl = `/api/download?url=${encodeURIComponent(url)}&filename=raver-${fileName}-${Date.now()}.mp4`;
+
+    const link = document.createElement('a');
+    link.href = downloadUrl;
+    link.setAttribute('download', '');
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
+
   return (
     <div className="group p-[8px] bg-white rounded-[12px] border border-slate-100 overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 flex flex-col h-full">
         {/* We remove gap-[8px] here because it interferes with the Thumbnail/Content relationship; padding should handle it */}
       {/* Thumbnail Container with 8px padding */}
-      <div className=" w-full">
-        <div className="relative h-[192px] w-full rounded-[8px] overflow-hidden bg-slate-100">
+      <div className=" w-full" onClick={onPreview}>
+        <div className="relative h-[192px] w-full rounded-[8px] overflow-hidden bg-slate-100 cursor-pointer">
           {videoUrl ? (
             <video 
               src={videoUrl} 
@@ -86,7 +104,7 @@ export default function ProjectCard({
       {/* Content */}
       <div className="pt-[12px] pb-[4px]  flex flex-col gap-[12px] flex-1">
         <div className="flex items-start justify-between gap-2">
-          <h3 className="text-[16px] font-bold text-[#121212] leading-tight line-clamp-1">{title}</h3>
+          <h3 className="text-[16px] font-bold text-[#121212] leading-tight line-clamp-1 cursor-pointer" onClick={onPreview}>{title}</h3>
         </div>
 
         <div className="flex items-center gap-[16px] mt-auto">
@@ -107,13 +125,15 @@ export default function ProjectCard({
           >
             <Icons.Eye className="w-4 h-4" /> Preview
           </button>
-          {/* <button 
-            onClick={onHistory}
-            className="h-[40px] px-4 border border-slate-200 rounded-xl text-[14px] font-bold text-[#4F4F4F] hover:bg-slate-50 transition-all active:scale-95 flex items-center justify-center gap-2"
-            title="View History & Details"
+          
+          <button 
+            onClick={handleDownload}
+            disabled={isInProduction}
+            className="h-[40px] w-[40px] border border-slate-200 rounded-xl text-[#4F4F4F] hover:bg-slate-50 transition-all active:scale-95 flex items-center justify-center disabled:opacity-50 disabled:cursor-not-allowed"
+            title="Download Asset"
           >
-            <Icons.Clock className="w-4 h-4" />
-          </button> */}
+            <Icons.Download className="w-5 h-5" />
+          </button>
         </div>
       </div>
     </div>

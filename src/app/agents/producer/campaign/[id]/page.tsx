@@ -7,6 +7,7 @@ import { cn } from "@/lib/utils";
 import DashboardLayout from "@/components/DashboardLayout";
 import { apiFetch } from "@/lib/api";
 import { RaverLoadingState } from "@/components/ui/RaverLoadingState";
+import { toast } from "react-toastify";
 
 export default function CampaignDetailPage() {
   const params = useParams();
@@ -87,22 +88,15 @@ export default function CampaignDetailPage() {
   };
 
   const handleDownload = async (url: string) => {
-    try {
-      const response = await fetch(url);
-      const blob = await response.blob();
-      const blobUrl = URL.createObjectURL(blob);
-      const link = document.createElement('a');
-      link.href = blobUrl;
-      link.download = `raver-production-${campaignId}.mp4`;
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-      URL.revokeObjectURL(blobUrl);
-    } catch (error) {
-      console.error('Download failed:', error);
-      // Fallback: open in new tab
-      window.open(url, '_blank');
-    }
+    toast.info('Preparing secure download...');
+    const downloadUrl = `/api/download?url=${encodeURIComponent(url)}&filename=raver-production-${campaignId}.mp4`;
+
+    const link = document.createElement('a');
+    link.href = downloadUrl;
+    link.setAttribute('download', '');
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
   };
 
   const steps = [

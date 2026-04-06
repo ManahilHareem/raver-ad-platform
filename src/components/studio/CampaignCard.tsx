@@ -3,6 +3,7 @@
 import Image from "next/image";
 import { Icons } from "@/components/ui/icons";
 import { cn } from "@/lib/utils";
+import { toast } from "react-toastify";
 
 import { useState, useEffect } from "react";
 import CampaignPreviewModal from "./CampaignPreviewModal";
@@ -137,6 +138,23 @@ export default function CampaignCard({
     } finally {
       setIsFetching(false);
     }
+  };
+
+  const handleDownload = async (e: React.MouseEvent) => {
+    e.stopPropagation();
+    const url = localData.video_url || videoUrl || image;
+    if (!url) return;
+
+    toast.info('Preparing secure download...');
+    const fileName = title.toLowerCase().replace(/\s+/g, '-');
+    const downloadUrl = `/api/download?url=${encodeURIComponent(url)}&filename=raver-${fileName}-${Date.now()}.mp4`;
+
+    const link = document.createElement('a');
+    link.href = downloadUrl;
+    link.setAttribute('download', '');
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
   };
 
   const currentStatus = localData.status;
@@ -288,7 +306,7 @@ export default function CampaignCard({
               Preview
             </button>
             <button
-              onClick={(e) => e.stopPropagation()}
+              onClick={handleDownload}
               disabled={isInProduction}
               className="w-[36px] h-[36px] bg-white flex items-center justify-center border border-[#F1F5F9] rounded-[5px] text-[#121212] hover:text-[#02022C] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
             >
