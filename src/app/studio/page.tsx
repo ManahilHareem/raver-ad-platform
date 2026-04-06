@@ -303,45 +303,6 @@ function StudioPageContent() {
           return tB - tA;
         })
         .slice(0, 5);
-
-      if (activeCandidates.length > 0) {
-        const updatedSessions = await Promise.all(activeCandidates.map(async (s) => {
-          try {
-            const updateRes = await apiFetch(`${API_BASE}/ai/director/session/${s.sessionId}/update`);
-            if (updateRes.ok) {
-              const uData = await updateRes.json();
-              if (uData.success && uData.data) {
-                const updateData = uData.data;
-                return {
-                  ...s,
-                  status: updateData.status,
-                  message: updateData.message,
-                  videoUrl: updateData.video_url || s.videoUrl,
-                  voiceoverUrl: updateData.voiceover_url || updateData.audio_url || s.voiceoverUrl,
-                  musicUrl: updateData.music_url || s.musicUrl,
-                  script: updateData.script || s.script,
-                  history: updateData.history || s.history,
-                  prompt: updateData.prompt || s.prompt,
-                  completed_nodes: updateData.completed_nodes || [],
-                  voice: updateData.voice || updateData.brief_draft?.voice || s.voice,
-                  campaign_status: updateData.campaign_status || s.campaign_status
-                };
-              }
-            }
-          } catch (e) {
-            console.warn(`Initial deep check failed for session ${s.sessionId}:`, e);
-          }
-          return s;
-        }));
-
-        setVideos(prev => {
-          const updatedList = prev.map(v => {
-            const up = updatedSessions.find(u => u.sessionId === v.sessionId);
-            return up ? { ...v, ...up } : v;
-          });
-          return sortLatest(updatedList);
-        });
-      }
     } catch (err) {
       if (err instanceof Error && err.message === 'Unauthorized') return;
       console.error("Critical error in fetchCampaigns:", err);
@@ -517,9 +478,12 @@ function StudioPageContent() {
 
   useEffect(() => {
     let timeoutId: NodeJS.Timeout;
+    let isActive = true;
+    const abortController = new AbortController();
     const API_BASE = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
 
     const poll = async () => {
+      if (!isActive) return;
       const currentVideos = videosRef.current;
       const activeStatuses = ["queued", "in_production", "pipeline_running", "In Production", "processing", "rendering"];
       const terminalStatuses = ["completed", "Ready", "delivered", "failed", "ready_for_human_review", "approved"];
@@ -534,14 +498,20 @@ function StudioPageContent() {
       });
 
       if (polls.length > 0) {
-        let newVideos = [...currentVideos];
-        let hasChanges = false;
-
+        let isFirstPoll = true;
         for (const v of polls) {
+          if (!isActive) return;
           if (!v.sessionId) continue;
+          
+          if (!isFirstPoll) {
+            await new Promise(resolve => setTimeout(resolve, 2000));
+          }
+          isFirstPoll = false;
+          
           try {
             const res = await apiFetch(`${API_BASE}/ai/director/session/${v.sessionId}/update`, {
-              headers: { "accept": "*/*" }
+              headers: { "accept": "*/*" },
+              signal: abortController.signal
             });
 
             if (res.ok) {
@@ -550,51 +520,64 @@ function StudioPageContent() {
               sessionFailuresRef.current[v.sessionId] = 0;
 
               if (updateData) {
-                const index = newVideos.findIndex(vid => vid.sessionId === v.sessionId);
-                if (index !== -1) {
-                  if (
-                    newVideos[index].status !== updateData.status ||
-                    newVideos[index].message !== updateData.message ||
-                    newVideos[index].videoUrl !== updateData.video_url
-                  ) {
-                    const isInvalidStatus = !updateData.status || updateData.status.toLowerCase() === 'failed';
-                    const prevStatus = newVideos[index].status?.toLowerCase() || "";
-                    const prevInProduction = prevStatus === "in_production" || prevStatus === "queued";
-                    
-                    const nextStatus = (isInvalidStatus && prevInProduction) ? newVideos[index].status : (updateData.status || newVideos[index].status);
+                setVideos(prevVideos => {
+                  const updatedVideos = [...prevVideos];
+                  const index = updatedVideos.findIndex(vid => vid.sessionId === v.sessionId);
+                  if (index !== -1) {
+                    if (
+                      updatedVideos[index].status !== updateData.status ||
+                      updatedVideos[index].message !== updateData.message ||
+                      updatedVideos[index].videoUrl !== updateData.video_url
+                    ) {
+                      const isInvalidStatus = !updateData.status || updateData.status.toLowerCase() === 'failed';
+                      const prevStatus = updatedVideos[index].status?.toLowerCase() || "";
+                      const prevInProduction = prevStatus === "in_production" || prevStatus === "queued";
+                      
+                      const nextStatus = (isInvalidStatus && prevInProduction) ? updatedVideos[index].status : (updateData.status || updatedVideos[index].status);
 
-                    newVideos[index] = {
-                      ...newVideos[index],
-                      status: nextStatus,
-                      message: updateData.message || newVideos[index].message,
-                      videoUrl: updateData.video_url || newVideos[index].videoUrl,
-                      voiceoverUrl: updateData.voiceover_url || updateData.audio_url || newVideos[index].voiceoverUrl,
-                      musicUrl: updateData.music_url || newVideos[index].musicUrl,
-                      script: updateData.script || newVideos[index].script,
-                      history: updateData.history || newVideos[index].history,
-                      prompt: updateData.prompt || newVideos[index].prompt,
-                      completed_nodes: updateData.completed_nodes || []
-                    };
-                    hasChanges = true;
+                      updatedVideos[index] = {
+                        ...updatedVideos[index],
+                        status: nextStatus,
+                        message: updateData.message || updatedVideos[index].message,
+                        videoUrl: updateData.video_url || updatedVideos[index].videoUrl,
+                        voiceoverUrl: updateData.voiceover_url || updateData.audio_url || updatedVideos[index].voiceoverUrl,
+                        musicUrl: updateData.music_url || updatedVideos[index].musicUrl,
+                        script: updateData.script || updatedVideos[index].script,
+                        history: updateData.history || updatedVideos[index].history,
+                        prompt: updateData.prompt || updatedVideos[index].prompt,
+                        completed_nodes: updateData.completed_nodes || []
+                      };
+                      return updatedVideos;
+                    }
                   }
-                }
+                  return prevVideos;
+                });
               }
             } else if (res.status === 404) {
               sessionFailuresRef.current[v.sessionId] = (sessionFailuresRef.current[v.sessionId] || 0) + 1;
             }
-          } catch (e) {
-            const isNetworkError = e instanceof TypeError && e.message.includes("fetch");
-            if (!isNetworkError) console.error("Polling error for", v.sessionId, e);
-            sessionFailuresRef.current[v.sessionId] = (sessionFailuresRef.current[v.sessionId] || 0) + 1;
+          } catch (e: any) {
+            if (e.name === 'AbortError') {
+              console.log('Studio poll fetch aborted');
+            } else {
+              const isNetworkError = e instanceof TypeError && e.message.includes("fetch");
+              if (!isNetworkError) console.error("Polling error for", v.sessionId, e);
+              sessionFailuresRef.current[v.sessionId] = (sessionFailuresRef.current[v.sessionId] || 0) + 1;
+            }
           }
         }
-        if (hasChanges) setVideos(newVideos);
       }
-      timeoutId = setTimeout(poll, 5000);
+      if (isActive) {
+        timeoutId = setTimeout(poll, 5000);
+      }
     };
     // Initial delay before starting the loop to avoid immediate redundant calls
     timeoutId = setTimeout(poll, 5000);
-    return () => clearTimeout(timeoutId);
+    return () => {
+      isActive = false;
+      abortController.abort();
+      clearTimeout(timeoutId);
+    };
   }, []);
 
   useEffect(() => {

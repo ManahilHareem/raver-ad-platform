@@ -112,9 +112,13 @@ function ProjectsContent() {
   // Polling Effect for running pipelines
   useEffect(() => {
     let timeoutId: NodeJS.Timeout;
+    let isActive = true;
+    const abortController = new AbortController();
     const API_BASE = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
 
     const poll = async () => {
+      if (!isActive) return;
+      
       const currentCampaigns = campaignsRef.current;
       const activeStatuses = ["queued", "in_production", "pipeline_running", "In Production", "processing", "rendering"];
       const terminalStatuses = ["completed", "Ready", "delivered", "failed", "ready_for_human_review", "approved"];
@@ -129,54 +133,75 @@ function ProjectsContent() {
       });
       
       if (polls.length > 0) {
-        let newCampaigns = [...currentCampaigns];
-        let hasChanges = false;
-
+        let isFirstPoll = true;
         for (const c of polls) {
+          if (!isActive) return;
           if (!c.sessionId) continue;
+          
+          if (!isFirstPoll) {
+             await new Promise(resolve => setTimeout(resolve, 3000));
+          }
+          isFirstPoll = false;
+
           try {
-            const res = await apiFetch(`${API_BASE}/ai/director/session/${c.sessionId}/update`);
+            const res = await apiFetch(`${API_BASE}/ai/director/session/${c.sessionId}/update`, {
+              signal: abortController.signal
+            });
             if (res.ok) {
               const resData = await res.json();
               const updateData = resData.data;
               sessionFailuresRef.current[c.sessionId] = 0;
 
               if (updateData) {
-                const index = newCampaigns.findIndex(vid => vid.sessionId === c.sessionId);
-                if (index !== -1) {
-                  if (
-                    newCampaigns[index].status !== updateData.status || 
-                    newCampaigns[index].message !== updateData.message || 
-                    newCampaigns[index].videoUrl !== updateData.video_url
-                  ) {
-                    newCampaigns[index] = {
-                      ...newCampaigns[index],
-                      status: updateData.status,
-                      message: updateData.message,
-                      videoUrl: updateData.video_url || newCampaigns[index].videoUrl,
-                      voiceoverUrl: updateData.voiceover_url || newCampaigns[index].voiceoverUrl,
-                      musicUrl: updateData.music_url || newCampaigns[index].musicUrl,
-                      script: updateData.script || newCampaigns[index].script,
-                      voiceId: updateData.voice || updateData.voice_id || updateData.brief_draft?.voice || newCampaigns[index].voiceId
-                    };
-                    hasChanges = true;
+                setCampaigns(prevCampaigns => {
+                  const updatedCampaigns = [...prevCampaigns];
+                  const index = updatedCampaigns.findIndex(vid => vid.sessionId === c.sessionId);
+                  if (index !== -1) {
+                    if (
+                      updatedCampaigns[index].status !== updateData.status || 
+                      updatedCampaigns[index].message !== updateData.message || 
+                      updatedCampaigns[index].videoUrl !== updateData.video_url
+                    ) {
+                      updatedCampaigns[index] = {
+                        ...updatedCampaigns[index],
+                        status: updateData.status,
+                        message: updateData.message,
+                        videoUrl: updateData.video_url || updatedCampaigns[index].videoUrl,
+                        voiceoverUrl: updateData.voiceover_url || updatedCampaigns[index].voiceoverUrl,
+                        musicUrl: updateData.music_url || updatedCampaigns[index].musicUrl,
+                        script: updateData.script || updatedCampaigns[index].script,
+                        voiceId: updateData.voice || updateData.voice_id || updateData.brief_draft?.voice || updatedCampaigns[index].voiceId
+                      };
+                      return updatedCampaigns;
+                    }
                   }
-                }
+                  return prevCampaigns;
+                });
               }
             } else if (res.status === 404) {
               sessionFailuresRef.current[c.sessionId] = (sessionFailuresRef.current[c.sessionId] || 0) + 1;
             }
-          } catch (e) {
-            sessionFailuresRef.current[c.sessionId] = (sessionFailuresRef.current[c.sessionId] || 0) + 1;
+          } catch (e: any) {
+            if (e.name === 'AbortError') {
+              // Ignore aborted fetches silently
+              console.log('Poll fetch aborted');
+            } else {
+              sessionFailuresRef.current[c.sessionId] = (sessionFailuresRef.current[c.sessionId] || 0) + 1;
+            }
           }
         }
-        if (hasChanges) setCampaigns(newCampaigns);
       }
-      timeoutId = setTimeout(poll, 5000);
+      if (isActive) {
+        timeoutId = setTimeout(poll, 5000);
+      }
     };
 
-    poll();
-    return () => clearTimeout(timeoutId);
+    timeoutId = setTimeout(poll, 5000);
+    return () => {
+      isActive = false;
+      abortController.abort();
+      clearTimeout(timeoutId);
+    };
   }, []);
 
   useEffect(() => {
