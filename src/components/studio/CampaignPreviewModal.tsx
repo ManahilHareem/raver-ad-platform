@@ -98,6 +98,7 @@ export default function CampaignPreviewModal({
   const [selectedVoice, setSelectedVoice] = useState<string>(campaignData?.voice_id?.toLowerCase() || "adam");
   const [musicPrompt, setMusicPrompt] = useState("");
   const [isApplyingChanges, setIsApplyingChanges] = useState(false);
+  const [isApproving, setIsApproving] = useState(false);
 
   // Get the name of the selected voice for display
   const selectedVoiceName =
@@ -200,6 +201,53 @@ export default function CampaignPreviewModal({
       });
     } finally {
       setIsApplyingChanges(false);
+    }
+  };
+
+  const handleApprove = async () => {
+    if (!campaignData?.session_id) {
+      toast.error("No session ID found to approve.");
+      return;
+    }
+
+    setIsApproving(true);
+    const toastId = toast.loading("Finalizing campaign authorization...");
+
+    try {
+      const API_BASE = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
+      const token = getToken();
+
+      const response = await fetch(`${API_BASE}/ai/director/session/${campaignData.session_id}/approve`, {
+        method: 'PATCH',
+        headers: {
+          'accept': '*/*',
+          'Authorization': `Bearer ${token}`
+        }
+      });
+
+      if (!response.ok) {
+        throw new Error(`Failed to approve campaign: ${response.statusText}`);
+      }
+
+      toast.update(toastId, {
+        render: "✓ Campaign successfully approved and finalized!",
+        type: "success",
+        isLoading: false,
+        autoClose: 3000
+      });
+
+      setLocalStatus("approved");
+      if (onRefresh) onRefresh();
+    } catch (error: any) {
+      console.error("Approval error:", error);
+      toast.update(toastId, {
+        render: `Error: ${error.message}`,
+        type: "error",
+        isLoading: false,
+        autoClose: 5000
+      });
+    } finally {
+      setIsApproving(false);
     }
   };
 
@@ -621,12 +669,28 @@ export default function CampaignPreviewModal({
         {/* Footer */}
         <div className="p-6 border-t border-[#F1F5F9] bg-[#FDFDFF] flex items-center justify-between sticky bottom-0">
           <div className="flex flex-col gap-1"></div>
-          <button
-            onClick={onClose}
-            className="h-11 px-8 bg-[#02022C] text-white rounded-xl font-bold text-sm hover:shadow-xl hover:-translate-y-px transition-all"
-          >
-            Close Preview
-          </button>
+          <div className="flex items-center gap-3">
+            {!isApproved && (
+              <button
+                onClick={handleApprove}
+                disabled={isApproving}
+                className="h-11 px-8 bg-emerald-600 text-white rounded-xl font-bold text-sm hover:bg-emerald-700 hover:shadow-xl hover:-translate-y-px transition-all flex items-center gap-2 disabled:opacity-50"
+              >
+                {isApproving ? (
+                  <Icons.Loader className="w-4 h-4 animate-spin" />
+                ) : (
+                  <Icons.CheckCircle className="w-4 h-4" />
+                )}
+               Approve
+              </button>
+            )}
+            <button
+              onClick={onClose}
+              className="h-11 px-8 bg-[#02022C] text-white rounded-xl font-bold text-sm hover:shadow-xl hover:-translate-y-px transition-all"
+            >
+              Close Preview
+            </button>
+          </div>
         </div>
       </div>
     </div>

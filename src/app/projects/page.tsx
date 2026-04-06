@@ -356,6 +356,7 @@ function ProjectsContent() {
           voice_id: campaignToView.voiceId
         } : null}
         showHistory={true}
+        onRefresh={fetchCampaigns}
       />
 
       <AIResponseModal 
