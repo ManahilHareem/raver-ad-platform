@@ -323,7 +323,7 @@ function ProjectsContent() {
                 <p className="text-slate-400 text-[14px]">Try adjusting your search or start a new campaign to see it here.</p>
               </div>
               <button 
-                onClick={() => setIsModalOpen(true)}
+                onClick={() => router.push("/studio")}
                 className="px-6 py-2.5 bg-linear-to-r from-[#01012A] to-[#2E2C66] text-white rounded-xl text-[14px] font-bold hover:opacity-90 transition-all shadow-lg active:scale-95"
               >
                 Preview
