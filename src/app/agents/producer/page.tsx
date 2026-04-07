@@ -13,6 +13,7 @@ import { ProducerModal } from "@/components/producer/ProducerModal";
 import { LiveProductionTracker } from "@/components/producer/LiveProductionTracker";
 import { CampaignHistoryList } from "@/components/producer/CampaignHistoryList";
 import { RaverLoadingState } from "@/components/ui/RaverLoadingState";
+import ConfirmationModal from "@/components/ui/ConfirmationModal";
 
 function ProducerContent() {
   const searchParams = useSearchParams();
@@ -21,6 +22,9 @@ function ProducerContent() {
   const [activeCampaign, setActiveCampaign] = useState<any>(null);
   const [history, setHistory] = useState<any[]>([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [campaignToDelete, setCampaignToDelete] = useState<any>(null);
+  const [isDeleting, setIsDeleting] = useState(false);
 
   const fetchHistory = async () => {
     try {
@@ -114,6 +118,37 @@ function ProducerContent() {
     }
   };
 
+  const handleDelete = (id: string) => {
+    const campaign = history.find(c => (c.id || c.campaign_id) === id);
+    setCampaignToDelete(campaign);
+    setIsDeleteModalOpen(true);
+  };
+
+  const confirmDelete = async () => {
+    if (!campaignToDelete) return;
+    const id = campaignToDelete.id || campaignToDelete.campaign_id;
+    setIsDeleting(true);
+    try {
+      const response = await apiFetch(`${process.env.NEXT_PUBLIC_API_URL}/ai/producer/campaign/${id}`, {
+        method: "DELETE"
+      });
+      if (response.ok) {
+        setHistory(prev => prev.filter(c => (c.id || c.campaign_id) !== id));
+        if (activeCampaign && (activeCampaign.id === id || activeCampaign.campaign_id === id)) {
+           setActiveCampaign(null);
+        }
+        setIsDeleteModalOpen(false);
+      } else {
+        alert("Failed to delete campaign.");
+      }
+    } catch (err) {
+      console.error("Delete error:", err);
+      alert("Error deleting campaign.");
+    } finally {
+      setIsDeleting(false);
+    }
+  };
+
   if (isSyncing) {
     return (
       <RaverLoadingState
@@ -168,6 +203,7 @@ function ProducerContent() {
           <div className="pt-8">
             <CampaignHistoryList
               history={history}
+              onDelete={handleDelete}
             />
           </div>
         </div>
@@ -182,6 +218,17 @@ function ProducerContent() {
             activeCampaign={activeCampaign}
           />
         )}
+
+        <ConfirmationModal
+          isOpen={isDeleteModalOpen}
+          onClose={() => setIsDeleteModalOpen(false)}
+          onConfirm={confirmDelete}
+          title="Delete Production"
+          message={`Are you sure you want to delete "${campaignToDelete?.name || 'this production'}"? This will permanently remove the audit and all associated assets.`}
+          confirmText="Delete Production"
+          variant="danger"
+          isLoading={isDeleting}
+        />
       </div>
     </DashboardLayout>
   );

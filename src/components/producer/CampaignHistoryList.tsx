@@ -4,9 +4,10 @@ import { cn } from "@/lib/utils";
 
 interface CampaignHistoryListProps {
   history: any[];
+  onDelete?: (id: string) => void;
 }
 
-export function CampaignHistoryList({ history }: CampaignHistoryListProps) {
+export function CampaignHistoryList({ history, onDelete }: CampaignHistoryListProps) {
   if (!history.length) return null;
 
   return (
@@ -17,8 +18,7 @@ export function CampaignHistoryList({ history }: CampaignHistoryListProps) {
             <Icons.Files className="w-5 h-5 text-slate-400" />
           </div>
           <div className="flex flex-col">
-            <h2 className="text-xl font-black text-[#01012A] tracking-tighter lowercase leading-none">Dossier Matrix</h2>
-            <p className="text-[10px] font-black uppercase tracking-[0.3em] text-slate-400 mt-2">Historical Production Audits</p>
+            <h2 className="text-xl font-black text-[#01012A] tracking-tighter lowercase leading-none">Production Audits</h2>
           </div>
         </div>
         <div className="flex items-center gap-2 px-4 py-2 bg-slate-50 rounded-full border border-slate-100">
@@ -39,16 +39,30 @@ export function CampaignHistoryList({ history }: CampaignHistoryListProps) {
             {/* Header Section */}
             <div className="flex items-center justify-between relative z-10 mb-6">
               <div className="flex flex-col gap-1">
-                <span className="text-[10px] font-black uppercase tracking-widest text-slate-400">Merchant Identity</span>
                 <h4 className="text-xl font-black text-[#01012A] tracking-tighter lowercase">{campaign.name || "unnamed_brief"}</h4>
               </div>
-              <div className={cn(
-                "px-3 py-1 rounded-lg text-[9px] font-black uppercase tracking-widest border",
-                campaign.status === "delivered" || campaign.status === "completed" || campaign.status === "ready_for_human_review"
-                  ? "bg-emerald-50 text-emerald-600 border-emerald-100"
-                  : "bg-slate-50 text-[#01012A] border-slate-100"
-              )}>
-                {campaign.status}
+              <div className="flex items-center gap-3">
+                <div className={cn(
+                  "px-3 py-1 rounded-lg text-[9px] font-black uppercase tracking-widest border",
+                  campaign.status === "delivered" || campaign.status === "completed" || campaign.status === "ready_for_human_review"
+                    ? "bg-emerald-50 text-emerald-600 border-emerald-100"
+                    : "bg-slate-50 text-[#01012A] border-slate-100"
+                )}>
+                  {campaign.status}
+                </div>
+                {onDelete && (
+                  <button
+                    onClick={(e) => {
+                      e.preventDefault();
+                      e.stopPropagation();
+                      onDelete(campaign.id);
+                    }}
+                    className="w-8 h-8 rounded-xl flex items-center justify-center bg-red-50 text-red-500 border border-red-100 hover:bg-red-500 hover:text-white transition-all active:scale-90 shadow-sm"
+                    title="Delete Audit"
+                  >
+                    <Icons.Trash className="w-3.5 h-3.5" />
+                  </button>
+                )}
               </div>
             </div>
 
@@ -81,4 +95,4 @@ export function CampaignHistoryList({ history }: CampaignHistoryListProps) {
       </div>
     </div>
   );
-}
+} 
