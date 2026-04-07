@@ -9,6 +9,11 @@ import ProjectCard from "@/components/dashboard/ProjectCard";
 import { Icons } from "@/components/ui/icons";
 import {CustomIcons} from "@/components/ui/custom-icons";
 import Link from "next/link";
+import { apiFetch } from "@/lib/api";
+import { useUser } from "@/context/UserContext";
+import CampaignPreviewModal from "@/components/studio/CampaignPreviewModal";
+import { toast } from "react-toastify";
+
 const stats = [
   { label: "Total Projects", value: "24", change: "12%", icon: Icons.Dashboard, trend: "up" as const },
   { label: "Content Generated", value: "1,847", change: "5.2%", icon: Icons.CreativeStudio, trend: "up" as const },
@@ -17,11 +22,11 @@ const stats = [
 ];
 
 const quickActions = [
-  { title: "Create Image", icon: Icons.Image, gradient: "bg-[linear-gradient(90deg,_#01012A_0%,_#2E2C66_100%)]" },
-  { title: "Create Video", icon: Icons.Video, gradient: "bg-[linear-gradient(135deg,_#F6339A_0%,_#FB2C36_100%)]" },
-  { title: "Generate Text", icon: Icons.Text, gradient: "bg-[linear-gradient(135deg,_#00C950_0%,_#00BC7D_100%)]" },
-  { title: "Start AI Project", icon: Icons.MagicWand, gradient: "bg-[linear-gradient(135deg,_#FF6900_0%,_#F0B100_100%)]" },
-  { title: "Open Template", icon: CustomIcons.Templates, gradient: "bg-[linear-gradient(90deg,_#01012A_0%,_#2E2C66_100%)]" },
+  { title: "Create Image", icon: Icons.Image, href: "/agents/image-lead", gradient: "bg-[linear-gradient(90deg,_#01012A_0%,_#2E2C66_100%)]" },
+  { title: "Create Video", icon: Icons.Video, href: "/studio", gradient: "bg-[linear-gradient(135deg,_#F6339A_0%,_#FB2C36_100%)]" },
+  { title: "Generate Text", icon: Icons.Text, href: "/chat", gradient: "bg-[linear-gradient(135deg,_#00C950_0%,_#00BC7D_100%)]" },
+  { title: "Start AI Project", icon: Icons.MagicWand, href: "/agents", gradient: "bg-[linear-gradient(135deg,_#FF6900_0%,_#F0B100_100%)]" },
+  { title: "Open Template", icon: CustomIcons.Templates, href: "/templates", gradient: "bg-[linear-gradient(90deg,_#01012A_0%,_#2E2C66_100%)]" },
 ];
 
 const recentProjects = [
@@ -45,42 +50,61 @@ const recentProjects = [
   },
 ];
 
-import { apiFetch } from "@/lib/api";
-import { useUser } from "@/context/UserContext";
-
 export default function HomePage() {
-  const [dashboardProjects, setDashboardProjects] = useState(recentProjects);
+  const [dashboardProjects, setDashboardProjects] = useState<any[]>([]);
   const [dashboardStats, setDashboardStats] = useState(stats);
+  const [activeCampaign, setActiveCampaign] = useState<any>(null);
+  const [isPreviewOpen, setIsPreviewOpen] = useState(false);
+  const [isProjectsLoading, setIsProjectsLoading] = useState(true);
   const { user } = useUser();
 
   useEffect(() => {
     // Attempt to fetch live data from the backend
     const fetchDashboardData = async () => {
       try {
-        const API_BASE = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000/api";
-        const [projectsRes, statsRes] = await Promise.all([
-          apiFetch(`${API_BASE}/projects`).catch(() => null),
-          apiFetch(`${API_BASE}/campaigns`).catch(() => null)
-        ]);
+        const API_BASE = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
         
-        if (projectsRes && projectsRes.ok) {
-          const responseData = await projectsRes.json();
-          if (responseData.success && responseData.data && responseData.data.length > 0) {
-            setDashboardProjects(responseData.data.slice(0, 3).map((p: any) => ({
-              title: p.name,
-              time: "Just now",
-              members: 1,
-              image: "/assets/f3866e13f8851b89b6d19d9a6186e137dbe58fcc.jpg"
+        // Fetch AI Director Sessions (AI Creative)
+        const response = await apiFetch(`${API_BASE}/ai/director/sessions`);
+        
+        if (response.ok) {
+          const result = await response.json();
+          const sessionsArray = Array.isArray(result.data?.sessions) ? result.data.sessions : result.data;
+          
+          if (Array.isArray(sessionsArray)) {
+            // Sort by creation date and take latest 3
+            const sorted = sessionsArray.sort((a, b) => {
+               const tA = a.created_at ? new Date(a.created_at).getTime() : 0;
+               const tB = b.created_at ? new Date(b.created_at).getTime() : 0;
+               return tB - tA;
+            });
+
+            setDashboardProjects(sorted.slice(0, 3).map((s: any) => ({
+              id: s.campaign_id || s.id,
+              session_id: s.session_id || s.id,
+              title: s.title || (s.brief_draft?.business_name ? `${s.brief_draft.business_name} Campaign` : `Session ${s.session_id || s.id}`),
+              status: s.status || "ready",
+              message: s.message || s.prompt,
+              video_url: s.video_url,
+              voiceover_url: s.voiceover_url,
+              music_url: s.music_url,
+              script: s.script,
+              history: s.history,
+              brief_draft: s.brief_draft,
+              prompt: s.prompt,
+              voice_id: s.voice || s.voice_id || s.brief_draft?.voice || s.production?.voice || s.metadata?.voice || "adam",
+              image: "/assets/hashtag-campaign.jpg",
+              created_at: s.created_at,
+              time: s.created_at ? "Recently" : "Just now"
             })));
           }
         }
-      } catch (err) {
-        if (err instanceof Error && err.message === 'Unauthorized') return;
-        console.error("Dashboard API integration error:", err);
-      }
-    };
-    fetchDashboardData();
-  }, []);
+    } finally {
+      setIsProjectsLoading(false);
+    }
+  };
+  fetchDashboardData();
+}, []);
 
   return (
     <DashboardLayout>
@@ -119,12 +143,54 @@ export default function HomePage() {
             </Link>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {dashboardProjects.map((project, i) => (
-              <ProjectCard key={i} {...project} />
-            ))}
+            {isProjectsLoading ? (
+               Array.from({ length: 3 }).map((_, i) => (
+                  <div key={i} className="p-[8px] bg-slate-50/50 rounded-[12px] border border-slate-100 animate-pulse h-[340px] flex flex-col gap-4">
+                     <div className="w-full aspect-video bg-slate-200 rounded-lg" />
+                     <div className="flex-1 space-y-3 px-2">
+                        <div className="h-4 bg-slate-200 rounded w-3/4" />
+                        <div className="h-3 bg-slate-200 rounded w-1/2" />
+                        <div className="mt-8 h-10 bg-slate-200 rounded-xl" />
+                     </div>
+                  </div>
+               ))
+            ) : dashboardProjects.length > 0 ? (
+              dashboardProjects.map((project, i) => (
+                <ProjectCard 
+                  key={i} 
+                  {...project} 
+                  image={project.image || "/assets/hashtag-campaign.jpg"}
+                  videoUrl={project.video_url}
+                  members={1}
+                  onPreview={() => {
+                    setActiveCampaign(project);
+                    setIsPreviewOpen(true);
+                  }}
+                />
+              ))
+            ) : (
+              <div className="col-span-1 md:col-span-2 lg:col-span-3 flex flex-col items-center justify-center py-10 bg-slate-50/50 rounded-3xl border border-dashed border-slate-200">
+                 <Icons.MagicWand className="w-10 h-10 text-slate-300 mb-4" />
+                 <p className="text-slate-400 font-bold uppercase tracking-widest text-[10px]">No active campaigns found</p>
+                 <Link href="/agents" className="text-blue-500 font-bold text-xs mt-2 hover:underline">Start a new campaign</Link>
+              </div>
+            )}
           </div>
         </div>
       </div>
+
+      <CampaignPreviewModal 
+          isOpen={isPreviewOpen}
+          onClose={() => setIsPreviewOpen(false)}
+          campaignData={activeCampaign ? {
+            ...activeCampaign,
+            session_id: activeCampaign.session_id,
+            campaign_id: activeCampaign.id
+          } : null}
+          onRefresh={() => {
+             // Re-fetch data if needed
+          }}
+      />
     </DashboardLayout>
   );
 }

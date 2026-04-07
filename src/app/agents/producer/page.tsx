@@ -105,7 +105,8 @@ function ProducerContent() {
         if (data.success && data.data) {
           setActiveCampaign(data.data);
           setIsModalOpen(false);
-          fetchHistory(); // Refresh list immediately
+          await fetchHistory(); // Refresh list immediately
+          window.location.reload(); // Hard reload as requested
         }
       } else {
         alert("Launch failed: Matrix infrastructure busy.");

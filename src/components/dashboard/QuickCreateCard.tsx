@@ -1,19 +1,22 @@
-import { LucideIcon } from "lucide-react";
 import { cn } from "@/lib/utils";
+import Link from "next/link";
 
 interface QuickCreateCardProps {
   title: string;
   icon: React.ComponentType<{ className?: string }>;
-  hoverColor?: string;
+  href: string;
   gradient?: string;
 }
 
-export default function QuickCreateCard({ title, icon: Icon, hoverColor, gradient }: QuickCreateCardProps) {
+export default function QuickCreateCard({ title, icon: Icon, href, gradient }: QuickCreateCardProps) {
   return (
-    <button className={cn(
-      "group relative flex-1 min-w-[181.8px] h-[84px] bg-white rounded-[8px] border-[0.35px]-[#0000001A]  p-5 flex flex-col items-start gap-3 transition-all duration-300 overflow-hidden shadow-sm",
-      "hover:shadow-xl hover:scale-[1.02] hover:-translate-y-1"
-    )}>
+    <Link 
+      href={href}
+      className={cn(
+        "group relative flex-1 min-w-[181.8px] h-[84px] bg-white rounded-[8px] border border-[#0000001A] p-5 flex flex-col items-start gap-3 transition-all duration-300 overflow-hidden shadow-sm shrink-0",
+        "hover:shadow-xl hover:scale-[1.02] hover:-translate-y-1"
+      )}
+    >
       {/* Dynamic Hover Gradient Background */}
       <div 
         className={cn(
@@ -33,6 +36,6 @@ export default function QuickCreateCard({ title, icon: Icon, hoverColor, gradien
           {title}
         </span>
       </div>
-    </button>
+    </Link>
   );
 }

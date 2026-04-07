@@ -59,7 +59,7 @@ export default function CampaignPreviewModal({
 
   // Get the name of the selected voice for display
   const selectedVoiceName =
-    VOICE_OPTIONS.find((v) => v.id.toLowerCase() === selectedVoice?.toLowerCase())?.name || "adam";
+    VOICE_OPTIONS.find((v) => v.id.toLowerCase() === selectedVoice?.toLowerCase())?.name || selectedVoice || "Neural Selection";
 
   // Initialize and sync history & script
   useEffect(() => {
@@ -70,11 +70,9 @@ export default function CampaignPreviewModal({
       setLocalStatus(campaignData.status);
       setEditedScript(campaignData.script || "");
 
-      // Initialize selected voice from campaign data, if available — otherwise default to 'adam'
+      // Initialize selected voice from campaign data, if available
       if (campaignData.voice_id) {
         setSelectedVoice(campaignData.voice_id.toLowerCase());
-      } else {
-        setSelectedVoice("adam");
       }
     }
   }, [isOpen, campaignData]);
