@@ -5,11 +5,14 @@ import { cn } from "@/lib/utils";
 import { Icons } from "@/components/ui/icons";
 
 interface Session {
-  sessionId: string;
+  id?: string;
+  sessionId?: string;
   tag?: string;
   createdAt?: string;
+  mainImageUrl?: string;
+  scenes?: { label: string | number; url: string }[];
   metadata?: {
-    scenes?: { label: string; url: string }[];
+    scenes?: { label: string | number; url: string }[];
   };
 }
 
@@ -30,36 +33,59 @@ export function SessionBrowser({
 
   return (
     <div className="flex flex-col gap-4">
-      <div className="flex items-center gap-4 overflow-x-auto pb-4 scrollbar-hide">
-        {sessions
-          .map((s) => (
-          <button
-            key={s.sessionId}
-            onClick={() => onSelect(s)}
-            onDoubleClick={onReset}
-            className={cn(
-              "group flex flex-col gap-2 p-4 rounded-2xl border transition-all min-w-[180px] text-left relative overflow-hidden",
-              activeSessionId === s.sessionId 
-                ? "bg-[#0A0A0A] text-white border-[#0A0A0A] translate-y-[-2px]" 
-                : "bg-white text-slate-600 border-slate-100 hover:border-slate-300 hover:bg-slate-50"
-            )}
-          >
-            <div className="flex items-center justify-between">
-              <Icons.Clock className={cn("w-3.5 h-3.5", activeSessionId === s.sessionId ? "opacity-100" : "opacity-30")} />
-              {s.createdAt && (
-                <span className="text-[9px] font-bold opacity-40 uppercase tracking-tighter">
-                  {new Date(s.createdAt).toLocaleDateString([], { month: 'short', day: 'numeric' })}
-                </span>
+      <div className="flex items-center gap-4 overflow-x-auto pb-4 scrollbar-hide px-1">
+        {sessions.map((s) => {
+          const sid = s.sessionId || s.id || "";
+          const isActive = activeSessionId === sid;
+          const thumbnail = s.mainImageUrl || s.scenes?.[0]?.url || s.metadata?.scenes?.[0]?.url;
+
+          return (
+            <button
+              key={sid}
+              onClick={() => onSelect(s)}
+              onDoubleClick={onReset}
+              className={cn(
+                "group flex flex-col gap-3 p-3 rounded-[24px] border transition-all min-w-[200px] text-left relative overflow-hidden shrink-0",
+                isActive 
+                  ? "bg-[#0A0A0A] text-white border-[#0A0A0A] shadow-xl shadow-black/10 -translate-y-1" 
+                  : "bg-white text-slate-600 border-slate-100 hover:border-slate-300 hover:bg-slate-50"
               )}
-            </div>
-            <span className="text-[12px] font-black truncate tracking-tighter uppercase">
-              {s.tag || s.sessionId.replace("raver_campaign_", "")}
-            </span>
-            {activeSessionId === s.sessionId && (
-              <div className="absolute bottom-0 left-0 right-0 h-1 bg-linear-to-r from-transparent via-white/20 to-transparent" />
-            )}
-          </button>
-        ))}
+            >
+              {/* Thumbnail Preview */}
+              <div className="relative aspect-video w-full rounded-[18px] overflow-hidden bg-slate-100 border border-black/3">
+                {thumbnail ? (
+                  <img src={thumbnail} alt="Session Preview" className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" />
+                ) : (
+                  <div className="absolute inset-0 flex items-center justify-center opacity-20">
+                    <Icons.Image className="w-8 h-8" />
+                  </div>
+                )}
+                {isActive && (
+                   <div className="absolute top-2 right-2 w-5 h-5 bg-emerald-500 rounded-full flex items-center justify-center shadow-lg animate-in zoom-in-0 duration-300">
+                      <Icons.CheckCircle className="w-3 h-3 text-white" />
+                   </div>
+                )}
+              </div>
+
+              <div className="flex flex-col gap-1 px-1">
+                <div className="flex items-center justify-between">
+                  <span className="text-[10px] font-black truncate tracking-tighter uppercase opacity-80">
+                    {s.tag || sid.replace("raver_campaign_", "ID: ")}
+                  </span>
+                  <Icons.Clock className={cn("w-3 h-3", isActive ? "opacity-100" : "opacity-30")} />
+                </div>
+                {s.createdAt && (
+                  <span className={cn(
+                    "text-[9px] font-bold uppercase tracking-widest",
+                    isActive ? "opacity-40" : "opacity-30"
+                  )}>
+                    {new Date(s.createdAt).toLocaleDateString([], { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' })}
+                  </span>
+                )}
+              </div>
+            </button>
+          );
+        })}
 
         {/* View All Sessions Button */}
         {activeSessionId && (

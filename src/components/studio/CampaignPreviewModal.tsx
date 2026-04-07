@@ -6,6 +6,7 @@ import { useUser } from "@/context/UserContext";
 import { MarkdownRenderer } from "@/components/ui/MarkdownRenderer";
 import { apiFetch } from "@/lib/api";
 import { getToken } from "@/lib/auth";
+import { VoiceSelector, VOICE_OPTIONS } from "@/components/agents/audio-lead/VoiceSelector";
 import { toast } from "react-toastify";
 
 interface CampaignPreviewModalProps {
@@ -32,52 +33,6 @@ interface CampaignPreviewModalProps {
   onSwitchCampaign?: () => void;
 }
 
-// Voice options (ElevenLabs Premade Voices)
-const voiceOptions = [
-  // Professional Male Narrators
-  { id: "adam", name: "Adam - Deep Casual American (Default)", category: "Male - Professional", accent: "American" },
-  { id: "arnold", name: "Arnold - Crisp Calm Narrator", category: "Male - Professional", accent: "American" },
-  { id: "callum", name: "Callum - Strong Middle-Aged", category: "Male - Professional", accent: "American" },
-  { id: "clyde", name: "Clyde - American Narrator", category: "Male - Professional", accent: "American" },
-  { id: "daniel", name: "Daniel - Deep Authoritative", category: "Male - Professional", accent: "British" },
-  { id: "george", name: "George - Warm Narrator", category: "Male - Professional", accent: "British" },
-  { id: "james", name: "James - Professional Calm", category: "Male - Professional", accent: "British" },
-  { id: "joseph", name: "Joseph - Professional British", category: "Male - Professional", accent: "British" },
-  { id: "liam", name: "Liam - Neutral Professional", category: "Male - Professional", accent: "American" },
-  { id: "michael", name: "Michael - Deep American", category: "Male - Professional", accent: "American" },
-
-  // Casual/Young Male
-  { id: "antoni", name: "Antoni - Well-Rounded Warm", category: "Male - Casual", accent: "American" },
-  { id: "charlie", name: "Charlie - Casual Australian", category: "Male - Casual", accent: "Australian" },
-  { id: "drew", name: "Drew - Young Energetic", category: "Male - Casual", accent: "American" },
-  { id: "ethan", name: "Ethan - Conversational", category: "Male - Casual", accent: "American" },
-  { id: "fin", name: "Fin - Warm Irish", category: "Male - Casual", accent: "Irish" },
-  { id: "harry", name: "Harry - British Young", category: "Male - Casual", accent: "British" },
-  { id: "jeremy", name: "Jeremy - Animated Irish", category: "Male - Casual", accent: "Irish" },
-  { id: "josh", name: "Josh - Young American", category: "Male - Casual", accent: "American" },
-  { id: "patrick", name: "Patrick - Conversational", category: "Male - Casual", accent: "American" },
-  { id: "sam", name: "Sam - Raspy American", category: "Male - Casual", accent: "American" },
-  { id: "thomas", name: "Thomas - Young Energetic", category: "Male - Casual", accent: "American" },
-
-  // Professional Female
-  { id: "charlotte", name: "Charlotte - Clear British Narrator", category: "Female - Professional", accent: "British" },
-  { id: "domi", name: "Domi - Strong Confident", category: "Female - Professional", accent: "American" },
-  { id: "dorothy", name: "Dorothy - Warm Pleasant", category: "Female - Professional", accent: "British" },
-  { id: "emily", name: "Emily - Calm Professional", category: "Female - Professional", accent: "American" },
-  { id: "rachel", name: "Rachel - Calm Narrator", category: "Female - Professional", accent: "American" },
-  { id: "sarah", name: "Sarah - Soft Professional", category: "Female - Professional", accent: "American" },
-  { id: "alice", name: "Alice - Confident British", category: "Female - Professional", accent: "British" },
-  { id: "matilda", name: "Matilda - Warm American", category: "Female - Professional", accent: "American" },
-
-  // Casual/Young Female
-  { id: "elli", name: "Elli - Emotional Young", category: "Female - Casual", accent: "American" },
-  { id: "freya", name: "Freya - Young Expressive", category: "Female - Casual", accent: "American" },
-  { id: "gigi", name: "Gigi - Upbeat", category: "Female - Casual", accent: "American" },
-  { id: "grace", name: "Grace - Soft Southern", category: "Female - Casual", accent: "American Southern" },
-  { id: "jessica", name: "Jessica - Young American", category: "Female - Casual", accent: "American" },
-  { id: "lily", name: "Lily - British Conversational", category: "Female - Casual", accent: "British" },
-  { id: "nicole", name: "Nicole - Whisper Soft", category: "Female - Casual", accent: "American" },
-];
 
 export default function CampaignPreviewModal({
   isOpen,
@@ -104,7 +59,7 @@ export default function CampaignPreviewModal({
 
   // Get the name of the selected voice for display
   const selectedVoiceName =
-    voiceOptions.find((v) => v.id.toLowerCase() === selectedVoice?.toLowerCase())?.name || "adam";
+    VOICE_OPTIONS.find((v) => v.id.toLowerCase() === selectedVoice?.toLowerCase())?.name || "adam";
 
   // Initialize and sync history & script
   useEffect(() => {
@@ -470,34 +425,14 @@ export default function CampaignPreviewModal({
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {/* Voice Selection */}
             <div className="space-y-4">
-              <h3 className="text-[12px] font-black text-[#02022C] uppercase tracking-[0.2em]">Voice Selection</h3>
-              {voiceOptions && voiceOptions.length > 0 ? (
-                <>
-                  <div className="relative">
-                    <select
-                      value={selectedVoice}
-                      onChange={(e) => setSelectedVoice(e.target.value)}
-                      className="w-full p-4 bg-white border border-[#E2E8F0] focus:border-[#02022C] text-[#334155] rounded-2xl text-[13px] font-medium outline-none transition-colors appearance-none cursor-pointer"
-                    >
-                      <option value="" disabled>Select Voice Casting...</option>
-                      <option value="adam">Adam - Deep Casual American (Default)</option>
-                      {voiceOptions.map((voice) => (
-                        <option key={voice.id} value={voice.id}>
-                          {voice.name}
-                        </option>
-                      ))}
-                    </select>
-                    <Icons.ChevronRight className="w-4 h-4 text-[#94A3B8] absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none rotate-90" />
-                  </div>
-                  <p className="text-xs text-[#64748B] mt-1 ml-1">
-                    Active voice: <span className="font-bold text-[#02022C]">{selectedVoiceName}</span>
-                  </p>
-                </>
-              ) : (
-                <div className="p-4 bg-gray-50 border border-[#E2E8F0] rounded-2xl text-[13px] text-[#64748B]">
-                  ⚠️ No voice options available.
-                </div>
-              )}
+              <h3 className="text-[12px] font-black text-[#02022C] uppercase tracking-[0.2em]">Neural Voice Casting</h3>
+              <VoiceSelector 
+                selectedVoice={selectedVoice}
+                onSelect={(id) => setSelectedVoice(id)}
+              />
+              <p className="text-[10px] text-slate-400 font-bold uppercase tracking-widest mt-1 ml-1 leading-relaxed">
+                Active Selection: <span className="text-[#02022C]">{selectedVoiceName}</span>
+              </p>
             </div>
 
             {/* Background Music Prompt */}

@@ -5,30 +5,9 @@ import { Icons } from "@/components/ui/icons";
 import { useState, useCallback } from "react";
 import CampaignSelectionModal from "./CampaignSelectionModal";
 import { useVoiceInput } from "@/hooks/useVoiceInput";
+import { cn } from "@/lib/utils";
 
-// Voice options (ElevenLabs Premade Voices) — same list surfaced in preview modal
-const voiceOptions = [
-  { id: "adam", name: "Adam - Deep Casual American", category: "Male" },
-  { id: "arnold", name: "Arnold - Crisp Calm Narrator", category: "Male" },
-  { id: "callum", name: "Callum - Strong Middle-Aged", category: "Male" },
-  { id: "daniel", name: "Daniel - Deep Authoritative", category: "Male" },
-  { id: "george", name: "George - Warm Narrator", category: "Male" },
-  { id: "james", name: "James - Professional Calm", category: "Male" },
-  { id: "liam", name: "Liam - Neutral Professional", category: "Male" },
-  { id: "charlie", name: "Charlie - Casual Australian", category: "Male" },
-  { id: "ethan", name: "Ethan - Conversational", category: "Male" },
-  { id: "josh", name: "Josh - Young American", category: "Male" },
-  { id: "charlotte", name: "Charlotte - Clear British", category: "Female" },
-  { id: "domi", name: "Domi - Strong Confident", category: "Female" },
-  { id: "emily", name: "Emily - Calm Professional", category: "Female" },
-  { id: "rachel", name: "Rachel - Calm Narrator", category: "Female" },
-  { id: "sarah", name: "Sarah - Soft Professional", category: "Female" },
-  { id: "alice", name: "Alice - Confident British", category: "Female" },
-  { id: "matilda", name: "Matilda - Warm American", category: "Female" },
-  { id: "freya", name: "Freya - Young Expressive", category: "Female" },
-  { id: "gigi", name: "Gigi - Upbeat", category: "Female" },
-  { id: "jessica", name: "Jessica - Young American", category: "Female" },
-];
+import { VoiceSelector, VOICE_OPTIONS } from "@/components/agents/audio-lead/VoiceSelector";
 
 interface Campaign {
   id?: string;
@@ -109,7 +88,7 @@ export default function StudioHero({
     setVoiceError(false);
 
     // Append voice selection to the prompt so AI Director knows
-    const voiceName = voiceOptions.find(v => v.id === selectedVoice)?.name || selectedVoice;
+    const voiceName = VOICE_OPTIONS.find(v => v.id === selectedVoice)?.name || selectedVoice;
     const enrichedPrompt = `${prompt.trim()}\n\n[Voice: ${selectedVoice} (${voiceName})]`;
 
     onSend?.(enrichedPrompt);
@@ -193,48 +172,37 @@ export default function StudioHero({
           </div>
         </div>
 
-        {/* Voice Selection — Mandatory */}
         <div className="flex flex-col gap-2">
-          <div className="flex items-center gap-2">
-            <span className="text-[13px] font-semibold text-[#64748B]">
-              Voice Selection <span className="text-red-500">*</span>
-            </span>
-            <span className="text-[10px] font-bold text-[#94A3B8] uppercase tracking-wider">(Required)</span>
-          </div>
-          <div className="flex items-center gap-3">
-            <div className="relative flex-1">
-              <select
-                value={selectedVoice}
-                onChange={(e) => {
-                  setSelectedVoice(e.target.value);
-                  setVoiceError(false);
-                }}
-                className={`w-full px-4 py-2.5 bg-white border rounded-xl text-[12px] font-medium outline-none transition-colors appearance-none cursor-pointer ${
-                  voiceError ? "border-red-400 ring-2 ring-red-100 text-[#334155]" : selectedVoice ? "border-[#E2E8F0] focus:border-[#02022C] text-[#334155]" : "border-[#E2E8F0] focus:border-[#02022C] text-[#94A3B8]"
-                }`}
-              >
-                <option value="" disabled>Select a voice for your campaign...</option>
-                {voiceOptions.map((voice) => (
-                  <option key={voice.id} value={voice.id}>
-                    {voice.name} ({voice.category})
-                  </option>
-                ))}
-              </select>
-              <Icons.ChevronRight className="w-3.5 h-3.5 text-[#94A3B8] absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none rotate-90" />
-            </div>
-            {/* Current voice badge */}
-            <div className={`px-3 py-2 border rounded-xl flex items-center gap-2 shrink-0 ${
-              selectedVoice ? "bg-[#02022C]/5 border-[#02022C]/10" : "bg-red-50 border-red-200"
-            }`}>
-              <div className={`w-2 h-2 rounded-full ${selectedVoice ? "bg-green-500 animate-pulse" : "bg-red-400"}`} />
-              <span className={`text-[10px] font-black uppercase tracking-wider ${selectedVoice ? "text-[#02022C]" : "text-red-500"}`}>
-                {selectedVoice ? voiceOptions.find(v => v.id === selectedVoice)?.name.split(" - ")[0] : "Not Selected"}
+          <div className="flex items-center justify-between mb-1">
+            <div className="flex items-center gap-2">
+              <span className="text-[11px] font-black text-[#01012A] uppercase tracking-[0.2em]">
+                Neural Casting <span className="text-red-500">*</span>
               </span>
+              <span className="text-[9px] font-bold text-slate-300 uppercase tracking-widest">(Mandatory)</span>
             </div>
+            {selectedVoice && (
+              <div className="flex items-center gap-2 px-3 py-1 bg-emerald-50 border border-emerald-100 rounded-full animate-in fade-in slide-in-from-right-2 duration-500">
+                <div className="w-1.5 h-1.5 bg-emerald-500 rounded-full animate-pulse" />
+                <span className="text-[9px] font-black text-emerald-600 uppercase tracking-tighter">Ready For Production</span>
+              </div>
+            )}
           </div>
+          
+          <VoiceSelector 
+            selectedVoice={selectedVoice}
+            onSelect={(id) => {
+              setSelectedVoice(id);
+              setVoiceError(false);
+            }}
+            className={cn(
+              "transition-all duration-300",
+              voiceError && "ring-4 ring-red-500/20 rounded-[22px]"
+            )}
+          />
+
           {voiceError && (
-            <p className="text-[11px] text-red-500 font-medium animate-in fade-in duration-200">
-              ⚠️ Please select a voice before sending your prompt.
+            <p className="text-[10px] text-red-500 font-bold uppercase tracking-widest mt-1 animate-in fade-in slide-in-from-top-1 duration-300 ml-1">
+              ⚠️ You must select a neural profile before initiating production
             </p>
           )}
         </div>

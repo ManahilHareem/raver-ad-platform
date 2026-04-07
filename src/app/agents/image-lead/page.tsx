@@ -78,14 +78,38 @@ function ImageLeadContent() {
           
           // If no session is selected, aggregate all scenes from all sessions
           if (!sessionId) {
-            const allScenes = sessionsData.flatMap((s: any) => 
-              (s.metadata?.scenes || []).map((scene: any) => ({
-                filename: scene.label || s.sessionId,
-                url: scene.url,
-                label: scene.label || "Scene Asset",
-                sessionId: s.sessionId
-              }))
-            );
+            const allScenes: ImageAsset[] = [];
+            const seenUrls = new Set<string>();
+
+            sessionsData.forEach((s: any) => {
+              const sid = s.sessionId || s.id;
+              
+              // 1. Add Main Image
+              if (s.mainImageUrl && !seenUrls.has(s.mainImageUrl)) {
+                allScenes.push({
+                  filename: `hero_${sid}`,
+                  url: s.mainImageUrl,
+                  label: "Hero Image",
+                  sessionId: sid
+                } as any);
+                seenUrls.add(s.mainImageUrl);
+              }
+
+              // 2. Add Scenes
+              const sessionScenes = s.scenes || s.metadata?.scene_images || s.metadata?.scenes || [];
+              sessionScenes.forEach((scene: any) => {
+                const url = scene.url || scene.image_url;
+                if (url && !seenUrls.has(url)) {
+                  allScenes.push({
+                    filename: scene.label || scene.scene_id || sid,
+                    url: url,
+                    label: scene.label ? `Scene ${scene.label}` : "Scene Asset",
+                    sessionId: sid
+                  } as any);
+                  seenUrls.add(url);
+                }
+              });
+            });
             setVault(allScenes);
           }
           return sessionsData;
@@ -117,13 +141,34 @@ function ImageLeadContent() {
     if (!sessionId) return [];
     
     // Fallback logic
-    const currentSession = sessions.find(s => s.sessionId === sessionId);
-    const fallbackScenes = currentSession?.metadata?.scenes ? currentSession.metadata.scenes.map((scene: any) => ({
-      filename: scene.label || currentSession.sessionId,
-      url: scene.url,
-      label: scene.label || "Scene Asset",
-      sessionId: currentSession.sessionId
-    })) : [];
+    const currentSession = sessions.find(s => (s.sessionId || s.id) === sessionId);
+    if (!currentSession) return [];
+
+    const fallbackScenes: ImageAsset[] = [];
+    const seenUrls = new Set<string>();
+    const sid = currentSession.sessionId || currentSession.id;
+
+    if (currentSession.mainImageUrl && !seenUrls.has(currentSession.mainImageUrl)) {
+      fallbackScenes.push({
+        filename: `hero_${sid}`,
+        url: currentSession.mainImageUrl,
+        label: "Hero Image"
+      } as any);
+      seenUrls.add(currentSession.mainImageUrl);
+    }
+
+    const sessionScenes = currentSession?.scenes || currentSession?.metadata?.scene_images || currentSession?.metadata?.scenes || [];
+    sessionScenes.forEach((scene: any) => {
+      const url = scene.url || scene.image_url;
+      if (url && !seenUrls.has(url)) {
+        fallbackScenes.push({
+          filename: scene.label || scene.scene_id || sid,
+          url: url,
+          label: scene.label ? `Scene ${scene.label}` : "Scene Asset"
+        } as any);
+        seenUrls.add(url);
+      }
+    });
 
     try {
       const response = await apiFetch(`${API_BASE}/ai/image-lead/vault/${sessionId}`, {
@@ -325,32 +370,72 @@ function ImageLeadContent() {
   // Fetch vault when session changes
   useEffect(() => {
     if (sessionId) {
-      const currentSession = sessions.find(s => s.sessionId === sessionId);
-      const hasLocalScenes = currentSession?.metadata?.scenes && currentSession.metadata.scenes.length > 0;
+      const currentSession = sessions.find(s => (s.sessionId || s.id) === sessionId);
+      const sessionScenes = currentSession?.scenes || currentSession?.metadata?.scene_images || currentSession?.metadata?.scenes || [];
+      const hasLocalScenes = (sessionScenes && sessionScenes.length > 0) || currentSession?.mainImageUrl;
       
-      // Only fetch from network if we don't already have the scenes in memory
-      // This prevents API responses from overwriting our locally cached scenes right after selection.
       if (!hasLocalScenes) {
         fetchVault();
       } else {
-         const sceneImages = currentSession.metadata.scenes.map((scene: any) => ({
-           filename: scene.label || currentSession.sessionId,
-           url: scene.url,
-           label: scene.label || "Scene Asset",
-           sessionId: currentSession.sessionId
-         }));
-         setVault(sceneImages);
+         const collectedAssets: ImageAsset[] = [];
+         const seenUrls = new Set<string>();
+         const sid = currentSession.sessionId || currentSession.id;
+
+         if (currentSession.mainImageUrl && !seenUrls.has(currentSession.mainImageUrl)) {
+          collectedAssets.push({
+            filename: `hero_${sid}`,
+            url: currentSession.mainImageUrl,
+            label: "Hero Image",
+            sessionId: sid
+          } as any);
+          seenUrls.add(currentSession.mainImageUrl);
+         }
+
+         sessionScenes.forEach((scene: any) => {
+           const url = scene.url || scene.image_url;
+           if (url && !seenUrls.has(url)) {
+            collectedAssets.push({
+               filename: scene.label || scene.scene_id || sid,
+               url: url,
+               label: scene.label ? `Scene ${scene.label}` : "Scene Asset",
+               sessionId: sid
+             } as any);
+             seenUrls.add(url);
+           }
+         });
+         setVault(collectedAssets);
       }
     } else if (sessions.length > 0) {
       // Re-aggregate all scenes if session is cleared
-      const allScenes = sessions.flatMap((s: any) => 
-        (s.metadata?.scenes || []).map((scene: any) => ({
-          filename: scene.label || s.sessionId,
-          url: scene.url,
-          label: scene.label || "Scene Asset",
-          sessionId: s.sessionId
-        }))
-      );
+      const allScenes: ImageAsset[] = [];
+      const seenUrls = new Set<string>();
+
+      sessions.forEach((s: any) => {
+        const sid = s.sessionId || s.id;
+        if (s.mainImageUrl && !seenUrls.has(s.mainImageUrl)) {
+          allScenes.push({
+            filename: `hero_${sid}`,
+            url: s.mainImageUrl,
+            label: "Hero Image",
+            sessionId: sid
+          } as any);
+          seenUrls.add(s.mainImageUrl);
+        }
+
+        const sessionScenes = s.scenes || s.metadata?.scene_images || s.metadata?.scenes || [];
+        sessionScenes.forEach((scene: any) => {
+          const url = scene.url || scene.image_url;
+          if (url && !seenUrls.has(url)) {
+            allScenes.push({
+              filename: scene.label || scene.scene_id || sid,
+              url: url,
+              label: scene.label ? `Scene ${scene.label}` : "Scene Asset",
+              sessionId: sid
+            } as any);
+            seenUrls.add(url);
+          }
+        });
+      });
       setVault(allScenes);
     }
   }, [sessionId, sessions]);
@@ -391,23 +476,6 @@ function ImageLeadContent() {
           </div>
         </div>
 
-        {/* Session Selector */}
-        <SessionBrowser 
-          sessions={sessions}
-          activeSessionId={sessionId}
-          onSelect={(s) => {
-            setSessionId(s.sessionId);
-            if (s.metadata?.scenes) {
-              const sceneImages = s.metadata.scenes.map((scene: any) => ({
-                filename: scene.label || s.sessionId,
-                url: scene.url,
-                label: scene.label || "Scene Asset"
-              }));
-              setVault(sceneImages);
-            }
-          }}
-          onReset={() => setSessionId("")}
-        />
 
         {/* Media Vault Section */}
         <div className="bg-white rounded-[32px] p-5 sm:p-8 border border-[#F1F5F9] shadow-sm flex flex-col gap-8 scroll-mt-6">

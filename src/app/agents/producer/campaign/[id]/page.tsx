@@ -46,6 +46,31 @@ export default function CampaignDetailPage() {
     if (id) fetchCampaign();
   }, [id]);
 
+  // Use a second useEffect for polling to avoid reset issues
+  useEffect(() => {
+    if (!id || !campaign) return;
+
+    // Stop polling if the campaign has reached a terminal state
+    const terminalStatuses = ["delivered", "completed", "failed", "ready_for_human_review"];
+    if (terminalStatuses.includes(campaign.status)) return;
+
+    const interval = setInterval(async () => {
+       try {
+         const response = await apiFetch(`${process.env.NEXT_PUBLIC_API_URL}/ai/producer/campaign/${id}`);
+         if (response.ok) {
+           const data = await response.json();
+           if (data.success && data.data) {
+              setCampaign(data.data);
+           }
+         }
+       } catch (err) {
+         console.warn("Polling update failed:", err);
+       }
+    }, 3000);
+
+    return () => clearInterval(interval);
+  }, [id, campaign?.status]);
+
   if (isLoading) {
     return (
       <RaverLoadingState
@@ -77,16 +102,27 @@ export default function CampaignDetailPage() {
   const brief = campaign.config?.brief || campaign.brief || {};
   const nodes = campaign.config?.nodes || campaign.nodes || {};
   const result = campaign.config?.result || campaign.result || {};
-  const quality = result.quality_report || {};
+  const quality = result.quality_report || nodes.score_quality?.result || {};
   const campaignName = campaign.name || brief.business_name || "unnamed_production";
   const campaignId = campaign.id || campaign.campaign_id || id;
+  
+  // Extract Social Content
+  const social = result.platform_copy || nodes.generate_text?.result?.platform_copy || {};
+  const platform = brief.platform || "instagram";
+  const platformContent = social[platform] || Object.values(social)[0] || {};
+
+  // Extract Script Details
+  const scriptObj = nodes.generate_text?.result?.script || result.script_obj || result.script || {};
+  const fullScript = typeof scriptObj === 'string' ? scriptObj : scriptObj.script || "";
+  const sceneScripts = Array.isArray(scriptObj.scenes_scripts) ? scriptObj.scenes_scripts : [];
+  const overlays = result.overlays || nodes.generate_text?.result?.overlays || [];
 
   const getNodeStatus = (nodeKey: string) => {
     const node = nodes[nodeKey];
     if (!node) return "pending";
+    if (node.status === "failed" || node.error || (node.result?.status === "failed")) return "failed";
     if (node.status === "completed" || node.status === "success") return "done";
     if (node.status === "running" || node.status === "processing" || node.status === "started") return "running";
-    if (node.status === "failed" || node.error) return "failed";
     return "pending";
   };
 
@@ -103,8 +139,8 @@ export default function CampaignDetailPage() {
   };
 
   const steps = [
-    { id: "generate_text", label: "Narrative Synthesis", icon: Icons.Mic },
     { id: "generate_image", label: "Visual Matrix", icon: Icons.Image },
+    { id: "generate_text", label: "Narrative Synthesis", icon: Icons.Mic },
     { id: "generate_voice", label: "Neural Voice", icon: Icons.AudioWave },
     { id: "generate_music", label: "Atmospheric Score", icon: Icons.AudioWave },
     { id: "render", label: "Neural Rendering", icon: Icons.Video },
@@ -113,24 +149,24 @@ export default function CampaignDetailPage() {
 
   return (
     <DashboardLayout>
-      <div className="min-h-screen bg-slate-50/10 relative overflow-hidden flex flex-col">
+      <div className="min-h-screen relative overflow-hidden flex flex-col bg-white border-slate-100 rounded-[10px]">
 
         {/* Persistent Header Section */}
-        <div className="px-6 md:px-10 py-6 md:py-10 border-b border-slate-100 flex flex-col lg:flex-row lg:items-center justify-between gap-8 md:gap-10 shrink-0 bg-white relative z-20">
-          <div className="flex flex-col md:flex-row md:items-center gap-6 md:gap-8 overflow-hidden">
+        <div className="px-5 sm:px-8 md:px-10 py-6 sm:py-8 md:py-10 border-b border-slate-100 flex flex-col lg:flex-row lg:items-center justify-between gap-6 sm:gap-8 md:gap-10 shrink-0 relative z-20">
+          <div className="flex flex-col sm:flex-row sm:items-center gap-5 sm:gap-6 md:gap-8 overflow-hidden">
             <button
               onClick={() => router.push("/agents/producer")}
-              className="w-12 h-12 bg-slate-50 hover:bg-slate-100 rounded-2xl flex items-center justify-center border border-slate-100 transition-all active:scale-90 shrink-0 self-start md:self-auto"
+              className="w-11 h-11 sm:w-12 sm:h-12 bg-slate-50 hover:bg-slate-100 rounded-2xl flex items-center justify-center border border-slate-100 transition-all active:scale-90 shrink-0"
             >
-              <Icons.ArrowLeft className="w-5 h-5 text-[#01012A]" />
+              <Icons.ArrowLeft className="w-4 h-4 sm:w-5 sm:h-5 text-[#01012A]" />
             </button>
             <div className="flex flex-col gap-1 overflow-hidden">
-              <div className="flex flex-col sm:flex-row sm:items-center gap-3 md:gap-4 overflow-hidden">
-                <h1 className="text-[24px] sm:text-[30px] md:text-[34px] font-black text-[#121212] tracking-tighter lowercase leading-tight truncate max-w-full">
+              <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4 overflow-hidden">
+                <h1 className="text-[20px] sm:text-[28px] md:text-[32px] font-black text-[#121212] tracking-tighter  leading-tight truncate">
                   {campaignName}
                 </h1>
                 <div className={cn(
-                  "px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest border shadow-sm w-fit shrink-0",
+                  "px-3 py-1 sm:px-4 sm:py-1.5 rounded-full text-[9px] sm:text-[10px] font-black uppercase tracking-widest border shadow-sm w-fit",
                   campaign.status === "delivered" || campaign.status === "ready_for_human_review" || campaign.status === "completed"
                     ? "bg-emerald-50 text-emerald-600 border-emerald-100/50"
                     : "bg-slate-50 text-slate-500 border-slate-100"
@@ -138,17 +174,17 @@ export default function CampaignDetailPage() {
                   {campaign.status}
                 </div>
               </div>
-              <div className="flex flex-col sm:flex-row sm:items-center gap-2 md:gap-3 text-[9px] md:text-[10px] font-black uppercase tracking-[0.3em] text-slate-400 mt-2">
+              <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-[9px] sm:text-[10px] font-black uppercase tracking-widest sm:tracking-[0.3em] text-slate-400 mt-1 sm:mt-2">
                 <span className="truncate">CAMPAIGN_ID: {campaignId}</span>
                 <span className="hidden sm:inline w-1 h-1 rounded-full bg-slate-200" />
-                <span className="truncate">Neural Thread: {new Date(campaign.createdAt || campaign.created_at).toLocaleString()}</span>
+                <span className="truncate">Neural Thread: {new Date(campaign.createdAt || campaign.created_at).toLocaleString([], { dateStyle: 'short', timeStyle: 'short' })}</span>
               </div>
             </div>
           </div>
 
-          <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-4">
-            <button className="h-12 md:h-14 px-6 md:px-8 bg-white border border-slate-200 text-[#01012A] rounded-[20px] md:rounded-[22px] text-[10px] md:text-[11px] font-black uppercase tracking-widest transition-all hover:bg-slate-50 active:scale-95">
-              Download PDF
+          <div className="flex items-center gap-3 w-full sm:w-auto">
+            <button className="flex-1 sm:flex-none h-11 sm:h-14 px-6 sm:px-8 bg-white border border-slate-200 text-[#01012A] rounded-xl sm:rounded-[22px] text-[10px] font-black uppercase tracking-widest transition-all hover:bg-slate-50 active:scale-95">
+              Protocol PDF
             </button>
           </div>
         </div>
@@ -158,36 +194,26 @@ export default function CampaignDetailPage() {
           <div className="max-w-[1400px] mx-auto flex flex-col gap-8 md:gap-12 pb-32">
 
             {/* HERO: Cinema Mode Video Showcase */}
-            {result.video_url && (
+            {result.video_url ? (
               <div className="bg-[#01012A] rounded-[32px] md:rounded-[40px] overflow-hidden shadow-2xl shadow-black/20 relative group h-[60vh] sm:h-[70vh] lg:h-[80vh] transition-all duration-700">
-
                 {/* Immersive Hover Overlays */}
-                <div className="absolute inset-x-0 top-0 h-40 bg-linear-to-b from-black/80 to-transparent z-20 opacity-0 group-hover:opacity-100 transition-opacity duration-500 flex items-start justify-between p-8 md:p-12 pointer-events-none">
-                  <div className="flex flex-col gap-2 pointer-events-auto">
-                    <div className="flex items-center gap-3">
-                      <div className="w-8 h-8 rounded-full bg-emerald-500 animate-pulse" />
-                      <span className="text-[12px] font-black uppercase tracking-[0.4em] text-white/70">Master Production Render</span>
+                <div className="absolute inset-x-0 top-0 h-40 bg-linear-to-b from-black/80 to-transparent z-20 opacity-0 group-hover:opacity-100 transition-opacity duration-500 flex items-start justify-between p-6 sm:p-8 md:p-12 pointer-events-none">
+                  <div className="flex flex-col gap-1 sm:gap-2 pointer-events-auto">
+                    <div className="flex items-center gap-2 sm:gap-3">
+                      <div className="w-2 h-2 sm:w-8 sm:h-8 rounded-full bg-emerald-500 sm:animate-pulse" />
+                      <span className="text-[10px] sm:text-[12px] font-black uppercase tracking-widest sm:tracking-[0.4em] text-white/70">Master Production</span>
                     </div>
-                    <h2 className="text-[20px] md:text-[32px] font-black text-white tracking-tighter lowercase leading-none mt-1 shadow-black/20 drop-shadow-lg">Finalized Synthesis Output</h2>
+                    <h2 className="text-[16px] sm:text-[24px] md:text-[32px] font-black text-white tracking-tighter lowercase leading-none mt-1 shadow-black/20 drop-shadow-lg">Production Synthesis</h2>
                   </div>
 
-                  <div className="flex gap-4 pointer-events-auto">
+                  <div className="flex gap-2 sm:gap-4 pointer-events-auto">
                     <button
                       onClick={() => handleDownload(result.video_url)}
-                      className="w-14 h-14 bg-white/10 backdrop-blur-xl text-white border border-white/20 rounded-[20px] flex items-center justify-center hover:bg-white/30 transition-all active:scale-90"
+                      className="w-10 h-10 sm:w-14 sm:h-14 bg-white/10 backdrop-blur-xl text-white border border-white/20 rounded-xl sm:rounded-[20px] flex items-center justify-center hover:bg-white/30 transition-all active:scale-90"
                       title="Download Master"
                     >
-                      <Icons.Download className="w-6 h-6" />
+                      <Icons.Download className="w-5 h-5 sm:w-6 sm:h-6" />
                     </button>
-                    <a
-                      href={result.video_url}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="h-14 px-8 bg-white text-[#01012A] rounded-[20px] text-[11px] font-black uppercase tracking-widest flex items-center justify-center gap-3 hover:scale-105 active:scale-95 transition-all shadow-2xl shadow-black/20"
-                    >
-                      <Icons.ExternalLink className="w-4 h-4" />
-                      External
-                    </a>
                   </div>
                 </div>
 
@@ -209,8 +235,8 @@ export default function CampaignDetailPage() {
                   </div>
 
                   <div className={cn(
-                    "relative z-10 h-full flex items-center justify-center py-6 sm:py-10 md:py-16 w-full",
-                    brief.format === "9:16" ? "max-w-[500px]" : brief.format === "1:1" ? "max-w-[70vh]" : "max-w-6xl px-4"
+                    "relative z-10 h-full flex items-center justify-center py-4 sm:py-10 md:py-16 w-full",
+                    brief.format === "9:16" ? "max-w-[320px] sm:max-w-[440px] md:max-w-[500px]" : brief.format === "1:1" ? "max-w-[85%] sm:max-w-[70vh]" : "max-w-6xl px-4"
                   )}>
                     <video
                       controls
@@ -228,6 +254,38 @@ export default function CampaignDetailPage() {
                     </video>
                   </div>
                 </div>
+              </div>
+            ) : (
+              <div className="bg-slate-50 border-2 border-dashed border-slate-200 rounded-[32px] md:rounded-[40px] h-[40vh] flex flex-col items-center justify-center gap-6 text-center p-8">
+                {getNodeStatus("render") === "failed" ? (
+                  <>
+                    <div className="w-16 h-16 bg-red-50 rounded-full flex items-center justify-center border border-red-100">
+                      <Icons.Activity className="w-8 h-8 text-red-500" />
+                    </div>
+                    <div className="flex flex-col gap-2">
+                       <h3 className="text-xl font-black text-red-600 tracking-tighter lowercase">Neural Rendering Failed</h3>
+                       <p className="text-sm text-slate-400 font-bold max-w-md">
+                         {nodes.render?.result?.error || "The synthesis matrix encountered a timeout or resource allocation error during final rendering."}
+                       </p>
+                    </div>
+                    <button 
+                      onClick={() => window.location.reload()}
+                      className="h-11 px-8 bg-red-500 text-white rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-red-600 transition-all active:scale-95"
+                    >
+                      Retry Neural Sync
+                    </button>
+                  </>
+                ) : (
+                  <>
+                    <div className="w-16 h-16 bg-slate-100 rounded-full flex items-center justify-center border border-slate-200 animate-pulse">
+                      <Icons.Loader className="w-8 h-8 text-slate-300 animate-spin" />
+                    </div>
+                    <div className="flex flex-col gap-2">
+                       <h3 className="text-xl font-black text-slate-600 tracking-tighter lowercase">Rendering in Progress</h3>
+                       <p className="text-sm text-slate-400 font-bold">The master video is currently being synthesized in the visual matrix.</p>
+                    </div>
+                  </>
+                )}
               </div>
             )}
 
@@ -301,23 +359,33 @@ export default function CampaignDetailPage() {
                         <div key={step.id} className="flex gap-5 md:gap-6 group/node">
                           <div className="relative shrink-0">
                             <div className={cn(
-                              "w-7 h-7 rounded-[10px] flex items-center justify-center transition-all duration-700 relative z-10",
-                              isDone ? "bg-white text-[#01012A] shadow-[0_0_15px_rgba(255,255,255,0.3)]" :
+                              "w-8 h-8 rounded-xl flex items-center justify-center transition-all duration-700 relative z-10 shadow-sm",
+                              isDone ? "bg-white/10 text-white border border-white/20" :
                                 isRunning ? "bg-white/20 text-white animate-pulse" :
-                                  "bg-white/5 text-white/20 border border-white/5"
+                                  status === "failed" ? "bg-red-500/20 text-red-500 border border-red-500/20 shadow-xl shadow-red-200/10" :
+                                    "bg-white/5 text-white/20 border border-white/5"
                             )}>
-                              {isDone ? <Icons.Success className="w-3.5 h-3.5" /> :
-                                isRunning ? <Icons.Loader className="w-3.5 h-3.5 animate-spin" /> :
-                                  <div className="w-1 h-1 rounded-full bg-white/20" />}
+                              {isDone ? <Icons.Success className="w-4 h-4" /> :
+                                isRunning ? <Icons.Loader className="w-4 h-4 animate-spin" /> :
+                                  status === "failed" ? <Icons.Activity className="w-3.5 h-3.5" /> :
+                                    <div className="w-1.5 h-1.5 rounded-full bg-white/10" />}
                             </div>
                           </div>
                           <div className="flex flex-col overflow-hidden">
                             <span className={cn(
                               "text-[13px] md:text-[14px] font-bold tracking-tight truncate transition-colors duration-500",
-                              isDone ? "text-white" : isRunning ? "text-white/80" : "text-white/30"
+                              isDone ? "text-white" : 
+                                isRunning ? "text-white/80" : 
+                                  status === "failed" ? "text-red-400" :
+                                    "text-white/30"
                             )}>
                               {step.label}
                             </span>
+                            {status === "failed" && (
+                              <span className="text-[9px] font-bold text-red-400 mt-0.5 truncate">
+                                Error: {nodeData.result?.error || "Node synthesis failed"}
+                              </span>
+                            )}
                           </div>
                         </div>
                       );
@@ -333,11 +401,17 @@ export default function CampaignDetailPage() {
                     </div>
                     <h4 className="text-lg md:text-xl font-black text-[#01012A] tracking-tighter lowercase leading-none truncate">intel_matrix</h4>
                   </div>
-                  <div className="flex flex-col gap-5 md:gap-6">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-4 gap-y-5 md:gap-y-6">
                     {[
-                      { label: "Target Profile", value: brief.target_audience || campaign.audience },
-                      { label: "Visual Engine", value: brief.video_model || "Standard GPU Cluster" },
-                      { label: "Platform Canvas", value: brief.format || campaign.format },
+                      { label: "Neural Model", value: brief.video_model || "Standard GPU Cluster" },
+                      { label: "Platform Canvas", value: `${brief.platform || "Social"} | ${brief.format || campaign.format}` },
+                      { label: "Brand Tone", value: brief.tone },
+                      { label: "Campaign Mood", value: brief.mood },
+                      { label: "Scene Count", value: `${brief.num_scenes || 0} Frames` },
+                      { label: "Voice Profile", value: brief.voice },
+                      { label: "Synthetics Speed", value: `${brief.voice_speed || 1.0}x` },
+                      { label: "Transition Matrix", value: brief.transition },
+                      { label: "Atmospheric Mix", value: `${Math.round((brief.music_volume || 0.1) * 100)}%` },
                     ].map((p, idx) => (
                       <div key={idx} className="flex flex-col gap-2">
                         <span className="text-[8px] md:text-[9px] font-black uppercase tracking-widest text-slate-300 pl-1">{p.label}</span>
@@ -348,8 +422,165 @@ export default function CampaignDetailPage() {
                     ))}
                   </div>
                 </div>
+
+                {/* Style Directive */}
+                {(result.style_prompt || brief.style_prompt) && (
+                  <div className="bg-white rounded-[32px] md:rounded-[40px] p-6 md:p-10 border border-slate-100 shadow-sm flex flex-col gap-6">
+                    <div className="flex items-center gap-4">
+                      <div className="w-10 h-10 bg-slate-50 rounded-[18px] flex items-center justify-center border border-slate-100">
+                        <Icons.MagicWand className="w-5 h-5 text-[#01012A]" />
+                      </div>
+                      <h4 className="text-lg md:text-xl font-black text-[#01012A] tracking-tighter lowercase leading-none">style_directive</h4>
+                    </div>
+                    <div className="p-6 bg-slate-50/50 rounded-[24px] border border-slate-100/50">
+                       <p className="text-[11px] md:text-xs font-medium text-[#121212] leading-relaxed italic">
+                         "{result.style_prompt || brief.style_prompt}"
+                       </p>
+                    </div>
+                  </div>
+                )}
               </div>
             </div>
+
+            {/* NEW: Narrative Synthesis Section */}
+            {(fullScript || sceneScripts.length > 0) && (
+              <div className="grid grid-cols-12 gap-6 md:gap-10">
+                <div className="col-span-12 bg-white rounded-[32px] md:rounded-[40px] p-6 md:p-10 border border-slate-100 shadow-sm flex flex-col gap-10">
+                  <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 border-b border-slate-50 pb-8">
+                    <div className="flex items-center gap-4">
+                      <div className="w-10 h-10 md:w-12 md:h-12 bg-slate-50 rounded-[18px] md:rounded-[20px] flex items-center justify-center border border-slate-100">
+                        <Icons.Mic className="w-5 h-5 md:w-6 md:h-6 text-[#01012A]" />
+                      </div>
+                      <div className="flex flex-col">
+                        <h4 className="text-lg md:text-xl font-black text-[#01012A] tracking-tighter lowercase leading-none">narrative_synthesis</h4>
+                        <span className="text-[10px] md:text-[11px] font-black uppercase tracking-widest text-slate-300 mt-2">Script & Overlay Coordination</span>
+                      </div>
+                    </div>
+                    {scriptObj.word_count && (
+                      <div className="flex items-center gap-4">
+                         <div className="flex flex-col items-end">
+                            <span className="text-[9px] font-black uppercase text-slate-300">Word Count</span>
+                            <span className="text-sm font-black text-[#01012A]">{scriptObj.word_count} wds</span>
+                         </div>
+                         <div className="w-px h-8 bg-slate-100" />
+                         <div className="flex flex-col items-end">
+                            <span className="text-[9px] font-black uppercase text-slate-300">Duration</span>
+                            <span className="text-sm font-black text-[#01012A]">{scriptObj.estimated_duration_seconds}s</span>
+                         </div>
+                      </div>
+                    )}
+                  </div>
+
+                  <div className="grid grid-cols-1 lg:grid-cols-3 gap-10">
+                    {/* Full Script Text */}
+                    <div className="lg:col-span-1 flex flex-col gap-4">
+                       <span className="text-[10px] font-black uppercase tracking-[0.2em] text-[#01012A] pl-1">Master Script</span>
+                       <div className="p-8 bg-slate-50/50 rounded-[32px] border border-slate-100/50 h-full">
+                          <p className="text-sm md:text-base font-medium text-[#121212] leading-relaxed italic">
+                            "{fullScript}"
+                          </p>
+                       </div>
+                    </div>
+
+                    {/* Scene Breakdowns */}
+                    <div className="lg:col-span-2 flex flex-col gap-4">
+                       <span className="text-[10px] font-black uppercase tracking-[0.2em] text-[#01012A] pl-1">Scene Synchronization</span>
+                       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                          {sceneScripts.map((text: string, idx: number) => {
+                             const overlay = overlays.find((o: any) => o.scene_id === idx + 1);
+                             return (
+                                <div key={idx} className="p-6 bg-white border border-slate-100 rounded-[24px] flex flex-col gap-4 hover:border-slate-200 transition-all shadow-sm">
+                                   <div className="flex items-center justify-between border-b border-slate-50 pb-3">
+                                      <span className="text-[10px] font-black text-[#01012A] uppercase">Scene_0{idx + 1}</span>
+                                      <Icons.AudioWave className="w-3 h-3 text-blue-400 opacity-50" />
+                                   </div>
+                                   <div className="flex flex-col gap-3">
+                                      <div>
+                                         <span className="text-[8px] font-black uppercase text-slate-300 tracking-tighter">Audio Stream</span>
+                                         <p className="text-[11px] font-medium text-[#4F4F4F] leading-relaxed mt-1 italic">"{text}"</p>
+                                      </div>
+                                      {overlay && (
+                                         <div className="p-3 bg-slate-50 rounded-xl border border-slate-100/50">
+                                            <span className="text-[8px] font-black uppercase text-blue-500 tracking-tighter">Video Overlay</span>
+                                            <p className="text-[11px] font-black text-[#01012A] mt-1">{overlay.text}</p>
+                                         </div>
+                                      )}
+                                   </div>
+                                </div>
+                             );
+                          })}
+                       </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* NEW: Social Architecture Section */}
+            {platformContent.caption && (
+              <div className="grid grid-cols-12 gap-6 md:gap-10">
+                <div className="col-span-12 bg-white rounded-[32px] md:rounded-[40px] p-6 md:p-10 border border-slate-100 shadow-sm flex flex-col gap-8">
+                  <div className="flex items-center gap-4 border-b border-slate-50 pb-8">
+                    <div className="w-10 h-10 md:w-12 md:h-12 bg-slate-50 rounded-[18px] md:rounded-[20px] flex items-center justify-center border border-slate-100">
+                      <Icons.MessageCircle className="w-5 h-5 md:w-6 md:h-6 text-[#01012A]" />
+                    </div>
+                    <div className="flex flex-col">
+                      <h4 className="text-lg md:text-xl font-black text-[#01012A] tracking-tighter lowercase leading-none">social_architecture</h4>
+                      <span className="text-[10px] md:text-[11px] font-black uppercase tracking-widest text-[#01012A]/40 mt-1">{platform} | Platform Fit Optimized</span>
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-1 lg:grid-cols-2 gap-10">
+                    <div className="flex flex-col gap-4">
+                       <span className="text-[10px] font-black uppercase tracking-[0.2em] text-[#01012A] pl-1">Primary Platform Copy</span>
+                       <div className="p-8 bg-slate-900 text-white rounded-[32px] border border-white/5 relative group">
+                          <button 
+                            onClick={() => {
+                               navigator.clipboard.writeText(platformContent.caption);
+                               toast.success("Platform copy synced to clipboard");
+                            }}
+                            className="absolute top-6 right-6 w-10 h-10 bg-white/10 rounded-xl flex items-center justify-center hover:bg-white/20 transition-all opacity-0 group-hover:opacity-100 border border-white/10"
+                          >
+                             <Icons.Files className="w-4 h-4 text-white" />
+                          </button>
+                          <p className="text-sm md:text-base font-medium leading-relaxed whitespace-pre-wrap selection:bg-blue-500/30">
+                            {platformContent.caption}
+                          </p>
+                          {platformContent.cta && (
+                             <div className="mt-8 pt-8 border-t border-white/10 flex flex-col gap-2">
+                                <span className="text-[9px] font-black uppercase text-blue-400 tracking-widest">Call to Action</span>
+                                <p className="text-sm font-black text-white">{platformContent.cta}</p>
+                             </div>
+                          )}
+                       </div>
+                    </div>
+
+                    <div className="flex flex-col gap-6">
+                       <div className="flex flex-col gap-4">
+                          <span className="text-[10px] font-black uppercase tracking-[0.2em] text-[#01012A] pl-1">Neural Hashtag Clusters</span>
+                          <div className="p-8 bg-slate-50/50 rounded-[32px] border border-slate-100/50 flex flex-wrap gap-2">
+                             {platformContent.hashtags?.map((tag: string, idx: number) => (
+                                <span key={idx} className="px-3 py-1.5 bg-white border border-slate-100 rounded-lg text-[11px] font-bold text-[#4F4F4F] transition-all hover:border-blue-400/30 hover:text-blue-500">
+                                   {tag}
+                                </span>
+                             ))}
+                          </div>
+                       </div>
+                       
+                       <div className="mt-auto p-8 bg-emerald-50/50 rounded-[32px] border border-emerald-100/50 flex items-center gap-6">
+                          <div className="w-14 h-14 bg-white rounded-2xl flex items-center justify-center border border-emerald-100 shadow-sm shrink-0">
+                             <Icons.CheckCircle className="w-7 h-7 text-emerald-500" />
+                          </div>
+                          <div className="flex flex-col">
+                             <span className="text-[10px] font-black uppercase text-emerald-600 tracking-widest">Platform Validation</span>
+                             <p className="text-sm font-bold text-[#01012A] mt-1">This dossier is fully compliant with the {platform} advertising matrix.</p>
+                          </div>
+                       </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )}
 
             {/* Quality Dimensions Grid */}
             <div className="grid grid-cols-12 gap-6 md:gap-10">
@@ -361,25 +592,44 @@ export default function CampaignDetailPage() {
                       <Icons.Success className="w-5 h-5 md:w-6 md:h-6 text-emerald-600" />
                     </div>
                     <div className="flex flex-col">
-                      <h4 className="text-lg md:text-xl font-black text-[#01012A] tracking-tighter lowercase leading-none">dimension_breakdown</h4>
-                      <span className="text-[10px] md:text-[11px] font-black uppercase tracking-widest text-slate-400 mt-2">Weighted Audit Results</span>
+                      <h4 className="text-base sm:text-lg md:text-xl font-black text-[#01012A] tracking-tighter lowercase leading-none">dimension_breakdown</h4>
+                      <span className="text-[9px] sm:text-[10px] md:text-[11px] font-black uppercase tracking-widest text-slate-400 mt-1 sm:mt-2">Weighted Audit Results</span>
                     </div>
                   </div>
                   <div className="flex items-center sm:items-end flex-row sm:flex-col justify-between sm:justify-start">
-                    <span className="text-3xl md:text-4xl font-black text-[#01012A] tracking-tighter tabular-nums">{Math.round((quality.overall_score || 0) * 100)}%</span>
+                    <span className="text-2xl sm:text-3xl md:text-4xl font-black text-[#01012A] tracking-tighter tabular-nums">{Math.round((quality.overall_score || 0) * 100)}%</span>
                   </div>
                 </div>
 
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 md:gap-6">
-                  {quality.dimension_details && Object.entries(quality.dimension_details).map(([key, dim]: any) => (
-                    <div key={key} className="p-6 md:p-8 bg-slate-50/50 rounded-[24px] md:rounded-[32px] border border-slate-100/50 flex flex-col gap-5 hover:bg-white hover:border-slate-200 transition-all">
-                      <div className="flex items-center justify-between border-b border-slate-100 pb-4">
-                        <span className="text-[10px] md:text-[11px] font-black uppercase tracking-widest text-[#01012A]">{key.replace('_', ' ')}</span>
-                        <span className="text-xl md:text-2xl font-black text-[#01012A]/40 tabular-nums">{Math.round((dim.score || 0) * 100)}%</span>
-                      </div>
-                    </div>
-                  ))}
-                </div>
+                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 md:gap-6">
+                   {quality.dimension_details && Object.entries(quality.dimension_details).map(([key, dim]: any) => (
+                     <div key={key} className="p-6 md:p-8 bg-slate-50/50 rounded-[24px] md:rounded-[32px] border border-slate-100/50 flex flex-col gap-5 hover:bg-white hover:border-slate-200 transition-all">
+                       <div className="flex items-center justify-between border-b border-slate-100 pb-4">
+                         <span className="text-[10px] md:text-[11px] font-black uppercase tracking-widest text-[#01012A]">{key.replace('_', ' ')}</span>
+                         <span className="text-xl md:text-2xl font-black text-[#01012A]/40 tabular-nums">{Math.round((dim.score || 0) * 100)}%</span>
+                       </div>
+
+                       {/* Granular Audit Logs */}
+                       <div className="flex flex-col gap-3">
+                          {dim.issues && dim.issues.length > 0 && (
+                             <div className="flex flex-col gap-2">
+                                {dim.issues.map((issue: string, idx: number) => (
+                                   <div key={idx} className="flex items-start gap-2 bg-red-50/50 p-2 rounded-lg border border-red-100/30">
+                                      <Icons.Activity className="w-3 h-3 text-red-500 shrink-0 mt-0.5" />
+                                      <p className="text-[9px] md:text-[10px] font-bold text-red-600 leading-tight capitalize">{issue}</p>
+                                   </div>
+                                ))}
+                             </div>
+                          )}
+                          {dim.notes && (
+                             <div className="p-3 bg-white/60 rounded-xl border border-slate-100/50 italic">
+                                <p className="text-[10px] text-slate-400 font-medium leading-relaxed leading-tight">Note: {dim.notes}</p>
+                             </div>
+                          )}
+                       </div>
+                     </div>
+                   ))}
+                 </div>
               </div>
 
               {/* Agent Audit Cluster */}

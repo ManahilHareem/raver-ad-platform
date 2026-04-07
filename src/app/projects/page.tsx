@@ -257,12 +257,6 @@ function ProjectsContent() {
                 className="w-full pl-10 pr-4 py-2 bg-white border border-[#E2E8F0] rounded-xl text-[14px] focus:outline-none focus:border-[#02022C] transition-all shadow-sm"
               />
             </div>
-            <button 
-              onClick={() => setIsModalOpen(true)}
-              className="px-6 py-2 bg-linear-to-r from-[#01012A] to-[#2E2C66] text-white rounded-xl text-[14px] font-bold shadow-lg shadow-[#01012A]/10 active:scale-95 transition-all flex items-center justify-center gap-2"
-            >
-              <Icons.Plus className="w-4 h-4" /> Create New Project
-            </button>
           </div>
         </div>
 

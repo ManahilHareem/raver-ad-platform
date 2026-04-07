@@ -1,11 +1,15 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 import AgentCard from "@/components/agents/AgentCard";
 import AgentModal from "@/components/agents/AgentModal";
 import DashboardLayout from "@/components/DashboardLayout";
 import { Icons } from "@/components/ui/icons";
+import { apiFetch } from "@/lib/api";
+import { CampaignHistoryList } from "@/components/producer/CampaignHistoryList";
+import ConfirmationModal from "@/components/ui/ConfirmationModal";
 
 const agents = [
   {
@@ -84,6 +88,59 @@ const agents = [
 export default function AgentsPage() {
   const router = useRouter();
   const [selectedAgent, setSelectedAgent] = useState<typeof agents[0] | null>(null);
+  const [history, setHistory] = useState<any[]>([]);
+  const [isSyncing, setIsSyncing] = useState(true);
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [campaignToDelete, setCampaignToDelete] = useState<any>(null);
+  const [isDeleting, setIsDeleting] = useState(false);
+
+  const fetchHistory = async () => {
+    try {
+      const response = await apiFetch(`${process.env.NEXT_PUBLIC_API_URL || "https://apiplatform.raver.ai/api"}/ai/producer/campaigns`);
+      if (response.ok) {
+        const data = await response.json();
+        if (data.success && Array.isArray(data.data)) {
+          setHistory(data.data);
+        }
+      }
+    } catch (err) {
+      console.warn("Failed to fetch campaign history on agents page:", err);
+    } finally {
+      setIsSyncing(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchHistory();
+  }, []);
+
+  const handleDelete = (id: string) => {
+    const campaign = history.find(c => (c.id || c.campaign_id) === id);
+    setCampaignToDelete(campaign);
+    setIsDeleteModalOpen(true);
+  };
+
+  const confirmDelete = async () => {
+    if (!campaignToDelete) return;
+    const id = campaignToDelete.id || campaignToDelete.campaign_id;
+    setIsDeleting(true);
+    try {
+      const response = await apiFetch(`${process.env.NEXT_PUBLIC_API_URL || "https://apiplatform.raver.ai/api"}/ai/producer/campaign/${id}`, {
+        method: "DELETE"
+      });
+      if (response.ok) {
+        setHistory(prev => prev.filter(c => (c.id || c.campaign_id) !== id));
+        setIsDeleteModalOpen(false);
+      } else {
+        alert("Failed to delete campaign.");
+      }
+    } catch (err) {
+      console.error("Delete error:", err);
+      alert("Error deleting campaign.");
+    } finally {
+      setIsDeleting(false);
+    }
+  };
 
   return (
     <DashboardLayout>
@@ -124,7 +181,7 @@ export default function AgentsPage() {
               key={i} 
               {...agent} 
               onClick={() => setSelectedAgent(agent)}
-              actionLabel={(agent.name === "Raver Image Lead" || agent.name === "Raver Producer") ? "Start Creating" : undefined}
+              actionLabel={(agent.name === "Raver Image Lead" || agent.name === "Raver Producer" || agent.name === "Raver Audio Lead") ? "Start Creating" : undefined}
               onAction={(e) => {
                 if (agent.name === "Raver Image Lead") {
                   e.stopPropagation();
@@ -132,12 +189,36 @@ export default function AgentsPage() {
                 } else if (agent.name === "Raver Producer") {
                   e.stopPropagation();
                   router.push("/agents/producer");
+                } else if (agent.name === "Raver Audio Lead") {
+                  e.stopPropagation();
+                  router.push("/agents/audio-lead?generate=true");
                 }
               }}
             />
           ))}
         </div>
       </div>
+
+      {/* Recent History Section */}
+      {history.length > 0 && (
+         <div className="flex flex-col gap-[16px] bg-[#FFFFFF] p-[16px] rounded-[12px] border-[0.35px] border-[#0000001A]">
+            <CampaignHistoryList 
+               history={history.slice(0, 3)} 
+               onDelete={handleDelete}
+            />
+            {history.length > 3 && (
+               <div className="flex justify-center pt-4">
+                  <Link 
+                    href="/agents/producer" 
+                    className="px-8 h-12 rounded-[16px] bg-slate-50 border border-slate-100 flex items-center gap-3 text-[11px] font-black uppercase tracking-widest text-slate-400 hover:bg-slate-100 hover:text-[#01012A] transition-all"
+                  >
+                    View All Archives
+                    <Icons.ArrowRight className="w-4 h-4" />
+                  </Link>
+               </div>
+            )}
+         </div>
+      )}
 
       {/* Workflow Section */}
       <div className="flex flex-col gap-[16px] bg-[#FFFFFF] p-[16px] rounded-[12px] border-[0.35px] border-[#0000001A]">
@@ -183,8 +264,20 @@ export default function AgentsPage() {
             router.push("/agents/image-lead");
           } else if (selectedAgent?.name === "Raver Producer") {
             router.push("/agents/producer");
+          } else if (selectedAgent?.name === "Raver Audio Lead") {
+            router.push("/agents/audio-lead?generate=true");
           }
         }}
+      />
+      <ConfirmationModal 
+        isOpen={isDeleteModalOpen}
+        onClose={() => setIsDeleteModalOpen(false)}
+        onConfirm={confirmDelete}
+        title="Delete Production"
+        message={`Are you sure you want to delete "${campaignToDelete?.name || 'this production'}"? This will permanently remove the audit and all associated assets.`}
+        confirmText="Delete Production"
+        variant="danger"
+        isLoading={isDeleting}
       />
     </DashboardLayout>
   );

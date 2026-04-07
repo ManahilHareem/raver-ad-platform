@@ -29,8 +29,8 @@ export function LiveProductionTracker({
   };
 
   const steps: PipelineStep[] = [
-    { id: "text", label: "Narrative Synthesis", icon: "Mic", status: getNodeStatus("generate_text") },
     { id: "image", label: "Visual Matrix Generation", icon: "Image", status: getNodeStatus("generate_image") },
+    { id: "text", label: "Narrative Synthesis", icon: "Mic", status: getNodeStatus("generate_text") },
     { id: "voice", label: "Neural Voice Synthesis", icon: "AudioWave", status: getNodeStatus("generate_voice") },
     { id: "music", label: "Atmospheric Score", icon: "AudioWave", status: getNodeStatus("generate_music") },
     { id: "render", label: "Kling-Video Rendering", icon: "Video", status: getNodeStatus("render") },
@@ -110,7 +110,7 @@ export function LiveProductionTracker({
                   <div
                     className={cn(
                       "w-8 h-8 rounded-xl flex items-center justify-center transition-all duration-700 relative z-10 shadow-sm",
-                      isDone ? "bg-linear-to-r from-[#01012A] to-[#2E2C66] text-white" :
+                      isDone ? "bg-white text-emerald-600 border border-emerald-100" :
                         isRunning ? "bg-white border-2 border-[#01012A] text-[#01012A] shadow-lg shadow-[#01012A]/10" :
                           "bg-white border border-slate-100 text-slate-300"
                     )}

@@ -47,7 +47,10 @@ import {
   Monitor,
   Smartphone,
   Activity as LucideActivityIcon,
-  ChevronDown as ArrowDown
+  ChevronDown as ArrowDown,
+  Play,
+  Pause,
+  ChevronDown
 } from "lucide-react";
 import { CustomIcons } from "./custom-icons";
 
@@ -93,6 +96,7 @@ export const Icons = {
   AudioWave: LucideActivity,
   whiteMagicWand: CustomIcons.whiteMagicWand,
   Volume: Volume2,
+  Volume2: Volume2,
   Mute: VolumeX,
   Square: Square,
   CreditCard: CreditCard,
@@ -110,5 +114,8 @@ export const Icons = {
   Monitor: Monitor,
   Smartphone: Smartphone,
   Files: Files,
-  ArrowDown: ArrowDown
+  ArrowDown: ArrowDown,
+  ChevronDown: ChevronDown,
+  Play: Play,
+  Pause: Pause
 };
