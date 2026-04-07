@@ -207,6 +207,7 @@ function ImageLeadContent() {
     const checkVault = async () => {
       const currentVault = await fetchVault();
       if (currentVault.length > 0) {
+        await fetchSessions(); // Sync session data with vault contents
         clearInterval(interval);
       }
     };
@@ -356,6 +357,7 @@ function ImageLeadContent() {
       if (response.ok) {
         setIsModalOpen(false);
         await fetchVault();
+        await fetchSessions(); // Ensure session list has the latest metadata after enhancement
         alert("Image enhanced successfully!");
       } else {
         alert("Failed to enhance image.");
@@ -468,9 +470,18 @@ function ImageLeadContent() {
             </div>
             <div className="flex items-center gap-2 sm:gap-3">
               
-              {sessionId && <div className="hidden sm:flex items-center gap-2 px-3 py-1.5 bg-slate-100 rounded-lg">
-                 <span className="text-[10px] font-bold text-[#64748B] uppercase">Active Session:</span>
-                 <span className="text-[10px] font-bold text-[#0A0A0A] truncate max-w-[150px]">{sessionId}</span>
+              {sessionId && <div className="hidden sm:flex items-center gap-3 px-4 py-2 bg-slate-50 border border-slate-100 rounded-2xl">
+                 <div className="flex flex-col">
+                    <span className="text-[8px] font-black text-[#64748B] uppercase tracking-widest">Active dossier</span>
+                    <span className="text-[10px] font-black text-[#0A0A0A] truncate max-w-[150px] lowercase">{sessionId}</span>
+                 </div>
+                 <div className="w-px h-6 bg-slate-200" />
+                 <button 
+                  onClick={() => { setSessionId(""); fetchSessions(); }}
+                  className="px-3 py-1 bg-white border border-slate-100 rounded-lg text-[9px] font-black uppercase text-[#0A0A0A] hover:bg-slate-900 hover:text-white hover:border-slate-900 transition-all shadow-sm active:scale-95"
+                 >
+                   See All
+                 </button>
               </div>}
             </div>
           </div>
