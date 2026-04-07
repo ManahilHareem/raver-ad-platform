@@ -163,15 +163,6 @@ function ProducerContent() {
             </div>
           </div>
 
-          {/* // <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-start">
-           //   <div className="lg:col-span-12"> 
-          //     <LiveProductionTracker  
-          //       campaignId={activeCampaign?.campaign_id || activeCampaign?.id}
-          //       status={activeCampaign?.status}
-          //       nodes={activeCampaign?.config?.nodes || activeCampaign?.nodes}
-          //     />
-          //   </div>
-          // </div> */}
 
           {/* Archive Matrix - Dossier Feed */}
           <div className="pt-8">

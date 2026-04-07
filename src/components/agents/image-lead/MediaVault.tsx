@@ -103,8 +103,9 @@ function VaultImage({ asset, onAssetClick }: { asset: ImageAsset; onAssetClick: 
             isLoading ? "opacity-0" : "opacity-100"
           )}
           onError={handleError}
-          onLoadingComplete={handleLoad}
+          onLoad={handleLoad}
           priority={false}
+          unoptimized
         />
       )}
       

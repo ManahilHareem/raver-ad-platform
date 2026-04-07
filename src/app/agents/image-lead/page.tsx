@@ -114,28 +114,45 @@ function ImageLeadContent() {
   }, [sessionId]);
 
   const fetchVault = async () => {
-    if (!sessionId) return;
+    if (!sessionId) return [];
+    
+    // Fallback logic
+    const currentSession = sessions.find(s => s.sessionId === sessionId);
+    const fallbackScenes = currentSession?.metadata?.scenes ? currentSession.metadata.scenes.map((scene: any) => ({
+      filename: scene.label || currentSession.sessionId,
+      url: scene.url,
+      label: scene.label || "Scene Asset",
+      sessionId: currentSession.sessionId
+    })) : [];
+
     try {
       const response = await apiFetch(`${API_BASE}/ai/image-lead/vault/${sessionId}`, {
         headers: { "accept": "*/*" }
       });
       
       if (response.status === 404) {
-        setVault([]);
-        return;
+        setVault(fallbackScenes);
+        return fallbackScenes;
       }
 
       if (response.ok) {
         const data = await response.json();
-        const vaultImages = data?.data?.images || [];
-        setVault(Array.isArray(vaultImages) ? vaultImages : []);
+        let vaultImages = data?.data?.images || [];
+        
+        if (!Array.isArray(vaultImages) || vaultImages.length === 0) {
+           vaultImages = fallbackScenes;
+        }
+        setVault(vaultImages);
         return vaultImages;
       }
     } catch (err) {
       console.warn("Vault sync failed:", err);
-      setVault([]);
+      setVault(fallbackScenes);
+      return fallbackScenes;
     }
-    return [];
+    
+    setVault(fallbackScenes);
+    return fallbackScenes;
   };
 
   // Implement automatic polling if vault is empty
@@ -308,7 +325,22 @@ function ImageLeadContent() {
   // Fetch vault when session changes
   useEffect(() => {
     if (sessionId) {
-      fetchVault();
+      const currentSession = sessions.find(s => s.sessionId === sessionId);
+      const hasLocalScenes = currentSession?.metadata?.scenes && currentSession.metadata.scenes.length > 0;
+      
+      // Only fetch from network if we don't already have the scenes in memory
+      // This prevents API responses from overwriting our locally cached scenes right after selection.
+      if (!hasLocalScenes) {
+        fetchVault();
+      } else {
+         const sceneImages = currentSession.metadata.scenes.map((scene: any) => ({
+           filename: scene.label || currentSession.sessionId,
+           url: scene.url,
+           label: scene.label || "Scene Asset",
+           sessionId: currentSession.sessionId
+         }));
+         setVault(sceneImages);
+      }
     } else if (sessions.length > 0) {
       // Re-aggregate all scenes if session is cleared
       const allScenes = sessions.flatMap((s: any) => 

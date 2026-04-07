@@ -16,12 +16,12 @@ export const getToken = (): string | undefined => {
 };
 
 /**
- * Sets the token in cookies with a 7-day expiration.
+ * Sets the token in cookies with a 1-day expiration.
  */
 export const setToken = (token: string): void => {
   if (typeof document === 'undefined') return;
   const expires = new Date();
-  expires.setTime(expires.getTime() + 7 * 24 * 60 * 60 * 1000);
+  expires.setTime(expires.getTime() + 1 * 24 * 60 * 60 * 1000);
   document.cookie = `${TOKEN_NAME}=${token}; path=/; expires=${expires.toUTCString()}; SameSite=Lax`;
 };
 

@@ -50,7 +50,8 @@ export default function ImageViewerModal({
                     isImageLoading ? "opacity-0 scale-95" : "opacity-100 scale-100"
                   )} 
                   priority 
-                  onLoadingComplete={() => setIsImageLoading(false)}
+                  unoptimized
+                  onLoad={() => setIsImageLoading(false)}
                 />
               </>
             ) : (
@@ -66,14 +67,16 @@ export default function ImageViewerModal({
       <div className="absolute bottom-6 sm:bottom-10 inset-x-0 flex justify-center items-center pointer-events-none animate-in slide-in-from-bottom-10 duration-700">
          <div className="bg-white/5 backdrop-blur-3xl border border-white/10 rounded-full px-2 py-2 flex items-center gap-1 pointer-events-auto shadow-2xl scale-90 sm:scale-100">
             {onEnhance && (
-               <button 
-                onClick={(e) => { e.stopPropagation(); onEnhance(); }}
-                className="h-10 px-6 hover:bg-white hover:text-black text-white rounded-full font-black text-[10px] uppercase tracking-widest transition-all flex items-center gap-2"
-               >
-                 <Icons.MagicWand className="w-3.5 h-3.5" /> Neural Enlarge
-               </button>
+               <>
+                 <button 
+                  onClick={(e) => { e.stopPropagation(); onEnhance(); }}
+                  className="h-10 px-6 hover:bg-white hover:text-black text-white rounded-full font-black text-[10px] uppercase tracking-widest transition-all flex items-center gap-2"
+                 >
+                   <Icons.MagicWand className="w-3.5 h-3.5" /> Neural Enlarge
+                 </button>
+                 <div className="w-px h-4 bg-white/10 mx-1" />
+               </>
             )}
-            <div className="w-px h-4 bg-white/10 mx-1" />
             <button 
               onClick={onClose}
               className="w-10 h-10 flex items-center justify-center text-white/40 hover:text-white transition-colors"

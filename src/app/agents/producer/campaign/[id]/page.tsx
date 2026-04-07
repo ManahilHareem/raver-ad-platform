@@ -8,6 +8,7 @@ import DashboardLayout from "@/components/DashboardLayout";
 import { apiFetch } from "@/lib/api";
 import { RaverLoadingState } from "@/components/ui/RaverLoadingState";
 import { toast } from "react-toastify";
+import ImageViewerModal from "@/components/agents/ImageViewerModal";
 
 export default function CampaignDetailPage() {
   const params = useParams();
@@ -17,6 +18,8 @@ export default function CampaignDetailPage() {
   const [campaign, setCampaign] = useState<any>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [isPreviewOpen, setIsPreviewOpen] = useState(false);
+  const [selectedImage, setSelectedImage] = useState<string>("");
 
   useEffect(() => {
     const fetchCampaign = async () => {
@@ -246,7 +249,11 @@ export default function CampaignDetailPage() {
                   {result.scene_images?.map((scene: any, idx: number) => (
                     <div
                       key={idx}
-                      className="group bg-slate-50 rounded-[24px] md:rounded-[32px] overflow-hidden border border-slate-200/50 relative"
+                      className="group bg-slate-50 rounded-[24px] md:rounded-[32px] overflow-hidden border border-slate-200/50 relative cursor-pointer"
+                      onClick={() => {
+                        setSelectedImage(scene.image_url);
+                        setIsPreviewOpen(true);
+                      }}
                     >
                       <div className="aspect-square relative overflow-hidden">
                         <img
@@ -259,6 +266,11 @@ export default function CampaignDetailPage() {
                           <p className="text-[10px] md:text-xs font-medium text-white/90 leading-relaxed italic line-clamp-4">
                             "{scene.prompt_used}"
                           </p>
+                          <div className="flex justify-center mt-4">
+                             <div className="w-10 h-10 bg-white/10 rounded-full flex items-center justify-center border border-white/20 backdrop-blur-md">
+                               <Icons.Search className="w-4 h-4 text-white" />
+                             </div>
+                          </div>
                         </div>
                       </div>
                       <div className="p-4 md:p-6 bg-white border-t border-slate-50 flex items-center justify-between">
@@ -407,6 +419,12 @@ export default function CampaignDetailPage() {
           </div>
         </div>
       </div>
+
+      <ImageViewerModal 
+        isOpen={isPreviewOpen}
+        onClose={() => setIsPreviewOpen(false)}
+        imageUrl={selectedImage}
+      />
     </DashboardLayout>
   );
 }

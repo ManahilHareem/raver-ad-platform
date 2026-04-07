@@ -32,7 +32,6 @@ export function SessionBrowser({
     <div className="flex flex-col gap-4">
       <div className="flex items-center gap-4 overflow-x-auto pb-4 scrollbar-hide">
         {sessions
-          .filter((s) => (activeSessionId ? s.sessionId === activeSessionId : true))
           .map((s) => (
           <button
             key={s.sessionId}
@@ -68,7 +67,7 @@ export function SessionBrowser({
             onClick={onReset}
             className="text-xs font-bold text-slate-500 hover:text-[#0A0A0A] underline ml-2 whitespace-nowrap transition-colors"
           >
-            View All Sessions
+            Clear Selection
           </button>
         )}
       </div>
