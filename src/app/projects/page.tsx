@@ -62,7 +62,10 @@ function ProjectsContent() {
           const sData = await sessionRes.json();
           const sessionsArray = Array.isArray(sData.data?.sessions) ? sData.data.sessions : sData.data;
           if (Array.isArray(sessionsArray)) {
-            allSessions = sessionsArray.map((s: any) => ({
+            // STRICT FILTER: Only include sessions that have a valid session_id
+            const filteredSessions = sessionsArray.filter((s: any) => s.session_id);
+            
+            allSessions = filteredSessions.map((s: any) => ({
               id: s.campaign_id || s.id,
               sessionId: s.session_id || s.id,
               title: s.title || (s.brief_draft?.business_name ? `${s.brief_draft.business_name} Campaign` : `Session ${s.session_id || s.id}`),

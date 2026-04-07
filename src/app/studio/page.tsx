@@ -167,46 +167,6 @@ function StudioPageContent() {
     try {
       const API_BASE = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
 
-      const res = await apiFetch(`${API_BASE}/campaigns`);
-      let mappedCampaigns: Campaign[] = [];
-
-      if (res.ok) {
-        const responseData = await res.json();
-        if (responseData.success && responseData.data && (Array.isArray(responseData.data) || typeof responseData.data === 'object')) {
-          const rawData = Array.isArray(responseData.data) ? responseData.data : [responseData.data];
-          mappedCampaigns = rawData.map((c: any) => {
-            let config = c.config;
-            if (typeof config === "string") {
-              try { config = JSON.parse(config); } catch (e) { console.warn("Failed to parse config string", e); }
-            }
-
-            return {
-              id: c.id?.toString() || c._id?.toString(),
-              title: c.name || c.title || "Untitled",
-              status: c.status || "Ready",
-              image: "/assets/hashtag-campaign.jpg",
-              sessionId: c.session_id || c.sessionId,
-              videoUrl: c.video_url || c.videoUrl,
-              voiceoverUrl: c.voiceover_url || c.voiceoverUrl,
-              musicUrl: c.music_url || c.musicUrl,
-              script: c.script,
-              message: c.message,
-              audience: config?.audience || c.audience,
-              objective: config?.objective || c.objective,
-              format: config?.format || c.format,
-              duration: config?.duration || c.duration,
-              colorScheme: config?.color_scheme || config?.colorScheme || c.colorScheme,
-              platforms: config?.platforms || (Array.isArray(c.platforms) && c.platforms.length > 0 ? c.platforms : (c.platform ? [c.platform] : [])),
-              tones: config?.tones || c.tones,
-              visualStyles: config?.visual_style || config?.visualStyles || c.visualStyles,
-              createdAt: c.createdAt || c.created_at,
-              completed_nodes: c.completed_nodes || [],
-              voice: config?.voice || c.voice
-            };
-          });
-        }
-      }
-
       let allSessions: Campaign[] = [];
       try {
         const sessionRes = await apiFetch(`${API_BASE}/ai/director/sessions`, {
@@ -215,15 +175,25 @@ function StudioPageContent() {
 
         if (sessionRes.ok) {
           const sessionData = await sessionRes.json();
-          if (sessionData.success && (Array.isArray(sessionData.data?.sessions) || Array.isArray(sessionData.data))) {
-            const sessionsArray = Array.isArray(sessionData.data?.sessions) ? sessionData.data.sessions : sessionData.data;
-            allSessions = sessionsArray.map((s: any) => {
+          const sessionsArray = Array.isArray(sessionData.data?.sessions) ? sessionData.data.sessions : (Array.isArray(sessionData.data) ? sessionData.data : []);
+          
+          console.log(`[STUDIO FETCH ${new Date().toLocaleTimeString()}] Raw Sessions:`, sessionsArray.length);
+
+          if (Array.isArray(sessionsArray)) {
+            // STRICT FILTER: Only include sessions that have a valid session identifier (Studio-originated)
+            const sessionsOnly = sessionsArray.filter((s: any) => s.session_id || s.sessionId);
+            
+            console.log(`[STUDIO FETCH] Filtered to ${sessionsOnly.length} Studio sessions.`);
+
+            allSessions = sessionsOnly.map((s: any) => {
               const brief = s.brief_draft || {};
+              const sId = s.session_id || s.sessionId || s.id;
+              
               return {
                 id: s.campaign_id || s.id,
-                sessionId: s.session_id || s.id,
-                title: s.title || (brief.business_name ? `${brief.business_name} Campaign` : `Session ${s.session_id || s.id}`),
-                status: s.status || "queued",
+                sessionId: sId,
+                title: s.title || (brief.business_name ? `${brief.business_name} Active Simulation` : `Studio Session ${sId}`),
+                status: s.status || "ready",
                 message: s.message,
                 videoUrl: s.video_url,
                 voiceoverUrl: s.voiceover_url || s.audio_url,
@@ -264,32 +234,18 @@ function StudioPageContent() {
         console.error("Failed to fetch insights:", err);
       }
 
-      const initialVideos = [...allSessions];
-      const activePrimary = mappedCampaigns.filter(c =>
-        ["in_production", "queued", "In Production", "ready_for_human_review", "approved", "delivered", "Ready"].includes(c.status)
-      );
-
-      activePrimary.forEach(c => {
-        if (!initialVideos.some(v => v.sessionId === c.sessionId || (v.id && c.id && v.id === c.id))) {
-          initialVideos.unshift(c);
-        }
-      });
-
       const sortLatest = (list: Campaign[]) => {
         return list
           .sort((a, b) => {
             const timeA = a.createdAt ? new Date(a.createdAt).getTime() : 0;
             const timeB = b.createdAt ? new Date(b.createdAt).getTime() : 0;
-            if (isNaN(timeA) && isNaN(timeB)) return 0;
-            if (isNaN(timeA)) return 1;
-            if (isNaN(timeB)) return -1;
             return timeB - timeA;
           });
       };
 
-      const validInitialVideos = initialVideos.filter(v => v.status);
-      setVideos(sortLatest(validInitialVideos));
-      setCampaigns(mappedCampaigns);
+      const sortedVideos = sortLatest(allSessions);
+      setVideos(sortedVideos);
+      setCampaigns(sortedVideos); // Align both states to only show sessions
 
       const terminalStatuses = ["completed", "Ready", "delivered", "failed", "ready_for_human_review", "approved"];
       const activeCandidates = allSessions

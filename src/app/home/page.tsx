@@ -69,20 +69,27 @@ export default function HomePage() {
         
         if (response.ok) {
           const result = await response.json();
-          const sessionsArray = Array.isArray(result.data?.sessions) ? result.data.sessions : result.data;
+          const rawData = Array.isArray(result.data?.sessions) ? result.data.sessions : result.data;
           
-          if (Array.isArray(sessionsArray)) {
+          console.log("DEBUG: Raw Dashboard Data:", result.data);
+
+          if (Array.isArray(rawData)) {
+            // STRICT FILTER: Only include Studio sessions with a valid session_id
+            const sessionsOnly = rawData.filter((s: any) => s.session_id);
+            
+            console.log("DEBUG: Filtered Studio Sessions (Strict):", sessionsOnly);
+
             // Sort by creation date and take latest 3
-            const sorted = sessionsArray.sort((a, b) => {
+            const sorted = sessionsOnly.sort((a, b) => {
                const tA = a.created_at ? new Date(a.created_at).getTime() : 0;
                const tB = b.created_at ? new Date(b.created_at).getTime() : 0;
                return tB - tA;
             });
 
-            setDashboardProjects(sorted.slice(0, 3).map((s: any) => ({
+            const mappedProjects = sorted.slice(0, 3).map((s: any) => ({
               id: s.campaign_id || s.id,
               session_id: s.session_id || s.id,
-              title: s.title || (s.brief_draft?.business_name ? `${s.brief_draft.business_name} Campaign` : `Session ${s.session_id || s.id}`),
+              title: s.title || (s.brief_draft?.business_name ? `${s.brief_draft.business_name} Active Simulation` : `Studio Session ${s.session_id || s.id}`),
               status: s.status || "ready",
               message: s.message || s.prompt,
               video_url: s.video_url,
@@ -96,7 +103,17 @@ export default function HomePage() {
               image: "/assets/hashtag-campaign.jpg",
               created_at: s.created_at,
               time: s.created_at ? "Recently" : "Just now"
-            })));
+            }));
+
+            setDashboardProjects(mappedProjects);
+
+            // Update stats based on live STUDIO data only
+            setDashboardStats(prev => [
+              { ...prev[0], value: sessionsOnly.length.toString() }, // Total Studio Projects
+              { ...prev[1], value: sessionsOnly.filter((p: any) => p.status === 'completed' || p.status === 'delivered').length.toString() }, // Content Generated
+              prev[2],
+              prev[3]
+            ]);
           }
         }
     } finally {
@@ -134,10 +151,10 @@ export default function HomePage() {
           </div>
         </div>
 
-        {/* Recent Projects Section */}
+        {/* Active Campaigns Section */}
         <div className="flex flex-col gap-[12px]">
           <div className="items-center justify-between flex">
-            <h2 className="text-[18px] font-medium text-[#02022C]">Recent Projects</h2>
+            <h2 className="text-[18px] font-medium text-[#02022C]">Active Campaigns</h2>
             <Link href="/projects" className="text-[14px] font-semibold text-[#02022C] hover:underline flex items-center gap-2">
               View All <Icons.ExternalLink className="w-4 h-4" />
             </Link>
