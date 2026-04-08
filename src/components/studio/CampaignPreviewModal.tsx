@@ -159,6 +159,12 @@ export default function CampaignPreviewModal({
     }
   };
 
+  const handleCopyUrl = (url: string, label: string) => {
+    if (!url) return;
+    navigator.clipboard.writeText(url);
+    toast.success(`${label} link copied to clipboard`);
+  };
+
   const handleApprove = async () => {
     if (!campaignData?.session_id) {
       toast.error("No session ID found to approve.");
@@ -336,10 +342,19 @@ export default function CampaignPreviewModal({
             </div>
           )}
 
-          {/* Visual Preview */}
           <div className="space-y-4">
             <div className="flex items-center justify-between">
               <h3 className="text-[12px] font-black text-[#02022C] uppercase tracking-[0.2em]">Visual & Video</h3>
+              {campaignData.video_url && (
+                <button
+                  onClick={() => handleCopyUrl(campaignData.video_url!, "Video")}
+                  className="text-[11px] font-bold text-[#64748B] hover:text-[#02022C] transition-colors flex items-center gap-1.5 px-3 py-1 bg-slate-50 rounded-lg border border-slate-100"
+                  title="Copy Video URL"
+                >
+                  <Icons.Copy className="w-3.5 h-3.5" />
+                  Copy Link
+                </button>
+              )}
             </div>
             <div className="relative aspect-video rounded-3xl overflow-hidden bg-slate-100 border border-[#F1F5F9] shadow-inner group">
               {campaignData.video_url ? (
@@ -360,7 +375,16 @@ export default function CampaignPreviewModal({
               <div className="p-4 bg-white border border-[#F1F5F9] rounded-2xl shadow-sm flex flex-col gap-3">
                 {campaignData.voiceover_url ? (
                   <>
-                    <audio src={campaignData.voiceover_url} controls className="w-full h-8" />
+                    <div className="flex items-center gap-2">
+                       <audio src={campaignData.voiceover_url} controls className="flex-1 h-8" />
+                       <button 
+                         onClick={() => handleCopyUrl(campaignData.voiceover_url!, "Voiceover")}
+                         className="w-8 h-8 rounded-lg bg-slate-50 text-slate-400 hover:text-[#02022C] border border-slate-100 flex items-center justify-center transition-all"
+                         title="Copy Voiceover URL"
+                       >
+                         <Icons.Copy className="w-3.5 h-3.5" />
+                       </button>
+                    </div>
                     <div className="flex items-center gap-2 mt-1">
                       <Icons.Mic className="w-3.5 h-3.5 text-slate-400" />
                       <span className="text-[10px] font-black text-[#64748B] uppercase tracking-widest">
@@ -378,7 +402,16 @@ export default function CampaignPreviewModal({
               <h3 className="text-[12px] font-black text-[#02022C] uppercase tracking-[0.2em]">Background Music</h3>
               <div className="p-4 bg-white border border-[#F1F5F9] rounded-2xl shadow-sm flex flex-col gap-3">
                 {campaignData.music_url ? (
-                  <audio src={campaignData.music_url} controls className="w-full h-8" />
+                  <div className="flex items-center gap-2">
+                    <audio src={campaignData.music_url} controls className="flex-1 h-8" />
+                    <button 
+                         onClick={() => handleCopyUrl(campaignData.music_url!, "Music")}
+                         className="w-8 h-8 rounded-lg bg-slate-50 text-slate-400 hover:text-[#02022C] border border-slate-100 flex items-center justify-center transition-all"
+                         title="Copy Music URL"
+                    >
+                      <Icons.Copy className="w-3.5 h-3.5" />
+                    </button>
+                  </div>
                 ) : (
                   <div className="text-[11px] text-[#94A3B8] font-medium">No music track available</div>
                 )}

@@ -16,6 +16,7 @@ interface MediaVaultProps {
   onAssetClick: (url: string) => void;
   hasSessions: boolean;
   onDelete?: (sessionId: string) => void;
+  onCopyUrl?: (url: string) => void;
 }
 
 /**
@@ -25,11 +26,13 @@ interface MediaVaultProps {
 function VaultImage({ 
   asset, 
   onAssetClick,
-  onDelete
+  onDelete,
+  onCopyUrl
 }: { 
   asset: ImageAsset; 
   onAssetClick: (url: string) => void;
   onDelete?: (sessionId: string) => void;
+  onCopyUrl?: (url: string) => void;
 }) {
   const rawUrl = asset?.url || "";
   const initialUrl = rawUrl.startsWith("http") 
@@ -126,21 +129,35 @@ function VaultImage({
          </span>
       </div>
 
-      {/* Delete Trigger Overlay */}
-      {/* {onDelete && asset.sessionId && (
-        <div className="absolute top-3 right-3 opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-20">
-           <button 
-             onClick={(e) => {
-               e.stopPropagation();
-               onDelete(asset.sessionId!);
-             }}
-             className="w-8 h-8 rounded-lg bg-red-500/80 backdrop-blur-md flex items-center justify-center text-white hover:bg-red-600 transition-all border border-white/20 active:scale-95"
-             title="Archive Session"
-           >
-             <Icons.Trash className="w-3.5 h-3.5" />
-           </button>
+      {/* Action Overlays */}
+      {(onDelete || onCopyUrl) && asset.sessionId && (
+        <div className="absolute top-3 right-3 opacity-0 group-hover:opacity-100 transition-all duration-300 z-20 flex flex-col gap-2">
+           {onCopyUrl && (
+             <button 
+               onClick={(e) => {
+                 e.stopPropagation();
+                 onCopyUrl(asset.url);
+               }}
+               className="w-8 h-8 rounded-lg bg-white/90 backdrop-blur-md flex items-center justify-center text-[#0A0A0A] hover:bg-white transition-all border border-white/20 active:scale-95 shadow-sm"
+               title="Copy Image URL"
+             >
+               <Icons.Copy className="w-3.5 h-3.5" />
+             </button>
+           )}
+           {onDelete && (
+             <button 
+               onClick={(e) => {
+                 e.stopPropagation();
+                 onDelete(asset.sessionId!);
+               }}
+               className="w-8 h-8 rounded-lg bg-red-500/90 backdrop-blur-md flex items-center justify-center text-white hover:bg-red-600 transition-all border border-white/20 active:scale-95 shadow-sm"
+               title="Archive Session"
+             >
+               <Icons.Trash className="w-3.5 h-3.5" />
+             </button>
+           )}
         </div>
-      )} */}
+      )}
 
       {/* Hover Icon */}
       {!isError && (
@@ -158,7 +175,8 @@ export function MediaVault({
   vault, 
   onAssetClick,
   hasSessions,
-  onDelete
+  onDelete,
+  onCopyUrl
 }: MediaVaultProps) {
   return (
     <div className="flex flex-col gap-8">
@@ -182,6 +200,7 @@ export function MediaVault({
               asset={asset} 
               onAssetClick={onAssetClick} 
               onDelete={onDelete}
+              onCopyUrl={onCopyUrl}
             />
           ))}
         </div>

@@ -383,6 +383,11 @@ function AudioLeadContent() {
     }
   };
 
+  const handleCopyUrl = (url: string) => {
+    navigator.clipboard.writeText(url);
+    toast.success("Synthesis link copied to clipboard");
+  };
+
   const hasMusic = vault.some(v => v.type === "music");
   const hasVoiceover = vault.some(v => v.type === "voiceover");
   const hasFull = vault.some(v => v.type === "full");
@@ -475,6 +480,7 @@ function AudioLeadContent() {
              isLoading={isSyncing}
              onDownload={handleDownload}
              onDelete={handleDeleteSession}
+             onCopyUrl={handleCopyUrl}
              isGlobalArchive={!sessionId}
              selectedMusicUrl={selectedMusicUrl}
              selectedVoiceoverUrl={selectedVoiceoverUrl}

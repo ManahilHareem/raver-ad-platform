@@ -25,6 +25,7 @@ interface AudioVaultProps {
   onSelectMusic?: (url: string) => void;
   onSelectVoiceover?: (url: string) => void;
   onDelete?: (sessionId: string) => void;
+  onCopyUrl?: (url: string) => void;
 }
 
 export function AudioVault({ 
@@ -37,7 +38,8 @@ export function AudioVault({
   selectedVoiceoverUrl,
   onSelectMusic,
   onSelectVoiceover,
-  onDelete
+  onDelete,
+  onCopyUrl
 }: AudioVaultProps) {
   if (isLoading && assets.length === 0) {
     return (
@@ -164,6 +166,15 @@ export function AudioVault({
                       title="Archive Synthesis"
                     >
                       <Icons.Trash className="w-4 h-4" />
+                    </button>
+                 )}
+                 {onCopyUrl && (
+                    <button 
+                      onClick={() => onCopyUrl(asset.url)}
+                      className="w-10 h-10 rounded-2xl flex items-center justify-center bg-blue-50 text-blue-400 hover:bg-blue-500 hover:text-white transition-all active:scale-90 shadow-sm"
+                      title="Copy Neural URL"
+                    >
+                      <Icons.Copy className="w-3.5 h-3.5" />
                     </button>
                  )}
                  <button 

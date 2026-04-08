@@ -448,6 +448,11 @@ function ImageLeadContent() {
     }
   }, [sessionId, sessions]);
 
+  const handleCopyUrl = (url: string) => {
+    navigator.clipboard.writeText(url);
+    toast.success("Visual synthesis link copied to clipboard");
+  };
+
   const handleDeleteSession = (sid: string) => {
     setDeleteTargetId(sid);
     setIsDeleteModalOpen(true);
@@ -563,6 +568,7 @@ function ImageLeadContent() {
               setIsPreviewOpen(true);
             }}
             onDelete={handleDeleteSession}
+            onCopyUrl={handleCopyUrl}
             hasSessions={sessions.length > 0}
           />
         </div>
