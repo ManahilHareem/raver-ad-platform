@@ -15,6 +15,7 @@ import { SessionBrowser } from "@/components/agents/image-lead/SessionBrowser";
 import { MediaVault } from "@/components/agents/image-lead/MediaVault";
 import { RaverLoadingState } from "@/components/ui/RaverLoadingState";
 import ConfirmationModal from "@/components/ui/ConfirmationModal";
+import { toast } from "react-toastify";
 
 
 interface ImageAsset {

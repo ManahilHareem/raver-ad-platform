@@ -8,6 +8,7 @@ import { Icons } from "@/components/ui/icons";
 import { apiFetch } from "@/lib/api";
 import { cn, normalizeAssetUrl } from "@/lib/utils";
 import { RaverLoadingState } from "@/components/ui/RaverLoadingState";
+import { toast } from "react-toastify";
 
 import { AudioLeadModal } from "@/components/agents/audio-lead/AudioLeadModal";
 import { AudioVault } from "@/components/agents/audio-lead/AudioVault";

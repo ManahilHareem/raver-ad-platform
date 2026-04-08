@@ -144,7 +144,7 @@ function VaultImage({
                <Icons.Copy className="w-3.5 h-3.5" />
              </button>
            )}
-           {onDelete && (
+           {/* {onDelete && (
              <button 
                onClick={(e) => {
                  e.stopPropagation();
@@ -155,7 +155,7 @@ function VaultImage({
              >
                <Icons.Trash className="w-3.5 h-3.5" />
              </button>
-           )}
+           )} */}
         </div>
       )}
 

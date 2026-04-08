@@ -157,6 +157,15 @@ export default function CampaignCard({
     document.body.removeChild(link);
   };
 
+  const handleCopyLink = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    const url = localData.video_url || videoUrl || image;
+    if (!url) return;
+    
+    navigator.clipboard.writeText(url);
+    toast.success("Campaign link copied to clipboard");
+  };
+
   const currentStatus = localData.status;
   const currentCampaignStatus = localData.campaign_status;
 
@@ -245,8 +254,17 @@ export default function CampaignCard({
               onClick={handleDownload}
               disabled={isInProduction}
               className="w-[36px] h-[36px] bg-white flex items-center justify-center border border-[#F1F5F9] rounded-[5px] text-[#121212] hover:text-[#02022C] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              title="Download"
             >
               <Icons.Download className="w-4 h-4" />
+            </button>
+            <button
+              onClick={handleCopyLink}
+              disabled={isInProduction}
+              className="w-[36px] h-[36px] bg-white flex items-center justify-center border border-[#F1F5F9] rounded-[5px] text-[#121212] hover:text-blue-500 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              title="Copy Link"
+            >
+              <Icons.Copy className="w-4 h-4" />
             </button>
             <button
               onClick={(e) => {
