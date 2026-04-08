@@ -8,19 +8,29 @@ interface ImageAsset {
   filename: string;
   url: string;
   label?: string;
+  sessionId?: string;
 }
 
 interface MediaVaultProps {
   vault: ImageAsset[];
   onAssetClick: (url: string) => void;
   hasSessions: boolean;
+  onDelete?: (sessionId: string) => void;
 }
 
 /**
  * VaultImage: Handles individual image rendering, hover effects,
  * and up to 3 automatic retries if loading fails.
  */
-function VaultImage({ asset, onAssetClick }: { asset: ImageAsset; onAssetClick: (url: string) => void }) {
+function VaultImage({ 
+  asset, 
+  onAssetClick,
+  onDelete
+}: { 
+  asset: ImageAsset; 
+  onAssetClick: (url: string) => void;
+  onDelete?: (sessionId: string) => void;
+}) {
   const rawUrl = asset?.url || "";
   const initialUrl = rawUrl.startsWith("http") 
     ? rawUrl 
@@ -116,6 +126,24 @@ function VaultImage({ asset, onAssetClick }: { asset: ImageAsset; onAssetClick: 
          </span>
       </div>
 
+      {/* Delete Trigger Overlay */}
+      {onDelete && asset.sessionId && (
+        <div className="absolute top-3 right-3 opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-20">
+           <button 
+             onClick={(e) => {
+               e.stopPropagation();
+               if (window.confirm("Permanently archive this visual synthesis session?")) {
+                 onDelete(asset.sessionId!);
+               }
+             }}
+             className="w-8 h-8 rounded-lg bg-red-500/80 backdrop-blur-md flex items-center justify-center text-white hover:bg-red-600 transition-all border border-white/20 active:scale-95"
+             title="Archive Session"
+           >
+             <Icons.Trash className="w-3.5 h-3.5" />
+           </button>
+        </div>
+      )}
+
       {/* Hover Icon */}
       {!isError && (
         <div className="absolute inset-0 bg-[#0A0A0A]/40 opacity-0 group-hover:opacity-100 transition-opacity duration-200 flex items-center justify-center pointer-events-none z-5">
@@ -131,7 +159,8 @@ function VaultImage({ asset, onAssetClick }: { asset: ImageAsset; onAssetClick: 
 export function MediaVault({ 
   vault, 
   onAssetClick,
-  hasSessions 
+  hasSessions,
+  onDelete
 }: MediaVaultProps) {
   return (
     <div className="flex flex-col gap-8">
@@ -151,9 +180,10 @@ export function MediaVault({
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-6">
           {vault.map((asset) => (
             <VaultImage 
-              key={asset.filename + asset.url} 
+              key={asset.filename + (asset.sessionId || "") + asset.url} 
               asset={asset} 
               onAssetClick={onAssetClick} 
+              onDelete={onDelete}
             />
           ))}
         </div>
@@ -161,3 +191,4 @@ export function MediaVault({
     </div>
   );
 }
+

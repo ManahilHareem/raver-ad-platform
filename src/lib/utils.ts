@@ -34,3 +34,24 @@ Tones: ${campaign.tones?.join(", ") || "N/A"}
 `;
   return context.trim();
 }
+export function normalizeAssetUrl(url: string | null | undefined): string {
+  if (!url) return "";
+  
+  // If it's already a full URL, return it
+  if (url.startsWith("http")) return url;
+  
+  // If it starts with /api/, handle potential duplication with base URL
+  if (url.startsWith("/api/")) {
+    const base ="https://apiplatform.raver.ai/api";
+    const normalizedBase = base.endsWith('/') ? base.slice(0, -1) : base;
+    
+    // If base already ends with /api, and url starts with /api/, remove the duplicate /api from url
+    if (normalizedBase.endsWith('/api')) {
+      return `${normalizedBase}${url.substring(4)}`;
+    }
+    
+    return `${normalizedBase}${url}`;
+  }
+  
+  return url;
+}

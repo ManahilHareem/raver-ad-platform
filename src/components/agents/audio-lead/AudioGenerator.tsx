@@ -51,7 +51,8 @@ export function AudioGenerator({
     } else if (activeTab === "voiceover") {
       onGenerateVoiceover({
         script: formData.script,
-        voice: formData.voice,
+        // voice: formData.voice,
+        voice: "oversea_male1",
         voice_speed: formData.voiceSpeed
       });
     } else {
@@ -63,7 +64,8 @@ export function AudioGenerator({
         script: formData.script,
         tone: formData.tone,
         music_duration: formData.duration,
-        voice: formData.voice,
+        // voice: formData.voice,
+        voice: "oversea_male1",
         voice_speed: formData.voiceSpeed,
         music_volume: formData.musicVolume
       });

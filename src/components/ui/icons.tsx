@@ -42,6 +42,7 @@ import {
   Loader2,
   Camera,
   CheckCircle,
+  Check,
   Rocket,
   History,
   Monitor,
@@ -50,11 +51,13 @@ import {
   ChevronDown as ArrowDown,
   Play,
   Pause,
-  ChevronDown
+  ChevronDown,
+  Menu
 } from "lucide-react";
 import { CustomIcons } from "./custom-icons";
 
 export const Icons = {
+  Menu: Menu,
   CheckCircle: CheckCircle,
   Logo: CustomIcons.Logo,
   Dashboard: LayoutDashboard,
@@ -116,6 +119,7 @@ export const Icons = {
   Files: Files,
   ArrowDown: ArrowDown,
   ChevronDown: ChevronDown,
+  Check: Check,
   Play: Play,
   Pause: Pause
 };

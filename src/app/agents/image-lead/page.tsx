@@ -442,6 +442,22 @@ function ImageLeadContent() {
     }
   }, [sessionId, sessions]);
 
+  const handleDeleteSession = async (sid: string) => {
+    try {
+      const res = await apiFetch(`${API_BASE}/ai/image-lead/session/${sid}`, { 
+        method: 'DELETE' 
+      });
+      if (res.ok) {
+        if (sid === sessionId) {
+          setSessionId("");
+        }
+        await fetchSessions();
+      }
+    } catch (err) {
+      console.error("Deletion failed:", err);
+    }
+  };
+
   if (isSyncing && sessions.length === 0) {
     return (
       <RaverLoadingState 
@@ -477,10 +493,16 @@ function ImageLeadContent() {
                  </div>
                  <div className="w-px h-6 bg-slate-200" />
                  <button 
+                  onClick={() => handleDeleteSession(sessionId)}
+                  className="px-3 py-1 bg-white border border-slate-100 rounded-lg text-[9px] font-black uppercase text-red-500 hover:bg-red-500 hover:text-white hover:border-red-500 transition-all shadow-sm active:scale-95"
+                 >
+                   Archive
+                 </button>
+                 <button 
                   onClick={() => { setSessionId(""); fetchSessions(); }}
                   className="px-3 py-1 bg-white border border-slate-100 rounded-lg text-[9px] font-black uppercase text-[#0A0A0A] hover:bg-slate-900 hover:text-white hover:border-slate-900 transition-all shadow-sm active:scale-95"
                  >
-                   See All
+                   Clear
                  </button>
               </div>}
             </div>
@@ -522,6 +544,7 @@ function ImageLeadContent() {
               setSelectedImage(url);
               setIsPreviewOpen(true);
             }}
+            onDelete={handleDeleteSession}
             hasSessions={sessions.length > 0}
           />
         </div>

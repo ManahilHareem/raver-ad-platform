@@ -6,7 +6,7 @@ import DashboardLayout from "@/components/DashboardLayout";
 import Link from "next/link";
 import { Icons } from "@/components/ui/icons";
 import { apiFetch } from "@/lib/api";
-import { cn } from "@/lib/utils";
+import { cn, normalizeAssetUrl } from "@/lib/utils";
 import { RaverLoadingState } from "@/components/ui/RaverLoadingState";
 
 import { AudioLeadModal } from "@/components/agents/audio-lead/AudioLeadModal";
@@ -18,6 +18,7 @@ interface AudioAsset {
   type: "music" | "voiceover" | "full";
   timestamp: string;
   session_id: string;
+  business_name?: string;
 }
 
 function AudioLeadContent() {
@@ -29,6 +30,8 @@ function AudioLeadContent() {
   const [isLoading, setIsLoading] = useState(false);
   const [isSyncing, setIsSyncing] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [selectedMusicUrl, setSelectedMusicUrl] = useState<string>("");
+  const [selectedVoiceoverUrl, setSelectedVoiceoverUrl] = useState<string>("");
 
   const API_BASE = process.env.NEXT_PUBLIC_API_URL || "https://apiplatform.raver.ai/api";
 
@@ -40,11 +43,25 @@ function AudioLeadContent() {
       if (response.ok) {
         const data = await response.json();
         if (data.success && Array.isArray(data.data)) {
-          setVault(data.data.map((item: any) => ({
-            ...item,
-            timestamp: item.timestamp || new Date().toISOString()
-          })));
+          setVault(data.data.map((item: any) => {
+            let type: "music" | "voiceover" | "full" = "full";
+            const label = (item.label || "").toLowerCase();
+            const filename = (item.filename || "").toLowerCase();
+            
+            if (label.includes("music") || filename.includes("music")) type = "music";
+            else if (label.includes("voice") || filename.includes("voiceover")) type = "voiceover";
+            else if (label.includes("mix") || label.includes("full")) type = "full";
+
+            return {
+              ...item,
+              type,
+              url: normalizeAssetUrl(item.url),
+              timestamp: item.timestamp || new Date().toISOString(),
+              business_name: data.businessName || data.business_name
+            };
+          }));
         }
+        fetchGlobalVault();
       }
     } catch (err) {
       console.warn("Vault sync failed:", err);
@@ -53,9 +70,61 @@ function AudioLeadContent() {
     }
   };
 
+  const fetchGlobalVault = async () => {
+    setIsSyncing(true);
+    try {
+      const response = await apiFetch(`${API_BASE}/ai/audio-lead/results`);
+      if (response.ok) {
+        const data = await response.json();
+        if (data.success && Array.isArray(data.data)) {
+          const mapped: AudioAsset[] = [];
+          data.data.forEach((record: any) => {
+            if (record.mixUrl) {
+              mapped.push({
+                filename: record.mixUrl.split('/').pop() || "mix.mp3",
+                url: normalizeAssetUrl(record.mixUrl),
+                type: "full",
+                timestamp: record.createdAt,
+                session_id: record.sessionId,
+                business_name: record.businessName
+              });
+            }
+            if (record.musicUrl) {
+              mapped.push({
+                filename: record.musicUrl.split('/').pop() || "music.mp3",
+                url: normalizeAssetUrl(record.musicUrl),
+                type: "music",
+                timestamp: record.createdAt,
+                session_id: record.sessionId,
+                business_name: record.businessName
+              });
+            }
+            if (record.voiceoverUrl) {
+              mapped.push({
+                filename: record.voiceoverUrl.split('/').pop() || "voiceover.mp3",
+                url: normalizeAssetUrl(record.voiceoverUrl),
+                type: "voiceover",
+                timestamp: record.createdAt,
+                session_id: record.sessionId,
+                business_name: record.businessName
+              });
+            }
+          });
+          setVault(mapped);
+        }
+      }
+    } catch (err) {
+      console.warn("Global archives sync failed:", err);
+    } finally {
+      setIsSyncing(false);
+    }
+  };
+
   useEffect(() => {
     if (sessionId) {
       fetchVault(sessionId);
+    } else {
+      fetchGlobalVault();
     }
   }, [sessionId]);
 
@@ -90,7 +159,10 @@ function AudioLeadContent() {
            if (vResponse.ok) {
               const vData = await vResponse.json();
               if (vData.data && vData.data.length > 0) {
-                 setVault(vData.data);
+                 setVault(vData.data.map((item: any) => ({
+                   ...item,
+                   url: normalizeAssetUrl(item.url)
+                 })));
                  clearInterval(interval);
                  setIsLoading(false);
               }
@@ -130,7 +202,10 @@ function AudioLeadContent() {
            if (vResponse.ok) {
               const vData = await vResponse.json();
               if (vData.data && vData.data.length > 0) {
-                 setVault(vData.data);
+                 setVault(vData.data.map((item: any) => ({
+                   ...item,
+                   url: normalizeAssetUrl(item.url)
+                 })));
                  clearInterval(interval);
                  setIsLoading(false);
               }
@@ -168,7 +243,10 @@ function AudioLeadContent() {
            if (vResponse.ok) {
               const vData = await vResponse.json();
               if (vData.data && vData.data.length > 0) {
-                 setVault(vData.data);
+                 setVault(vData.data.map((item: any) => ({
+                   ...item,
+                   url: normalizeAssetUrl(item.url)
+                 })));
                  clearInterval(interval);
                  setIsLoading(false);
               }
@@ -185,14 +263,112 @@ function AudioLeadContent() {
     }
   };
 
-  const handleDownload = (url: string) => {
-    const link = document.createElement("a");
-    link.href = url;
-    link.setAttribute("download", `neural_audio_${new Date().getTime()}.mp3`);
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
+  const handleMixAudio = async () => {
+    const music = vault.find(v => v.type === "music");
+    const voiceover = vault.find(v => v.type === "voiceover");
+    
+    // If no selections, use defaults
+    const finalMusicUrl = selectedMusicUrl || music?.url;
+    const finalVoiceoverUrl = selectedVoiceoverUrl || voiceover?.url;
+
+    if (!finalMusicUrl || !finalVoiceoverUrl) {
+      alert("Please select both a Music track and a Voiceover track to mix.");
+      return;
+    }
+
+    const effectiveSessionId = sessionId || `raver_mix_${new Date().getTime()}`;
+    if (!sessionId) setSessionId(effectiveSessionId);
+
+    setIsLoading(true);
+    try {
+      const response = await apiFetch(`${API_BASE}/ai/audio-lead/mix`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ 
+          session_id: effectiveSessionId,
+          music_url: finalMusicUrl.replace(/^https?:\/\/[^\/]+/, ""),
+          voiceover_url: finalVoiceoverUrl.replace(/^https?:\/\/[^\/]+/, ""),
+          music_volume: 0.2
+        })
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        if (data.success && data.data?.audio_files?.length > 0) {
+          if (!sessionId) await fetchGlobalVault();
+          else await fetchVault(effectiveSessionId);
+          setIsLoading(false);
+          return;
+        }
+
+        const interval = setInterval(async () => {
+           const vResponse = await apiFetch(`${API_BASE}/ai/audio-lead/vault/${effectiveSessionId}`);
+           if (vResponse.ok) {
+              const vData = await vResponse.json();
+              const hasMix = vData.data && vData.data.some((f: any) => 
+                (f.label || "").toLowerCase().includes("mix") || 
+                (f.filename || "").toLowerCase().includes("mixed")
+              );
+              
+              if (hasMix) {
+                 if (!sessionId) await fetchGlobalVault();
+                 else await fetchVault(effectiveSessionId);
+                 clearInterval(interval);
+                 setIsLoading(false);
+              }
+           }
+        }, 3000);
+        setTimeout(() => { clearInterval(interval); setIsLoading(false); }, 45000);
+      } else {
+        setIsLoading(false);
+        alert("Mixing failed.");
+      }
+    } catch (err) {
+      console.error("Mixing error:", err);
+      setIsLoading(false);
+    }
   };
+
+  const handleDeleteSession = async (sid: string) => {
+    try {
+      const res = await apiFetch(`${API_BASE}/ai/audio-lead/session/${sid}`, { 
+        method: 'DELETE' 
+      });
+      if (res.ok) {
+        if (sid === sessionId) {
+          setSessionId("");
+          setVault([]);
+        }
+        await fetchGlobalVault();
+      }
+    } catch (err) {
+      console.error("Deletion failed:", err);
+    }
+  };
+
+  const handleDownload = async (url: string) => {
+    try {
+      const response = await apiFetch(url);
+      const blob = await response.blob();
+      const blobUrl = window.URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = blobUrl;
+      const filename = url.split("/").pop() || `neural_audio_${new Date().getTime()}.mp3`;
+      link.setAttribute("download", filename);
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      window.URL.revokeObjectURL(blobUrl);
+    } catch (err) {
+      console.error("Download failed:", err);
+      window.open(url, "_blank");
+    }
+  };
+
+  const hasMusic = vault.some(v => v.type === "music");
+  const hasVoiceover = vault.some(v => v.type === "voiceover");
+  const hasFull = vault.some(v => v.type === "full");
+  const canMix = hasMusic && hasVoiceover && !hasFull;
 
   return (
     <DashboardLayout>
@@ -222,7 +398,11 @@ function AudioLeadContent() {
                       <span className="text-[10px] font-black text-[#01012A] font-mono">{sessionId}</span>
                    </div>
                    <button 
-                    onClick={() => { setSessionId(""); setVault([]); }}
+                    onClick={() => {
+                        if (window.confirm("Permanently archive this neural synthesis session?")) {
+                            handleDeleteSession(sessionId);
+                        }
+                    }}
                     className="ml-2 p-1.5 hover:bg-white rounded-lg transition-all text-slate-300 hover:text-red-500"
                    >
                      <Icons.Trash className="w-3.5 h-3.5" />
@@ -241,12 +421,51 @@ function AudioLeadContent() {
           </div>
         </div>
 
+        {/* Neural Mixing Suggestion */}
+          <div className="mx-8 mb-4 p-6 bg-linear-to-r from-[#01012A] to-[#2E2C66] rounded-[24px] flex items-center justify-between animate-in slide-in-from-top-4 duration-500 shadow-xl shadow-blue-900/10 border border-white/5">
+            <div className="flex items-center gap-5">
+              <div className="w-12 h-12 rounded-2xl bg-white/10 backdrop-blur-md flex items-center justify-center border border-white/10">
+                <Icons.whiteMagicWand className="w-6 h-6" />
+              </div>
+              <div className="flex flex-col">
+                <h4 className="text-white font-black text-lg tracking-tight lowercase">Ready for neural mixing_</h4>
+                <p className="text-white/60 text-[10px] font-bold uppercase tracking-widest mt-0.5">
+                  {(!selectedMusicUrl && !selectedVoiceoverUrl) 
+                    ? "Select 1 Music + 1 Voiceover from vault below" 
+                    : (!selectedMusicUrl) 
+                    ? "Select a Music track to complete the pair" 
+                    : (!selectedVoiceoverUrl) 
+                    ? "Select a Voiceover track to complete the pair" 
+                    : "Custom neural pair locked: Ready to Mix"}
+                </p>
+              </div>
+            </div>
+            <button 
+              onClick={handleMixAudio}
+              disabled={!(selectedMusicUrl && selectedVoiceoverUrl) && !canMix}
+              className={cn(
+                "h-12 px-8 rounded-xl font-black text-[11px] uppercase tracking-widest transition-all shadow-lg",
+                ((selectedMusicUrl && selectedVoiceoverUrl) || canMix)
+                  ? "bg-white text-[#01012A] hover:scale-105 active:scale-95 shadow-white/10"
+                  : "bg-white/5 text-white/30 cursor-not-allowed border border-white/5"
+              )}
+            >
+              {((selectedMusicUrl && selectedVoiceoverUrl) || canMix) ? "Mix Neural Atmosphere" : "Select Components"}
+            </button>
+          </div>
+
         {/* Neural Vault Section */}
         <div className="bg-white rounded-[32px] p-6 sm:p-10 border border-slate-50 shadow-[0_8px_30px_rgb(0,0,0,0.01)] h-full">
            <AudioVault 
              assets={vault}
              isLoading={isSyncing}
              onDownload={handleDownload}
+             onDelete={handleDeleteSession}
+             isGlobalArchive={!sessionId}
+             selectedMusicUrl={selectedMusicUrl}
+             selectedVoiceoverUrl={selectedVoiceoverUrl}
+             onSelectMusic={setSelectedMusicUrl}
+             onSelectVoiceover={setSelectedVoiceoverUrl}
            />
         </div>
 

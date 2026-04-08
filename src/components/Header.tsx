@@ -6,7 +6,11 @@ import Link from "next/link";
 import { logout } from "@/lib/auth";
 import { useUser } from "@/context/UserContext";
 
-export default function Header() {
+interface HeaderProps {
+  onMenuClick: () => void;
+}
+
+export default function Header({ onMenuClick }: HeaderProps) {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const { user } = useUser();
   const dropdownRef = useRef<HTMLDivElement>(null);
@@ -26,41 +30,56 @@ export default function Header() {
   };
 
   return (
-    <header className="h-[78px] bg-white border-b border-slate-100 flex items-center justify-between px-8 relative z-50">
-      {/* Search Bar */}
-      <div className="relative w-[341px]">
-        <Icons.Search className="absolute left-4 top-1/2 -translate-y-1/2 text-[#4F4F4F] w-5 h-5" />
-        <input
-          type="text"
-          placeholder="Search..."
-          className="w-full h-[42px] bg-[#F8F8F8] border border-[#0000000D] border-t-[#FFFFFF] rounded-[4px] pt-[11px] pr-[16px] pb-[10px] pl-[48px] text-[14px] font-normal text-[#4F4F4F] leading-[100%] tracking-[-0.15px] focus:outline-none focus:ring-1 focus:ring-indigo-500/20 transition-all placeholder:text-[#4F4F4F]/50"
-        />
+    <header className="h-[78px] bg-white border-b border-slate-100 flex items-center justify-between px-4 sm:px-8 relative z-50 shrink-0">
+      {/* Search Bar / Menu Toggle */}
+      <div className="flex items-center gap-4 flex-1">
+        <button 
+          onClick={onMenuClick}
+          className="lg:hidden p-2 hover:bg-slate-50 rounded-xl transition-colors shrink-0"
+        >
+          <Icons.Menu className="w-6 h-6 text-[#01012A]" />
+        </button>
+
+        <div className="relative w-full max-w-[341px] hidden sm:block">
+          <Icons.Search className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 w-4 h-4" />
+          <input
+            type="text"
+            placeholder="Search platform..."
+            className="w-full h-[42px] bg-slate-50 border border-slate-100 rounded-xl pt-[11px] pr-[16px] pb-[10px] pl-[44px] text-[13px] font-medium text-[#121212] focus:outline-none focus:ring-2 focus:ring-[#01012A]/5 transition-all placeholder:text-slate-400"
+          />
+        </div>
       </div>
 
       {/* Actions */}
-      <div className="flex items-center gap-[16px]">
-        <div className="flex items-center gap-2">
-          <Link href="/chat" className="p-2.5 hover:bg-slate-50 rounded-xl transition-colors relative">
-            <Icons.MessageCircle className="w-5 h-5 text-[#4F4F4F]" />
+      <div className="flex items-center gap-2 sm:gap-6">
+        <div className="hidden md:flex items-center gap-2 border-r border-slate-100 pr-4">
+          <Link href="/chat" className="p-2.5 hover:bg-slate-50 rounded-xl transition-colors relative group">
+            <Icons.MessageCircle className="w-5 h-5 text-slate-400 group-hover:text-[#01012A]" />
           </Link>
-          <Link href="/notifications" className="p-2.5 hover:bg-slate-50 rounded-xl transition-colors relative">
-            <Icons.Bell className="w-5 h-5 text-[#4F4F4F]" />
-            <span className="absolute top-2 right-2.5 w-2 h-2 bg-red-500 rounded-full border-2 border-white" />
+          <Link href="/notifications" className="p-2.5 hover:bg-slate-50 rounded-xl transition-colors relative group">
+            <Icons.Bell className="w-5 h-5 text-slate-400 group-hover:text-[#01012A]" />
+            <span className="absolute top-2.5 right-2.5 w-2 h-2 bg-red-500 rounded-full border-2 border-white" />
           </Link>
         </div>
 
-        <Link href="/studio?create=true">
-          <Button className="w-[144px] h-[48px] px-6 rounded-xl flex items-center gap-2">
-            <Icons.Plus className="w-5 h-5" />
-            <span>Create</span>
+        <Link href="/studio?create=true" className="hidden sm:block">
+          <Button className="h-11 px-6 rounded-xl flex items-center gap-2 bg-[#01012A] text-white hover:bg-slate-900 shadow-lg shadow-[#01012A]/10 transition-all active:scale-95">
+            <Icons.Plus className="w-4 h-4" />
+            <span className="text-[12px] font-black uppercase tracking-widest text-white">Create</span>
           </Button>
+        </Link>
+        
+        <Link href="/studio?create=true" className="sm:hidden">
+          <button className="w-10 h-10 bg-[#01012A] text-white rounded-xl flex items-center justify-center active:scale-95 transition-all shadow-lg shadow-[#01012A]/10">
+            <Icons.Plus className="w-5 h-5" />
+          </button>
         </Link>
 
         {/* Profile Dropdown Container */}
         <div className="relative pl-2" ref={dropdownRef}>
           <button 
             onClick={() => setIsDropdownOpen(!isDropdownOpen)}
-            className="flex items-center gap-3 relative w-10 h-10 rounded-xl overflow-hidden shadow-sm hover:ring-2 hover:ring-indigo-500/20 transition-all border border-transparent focus:border-indigo-500/20 outline-none"
+            className="flex items-center gap-3 relative w-10 h-10 sm:w-11 sm:h-11 rounded-xl overflow-hidden shadow-sm hover:ring-2 hover:ring-[#01012A]/10 transition-all border border-slate-100 focus:border-indigo-500/20 outline-none"
           >
             <Image 
               src={user?.avatarUrl || "/assets/7441684aa4149b2fd6d813ffefd24cdc9a178dba.jpg"} 
@@ -72,29 +91,33 @@ export default function Header() {
 
           {/* Dropdown Menu */}
           {isDropdownOpen && (
-            <div className="absolute top-full right-0 mt-2 w-48 bg-white rounded-2xl shadow-xl border border-slate-100 py-2 animate-in fade-in zoom-in-95 duration-200 origin-top-right overflow-hidden z-100">
+            <div className="absolute top-full right-0 mt-3 w-56 bg-white rounded-2xl shadow-2xl border border-slate-100 py-2 animate-in fade-in zoom-in-95 duration-200 origin-top-right overflow-hidden z-200">
+              <div className="px-4 py-3 border-b border-slate-50 mb-1">
+                 <p className="text-[13px] font-black text-[#01012A] truncate">{user?.fullName || 'Creative Director'}</p>
+                 <p className="text-[10px] font-bold text-slate-400 truncate uppercase mt-0.5 tracking-widest">{user?.professionalRole || 'Global Admin'}</p>
+              </div>
               <Link 
                 href="/settings" 
                 onClick={() => setIsDropdownOpen(false)}
-                className="flex items-center gap-3 px-4 py-3 text-[14px] text-[#4F4F4F] hover:bg-slate-50 transition-colors"
+                className="flex items-center gap-3 px-4 py-3 text-[13px] font-bold text-[#4F4F4F] hover:bg-slate-50 transition-colors group"
               >
-                <Icons.User className="w-4 h-4" />
+                <Icons.User className="w-4 h-4 text-slate-400 group-hover:text-[#01012A]" />
                 <span>My Profile</span>
               </Link>
               <Link 
                 href="/settings?tab=security" 
                 onClick={() => setIsDropdownOpen(false)}
-                className="flex items-center gap-3 px-4 py-3 text-[14px] text-[#4F4F4F] hover:bg-slate-50 transition-colors"
+                className="flex items-center gap-3 px-4 py-3 text-[13px] font-bold text-[#4F4F4F] hover:bg-slate-50 transition-colors group"
               >
-                <Icons.Lock className="w-4 h-4" />
+                <Icons.Lock className="w-4 h-4 text-slate-400 group-hover:text-[#01012A]" />
                 <span>Security</span>
               </Link>
               <div className="h-px bg-slate-100 my-1 mx-2" />
               <button 
                 onClick={handleLogout}
-                className="w-full flex items-center gap-3 px-4 py-3 text-[14px] text-red-500 hover:bg-red-50 transition-colors"
+                className="w-full flex items-center gap-3 px-4 py-3 text-[13px] font-black text-red-500 hover:bg-red-50 transition-colors group"
               >
-                <Icons.Trash className="w-4 h-4" />
+                <Icons.Trash className="w-4 h-4 text-red-400 group-hover:text-red-600" />
                 <span>Logout</span>
               </button>
             </div>

@@ -623,7 +623,7 @@ export default function CampaignDetailPage() {
                           )}
                           {dim.notes && (
                              <div className="p-3 bg-white/60 rounded-xl border border-slate-100/50 italic">
-                                <p className="text-[10px] text-slate-400 font-medium leading-relaxed leading-tight">Note: {dim.notes}</p>
+                                <p className="text-[10px] text-slate-400 font-medium leading-relaxed">Note: {dim.notes}</p>
                              </div>
                           )}
                        </div>

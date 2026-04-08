@@ -22,13 +22,13 @@ export default function AgentCard({ name, role, description, tasksCompleted, ima
     <div 
       onClick={onClick}
       className={cn(
-        "bg-white rounded-[24px] overflow-hidden border-[0.35px] h-[360px] p-[12px] border-[#0000001A] transition-all duration-300 flex flex-col group hover-gradient-border cursor-pointer",
+        "bg-white rounded-[24px] overflow-hidden border-[0.35px] h-auto min-h-[360px] p-[12px] border-[#0000001A] transition-all duration-300 flex flex-col group hover-gradient-border cursor-pointer w-full",
         isAudio && "ring-2 ring-[#02022C]/5"
       )}
       style={{ boxShadow: "0px 0px 20px 0px #0000000A" }}
     >
       {/* Avatar Container */}
-      <div className="relative  min-w-[284px] h-[192px] bg-[#F8F8F8] overflow-hidden group items-center">
+      <div className="relative w-full h-[192px] bg-[#F8F8F8] overflow-hidden group items-center">
         <Image 
           src={imagePath} 
           alt={name}
@@ -54,7 +54,7 @@ export default function AgentCard({ name, role, description, tasksCompleted, ima
         </div>
         
         <p  
-          className="text-[12px] text-[#4F4F4F] leading-none line-clamp-3 font-normal tracking-normal"
+          className="text-[12px] text-[#4F4F4F] leading-relaxed line-clamp-3 font-normal tracking-normal"
         >
           {description}
         </p>

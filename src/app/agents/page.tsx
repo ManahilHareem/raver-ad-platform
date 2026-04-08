@@ -144,28 +144,28 @@ export default function AgentsPage() {
 
   return (
     <DashboardLayout>
-      <div className="flex flex-col gap-[10px] p-[10px] bg-[#F8FAFC] min-h-screen">
-      <div className="flex flex-col gap-[16px] p-[16px] rounded-[12px] bg-[#FFFFFF] border-[0.35px] border-[#0000001A]">
+      <div className="flex flex-col gap-3 sm:gap-4 p-2 sm:p-4 md:p-6 bg-[#F8FAFC] min-h-screen">
+      <div className="flex flex-col gap-4 sm:gap-6 p-4 sm:p-6 md:p-8 rounded-[12px] bg-[#FFFFFF] border-[0.35px] border-[#0000001A]">
       {/* Header */}
-      <div className="flex flex-col gap-2">
-        <h1 className="text-[30px] font-bold text-[#121212]">Ai Agents</h1>
-        <p className="text-[16px] text-[#4F4F4F] font-regular">
+      <div className="flex flex-col gap-1 sm:gap-2">
+        <h1 className="text-2xl sm:text-3xl font-bold text-[#121212]">Ai Agents</h1>
+        <p className="text-[14px] sm:text-[16px] text-[#4F4F4F] font-regular">
           10 specialized AI agents working together to create professional beauty marketing campaigns
         </p>
       </div>
 
       {/* Stats Section */}
-      <div className="flex flex-row  w-full   gap-[12px]">
+      <div className="flex flex-col sm:flex-row w-full gap-3 sm:gap-4">
         {[
           { label: "Active Agents", value: "10/10", sub: "100%", trend: "up" },
           { label: "Total Tasks Completed", value: "4,798", sub: "This Month", trend: "up" },
           { label: "Campaign Success Rate", value: "94%", sub: "+8%", trend: "up" }
         ].map((stat, i) => (
-          <div key={i} className="bg-[#F8F8F8] w-full h-[98px] px-[21px] pt-[21px] pb-px rounded-[8px] border border-[#F1F5F9] shadow-sm flex flex-col gap-2">
-            <span className="text-[12px] font-medium text-[#64748B]">{stat.label}</span>
+          <div key={i} className="bg-[#F8F8F8] w-full h-[88px] sm:h-[98px] px-5 sm:px-[21px] py-4 sm:pt-[21px] sm:pb-px rounded-[8px] border border-[#F1F5F9] shadow-sm flex flex-col justify-center sm:justify-start gap-1 sm:gap-2">
+            <span className="text-[11px] sm:text-[12px] font-medium text-[#64748B]">{stat.label}</span>
             <div className="flex items-end justify-between">
-              <span className="text-[24px] font-bold text-[#02022C]">{stat.value}</span>
-              <span className="text-[12px] font-bold text-[#02022C]">{stat.sub}</span>
+              <span className="text-xl sm:text-[24px] font-bold text-[#02022C] leading-none">{stat.value}</span>
+              <span className="text-[11px] sm:text-[12px] font-bold text-[#02022C] leading-none">{stat.sub}</span>
             </div>
           </div>
         ))}
@@ -173,15 +173,15 @@ export default function AgentsPage() {
         </div>
 
       {/* Team Grid */}
-      <div className="flex flex-col gap-[16px] bg-[#FFFFFF] p-[16px] rounded-[12px] border-[0.35px] border-[#0000001A]">
-        <h2 className="text-[18px] font-medium text-[#121212]">Your AI Team</h2>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-[12px] w-full">
+      <div className="flex flex-col gap-4 sm:gap-6 bg-[#FFFFFF] p-4 sm:p-6 md:p-8 rounded-[12px] border-[0.35px] border-[#0000001A]">
+        <h2 className="text-base sm:text-lg font-medium text-[#121212]">Your AI Team</h2>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4 md:gap-6 w-full">
           {agents.slice(0, 10).map((agent, i) => (
             <AgentCard 
               key={i} 
               {...agent} 
               onClick={() => setSelectedAgent(agent)}
-              actionLabel={(agent.name === "Raver Image Lead" || agent.name === "Raver Producer" || agent.name === "Raver Audio Lead") ? "Start Creating" : undefined}
+              actionLabel={(agent.name === "Raver Image Lead" || agent.name === "Raver Producer" || agent.name === "Raver Audio Lead" || agent.name === "Raver Copy Lead") ? "Start Creating" : undefined}
               onAction={(e) => {
                 if (agent.name === "Raver Image Lead") {
                   e.stopPropagation();
@@ -192,6 +192,9 @@ export default function AgentsPage() {
                 } else if (agent.name === "Raver Audio Lead") {
                   e.stopPropagation();
                   router.push("/agents/audio-lead?generate=true");
+                } else if (agent.name === "Raver Copy Lead") {
+                  e.stopPropagation();
+                  router.push("/agents/copy-lead?generate=true");
                 }
               }}
             />
@@ -199,31 +202,10 @@ export default function AgentsPage() {
         </div>
       </div>
 
-      {/* Recent History Section */}
-      {history.length > 0 && (
-         <div className="flex flex-col gap-[16px] bg-[#FFFFFF] p-[16px] rounded-[12px] border-[0.35px] border-[#0000001A]">
-            <CampaignHistoryList 
-               history={history.slice(0, 3)} 
-               onDelete={handleDelete}
-            />
-            {history.length > 3 && (
-               <div className="flex justify-center pt-4">
-                  <Link 
-                    href="/agents/producer" 
-                    className="px-8 h-12 rounded-[16px] bg-slate-50 border border-slate-100 flex items-center gap-3 text-[11px] font-black uppercase tracking-widest text-slate-400 hover:bg-slate-100 hover:text-[#01012A] transition-all"
-                  >
-                    View All Archives
-                    <Icons.ArrowRight className="w-4 h-4" />
-                  </Link>
-               </div>
-            )}
-         </div>
-      )}
-
       {/* Workflow Section */}
-      <div className="flex flex-col gap-[16px] bg-[#FFFFFF] p-[16px] rounded-[12px] border-[0.35px] border-[#0000001A]">
-        <h2 className="text-[18px] font-medium text-[#121212]">How Your AI Team Works Together</h2>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+      <div className="flex flex-col gap-4 sm:gap-6 bg-[#FFFFFF] p-4 sm:p-6 md:p-8 rounded-[12px] border-[0.35px] border-[#0000001A]">
+        <h2 className="text-base sm:text-lg font-medium text-[#121212]">How Your AI Team Works Together</h2>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-6">
           {[
             { 
               step: 1, 
@@ -241,13 +223,13 @@ export default function AgentsPage() {
               desc: "Quality Lead scores the output, Human Creative Director reviews it. You receive platform-ready content in minutes." 
             }
           ].map((item, i) => (
-            <div key={i} className="bg-[#F8F8F8] p-[12px] rounded-[12px] border-[0.35px] border-[#0000001A] shadow-sm flex flex-col gap-4">
-              <div className="w-[40px] h-[40px] rounded-[12px] bg-white flex items-center justify-center text-[18px] font-bold text-[#02022C]">
+            <div key={i} className="bg-[#F8F8F8] p-4 sm:p-[12px] rounded-[12px] border-[0.35px] border-[#0000001A] shadow-sm flex flex-col gap-3 sm:gap-4">
+              <div className="w-[36px] h-[36px] sm:w-[40px] sm:h-[40px] rounded-[10px] sm:rounded-[12px] bg-white flex items-center justify-center text-base sm:text-[18px] font-bold text-[#02022C]">
                 {item.step}
               </div>
-              <div className="flex flex-col gap-2">
-                <h4 className="text-[14px] font-medium text-[#121212]">{item.title}</h4>
-                <p className="text-[12px] text-[#4F4F4F]  leading-relaxed font-regular">{item.desc}</p>
+              <div className="flex flex-col gap-1 sm:gap-2">
+                <h4 className="text-[13px] sm:text-[14px] font-medium text-[#121212]">{item.title}</h4>
+                <p className="text-[11px] sm:text-[12px] text-[#4F4F4F] leading-relaxed font-regular">{item.desc}</p>
               </div>
             </div>
           ))}
@@ -266,6 +248,8 @@ export default function AgentsPage() {
             router.push("/agents/producer");
           } else if (selectedAgent?.name === "Raver Audio Lead") {
             router.push("/agents/audio-lead?generate=true");
+          } else if (selectedAgent?.name === "Raver Copy Lead") {
+            router.push("/agents/copy-lead?generate=true");
           }
         }}
       />
