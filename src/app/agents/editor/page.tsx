@@ -124,7 +124,7 @@ function EditorContent() {
   return (
     <div className="flex flex-col gap-6 sm:gap-8 p-4 sm:p-8 mx-auto bg-white rounded-3xl min-h-screen">
       {/* Standardized Orchestration Header */}
-      <div className="flex flex-col gap-6 p-5 sm:p-8 relative overflow-hidden bg-slate-50/50 rounded-[32px] border border-slate-100">
+      <div className="flex flex-col gap-6 p-5 sm:p-8 relative overflow-hidden ">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-6">
             <Link 

@@ -181,7 +181,7 @@ export default function AgentsPage() {
               key={i} 
               {...agent} 
               onClick={() => setSelectedAgent(agent)}
-              actionLabel={(agent.name === "Raver Image Lead" || agent.name === "Raver Producer" || agent.name === "Raver Audio Lead" || agent.name === "Raver Copy Lead") ? "Start Creating" : undefined}
+              actionLabel={(agent.name === "Raver Image Lead" || agent.name === "Raver Producer" || agent.name === "Raver Audio Lead" || agent.name === "Raver Copy Lead" || agent.name === "Raver Editor") ? "Start Creating" : undefined}
               onAction={(e) => {
                 if (agent.name === "Raver Image Lead") {
                   e.stopPropagation();
@@ -195,6 +195,9 @@ export default function AgentsPage() {
                 } else if (agent.name === "Raver Copy Lead") {
                   e.stopPropagation();
                   router.push("/agents/copy-lead?generate=true");
+                } else if (agent.name === "Raver Editor") {
+                  e.stopPropagation();
+                  router.push("/agents/editor");
                 }
               }}
             />
@@ -250,6 +253,8 @@ export default function AgentsPage() {
             router.push("/agents/audio-lead?generate=true");
           } else if (selectedAgent?.name === "Raver Copy Lead") {
             router.push("/agents/copy-lead?generate=true");
+          } else if (selectedAgent?.name === "Raver Editor") {
+            router.push("/agents/editor");
           }
         }}
       />
