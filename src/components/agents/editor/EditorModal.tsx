@@ -18,7 +18,7 @@ export function EditorModal({ isOpen, onClose, onGenerate, isLoading }: EditorMo
     <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 sm:p-6">
       {/* Backdrop */}
       <div 
-        className="absolute inset-0 bg-[#01012A]/60 backdrop-blur-xl animate-in fade-in duration-300"
+        className="absolute inset-0 bg-linear-to-r from-[#01012A] to-[#2E2C66] backdrop-blur-xl animate-in fade-in duration-300"
         onClick={onClose}
       />
 
@@ -28,7 +28,7 @@ export function EditorModal({ isOpen, onClose, onGenerate, isLoading }: EditorMo
         {/* Header */}
         <div className="flex items-center justify-between px-8 py-6 bg-white border-b border-slate-100">
           <div className="flex items-center gap-4">
-            <div className="w-12 h-12 rounded-2xl bg-[#01012A] flex items-center justify-center shadow-lg shadow-[#01012A]/10">
+            <div className="w-12 h-12 rounded-2xl bg-linear-to-r from-[#01012A] to-[#2E2C66] flex items-center justify-center shadow-lg shadow-[#01012A]/10">
               <Icons.Rocket className="w-6 h-6 text-white" />
             </div>
             <div className="flex flex-col">

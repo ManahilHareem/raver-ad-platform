@@ -165,7 +165,7 @@ function ProducerContent() {
         {/* Subtle Mesh Background Orchestration */}
         <div className="absolute inset-0 pointer-events-none overflow-hidden">
           <div className="absolute -top-[20%] -left-[10%] w-[60%] h-[60%] bg-white/5 blur-[120px] rounded-full" />
-          <div className="absolute -bottom-[20%] -right-[10%] w-[50%] h-[50%] bg-[#01012A]/5 blur-[100px] rounded-full" />
+          <div className="absolute -bottom-[20%] -right-[10%] w-[50%] h-[50%]   blur-[100px] rounded-full" />
         </div>
 
         <div className="flex flex-col gap-8 sm:gap-12 p-4 sm:p-10 mx-auto relative z-10 max-w-[1600px]">

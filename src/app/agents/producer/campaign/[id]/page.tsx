@@ -90,7 +90,7 @@ export default function CampaignDetailPage() {
           <h2 className="text-2xl font-black text-[#01012A] tracking-tighter lowercase">{error || "Production Not Sourced"}</h2>
           <button
             onClick={() => router.push("/agents/producer")}
-            className="h-12 px-8 bg-[#01012A] text-white rounded-2xl text-[10px] font-black uppercase tracking-widest shadow-xl shadow-[#01012A]/10 active:scale-95 transition-all"
+            className="h-12 px-8 bg-linear-to-r from-[#01012A] to-[#2E2C66]  text-white rounded-2xl text-[10px] font-black uppercase tracking-widest shadow-xl shadow-[#01012A]/10 active:scale-95 transition-all"
           >
             Return to Orchestration Hub
           </button>
@@ -195,7 +195,7 @@ export default function CampaignDetailPage() {
 
             {/* HERO: Cinema Mode Video Showcase */}
             {result.video_url ? (
-              <div className="bg-[#01012A] rounded-[32px] md:rounded-[40px] overflow-hidden shadow-2xl shadow-black/20 relative group h-[60vh] sm:h-[70vh] lg:h-[80vh] transition-all duration-700">
+              <div className="bg-linear-to-r from-[#01012A] to-[#2E2C66]  rounded-[32px] md:rounded-[40px] overflow-hidden shadow-2xl shadow-black/20 relative group h-[60vh] sm:h-[70vh] lg:h-[80vh] transition-all duration-700">
                 {/* Immersive Hover Overlays */}
                 <div className="absolute inset-x-0 top-0 h-40 bg-linear-to-b from-black/80 to-transparent z-20 opacity-0 group-hover:opacity-100 transition-opacity duration-500 flex items-start justify-between p-6 sm:p-8 md:p-12 pointer-events-none">
                   <div className="flex flex-col gap-1 sm:gap-2 pointer-events-auto">

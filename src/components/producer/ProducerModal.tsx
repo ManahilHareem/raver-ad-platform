@@ -40,7 +40,7 @@ export function ProducerModal({
       {/* Backdrop */}
       <div 
         onClick={onClose}
-        className="absolute inset-0 bg-[#01012A]/40 backdrop-blur-sm transition-opacity" 
+        className="absolute inset-0  backdrop-blur-sm transition-opacity" 
       />
       
       {/* Modal Container */}

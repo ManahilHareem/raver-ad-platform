@@ -83,7 +83,7 @@ export function EditorVault({ videos, isLoading, onPreview, onDelete, isGlobalAr
             {/* Thumbnail/Preview Area */}
             <div className="relative aspect-video bg-slate-100 overflow-hidden">
               {video.status === "processing" ? (
-                <div className="absolute inset-0 flex flex-col items-center justify-center bg-[#01012A]/40 backdrop-blur-md z-10 transition-all">
+                <div className="absolute inset-0 flex flex-col items-center justify-center bg-linear-to-r from-[#01012A] to-[#2E2C66] backdrop-blur-md z-10 transition-all">
                   <Icons.Loader className="w-6 h-6 text-white animate-spin mb-2" />
                   <p className="text-white text-[10px] font-black uppercase tracking-widest animate-pulse">Synthesis Running</p>
                 </div>
@@ -111,7 +111,7 @@ export function EditorVault({ videos, isLoading, onPreview, onDelete, isGlobalAr
                 <div className="absolute top-4 right-4 opacity-0 group-hover:opacity-100 transition-all duration-300 z-30 flex flex-col gap-2">
                   <button 
                     onClick={(e) => handleCopyUrl(e, video.url)}
-                    className="w-8 h-8 rounded-lg bg-white shadow-xl flex items-center justify-center text-[#01012A] hover:bg-[#01012A] hover:text-white transition-all border border-slate-100 active:scale-95"
+                    className="w-8 h-8 rounded-lg bg-white shadow-xl flex items-center justify-center text-[#01012A] hover:bg-linear-to-r hover:from-[#01012A] hover:to-[#2E2C66] hover:text-white transition-all border border-slate-100 active:scale-95"
                     title="Copy Video URL"
                   >
                     <Icons.Copy className="w-3.5 h-3.5" />

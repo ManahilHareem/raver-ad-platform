@@ -41,7 +41,7 @@ export function CampaignDetailModal({ isOpen, onClose, campaign }: CampaignDetai
       {/* Backdrop */}
       <div 
         onClick={onClose}
-        className="absolute inset-0 bg-[#01012A]/60 backdrop-blur-xl transition-opacity animate-in fade-in duration-500" 
+        className="absolute inset-0  backdrop-blur-xl transition-opacity animate-in fade-in duration-500" 
       />
       
       {/* Modal Container */}
@@ -51,7 +51,7 @@ export function CampaignDetailModal({ isOpen, onClose, campaign }: CampaignDetai
         {/* Header Section */}
         <div className="px-12 pt-12 pb-8 border-b border-slate-50 flex items-center justify-between shrink-0 bg-white/80 backdrop-blur-md relative z-20">
            <div className="flex items-center gap-6">
-              <div className="w-16 h-16 rounded-[24px] bg-linear-to-r from-[#01012A] to-[#2E2C66] flex items-center justify-center shadow-2xl shadow-[#01012A]/20">
+              <div className="w-16 h-16 rounded-[24px]  flex items-center justify-center shadow-2xl shadow-[#01012A]/20">
                  <Icons.Activity className="w-8 h-8 text-white" />
               </div>
               <div className="flex flex-col gap-1">
@@ -114,7 +114,7 @@ export function CampaignDetailModal({ isOpen, onClose, campaign }: CampaignDetai
                       href={result.video_url} 
                       target="_blank" 
                       rel="noopener noreferrer"
-                      className="h-10 px-6 bg-[#01012A] text-white rounded-xl text-[10px] font-black uppercase tracking-widest flex items-center gap-2 hover:bg-[#2E2C66] transition-all shadow-lg shadow-[#01012A]/10"
+                      className="h-10 px-6 bg-linear-to-r from-[#01012A] to-[#2E2C66] text-white rounded-xl text-[10px] font-black uppercase tracking-widest flex items-center gap-2 hover:bg-[#2E2C66] transition-all shadow-lg shadow-[#01012A]/10"
                     >
                       <Icons.Video className="w-3.5 h-3.5" />
                       View High-Res Master
@@ -189,7 +189,7 @@ export function CampaignDetailModal({ isOpen, onClose, campaign }: CampaignDetai
                           </div>
                           <div className="h-1 bg-slate-100 rounded-full overflow-hidden">
                              <div 
-                               className="h-full bg-[#01012A] transition-all duration-1000"
+                               className="h-full bg-linear-to-r from-[#01012A] to-[#2E2C66] transition-all duration-1000"
                                style={{ width: `${(m.score || 0) * 100}%` }}
                              />
                           </div>

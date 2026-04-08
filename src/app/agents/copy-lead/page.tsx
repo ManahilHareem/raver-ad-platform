@@ -225,7 +225,7 @@ function CopyLeadContent() {
               
               <button 
                 onClick={() => setIsModalOpen(true)}
-                className="h-12 sm:h-14 px-6 sm:px-8 bg-[#01012A] text-white rounded-[18px] sm:rounded-[20px] font-black text-[10px] sm:text-[11px] uppercase tracking-widest flex items-center justify-center gap-2 sm:gap-3 transition-all hover:scale-[1.02] active:scale-95 shadow-xl shadow-[#01012A]/10 border border-white/5 flex-1 sm:flex-none"
+                className="h-12 sm:h-14 px-6 sm:px-8 bg-linear-to-r from-[#01012A] to-[#2E2C66]  text-white rounded-[18px] sm:rounded-[20px] font-black text-[10px] sm:text-[11px] uppercase tracking-widest flex items-center justify-center gap-2 sm:gap-3 transition-all hover:scale-[1.02] active:scale-95 shadow-xl shadow-[#01012A]/10 border border-white/5 flex-1 sm:flex-none"
               >
                 <Icons.whiteMagicWand className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
                 <span>Initiate Synthesis</span>

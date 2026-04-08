@@ -94,7 +94,7 @@ export function VoiceSelector({ selectedVoice, onSelect, className }: VoiceSelec
                   onClick={() => { onSelect(voice.id); setIsOpen(false); }}
                   className={cn(
                     "w-full p-4 rounded-[18px] flex items-center gap-4 transition-all text-left group",
-                    selectedVoice === voice.id ? "bg-[#01012A] text-white" : "hover:bg-slate-50"
+                    selectedVoice === voice.id ? "bg-linear-to-r from-[#01012A] to-[#2E2C66]  text-white" : "hover:bg-slate-50"
                   )}
                 >
                   <div className={cn(

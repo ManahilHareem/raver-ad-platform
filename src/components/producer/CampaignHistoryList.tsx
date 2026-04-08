@@ -84,7 +84,7 @@ export function CampaignHistoryList({ history, onDelete }: CampaignHistoryListPr
             <div className="relative z-10 pt-2">
               <Link
                 href={`/agents/producer/campaign/${campaign.id}`}
-                className="w-full h-12 bg-[#01012A] text-white rounded-2xl flex items-center justify-between px-6 transition-all hover:bg-[#2E2C66] active:scale-95 group/btn"
+                className="w-full h-12 bg-linear-to-r from-[#01012A] to-[#2E2C66] text-white rounded-2xl flex items-center justify-between px-6 transition-all hover:bg-[#2E2C66] active:scale-95 group/btn"
               >
                 <span className="text-[10px] font-black uppercase tracking-widest">Review Full Audit</span>
                 <Icons.ArrowRight className="w-4 h-4 text-white/50 group-hover/btn:translate-x-1 transition-transform" />

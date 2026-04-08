@@ -118,9 +118,9 @@ export function CopyVault({
                 className={cn(
                   "flex items-center gap-2 sm:gap-3 px-4 sm:px-6 py-2.5 sm:py-3 rounded-xl sm:rounded-2xl font-black text-[9px] sm:text-[10px] uppercase tracking-wider transition-all border whitespace-nowrap active:scale-95 group",
                   isActive 
-                    ? "bg-[#01012A] text-white border-[#01012A] shadow-lg shadow-[#01012A]/10" 
+                    ? "bg-linear-to-r from-[#01012A] to-[#2E2C66] text-white border-[#01012A] shadow-lg shadow-[#01012A]/10" 
                     : count > 0 
-                      ? "bg-white text-slate-400 border-slate-100 hover:border-[#01012A] hover:text-white hover:bg-[#01012A] shadow-sm"
+                      ? "bg-white text-slate-400 border-slate-100 hover:border-[#01012A] hover:text-white hover:bg-linear-to-r hover:from-[#01012A] hover:to-[#2E2C66] shadow-sm"
                       : "bg-slate-50/50 text-slate-300 border-slate-100 cursor-not-allowed opacity-60"
                 )}
                 disabled={count === 0 && activeFilter !== "all"}
@@ -190,7 +190,7 @@ export function CopyVault({
                     )}
                     <button 
                       onClick={() => onCopy(typeof asset.content === "string" ? asset.content : JSON.stringify(asset.content, null, 2))}
-                      className="shrink-0 w-9 h-9 sm:w-10 sm:h-10 rounded-xl sm:rounded-2xl flex items-center justify-center bg-slate-50 text-slate-300 hover:bg-[#01012A] hover:text-white transition-all active:scale-90 shadow-xs border border-slate-100 group/btn"
+                      className="shrink-0 w-9 h-9 sm:w-10 sm:h-10 rounded-xl sm:rounded-2xl flex items-center justify-center bg-slate-50 text-slate-300 hover:bg-linear-to-r hover:from-[#01012A] hover:to-[#2E2C66] hover:text-white transition-all active:scale-90 shadow-xs border border-slate-100 group/btn"
                       title="Copy to clipboard"
                     >
                       <Icons.Files className="w-3.5 h-3.5 sm:w-4 sm:h-4 group-hover/btn:scale-110 transition-transform" />

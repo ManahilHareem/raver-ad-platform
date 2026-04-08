@@ -176,7 +176,7 @@ export function CopyGenerator({ onGenerate, isLoading }: CopyGeneratorProps) {
           </div>
 
           {activeTab === "hashtags" && (
-             <div className="space-y-3 bg-[#01012A] p-6 sm:p-8 rounded-2xl sm:rounded-[32px] shadow-xl shadow-[#01012A]/20">
+             <div className="space-y-3 bg-linear-to-r from-[#01012A] to-[#2E2C66]  p-6 sm:p-8 rounded-2xl sm:rounded-[32px] shadow-xl shadow-[#01012A]/20">
                 <div className="flex items-center justify-between">
                   <label className="text-[9px] sm:text-[10px] font-black uppercase tracking-[0.2em] text-white/50">Number of hashtags</label>
                   <span className="font-black text-white text-[10px] sm:text-xs px-3 py-1 bg-white/10 rounded-xl border border-white/5">#{formData.hashtagCount}</span>
@@ -217,7 +217,7 @@ export function CopyGenerator({ onGenerate, isLoading }: CopyGeneratorProps) {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
                 {formData.scenes.map((scene, idx) => (
                   <div key={idx} className="relative group">
-                    <div className="absolute left-4 sm:left-6 top-1/2 -translate-y-1/2 w-7 h-7 sm:w-8 sm:h-8 rounded-xl sm:rounded-2xl bg-slate-50 flex items-center justify-center text-[9px] sm:text-[10px] font-black text-slate-400 border border-slate-100 group-focus-within:bg-[#01012A] group-focus-within:text-white group-focus-within:border-[#01012A] transition-all duration-500 shadow-sm">
+                    <div className="absolute left-4 sm:left-6 top-1/2 -translate-y-1/2 w-7 h-7 sm:w-8 sm:h-8 rounded-xl sm:rounded-2xl bg-slate-50 flex items-center justify-center text-[9px] sm:text-[10px] font-black text-slate-400 border border-slate-100 group-focus-within:bg-linear-to-r from-[#01012A] to-[#2E2C66]  group-focus-within:text-white group-focus-within:border-[#01012A] transition-all duration-500 shadow-sm">
                       {idx + 1}
                     </div>
                     <input
@@ -241,7 +241,7 @@ export function CopyGenerator({ onGenerate, isLoading }: CopyGeneratorProps) {
                 "w-full h-16 sm:h-20 rounded-[20px] sm:rounded-[28px] flex items-center justify-center gap-3 sm:gap-4 transition-all duration-500 active:scale-[0.98] shadow-2xl relative overflow-hidden group/btn",
                 isLoading 
                   ? "bg-slate-100 text-slate-400 cursor-not-allowed" 
-                  : "bg-[#01012A] text-white hover:bg-black shadow-blue-900/20"
+                  : "bg-linear-to-r from-[#01012A] to-[#2E2C66] text-white hover:bg-black shadow-blue-900/20"
               )}
             >
               <div className="absolute inset-0 bg-linear-to-r from-transparent via-white/5 to-transparent -translate-x-full group-hover/btn:translate-x-full transition-transform duration-1000" />

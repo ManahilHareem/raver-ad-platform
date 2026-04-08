@@ -179,7 +179,7 @@ export function AudioVault({
                  )}
                  <button 
                   onClick={() => onDownload(asset.url)}
-                  className="w-10 h-10 rounded-2xl flex items-center justify-center bg-slate-50 text-slate-400 hover:bg-[#01012A] hover:text-white transition-all active:scale-90 shadow-sm"
+                  className="w-10 h-10 rounded-2xl flex items-center justify-center bg-slate-50 text-slate-400 hover:bg-linear-to-r hover:from-[#01012A] hover:to-[#2E2C66]  hover:text-white transition-all active:scale-90 shadow-sm"
                   title="Download Neural Asset"
                  >
                    <Icons.Download className="w-4 h-4" />

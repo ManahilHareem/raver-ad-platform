@@ -81,7 +81,7 @@ export default function AgentModal({ agent, isOpen, onClose, onAction }: AgentMo
             </div>
 
             <div className="bg-white p-4 rounded-xl border border-slate-100 shadow-sm flex flex-col gap-1 relative overflow-hidden group/feat">
-              <div className="absolute left-0 top-0 bottom-0 w-1 bg-[#01012A] group-hover/feat:w-1.5 transition-all"></div>
+              <div className="absolute left-0 top-0 bottom-0 w-1 bg-linear-to-r from-[#01012A] to-[#2E2C66]  group-hover/feat:w-1.5 transition-all"></div>
               <span className="text-[9px] font-black tracking-widest text-slate-400 uppercase">Strategic Edge</span>
               <span className="text-[13px] sm:text-[14px] font-bold text-[#01012A]">Precision-tuned neural architecture in established brand context.</span>
             </div>
@@ -90,7 +90,7 @@ export default function AgentModal({ agent, isOpen, onClose, onAction }: AgentMo
 
         <button 
           onClick={onAction}
-          className="w-full h-14 shrink-0 bg-[#01012A] text-white rounded-[16px] text-[13px] sm:text-[14px] font-black uppercase tracking-widest hover:bg-slate-900 transition-all flex items-center justify-center gap-2 shadow-xl shadow-[#01012A]/10 active:scale-95 group/btn border border-white/5"
+          className="w-full h-14 shrink-0 bg-linear-to-r from-[#01012A] to-[#2E2C66]  text-white rounded-[16px] text-[13px] sm:text-[14px] font-black uppercase tracking-widest hover:bg-slate-900 transition-all flex items-center justify-center gap-2 shadow-xl shadow-[#01012A]/10 active:scale-95 group/btn border border-white/5"
         >
           <span>Start Synthesis with {agent.name.split(' ').pop()}</span>
           <Icons.ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />

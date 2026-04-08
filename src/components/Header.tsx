@@ -63,14 +63,14 @@ export default function Header({ onMenuClick }: HeaderProps) {
         </div>
 
         <Link href="/studio?create=true" className="hidden sm:block">
-          <Button className="h-11 px-6 rounded-xl flex items-center gap-2 bg-[#01012A] text-white hover:bg-slate-900 shadow-lg shadow-[#01012A]/10 transition-all active:scale-95">
+          <Button className="h-11 px-6 rounded-xl flex items-center gap-2 bg-linear-to-r from-[#01012A] to-[#2E2C66]  text-white hover:bg-slate-900 shadow-lg shadow-[#01012A]/10 transition-all active:scale-95">
             <Icons.Plus className="w-4 h-4" />
             <span className="text-[12px] font-black uppercase tracking-widest text-white">Create</span>
           </Button>
         </Link>
         
         <Link href="/studio?create=true" className="sm:hidden">
-          <button className="w-10 h-10 bg-[#01012A] text-white rounded-xl flex items-center justify-center active:scale-95 transition-all shadow-lg shadow-[#01012A]/10">
+          <button className="w-10 h-10 bg-linear-to-r from-[#01012A] to-[#2E2C66]  text-white rounded-xl flex items-center justify-center active:scale-95 transition-all shadow-lg shadow-[#01012A]/10">
             <Icons.Plus className="w-5 h-5" />
           </button>
         </Link>

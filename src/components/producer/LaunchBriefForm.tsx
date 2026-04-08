@@ -230,12 +230,12 @@ export function LaunchBriefForm({ onLaunch, isLoading }: LaunchBriefFormProps) {
                  onChange={(e) => setVoice(e.target.value)}
                  className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-xs text-white font-bold outline-none cursor-pointer hover:bg-white/10 transition-colors"
                >
-                 <option value="oversea_male1" className="bg-[#01012A]">Neural Male 1</option>
-                 <option value="oversea_female1" className="bg-[#01012A]">Neural Female 1</option>
-                 <option value="uk_man2" className="bg-[#01012A]">UK Man 2</option>
-                 <option value="uk_boy1" className="bg-[#01012A]">UK Boy 1</option>
-                 <option value="calm_story1" className="bg-[#01012A]">Calm Story 1</option>
-                 <option value="genshin_vindi2" className="bg-[#01012A]">Genshin Vindi 2</option>
+                 <option value="oversea_male1" className="bg-linear-to-r from-[#01012A] to-[#2E2C66]">Neural Male 1</option>
+                 <option value="oversea_female1" className="bg-linear-to-r from-[#01012A] to-[#2E2C66]">Neural Female 1</option>
+                 <option value="uk_man2" className="bg-linear-to-r from-[#01012A] to-[#2E2C66]">UK Man 2</option>
+                 <option value="uk_boy1" className="bg-linear-to-r from-[#01012A] to-[#2E2C66]">UK Boy 1</option>
+                 <option value="calm_story1" className="bg-linear-to-r from-[#01012A] to-[#2E2C66]">Calm Story 1</option>
+                 <option value="genshin_vindi2" className="bg-linear-to-r from-[#01012A] to-[#2E2C66]">Genshin Vindi 2</option>
                </select>
             </div>
 
@@ -246,9 +246,9 @@ export function LaunchBriefForm({ onLaunch, isLoading }: LaunchBriefFormProps) {
                  onChange={(e) => setVideoModel(e.target.value)}
                  className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-xs text-white font-black uppercase tracking-widest outline-none cursor-pointer hover:bg-white/10 transition-colors"
                >
-                 <option value="kling-video" className="bg-[#01012A]">Kling-Video-Neo</option>
-                 <option value="seedance" className="bg-[#01012A]">Seedance Synthesis</option>
-                 <option value="ltx-video" className="bg-[#01012A]">LTX-High-Fidelity</option>
+                 <option value="kling-video" className="bg-linear-to-r from-[#01012A] to-[#2E2C66]">Kling-Video-Neo</option>
+                 <option value="seedance" className="bg-linear-to-r from-[#01012A] to-[#2E2C66]">Seedance Synthesis</option>
+                 <option value="ltx-video" className="bg-linear-to-r from-[#01012A] to-[#2E2C66]">LTX-High-Fidelity</option>
                </select>
             </div>
          </div>

@@ -158,7 +158,7 @@ function EditorContent() {
             
             <button 
               onClick={() => setIsModalOpen(true)}
-              className="h-14 px-8 bg-[#01012A] text-white rounded-[20px] font-black text-[11px] uppercase tracking-widest flex items-center gap-3 transition-all hover:scale-[1.02] active:scale-95 shadow-xl shadow-[#01012A]/10 border border-white/5"
+              className="h-14 px-8 bg-linear-to-r from-[#01012A] to-[#2E2C66]  text-white rounded-[20px] font-black text-[11px] uppercase tracking-widest flex items-center gap-3 transition-all hover:scale-[1.02] active:scale-95 shadow-xl shadow-[#01012A]/10 border border-white/5"
             >
               <Icons.Rocket className="w-4 h-4" />
               Initiate Synthesis

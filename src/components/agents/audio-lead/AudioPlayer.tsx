@@ -82,7 +82,7 @@ console.log(url)
       {/* Title & Type Badge Row */}
       <div className="flex items-center justify-between gap-4">
         <div className="flex items-center gap-3 flex-1 min-w-0">
-           <div className="w-8 h-8 rounded-full bg-[#01012A] flex items-center justify-center shrink-0">
+           <div className="w-8 h-8 rounded-full bg-linear-to-r from-[#01012A] to-[#2E2C66]  flex items-center justify-center shrink-0">
               <Icons.Mic className="w-4 h-4 text-white" />
            </div>
            <span className="text-[11px] font-black uppercase tracking-widest text-[#01012A] truncate opacity-60">
@@ -101,7 +101,7 @@ console.log(url)
       <div className="flex items-center gap-5">
         <button 
           onClick={togglePlay}
-          className="w-12 h-12 bg-[#01012A] text-white rounded-[18px] flex items-center justify-center hover:scale-110 active:scale-95 transition-all shadow-xl shadow-[#01012A]/10 group/btn"
+          className="w-12 h-12 bg-linear-to-r from-[#01012A] to-[#2E2C66]  text-white rounded-[18px] flex items-center justify-center hover:scale-110 active:scale-95 transition-all shadow-xl shadow-[#01012A]/10 group/btn"
         >
           {isPlaying ? (
             <Icons.Pause className="w-5 h-5 fill-current" />
