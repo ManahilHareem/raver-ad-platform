@@ -159,11 +159,7 @@ export function AudioVault({
                <div className="flex items-center gap-2">
                  {onDelete && (
                     <button 
-                      onClick={() => {
-                        if (window.confirm("Permanently archive this neural synthesis?")) {
-                          onDelete(asset.session_id);
-                        }
-                      }}
+                      onClick={() => onDelete(asset.session_id)}
                       className="w-10 h-10 rounded-2xl flex items-center justify-center bg-red-50 text-red-400 hover:bg-red-500 hover:text-white transition-all active:scale-90 shadow-sm"
                       title="Archive Synthesis"
                     >

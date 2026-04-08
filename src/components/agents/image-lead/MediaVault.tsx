@@ -132,9 +132,7 @@ function VaultImage({
            <button 
              onClick={(e) => {
                e.stopPropagation();
-               if (window.confirm("Permanently archive this visual synthesis session?")) {
-                 onDelete(asset.sessionId!);
-               }
+               onDelete(asset.sessionId!);
              }}
              className="w-8 h-8 rounded-lg bg-red-500/80 backdrop-blur-md flex items-center justify-center text-white hover:bg-red-600 transition-all border border-white/20 active:scale-95"
              title="Archive Session"

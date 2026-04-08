@@ -11,6 +11,8 @@ import { RaverLoadingState } from "@/components/ui/RaverLoadingState";
 
 import { AudioLeadModal } from "@/components/agents/audio-lead/AudioLeadModal";
 import { AudioVault } from "@/components/agents/audio-lead/AudioVault";
+import ConfirmationModal from "@/components/ui/ConfirmationModal";
+
 
 interface AudioAsset {
   filename: string;
@@ -32,6 +34,10 @@ function AudioLeadContent() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedMusicUrl, setSelectedMusicUrl] = useState<string>("");
   const [selectedVoiceoverUrl, setSelectedVoiceoverUrl] = useState<string>("");
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [deleteTargetId, setDeleteTargetId] = useState<string | null>(null);
+  const [isDeleting, setIsDeleting] = useState(false);
+
 
   const API_BASE = process.env.NEXT_PUBLIC_API_URL || "https://apiplatform.raver.ai/api";
 
@@ -329,20 +335,32 @@ function AudioLeadContent() {
     }
   };
 
-  const handleDeleteSession = async (sid: string) => {
+  const handleDeleteSession = (sid: string) => {
+    setDeleteTargetId(sid);
+    setIsDeleteModalOpen(true);
+  };
+
+  const confirmDelete = async () => {
+    if (!deleteTargetId) return;
+    
+    setIsDeleting(true);
     try {
-      const res = await apiFetch(`${API_BASE}/ai/audio-lead/session/${sid}`, { 
+      const res = await apiFetch(`${API_BASE}/ai/audio-lead/session/${deleteTargetId}`, { 
         method: 'DELETE' 
       });
       if (res.ok) {
-        if (sid === sessionId) {
+        if (deleteTargetId === sessionId) {
           setSessionId("");
           setVault([]);
         }
         await fetchGlobalVault();
+        setIsDeleteModalOpen(false);
       }
     } catch (err) {
       console.error("Deletion failed:", err);
+    } finally {
+      setIsDeleting(false);
+      setDeleteTargetId(null);
     }
   };
 
@@ -398,11 +416,7 @@ function AudioLeadContent() {
                       <span className="text-[10px] font-black text-[#01012A] font-mono">{sessionId}</span>
                    </div>
                    <button 
-                    onClick={() => {
-                        if (window.confirm("Permanently archive this neural synthesis session?")) {
-                            handleDeleteSession(sessionId);
-                        }
-                    }}
+                    onClick={() => handleDeleteSession(sessionId)}
                     className="ml-2 p-1.5 hover:bg-white rounded-lg transition-all text-slate-300 hover:text-red-500"
                    >
                      <Icons.Trash className="w-3.5 h-3.5" />
@@ -478,6 +492,17 @@ function AudioLeadContent() {
           onProduceFull={handleProduceFull}
           isLoading={isLoading}
         />
+
+        <ConfirmationModal 
+          isOpen={isDeleteModalOpen}
+          onClose={() => setIsDeleteModalOpen(false)}
+          onConfirm={confirmDelete}
+          title="Archive Synthesis"
+          message="Are you sure you want to permanently archive this neural synthesis? This action cannot be undone."
+          confirmText="Archive"
+          isLoading={isDeleting}
+        />
+
       </div>
     </DashboardLayout>
   );

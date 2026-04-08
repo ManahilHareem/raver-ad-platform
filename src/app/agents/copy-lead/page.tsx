@@ -12,6 +12,8 @@ import { RaverLoadingState } from "@/components/ui/RaverLoadingState";
 
 import { CopyLeadModal } from "@/components/agents/copy-lead/CopyLeadModal";
 import { CopyVault, CopyAsset } from "@/components/agents/copy-lead/CopyVault";
+import ConfirmationModal from "@/components/ui/ConfirmationModal";
+
 
 function CopyLeadContent() {
   const searchParams = useSearchParams();
@@ -22,6 +24,10 @@ function CopyLeadContent() {
   const [isLoading, setIsLoading] = useState(false);
   const [isSyncing, setIsSyncing] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [deleteTargetId, setDeleteTargetId] = useState<string | null>(null);
+  const [isDeleting, setIsDeleting] = useState(false);
+
 
   const API_BASE = process.env.NEXT_PUBLIC_API_URL || "https://apiplatform.raver.ai/api";
 
@@ -80,10 +86,15 @@ function CopyLeadContent() {
     fetchGlobalVault();
   }, [searchParams]);
 
-  // Client-side filtering for session-specific assets
-  const filteredVault = sessionId 
-    ? vault.filter(asset => asset.session_id === sessionId)
-    : vault;
+  // Handle auto-open modal for generation
+  useEffect(() => {
+    if (searchParams.get("generate") === "true") {
+      setIsModalOpen(true);
+    }
+  }, [searchParams]);
+
+  // Always show the full history as requested (do not filter out or 'remove' results)
+  const filteredVault = vault;
 
   const handleGenerate = async (type: string, data: any) => {
     setIsLoading(true);
@@ -146,6 +157,35 @@ function CopyLeadContent() {
     toast.success("Content copied to clipboard");
   };
 
+  const handleDeleteSession = (sid: string) => {
+    setDeleteTargetId(sid);
+    setIsDeleteModalOpen(true);
+  };
+
+  const confirmDelete = async () => {
+    if (!deleteTargetId) return;
+    
+    setIsDeleting(true);
+    try {
+      const res = await apiFetch(`${API_BASE}/ai/copy-lead/session/${deleteTargetId}`, { 
+        method: 'DELETE' 
+      });
+      if (res.ok) {
+        if (deleteTargetId === sessionId) {
+          setSessionId("");
+        }
+        await fetchGlobalVault();
+        setIsDeleteModalOpen(false);
+        toast.success("Synthesis archived successfully");
+      }
+    } catch (err) {
+      console.error("Deletion failed:", err);
+    } finally {
+      setIsDeleting(false);
+      setDeleteTargetId(null);
+    }
+  };
+
   return (
     <DashboardLayout>
       <div className="flex flex-col gap-6 sm:gap-8 p-4 sm:p-8 mx-auto bg-white rounded-3xl min-h-screen">
@@ -175,20 +215,7 @@ function CopyLeadContent() {
                       <span className="text-[9px] sm:text-[10px] font-black text-[#01012A] font-mono truncate max-w-[120px] sm:max-w-none">{sessionId}</span>
                    </div>
                    <button 
-                    onClick={async () => {
-                      if (window.confirm("Permanently archive this neural linguistic synthesis session?")) {
-                        try {
-                          const res = await apiFetch(`${API_BASE}/ai/copy-lead/session/${sessionId}`, { method: 'DELETE' });
-                          if (res.ok) {
-                            setSessionId("");
-                            fetchGlobalVault();
-                            toast.success("Synthesis archived successfully");
-                          }
-                        } catch (err) {
-                          console.error("Deletion failed:", err);
-                        }
-                      }
-                    }}
+                    onClick={() => handleDeleteSession(sessionId)}
                     className="ml-auto p-1.5 hover:bg-white rounded-lg transition-all text-slate-300 hover:text-red-500"
                    >
                      <Icons.Trash className="w-3 link-3 sm:w-3.5 sm:h-3.5" />
@@ -213,7 +240,8 @@ function CopyLeadContent() {
              assets={filteredVault}
              isLoading={isSyncing}
              onCopy={handleCopy}
-             isGlobalArchive={!sessionId}
+             isGlobalArchive={true}
+             onDelete={handleDeleteSession}
            />
         </div>
 
@@ -224,6 +252,17 @@ function CopyLeadContent() {
           onGenerate={handleGenerate}
           isLoading={isLoading}
         />
+
+        <ConfirmationModal 
+          isOpen={isDeleteModalOpen}
+          onClose={() => setIsDeleteModalOpen(false)}
+          onConfirm={confirmDelete}
+          title="Archive Synthesis"
+          message="Are you sure you want to permanently archive this neural linguistic synthesis? This action cannot be undone."
+          confirmText="Archive"
+          isLoading={isDeleting}
+        />
+
       </div>
     </DashboardLayout>
   );

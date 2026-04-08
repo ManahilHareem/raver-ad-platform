@@ -14,6 +14,8 @@ import ImageViewerModal from "@/components/agents/ImageViewerModal";
 import { SessionBrowser } from "@/components/agents/image-lead/SessionBrowser";
 import { MediaVault } from "@/components/agents/image-lead/MediaVault";
 import { RaverLoadingState } from "@/components/ui/RaverLoadingState";
+import ConfirmationModal from "@/components/ui/ConfirmationModal";
+
 
 interface ImageAsset {
   filename: string;
@@ -38,6 +40,10 @@ function ImageLeadContent() {
   const [isLoading, setIsLoading] = useState(false);
   const [isEnhancing, setIsEnhancing] = useState(false);
   const [statusMessage, setStatusMessage] = useState("System Standby");
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [deleteTargetId, setDeleteTargetId] = useState<string | null>(null);
+  const [isDeleting, setIsDeleting] = useState(false);
+
 
   // Generate form state
   const [businessName, setBusinessName] = useState("");
@@ -442,19 +448,31 @@ function ImageLeadContent() {
     }
   }, [sessionId, sessions]);
 
-  const handleDeleteSession = async (sid: string) => {
+  const handleDeleteSession = (sid: string) => {
+    setDeleteTargetId(sid);
+    setIsDeleteModalOpen(true);
+  };
+
+  const confirmDelete = async () => {
+    if (!deleteTargetId) return;
+    
+    setIsDeleting(true);
     try {
-      const res = await apiFetch(`${API_BASE}/ai/image-lead/session/${sid}`, { 
+      const res = await apiFetch(`${API_BASE}/ai/image-lead/session/${deleteTargetId}`, { 
         method: 'DELETE' 
       });
       if (res.ok) {
-        if (sid === sessionId) {
+        if (deleteTargetId === sessionId) {
           setSessionId("");
         }
         await fetchSessions();
+        setIsDeleteModalOpen(false);
       }
     } catch (err) {
       console.error("Deletion failed:", err);
+    } finally {
+      setIsDeleting(false);
+      setDeleteTargetId(null);
     }
   };
 
@@ -588,6 +606,17 @@ function ImageLeadContent() {
         imageUrl={selectedImage}
         onEnhance={() => { setIsPreviewOpen(false); setModalTab("enhance"); setIsModalOpen(true); }}
       />
+
+      <ConfirmationModal 
+        isOpen={isDeleteModalOpen}
+        onClose={() => setIsDeleteModalOpen(false)}
+        onConfirm={confirmDelete}
+        title="Archive Synthesis"
+        message="Are you sure you want to permanently archive this visual synthesis session? This action cannot be undone."
+        confirmText="Archive"
+        isLoading={isDeleting}
+      />
+
     </DashboardLayout>
   );
 }
