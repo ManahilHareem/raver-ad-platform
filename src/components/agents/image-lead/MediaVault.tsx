@@ -127,7 +127,7 @@ function VaultImage({
       </div>
 
       {/* Delete Trigger Overlay */}
-      {onDelete && asset.sessionId && (
+      {/* {onDelete && asset.sessionId && (
         <div className="absolute top-3 right-3 opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-20">
            <button 
              onClick={(e) => {
@@ -142,7 +142,7 @@ function VaultImage({
              <Icons.Trash className="w-3.5 h-3.5" />
            </button>
         </div>
-      )}
+      )} */}
 
       {/* Hover Icon */}
       {!isError && (
