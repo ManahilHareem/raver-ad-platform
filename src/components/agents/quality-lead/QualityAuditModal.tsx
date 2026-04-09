@@ -69,7 +69,10 @@ export function QualityAuditModal({ isOpen, onClose, onRefresh, candidate }: Qua
     raw?.result?.video_url || raw?.result?.videoUrl || raw?.result?.render_url || 
     raw?.metadata?.video_url || raw?.metadata?.videoUrl || 
     raw?.metadata?.production?.video_url || raw?.metadata?.production?.videoUrl ||
-    raw?.metadata?.render_details?.video_url;
+    raw?.metadata?.render_details?.video_url ||
+    raw?.config?.result?.video_url || raw?.config?.result?.videoUrl ||
+    raw?.config?.nodes?.render?.result?.video_url || raw?.config?.nodes?.render?.result?.videoUrl ||
+    raw?.videoSynthesis?.[0]?.url;
     
   const normalizedUrl = finalUrl ? normalizeAssetUrl(finalUrl) : null;
 
@@ -88,7 +91,7 @@ export function QualityAuditModal({ isOpen, onClose, onRefresh, candidate }: Qua
         overlays: raw?.metadata?.payload?.overlays || [],
         voiceover_url: normalizeAssetUrl(raw?.voiceoverUrl || raw?.metadata?.payload?.voiceover_url),
         music_url: normalizeAssetUrl(raw?.musicUrl || raw?.metadata?.payload?.music_url || (type === 'Audio' ? url : null)),
-        video_url: normalizeAssetUrl(['Editor', 'Producer', 'Director', 'video_synthesis', 'producer_render', 'director_session'].includes(type) ? url : null)
+        video_url: normalizeAssetUrl(['Editor', 'Producer', 'Director', 'video_synthesis', 'producer_render', 'director_session'].includes(type) ? finalUrl : null)
       };
 
       const response = await apiFetch(`${API_BASE}/ai/quality/score`, {

@@ -32,7 +32,10 @@ export function CandidateCard({
     raw?.result?.video_url || raw?.result?.videoUrl || raw?.result?.render_url || 
     raw?.metadata?.video_url || raw?.metadata?.videoUrl || 
     raw?.metadata?.production?.video_url || raw?.metadata?.production?.videoUrl ||
-    raw?.metadata?.render_details?.video_url;
+    raw?.metadata?.render_details?.video_url ||
+    raw?.config?.result?.video_url || raw?.config?.result?.videoUrl ||
+    raw?.config?.nodes?.render?.result?.video_url || raw?.config?.nodes?.render?.result?.videoUrl ||
+    raw?.videoSynthesis?.[0]?.url;
 
   const normalizedUrl = finalUrl ? normalizeAssetUrl(finalUrl) : null;
 
