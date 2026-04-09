@@ -58,7 +58,8 @@ import {
   Music,
   RefreshCcw,
   AlertTriangle,
-  Filter
+  Filter,
+  LayoutGrid
 } from "lucide-react";
 import { CustomIcons } from "./custom-icons";
 
@@ -136,5 +137,6 @@ export const Icons = {
   AlertTriangle: AlertTriangle,
   Filter: Filter,
   ShieldCheck: ShieldCheck,
-  Zap: Zap
+  Zap: Zap,
+  Layout: LayoutGrid
 };

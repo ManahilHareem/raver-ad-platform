@@ -55,24 +55,50 @@ export function QualityAuditModal({ isOpen, onClose, onRefresh, candidate }: Qua
     }
   }, [API_BASE, stopPolling]);
 
+  const { type, label, url, createdAt, id, sessionId, campaignId, raw } = candidate || {};
+
   useEffect(() => {
     return () => stopPolling();
   }, [stopPolling]);
 
-  if (!isOpen || !candidate) return null;
+  useEffect(() => {
+    // State Isolation Logic: Reset report states when the modal is closed or candidate changes
+    if (!isOpen) {
+      stopPolling();
+      setAuditReport(null);
+      setReportId(null);
+      setIsAuditing(false);
+    }
+  }, [isOpen, id, stopPolling]);
 
-  const { type, label, url, createdAt, id, sessionId, campaignId, raw } = candidate;
+  useEffect(() => {
+    // Proactive synchronization of pre-existing reports from metadata
+    if (isOpen && raw) {
+      const existingReport = raw?.result?.quality_report || 
+                            raw?.metadata?.production?.quality_report ||
+                            raw?.result?.nodes?.score_quality?.result ||
+                            raw?.quality_report; // Backend joint-enriched report
+      
+      if (existingReport && (existingReport.decision || existingReport.overallScore || existingReport.metadata?.overall_score)) {
+        setAuditReport(existingReport);
+      }
+    }
+  }, [isOpen, raw]);
+
+  if (!isOpen || !candidate) return null;
   
   // High-res fallback extraction for Producer/Director videos
   const finalUrl = url || 
     raw?.mixUrl || raw?.musicUrl || raw?.voiceoverUrl || raw?.mainImageUrl ||
     raw?.result?.video_url || raw?.result?.videoUrl || raw?.result?.render_url || 
+    raw?.result?.result?.video_url || raw?.result?.nodes?.render?.result?.video_url ||
     raw?.metadata?.video_url || raw?.metadata?.videoUrl || 
     raw?.metadata?.production?.video_url || raw?.metadata?.production?.videoUrl ||
     raw?.metadata?.render_details?.video_url ||
     raw?.config?.result?.video_url || raw?.config?.result?.videoUrl ||
     raw?.config?.nodes?.render?.result?.video_url || raw?.config?.nodes?.render?.result?.videoUrl ||
-    raw?.videoSynthesis?.[0]?.url;
+    raw?.videoSynthesis?.[0]?.url || raw?.result?.results?.[0]?.video_url ||
+    raw?.scenes?.[0]?.url;
     
   const normalizedUrl = finalUrl ? normalizeAssetUrl(finalUrl) : null;
 
@@ -83,15 +109,15 @@ export function QualityAuditModal({ isOpen, onClose, onRefresh, candidate }: Qua
       const payload = {
         campaign_id: campaignId || "manual_audit",
         session_id: sessionId || "manual_session",
-        brief: raw?.metadata?.payload?.brief || {},
-        scene_images: type === 'Image' 
-          ? [{ url: normalizeAssetUrl(url) }] 
-          : (raw?.metadata?.payload?.scenes || []).map((s: any) => ({ ...s, url: normalizeAssetUrl(s.url || s.image_url) })),
+        brief: raw?.metadata?.payload?.brief || raw?.brief || raw?.metadata?.brief || {},
+        scene_images: (type === 'Image' || type === 'image_scenes') && !(raw?.scenes?.length > 0)
+          ? [{ url: normalizeAssetUrl(finalUrl) }] 
+          : (raw?.scenes || raw?.metadata?.payload?.scenes || []).map((s: any) => ({ ...s, url: normalizeAssetUrl(s.url || s.image_url) })),
         script: (typeof raw?.script === 'object' && raw.script !== null ? raw.script.script : (raw?.script || raw?.content || raw?.metadata?.payload?.script || "No script provided")),
-        overlays: raw?.metadata?.payload?.overlays || [],
-        voiceover_url: normalizeAssetUrl(raw?.voiceoverUrl || raw?.metadata?.payload?.voiceover_url),
-        music_url: normalizeAssetUrl(raw?.musicUrl || raw?.metadata?.payload?.music_url || (type === 'Audio' ? url : null)),
-        video_url: normalizeAssetUrl(['Editor', 'Producer', 'Director', 'video_synthesis', 'producer_render', 'director_session'].includes(type) ? finalUrl : null)
+        overlays: raw?.metadata?.payload?.overlays || raw?.overlays || [],
+        voiceover_url: normalizeAssetUrl(raw?.voiceoverUrl || raw?.metadata?.payload?.voiceover_url || raw?.metadata?.production?.voiceover_url || raw?.metadata?.voiceover_url),
+        music_url: normalizeAssetUrl(raw?.musicUrl || raw?.metadata?.payload?.music_url || raw?.metadata?.production?.music_url || raw?.metadata?.music_url || (type === 'Audio' ? finalUrl : null)),
+        video_url: normalizeAssetUrl(['Editor', 'Producer', 'Director', 'video_synthesis', 'producer_render', 'director_session', 'Director', 'Producer'].includes(type) ? finalUrl : null)
       };
 
       const response = await apiFetch(`${API_BASE}/ai/quality/score`, {
@@ -115,6 +141,7 @@ export function QualityAuditModal({ isOpen, onClose, onRefresh, candidate }: Qua
             fetchReportUpdates(rid);
           } else {
             toast.success("Neural evaluation complete. Quality report synchronized.");
+            if (onRefresh) onRefresh();
           }
         }
       } else {
@@ -279,7 +306,12 @@ export function QualityAuditModal({ isOpen, onClose, onRefresh, candidate }: Qua
                       </div>
                    </div>
                    <div className="text-right">
-                      <div className="text-xl font-black text-[#01012A]">98.4%</div>
+                      <div className="text-xl font-black text-[#01012A]">
+                        {(() => {
+                          const score = auditReport?.overallScore || auditReport?.overall_score || auditReport?.metadata?.overall_score;
+                          return score ? `${(score * 100).toFixed(1)}%` : "Pending";
+                        })()}
+                      </div>
                       <div className="text-[9px] font-bold text-slate-400 uppercase tracking-widest">Confidence Score</div>
                    </div>
                 </div>
@@ -299,11 +331,11 @@ export function QualityAuditModal({ isOpen, onClose, onRefresh, candidate }: Qua
                    
                    <div className="space-y-2">
                       {[
-                        { label: "Neural ID", value: id.slice(0, 16) + "...", mono: true },
+                        { label: "Neural ID", value: (auditReport?.reportId || auditReport?.id || id || "").slice(0, 16) + "...", mono: true },
                         { label: "Session Archival", value: sessionId || "Global Vault", mono: true },
                         { label: "Campaign Sync", value: campaignId || "Unlinked", mono: true },
-                        { label: "Synthesis Date", value: new Date(createdAt).toLocaleString() },
-                        { label: "Candidate Type", value: type.replace("_", " "), bold: true }
+                        { label: "Synthesis Date", value: createdAt ? new Date(createdAt).toLocaleString() : "Recently" },
+                        { label: "Candidate Type", value: (type || "Unknown").replace("_", " "), bold: true }
                       ].map((item, idx) => (
                         <div key={idx} className="flex flex-col p-4 bg-slate-50 rounded-2xl border border-slate-100 hover:border-blue-100 transition-all">
                            <span className="text-[9px] font-bold text-slate-400 uppercase tracking-widest mb-1">{item.label}</span>
@@ -379,30 +411,90 @@ export function QualityAuditModal({ isOpen, onClose, onRefresh, candidate }: Qua
                            <Icons.ShieldCheck className="w-4 h-4 text-emerald-500" />
                            <h3 className="text-[11px] font-black uppercase tracking-[0.2em] text-[#01012A]">Neural Report v1.0</h3>
                         </div>
-                        <div className="grid grid-cols-2 gap-3">
-                           {[
-                             { label: "Visual", value: auditReport.visualScore || auditReport.metadata?.visual_score, color: "text-blue-500" },
-                             { label: "Brand", value: auditReport.brandAlignmentScore || auditReport.metadata?.brand_alignment_score, color: "text-emerald-500" },
-                             { label: "Platform", value: auditReport.platformFitScore || auditReport.metadata?.platform_fit_score, color: "text-purple-500" },
-                             { label: "Audio", value: auditReport.audioFitScore || auditReport.metadata?.audio_fit_score, color: "text-amber-500" }
-                           ].map((score, i) => (
-                             <div key={i} className="bg-slate-50 p-4 rounded-2xl border border-slate-100">
-                                <span className="text-[9px] font-bold text-slate-400 uppercase tracking-widest">{score.label}</span>
-                                <div className={cn("text-lg font-black", score.color)}>{score.value}/10</div>
-                             </div>
-                           ))}
-                        </div>
-                        <div className="p-5 bg-emerald-50/50 rounded-[28px] border border-emerald-100">
-                           <div className="flex items-center justify-between mb-2">
-                              <span className="text-[9px] font-bold text-emerald-600 uppercase tracking-widest">Final Decision</span>
-                              <span className="px-2 py-0.5 bg-emerald-500 text-white rounded text-[8px] font-black uppercase tracking-widest leading-none">
-                                 {auditReport.decision || "Approved"}
-                              </span>
-                           </div>
-                           <p className="text-[10px] font-medium text-emerald-800 leading-tight italic">
-                             "{auditReport.rejectReason || auditReport.metadata?.reject_reason || "Candidate exceeds all brand alignment thresholds and is cleared for production."}"
-                           </p>
-                        </div>
+                         <div className="space-y-6">
+                            {/* Dashboard of scores */}
+                            <div className="grid grid-cols-2 gap-3">
+                               {[
+                                 { label: "Visual", value: auditReport.visualScore || auditReport.metadata?.visual_score, color: "text-blue-500" },
+                                 { label: "Brand", value: auditReport.brandAlignmentScore || auditReport.metadata?.brand_alignment_score, color: "text-emerald-500" },
+                                 { label: "Copy", value: auditReport.copyScore || auditReport.metadata?.copy_score, color: "text-purple-500" },
+                                 { label: "Audio", value: auditReport.audioFitScore || auditReport.metadata?.audio_fit_score, color: "text-amber-500" }
+                               ].map((score, i) => (
+                                 <div key={i} className="bg-slate-50 p-4 rounded-2xl border border-slate-100 flex items-center justify-between">
+                                    <span className="text-[9px] font-bold text-slate-400 uppercase tracking-widest">{score.label}</span>
+                                    <div className={cn("text-sm font-black", score.color)}>{score.value}/10</div>
+                                 </div>
+                               ))}
+                            </div>
+
+                            {/* Detailed Diagnostics */}
+                            {(auditReport.metadata?.dimension_details || auditReport.dimension_details) && (
+                              <div className="space-y-4">
+                                <div className="flex items-center gap-3">
+                                  <Icons.Activity className="w-3 h-3 text-slate-400" />
+                                  <span className="text-[9px] font-black uppercase tracking-widest text-slate-400">Neural Diagnostic Drilldown</span>
+                                </div>
+                                <div className="space-y-2">
+                                  {Object.entries((auditReport.metadata?.dimension_details || auditReport.dimension_details)).map(([key, details]: [string, any]) => {
+                                    if (!details?.issues?.length && !details?.notes) return null;
+                                    return (
+                                      <div key={key} className="p-4 bg-slate-50/50 rounded-2xl border border-slate-100 space-y-2">
+                                        <div className="flex items-center justify-between">
+                                          <span className="text-[10px] font-black uppercase tracking-widest text-[#01012A]">{key.replace("_", " ")}</span>
+                                          <span className="px-2 py-0.5 bg-white border border-slate-200 rounded text-[8px] font-bold text-slate-500">
+                                            Score: {details.score}
+                                          </span>
+                                        </div>
+                                        {details.issues?.length > 0 && (
+                                          <ul className="space-y-1">
+                                            {details.issues.map((issue: string, idx: number) => (
+                                              <li key={idx} className="flex gap-2 text-[9px] font-medium text-slate-500">
+                                                <span className="text-rose-400 font-bold">•</span>
+                                                {issue}
+                                              </li>
+                                            ))}
+                                          </ul>
+                                        )}
+                                        {details.notes && (
+                                          <p className="text-[8px] font-bold text-slate-300 uppercase leading-none mt-2">
+                                            Note: {details.notes}
+                                          </p>
+                                        )}
+                                      </div>
+                                    );
+                                  })}
+                                </div>
+                              </div>
+                            )}
+
+                            <div className={cn(
+                              "p-5 rounded-[28px] border",
+                              (auditReport.decision === "auto_reject" || auditReport.rejected) 
+                                ? "bg-rose-50/50 border-rose-100" 
+                                : "bg-emerald-50/50 border-emerald-100"
+                            )}>
+                               <div className="flex items-center justify-between mb-2">
+                                  <span className={cn(
+                                    "text-[9px] font-bold uppercase tracking-widest",
+                                    (auditReport.decision === "auto_reject" || auditReport.rejected) ? "text-rose-600" : "text-emerald-600"
+                                  )}>
+                                    Final Decision
+                                  </span>
+                                  <span className={cn(
+                                    "px-2 py-0.5 text-white rounded text-[8px] font-black uppercase tracking-widest leading-none",
+                                    (auditReport.decision === "auto_reject" || auditReport.rejected) ? "bg-rose-500 font-bold" : "bg-emerald-500"
+                                  )}>
+                                     {auditReport.decision?.replace("_", " ") || "Approved"}
+                                  </span>
+                               </div>
+                               <p className={cn(
+                                 "text-[10px] font-medium leading-tight italic",
+                                 (auditReport.decision === "auto_reject" || auditReport.rejected) ? "text-rose-800" : "text-emerald-800"
+                               )}>
+                                 "{auditReport.rejectReason || auditReport.metadata?.reject_reason || "Candidate exceeds all brand alignment thresholds and is cleared for production."}"
+                               </p>
+                            </div>
+                         </div>
                      </div>
                    )}
                 </div>

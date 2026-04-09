@@ -21,12 +21,23 @@ interface QualityCandidatesProps {
 export function QualityCandidates({ candidates, isLoading, onAudit }: QualityCandidatesProps) {
   const [activeFilter, setActiveFilter] = useState<string>("all");
 
+  const counts = React.useMemo(() => {
+    if (!candidates) return { all: 0, video: 0, Audio: 0, Image: 0, Copy: 0 };
+    return {
+      all: Object.values(candidates).reduce((acc: number, curr: any) => acc + (curr?.length || 0), 0),
+      video: (candidates.video_synthesis?.length || 0) + (candidates.producer_render?.length || 0) + (candidates.director_session?.length || 0),
+      Audio: candidates.audio_mix?.length || 0,
+      Image: candidates.image_scenes?.length || 0,
+      Copy: candidates.copy_script?.length || 0,
+    };
+  }, [candidates]);
+
   const filters = [
-    { id: "all", label: "All Audits", icon: Icons.Activity },
-    { id: "video", label: "Video Renders", icon: Icons.Film },
-    { id: "Audio", label: "Audio Mixes", icon: Icons.Mic },
-    { id: "Image", label: "Visual Foundations", icon: Icons.Image },
-    { id: "Copy", label: "Brand Scripts", icon: Icons.Files },
+    { id: "all", label: "All Audits", count: counts.all, icon: Icons.Activity },
+    { id: "video", label: "Video Renders", count: counts.video, icon: Icons.Film },
+    { id: "Audio", label: "Audio Mixes", count: counts.Audio, icon: Icons.Mic },
+    { id: "Image", label: "Visual Foundations", count: counts.Image, icon: Icons.Image },
+    { id: "Copy", label: "Brand Scripts", count: counts.Copy, icon: Icons.Files },
   ];
 
   if (isLoading && !candidates) {
@@ -45,15 +56,15 @@ export function QualityCandidates({ candidates, isLoading, onAudit }: QualityCan
 
   if (!candidates) return null;
 
-  // Flatten and filter candidates
+  // Flatten and filter candidates with explicit type mapping
   const allCandidates = [
-    ...candidates.video_synthesis,
-    ...candidates.audio_mix,
-    ...candidates.image_scenes,
-    ...candidates.copy_script,
-    ...candidates.producer_render,
-    ...candidates.director_session,
-  ].sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+    ...(candidates.video_synthesis || []).map(c => ({ ...c, type: c.type || "video_synthesis" })),
+    ...(candidates.audio_mix || []).map(c => ({ ...c, type: c.type || "audio_mix" })),
+    ...(candidates.image_scenes || []).map(c => ({ ...c, type: c.type || "image_scenes" })),
+    ...(candidates.copy_script || []).map(c => ({ ...c, type: c.type || "copy_script" })),
+    ...(candidates.producer_render || []).map(c => ({ ...c, type: c.type || "producer_render" })),
+    ...(candidates.director_session || []).map(c => ({ ...c, type: c.type || "director_session" })),
+  ].sort((a, b) => new Date(b.createdAt || 0).getTime() - new Date(a.createdAt || 0).getTime());
 
   const displayedCandidates = activeFilter === "all" 
     ? allCandidates 
@@ -82,7 +93,13 @@ export function QualityCandidates({ candidates, isLoading, onAudit }: QualityCan
               )}
             >
               <Icon className="w-4 h-4" />
-              {f.label}
+              <span>{f.label}</span>
+              <span className={cn(
+                "px-2 py-0.5 rounded-md text-[8px] font-black",
+                activeFilter === f.id ? "bg-white/20 text-white" : "bg-slate-100 text-slate-400"
+              )}>
+                {f.count}
+              </span>
             </button>
           );
         })}
