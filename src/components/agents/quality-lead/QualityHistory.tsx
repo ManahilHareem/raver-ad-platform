@@ -7,9 +7,10 @@ import { cn } from "@/lib/utils";
 interface QualityHistoryProps {
   history: any[];
   onViewReport: (report: any) => void;
+  onDelete?: (id: string) => void;
 }
 
-export function QualityHistory({ history, onViewReport }: QualityHistoryProps) {
+export function QualityHistory({ history, onViewReport, onDelete }: QualityHistoryProps) {
   if (history.length === 0) {
     return (
       <div className="bg-slate-50 border border-dashed border-slate-200 rounded-[32px] py-20 flex flex-col items-center justify-center gap-4">
@@ -121,6 +122,14 @@ export function QualityHistory({ history, onViewReport }: QualityHistoryProps) {
                     >
                       View Report
                     </button>
+                    {onDelete && (
+                      <button 
+                        onClick={() => onDelete(record.id || record.reportId)}
+                        className="ml-2 p-2 bg-rose-50 text-rose-500 rounded-xl hover:bg-rose-500 hover:text-white transition-all active:scale-90"
+                      >
+                        <Icons.Trash className="w-4 h-4" />
+                      </button>
+                    )}
                   </td>
                 </tr>
               );

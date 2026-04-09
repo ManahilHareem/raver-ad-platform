@@ -6,15 +6,22 @@ import Link from "next/link";
 import { Icons } from "@/components/ui/icons";
 import { apiFetch } from "@/lib/api";
 import { QualityCandidates } from "@/components/agents/quality-lead/QualityCandidates";
+import { QualityHistory } from "@/components/agents/quality-lead/QualityHistory";
 import { QualityAuditModal } from "@/components/agents/quality-lead/QualityAuditModal";
+import ConfirmationModal from "@/components/ui/ConfirmationModal";
 import { toast } from "react-toastify";
 import { cn } from "@/lib/utils";
 
 export default function QualityLeadPage() {
   const [candidates, setCandidates] = useState<any>(null);
+  const [history, setHistory] = useState<any[]>([]);
   const [selectedCandidate, setSelectedCandidate] = useState<any>(null);
   const [isAuditModalOpen, setIsAuditModalOpen] = useState(false);
+  const [reportToDelete, setReportToDelete] = useState<any>(null);
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
+  const [activeTab, setActiveTab] = useState<"feed" | "history">("feed");
   const API_BASE = process.env.NEXT_PUBLIC_API_URL || "https://apiplatform.raver.ai/api";
 
   const fetchCandidates = async () => {
@@ -27,7 +34,7 @@ export default function QualityLeadPage() {
           setCandidates(data.data);
         }
       } else {
-        toast.error("Failed to synchronize quality archives.");
+        toast.error("Failed to synchronize quality candidates.");
       }
     } catch (err) {
       console.warn("Candidates fetch failed:", err);
@@ -37,13 +44,84 @@ export default function QualityLeadPage() {
     }
   };
 
-  useEffect(() => {
+  const fetchHistory = async () => {
+    try {
+      const response = await apiFetch(`${API_BASE}/ai/quality/history`);
+      if (response.ok) {
+        const data = await response.json();
+        if (data.success) {
+          setHistory(data.data || []);
+        }
+      }
+    } catch (err) {
+      console.warn("History fetch failed:", err);
+    }
+  };
+
+  const refreshAll = () => {
     fetchCandidates();
+    fetchHistory();
+  };
+
+  useEffect(() => {
+    refreshAll();
   }, []);
+
+  const stats = React.useMemo(() => {
+    if (!candidates && history.length === 0) return { pending: 0, rejections: 0, accuracy: 0, violations: 0 };
+    
+    // Calculate pending from all nested arrays in candidates object
+    const pending = candidates ? Object.values(candidates).reduce((acc: number, curr: any) => acc + (curr?.length || 0), 0) : 0;
+    
+    // Calculate history-based stats
+    const rejections = history.filter(h => h.decision === "rejected" || h.rejected).length;
+    const violations = history.filter(h => h.rejectReason?.toLowerCase().includes("brand") || h.metadata?.reject_reason?.toLowerCase().includes("brand")).length;
+    
+    const validScores = history.filter(h => (h.overallScore || h.metadata?.overall_score) > 0).map(h => h.overallScore || h.metadata?.overall_score);
+    const avgAccuracy = validScores.length > 0 
+      ? (validScores.reduce((a, b) => a + b, 0) / validScores.length) * 100 
+      : 98.8;
+
+    return { 
+      pending, 
+      rejections, 
+      accuracy: avgAccuracy.toFixed(1),
+      violations
+    };
+  }, [candidates, history]);
 
   const handleAudit = (candidate: any) => {
     setSelectedCandidate(candidate);
     setIsAuditModalOpen(true);
+  };
+
+  const handleDeleteReport = (id: string) => {
+    const report = history.find(h => h.id === id || h.reportId === id);
+    setReportToDelete(report);
+    setIsDeleteModalOpen(true);
+  };
+
+  const confirmDeleteReport = async () => {
+    if (!reportToDelete) return;
+    const id = reportToDelete.id || reportToDelete.reportId;
+    setIsDeleting(true);
+    try {
+      const response = await apiFetch(`${API_BASE}/ai/quality/report/${id}`, {
+        method: "DELETE"
+      });
+      if (response.ok) {
+        toast.success("Governance report archived successfully.");
+        setIsDeleteModalOpen(false);
+        refreshAll();
+      } else {
+        toast.error("Failed to archive governance report.");
+      }
+    } catch (err) {
+      console.error("Delete report failed:", err);
+      toast.error("Network synchronization failure.");
+    } finally {
+      setIsDeleting(false);
+    }
   };
 
   return (
@@ -67,10 +145,10 @@ export default function QualityLeadPage() {
           <div className="flex items-center gap-4">
             <div className="flex flex-col items-end mr-4">
               <span className="text-[9px] font-bold text-slate-400 uppercase tracking-widest">Global Audit Rate</span>
-              <span className="text-[16px] font-black text-[#01012A]">94.2%</span>
+              <span className="text-[16px] font-black text-[#01012A]">{history.length > 0 ? "100%" : "0%"}</span>
             </div>
             <button 
-              onClick={fetchCandidates}
+              onClick={refreshAll}
               className="p-4 rounded-2xl bg-slate-50 border border-slate-100 text-[#01012A] hover:bg-slate-100 transition-all active:rotate-180"
             >
               <Icons.RefreshCcw className="w-5 h-5" />
@@ -81,10 +159,10 @@ export default function QualityLeadPage() {
         {/* Dashboard Stats */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
            {[
-             { label: "Candidates Pending", value: "24", icon: Icons.Activity, color: "text-blue-500" },
-             { label: "Auto-Rejections", value: "112", icon: Icons.ShieldCheck, color: "text-emerald-500" },
-             { label: "Brand Violations", value: "3", icon: Icons.AlertTriangle, color: "text-amber-500" },
-             { label: "Synthesis Accuracy", value: "98.8%", icon: Icons.Layers, color: "text-purple-500" }
+             { label: "Candidates Pending", value: stats.pending, icon: Icons.Activity, color: "text-blue-500" },
+             { label: "Neural Audits", value: history.length, icon: Icons.ShieldCheck, color: "text-emerald-500" },
+             { label: "Rejections", value: stats.rejections, icon: Icons.AlertTriangle, color: "text-amber-500" },
+             { label: "Synthesis Accuracy", value: `${stats.accuracy}%`, icon: Icons.Layers, color: "text-purple-500" }
            ].map((stat, i) => (
              <div key={i} className="bg-slate-50 border border-[#F1F5F9] rounded-[28px] p-6 space-y-3">
                 <div className="flex items-center justify-between">
@@ -100,16 +178,48 @@ export default function QualityLeadPage() {
 
         {/* Main Interface */}
         <div className="flex-1 space-y-8">
-           <div className="flex items-center gap-3 px-2">
-             <div className="w-2 h-2 rounded-full bg-blue-500 animate-pulse" />
-             <h3 className="text-[12px] font-black uppercase tracking-[0.2em] text-[#01012A]">Active Synthesis Candidate Feed</h3>
+           <div className="flex items-center justify-between px-2">
+             <div className="flex items-center gap-6">
+               <button 
+                 onClick={() => setActiveTab("feed")}
+                 className={cn(
+                   "text-[12px] font-black uppercase tracking-[0.2em] transition-all pb-2 border-b-2",
+                   activeTab === "feed" ? "text-blue-500 border-blue-500" : "text-slate-300 border-transparent hover:text-slate-400"
+                 )}
+               >
+                 Candidate Feed
+               </button>
+               <button 
+                 onClick={() => setActiveTab("history")}
+                 className={cn(
+                   "text-[12px] font-black uppercase tracking-[0.2em] transition-all pb-2 border-b-2",
+                   activeTab === "history" ? "text-blue-500 border-blue-500" : "text-slate-300 border-transparent hover:text-slate-400"
+                 )}
+               >
+                 Audit History
+               </button>
+             </div>
+             <div className="flex items-center gap-3">
+               <div className="w-2 h-2 rounded-full bg-blue-500 animate-pulse" />
+               <h3 className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">
+                 {activeTab === "feed" ? "Active Synthesis Candidate Feed" : "Archival Integrity Vault"}
+               </h3>
+             </div>
            </div>
-
-           <QualityCandidates 
-             candidates={candidates} 
-             isLoading={isLoading} 
-             onAudit={handleAudit} 
-           />
+ 
+           {activeTab === "feed" ? (
+             <QualityCandidates 
+               candidates={candidates} 
+               isLoading={isLoading} 
+               onAudit={handleAudit} 
+             />
+           ) : (
+             <QualityHistory 
+               history={history} 
+               onViewReport={(record) => handleAudit(record)} 
+               onDelete={handleDeleteReport}
+             />
+           )}
         </div>
       </div>
 
@@ -119,8 +229,19 @@ export default function QualityLeadPage() {
           setIsAuditModalOpen(false);
           setSelectedCandidate(null);
         }}
-        onRefresh={fetchCandidates}
+        onRefresh={refreshAll}
         candidate={selectedCandidate}
+      />
+
+      <ConfirmationModal 
+        isOpen={isDeleteModalOpen}
+        onClose={() => setIsDeleteModalOpen(false)}
+        onConfirm={confirmDeleteReport}
+        title="Archive Governance Report"
+        message={`Are you sure you want to permanently remove the neural report for "${reportToDelete?.campaignId || 'this production'}"? This action cannot be undone.`}
+        confirmText="Archive Report"
+        variant="danger"
+        isLoading={isDeleting}
       />
     </DashboardLayout>
   );

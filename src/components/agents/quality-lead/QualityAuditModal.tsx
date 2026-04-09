@@ -422,10 +422,27 @@ export function QualityAuditModal({ isOpen, onClose, onRefresh, candidate }: Qua
                                ].map((score, i) => (
                                  <div key={i} className="bg-slate-50 p-4 rounded-2xl border border-slate-100 flex items-center justify-between">
                                     <span className="text-[9px] font-bold text-slate-400 uppercase tracking-widest">{score.label}</span>
-                                    <div className={cn("text-sm font-black", score.color)}>{score.value}/10</div>
+                                    <div className={cn("text-sm font-black", score.color)}>{score.value ? (score.value * 10).toFixed(1) : "0.0"}/10</div>
                                  </div>
                                ))}
                             </div>
+
+                            {/* Evaluator Stack */}
+                            {auditReport.metadata?.evaluator_models && (
+                              <div className="space-y-3">
+                                <div className="flex items-center gap-2">
+                                  <Icons.Layers className="w-3.5 h-3.5 text-blue-500" />
+                                  <span className="text-[9px] font-black uppercase tracking-widest text-slate-400">Collaborative Evaluator Stack</span>
+                                </div>
+                                <div className="flex flex-wrap gap-2">
+                                  {auditReport.metadata.evaluator_models.map((model: string, idx: number) => (
+                                    <span key={idx} className="px-3 py-1 bg-[#01012A]/5 border border-[#01012A]/10 rounded-lg text-[9px] font-bold text-[#01012A] lowercase tracking-tight">
+                                      {model}
+                                    </span>
+                                  ))}
+                                </div>
+                              </div>
+                            )}
 
                             {/* Detailed Diagnostics */}
                             {(auditReport.metadata?.dimension_details || auditReport.dimension_details) && (
@@ -438,27 +455,44 @@ export function QualityAuditModal({ isOpen, onClose, onRefresh, candidate }: Qua
                                   {Object.entries((auditReport.metadata?.dimension_details || auditReport.dimension_details)).map(([key, details]: [string, any]) => {
                                     if (!details?.issues?.length && !details?.notes) return null;
                                     return (
-                                      <div key={key} className="p-4 bg-slate-50/50 rounded-2xl border border-slate-100 space-y-2">
+                                      <div key={key} className="p-5 bg-slate-50/50 rounded-[28px] border border-slate-100 space-y-3 relative overflow-hidden group/dim">
+                                        <div className="absolute top-0 left-0 w-1 h-full bg-[#01012A]/10 group-hover/dim:bg-blue-500 transition-colors" />
                                         <div className="flex items-center justify-between">
-                                          <span className="text-[10px] font-black uppercase tracking-widest text-[#01012A]">{key.replace("_", " ")}</span>
-                                          <span className="px-2 py-0.5 bg-white border border-slate-200 rounded text-[8px] font-bold text-slate-500">
-                                            Score: {details.score}
-                                          </span>
+                                          <div className="flex flex-col">
+                                            <span className="text-[10px] font-black uppercase tracking-[0.2em] text-[#01012A]">{key.replace("_", " ")}</span>
+                                            <div className="flex items-center gap-2 mt-1">
+                                              <span className="text-[8px] font-bold text-slate-400 uppercase tracking-widest">Weight: {Math.round((details.weight || 0) * 100)}%</span>
+                                              <span className="w-1 h-1 rounded-full bg-slate-200" />
+                                              <span className="text-[8px] font-black text-blue-500 uppercase tracking-widest">Contribution: {(details.weighted_score || 0).toFixed(3)}</span>
+                                            </div>
+                                          </div>
+                                          <div className={cn(
+                                            "w-10 h-10 rounded-xl flex flex-col items-center justify-center border",
+                                            details.score < 0.4 ? "bg-rose-50 border-rose-100 text-rose-500" : "bg-emerald-50 border-emerald-100 text-emerald-500"
+                                          )}>
+                                            <span className="text-[12px] font-black leading-none">{details.score.toFixed(2)}</span>
+                                            <span className="text-[7px] font-black uppercase mt-0.5">Score</span>
+                                          </div>
                                         </div>
+                                        
                                         {details.issues?.length > 0 && (
-                                          <ul className="space-y-1">
+                                          <div className="space-y-1.5 pl-1">
                                             {details.issues.map((issue: string, idx: number) => (
-                                              <li key={idx} className="flex gap-2 text-[9px] font-medium text-slate-500">
-                                                <span className="text-rose-400 font-bold">•</span>
+                                              <div key={idx} className="flex gap-2.5 text-[10px] font-medium text-slate-500 leading-tight">
+                                                <div className="w-1.5 h-1.5 rounded-full bg-rose-400 mt-1 shrink-0" />
                                                 {issue}
-                                              </li>
+                                              </div>
                                             ))}
-                                          </ul>
+                                          </div>
                                         )}
+                                        
                                         {details.notes && (
-                                          <p className="text-[8px] font-bold text-slate-300 uppercase leading-none mt-2">
-                                            Note: {details.notes}
-                                          </p>
+                                          <div className="mt-3 p-3 bg-white/50 rounded-xl border border-slate-100/50">
+                                            <span className="text-[8px] font-black text-slate-300 uppercase tracking-widest block mb-1">Expert Forensics</span>
+                                            <p className="text-[10px] font-bold text-[#01012A]/60 italic leading-relaxed">
+                                              {details.notes}
+                                            </p>
+                                          </div>
                                         )}
                                       </div>
                                     );
@@ -473,19 +507,26 @@ export function QualityAuditModal({ isOpen, onClose, onRefresh, candidate }: Qua
                                 ? "bg-rose-50/50 border-rose-100" 
                                 : "bg-emerald-50/50 border-emerald-100"
                             )}>
-                               <div className="flex items-center justify-between mb-2">
-                                  <span className={cn(
-                                    "text-[9px] font-bold uppercase tracking-widest",
-                                    (auditReport.decision === "auto_reject" || auditReport.rejected) ? "text-rose-600" : "text-emerald-600"
-                                  )}>
-                                    Final Decision
-                                  </span>
-                                  <span className={cn(
-                                    "px-2 py-0.5 text-white rounded text-[8px] font-black uppercase tracking-widest leading-none",
-                                    (auditReport.decision === "auto_reject" || auditReport.rejected) ? "bg-rose-500 font-bold" : "bg-emerald-500"
+                               <div className="flex items-center justify-between mb-4">
+                                  <div className="flex flex-col">
+                                    <span className={cn(
+                                      "text-[9px] font-black uppercase tracking-[0.2em]",
+                                      (auditReport.decision === "auto_reject" || auditReport.rejected) ? "text-rose-600" : "text-emerald-600"
+                                    )}>
+                                      Orchestration Verdict
+                                    </span>
+                                    {auditReport.metadata?.evaluation_duration_ms && (
+                                      <span className="text-[8px] font-bold text-slate-400 uppercase tracking-widest mt-1">
+                                        Analysis Latency: {auditReport.metadata.evaluation_duration_ms}ms
+                                      </span>
+                                    )}
+                                  </div>
+                                  <div className={cn(
+                                    "px-4 py-1.5 text-white rounded-full text-[10px] font-black uppercase tracking-widest leading-none shadow-lg",
+                                    (auditReport.decision === "auto_reject" || auditReport.rejected) ? "bg-rose-500 shadow-rose-500/20" : "bg-emerald-500 shadow-emerald-500/20"
                                   )}>
                                      {auditReport.decision?.replace("_", " ") || "Approved"}
-                                  </span>
+                                  </div>
                                </div>
                                <p className={cn(
                                  "text-[10px] font-medium leading-tight italic",
