@@ -14,6 +14,8 @@ interface VideoAsset {
   status: "completed" | "processing" | "failed";
   label?: string;
   sessionId?: string;
+  metadata?: any;
+  type?: "render" | "export";
 }
 
 interface VideoVaultProps {
@@ -87,12 +89,19 @@ export function EditorVault({ videos, isLoading, onPreview, onDelete, isGlobalAr
                   <Icons.Loader className="w-6 h-6 text-white animate-spin mb-2" />
                   <p className="text-white text-[10px] font-black uppercase tracking-widest animate-pulse">Synthesis Running</p>
                 </div>
-              ) : video.thumbnail ? (
-                <img 
-                  src={video.thumbnail} 
-                  alt={video.label || "Rendered Campaign"} 
-                  className="w-full h-full object-cover transition-transform duration-[1.5s] group-hover:scale-110"
-                />
+              ) : video.url ? (
+                <div className="w-full h-full relative group/video">
+                  <video 
+                    src={video.url} 
+                    muted 
+                    loop 
+                    playsInline 
+                    autoPlay 
+                    className="w-full h-full object-cover transition-transform duration-[1.5s] group-hover:scale-110"
+                  />
+                  {/* Subtle overlay for better badge readability */}
+                  <div className="absolute inset-0 bg-black/10 group-hover:bg-transparent transition-all pointer-events-none" />
+                </div>
               ) : (
                 <div className="absolute inset-0 flex items-center justify-center">
                   <Icons.Video className="w-10 h-10 text-slate-200" />

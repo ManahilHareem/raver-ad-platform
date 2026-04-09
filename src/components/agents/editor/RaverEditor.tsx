@@ -5,10 +5,11 @@ import { Icons } from "@/components/ui/icons";
 import { cn } from "@/lib/utils";
 
 interface Scene {
-  imageUrl: string;
-  overlayText?: string;
-  motionPrompt?: string;
-  seconds: number;
+  scene_id: number;
+  image_url: string;
+  overlay_text?: string;
+  visual_prompt?: string;
+  duration: number;
 }
 
 interface VideoGeneratorProps {
@@ -21,11 +22,12 @@ export function RaverEditor({ onGenerate, isLoading }: VideoGeneratorProps) {
   const [format, setFormat] = useState("16:9");
   const [numScenes, setNumScenes] = useState(7);
   const [scenes, setScenes] = useState<Scene[]>(
-    Array(7).fill(null).map(() => ({
-      imageUrl: "",
-      overlayText: "",
-      motionPrompt: "",
-      seconds: 5
+    Array(7).fill(null).map((_, i) => ({
+      scene_id: i,
+      image_url: "",
+      overlay_text: "",
+      visual_prompt: "",
+      duration: 5
     }))
   );
 
@@ -33,11 +35,12 @@ export function RaverEditor({ onGenerate, isLoading }: VideoGeneratorProps) {
   const [voiceoverUrl, setVoiceoverUrl] = useState("");
   const [musicUrl, setMusicUrl] = useState("");
   const [musicVolume, setMusicVolume] = useState(0.5);
-  const [brandName, setBrandName] = useState("");
-  const [logoUrl, setLogoUrl] = useState("");
+  const [business_name, setBusinessName] = useState("");
+  const [logo_url, setLogoUrl] = useState("");
   const [transition, setTransition] = useState("fade");
-  const [transitionDuration, setTransitionDuration] = useState(0.2);
-  const [animationModel, setAnimationModel] = useState("kling-video");
+  const [transition_duration, setTransitionDuration] = useState(0.2);
+  const [video_model, setVideoModel] = useState("kling-video");
+  const [animate_scenes, setAnimateScenes] = useState(false);
 
   const handleSceneChange = (index: number, field: keyof Scene, value: any) => {
     const updated = [...scenes];
@@ -51,18 +54,17 @@ export function RaverEditor({ onGenerate, isLoading }: VideoGeneratorProps) {
     e.preventDefault();
     onGenerate({
       mode: activeTab,
-      format: activeTab === "export" ? "all" : format,
+      format: format,
       scenes: currentScenes,
-      global: {
-        voiceoverUrl,
-        musicUrl,
-        musicVolume,
-        brandName,
-        logoUrl,
-        transition,
-        transitionDuration,
-        animationModel
-      }
+      voiceover_url: voiceoverUrl,
+      music_url: musicUrl,
+      music_volume: musicVolume,
+      business_name: business_name,
+      logo_url: logo_url,
+      transition,
+      transition_duration: transition_duration,
+      animate_scenes,
+      video_model: video_model
     });
   };
 
@@ -176,8 +178,8 @@ export function RaverEditor({ onGenerate, isLoading }: VideoGeneratorProps) {
                           <span className="text-[10px] font-bold text-slate-300 uppercase tracking-widest">Duration</span>
                           <input 
                             type="number" 
-                            value={scene.seconds}
-                            onChange={(e) => handleSceneChange(idx, "seconds", parseInt(e.target.value))}
+                            value={scene.duration}
+                            onChange={(e) => handleSceneChange(idx, "duration", parseInt(e.target.value))}
                             className="w-12 h-8 bg-slate-50 border border-slate-100 rounded-lg text-center text-xs font-black outline-none focus:border-slate-300"
                           />
                           <span className="text-[10px] font-bold text-slate-300 uppercase tracking-widest">Sec</span>
@@ -190,8 +192,8 @@ export function RaverEditor({ onGenerate, isLoading }: VideoGeneratorProps) {
                          <input 
                            type="text"
                            placeholder="Paste URL from Image Lead..."
-                           value={scene.imageUrl}
-                           onChange={(e) => handleSceneChange(idx, "imageUrl", e.target.value)}
+                           value={scene.image_url}
+                           onChange={(e) => handleSceneChange(idx, "image_url", e.target.value)}
                            className="w-full px-5 py-4 bg-slate-50 border border-slate-100 rounded-2xl text-sm font-medium outline-none focus:border-blue-500 transition-all placeholder:text-slate-300"
                          />
                       </div>
@@ -200,11 +202,21 @@ export function RaverEditor({ onGenerate, isLoading }: VideoGeneratorProps) {
                          <input 
                            type="text"
                            placeholder="e.g. Your glow starts here..."
-                           value={scene.overlayText}
-                           onChange={(e) => handleSceneChange(idx, "overlayText", e.target.value)}
+                           value={scene.overlay_text}
+                           onChange={(e) => handleSceneChange(idx, "overlay_text", e.target.value)}
                            className="w-full px-5 py-4 bg-slate-50 border border-slate-100 rounded-2xl text-sm font-medium outline-none focus:border-blue-500 transition-all placeholder:text-slate-300"
                          />
                       </div>
+                    </div>
+                    
+                    <div className="space-y-2">
+                       <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Visual Direction / Prompt</label>
+                       <textarea 
+                         placeholder="Describe the cinematic motion or specific visual details for this scene..."
+                         value={scene.visual_prompt}
+                         onChange={(e) => handleSceneChange(idx, "visual_prompt", e.target.value)}
+                         className="w-full h-24 px-5 py-4 bg-slate-50 border border-slate-100 rounded-2xl text-sm font-medium outline-none focus:border-blue-500 transition-all placeholder:text-slate-300 resize-none"
+                       />
                     </div>
                   </div>
                 ))}
@@ -242,35 +254,88 @@ export function RaverEditor({ onGenerate, isLoading }: VideoGeneratorProps) {
                   </div>
                 </div>
 
-                {/* Transitions */}
+                {/* Branding Controls */}
                 <div className="space-y-4 pt-4 border-t border-white/5">
-                  <div className="text-[10px] font-black uppercase tracking-widest text-purple-400/80">Cinematic Transitions</div>
-                  <div className="space-y-3">
-                    <select 
-                      value={transition}
-                      onChange={(e) => setTransition(e.target.value)}
-                      className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-xs outline-none focus:border-white/20 transition-all font-medium appearance-none"
-                    >
-                      <option value="fade">Cross Fade</option>
-                      <option value="dissolve">Film Dissolve</option>
-                      <option value="none">Cut (None)</option>
-                    </select>
-                  </div>
+                   <div className="text-[10px] font-black uppercase tracking-widest text-pink-400/80">Brand Identity</div>
+                   <div className="space-y-2">
+                     <input 
+                       type="text" 
+                       placeholder="Business Name"
+                       value={business_name}
+                       onChange={(e) => setBusinessName(e.target.value)}
+                       className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-xs outline-none focus:border-white/20 transition-all font-medium"
+                     />
+                     <input 
+                       type="text" 
+                       placeholder="Logo URL (.png)"
+                       value={logo_url}
+                       onChange={(e) => setLogoUrl(e.target.value)}
+                       className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-xs outline-none focus:border-white/20 transition-all font-medium"
+                     />
+                   </div>
                 </div>
 
+                 {/* Cinematic Style Controls */}
+                 <div className="space-y-4 pt-4 border-t border-white/5">
+                   <div className="text-[10px] font-black uppercase tracking-widest text-emerald-400/80">Cinematic Style</div>
+                   <div className="flex items-center justify-between p-4 bg-white/5 rounded-xl border border-white/5">
+                      <div className="flex flex-col">
+                        <span className="text-[11px] font-bold">Animate Scenes</span>
+                        <span className="text-[8px] text-white/40">Apply dynamic camera motion</span>
+                      </div>
+                      <button
+                        type="button"
+                        onClick={() => setAnimateScenes(!animate_scenes)}
+                        className={cn(
+                          "w-10 h-5 rounded-full relative transition-all duration-300",
+                          animate_scenes ? "bg-emerald-500" : "bg-white/10"
+                        )}
+                      >
+                         <div className={cn(
+                           "absolute top-1 w-3 h-3 bg-white rounded-full transition-all duration-300",
+                           animate_scenes ? "left-6" : "left-1"
+                         )} />
+                      </button>
+                   </div>
+                 </div>
+
+                 {/* Transitions */}
+                 <div className="space-y-4 pt-4 border-t border-white/5">
+                   <div className="text-[10px] font-black uppercase tracking-widest text-purple-400/80">Cinematic Transitions</div>
+                   <div className="grid grid-cols-2 gap-2">
+                     <select 
+                       value={transition}
+                       onChange={(e) => setTransition(e.target.value)}
+                       className="bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-xs outline-none focus:border-white/20 transition-all font-medium appearance-none"
+                     >
+                       <option value="fade">Cross Fade</option>
+                       <option value="dissolve">Film Dissolve</option>
+                       <option value="none">Cut (None)</option>
+                     </select>
+                     <input 
+                        type="number"
+                        step="0.1"
+                        value={transition_duration}
+                        onChange={(e) => setTransitionDuration(parseFloat(e.target.value))}
+                        className="bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-xs outline-none focus:border-white/20 transition-all font-medium"
+                        placeholder="Duration"
+                     />
+                   </div>
+                 </div>
+
                 {/* Engine Settings */}
-                <div className="space-y-4 pt-4 border-t border-white/5">
-                  <div className="text-[10px] font-black uppercase tracking-widest text-amber-400/80">Animation Engine</div>
-                  <select 
-                    value={animationModel}
-                    onChange={(e) => setAnimationModel(e.target.value)}
-                    className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-xs outline-none focus:border-white/20 transition-all font-medium appearance-none"
-                  >
-                    <option value="kling-video">Kling Video (Recommended)</option>
-                    <option value="luma-dream">Luma Dream Machine</option>
-                    <option value="runway-gen3">Runway Gen-3 Alpha</option>
-                  </select>
-                </div>
+                 <div className="space-y-4 pt-4 border-t border-white/5">
+                   <div className="text-[10px] font-black uppercase tracking-widest text-amber-400/80">Animation Engine</div>
+                   <select 
+                     value={video_model}
+                     onChange={(e) => setVideoModel(e.target.value)}
+                     className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-xs outline-none focus:border-white/20 transition-all font-medium appearance-none"
+                   >
+                     <option value="kling-video">Kling Video (Recommended)</option>
+                     <option value="luma-dream">Luma Dream Machine</option>
+                     <option value="runway-gen3">Runway Gen-3 Alpha</option>
+                   </select>
+                 </div>
 
                 <button
                   type="submit"
