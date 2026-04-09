@@ -14,6 +14,27 @@ export default function Header({ onMenuClick }: HeaderProps) {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const { user } = useUser();
   const dropdownRef = useRef<HTMLDivElement>(null);
+  const [unreadCount, setUnreadCount] = useState(0);
+
+  useEffect(() => {
+    // Initial check
+    const saved = localStorage.getItem("raver_notifications");
+    if (saved) {
+      try {
+        const notifications = JSON.parse(saved);
+        setUnreadCount(notifications.filter((n: any) => !n.isRead).length);
+      } catch (e) {
+        console.error("Failed to parse notifications", e);
+      }
+    }
+
+    const handleUpdate = (e: any) => {
+      setUnreadCount(e.detail?.unreadCount || 0);
+    };
+
+    window.addEventListener("notifications_updated", handleUpdate);
+    return () => window.removeEventListener("notifications_updated", handleUpdate);
+  }, []);
 
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
@@ -58,7 +79,11 @@ export default function Header({ onMenuClick }: HeaderProps) {
           </Link>
           <Link href="/notifications" className="p-2.5 hover:bg-slate-50 rounded-xl transition-colors relative group">
             <Icons.Bell className="w-5 h-5 text-slate-400 group-hover:text-[#01012A]" />
-            <span className="absolute top-2.5 right-2.5 w-2 h-2 bg-red-500 rounded-full border-2 border-white" />
+            {unreadCount > 0 && (
+              <span className="absolute top-2 right-2 px-1.5 py-0.5 min-w-[18px] h-[18px] bg-rose-500 text-white text-[9px] font-black rounded-full border-2 border-white flex items-center justify-center shadow-lg transition-transform group-hover:scale-110">
+                {unreadCount}
+              </span>
+            )}
           </Link>
         </div>
 
