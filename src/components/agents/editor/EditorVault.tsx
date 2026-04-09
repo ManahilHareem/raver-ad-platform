@@ -2,7 +2,7 @@
 
 import React, { useState } from "react";
 import { Icons } from "@/components/ui/icons";
-import { cn } from "@/lib/utils";
+import { cn, normalizeAssetUrl } from "@/lib/utils";
 import { toast } from "react-toastify";
 
 interface VideoAsset {
@@ -29,7 +29,7 @@ interface VideoVaultProps {
 export function EditorVault({ videos, isLoading, onPreview, onDelete, isGlobalArchive }: VideoVaultProps) {
   const handleCopyUrl = (e: React.MouseEvent, url: string) => {
     e.stopPropagation();
-    navigator.clipboard.writeText(url);
+    navigator.clipboard.writeText(normalizeAssetUrl(url));
     toast.success("Video synthesis URL copied to clipboard");
   };
 

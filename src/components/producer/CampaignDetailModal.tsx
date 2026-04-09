@@ -2,7 +2,7 @@
 
 import React from "react";
 import { Icons } from "@/components/ui/icons";
-import { cn } from "@/lib/utils";
+import { cn, normalizeAssetUrl } from "@/lib/utils";
 
 interface CampaignDetailModalProps {
   isOpen: boolean;
@@ -111,7 +111,7 @@ export function CampaignDetailModal({ isOpen, onClose, campaign }: CampaignDetai
                   </div>
                   {result.video_url && (
                     <a 
-                      href={result.video_url} 
+                      href={normalizeAssetUrl(result.video_url)} 
                       target="_blank" 
                       rel="noopener noreferrer"
                       className="h-10 px-6 bg-linear-to-r from-[#01012A] to-[#2E2C66] text-white rounded-xl text-[10px] font-black uppercase tracking-widest flex items-center gap-2 hover:bg-[#2E2C66] transition-all shadow-lg shadow-[#01012A]/10"
@@ -130,7 +130,7 @@ export function CampaignDetailModal({ isOpen, onClose, campaign }: CampaignDetai
                       className="shrink-0 w-[280px] aspect-square rounded-[24px] overflow-hidden border border-slate-100 bg-slate-50 group/img relative"
                     >
                       <img 
-                        src={scene.image_url} 
+                        src={normalizeAssetUrl(scene.image_url)} 
                         alt={`Scene ${scene.scene_id}`}
                         className="w-full h-full object-cover transition-transform duration-700 group-hover/img:scale-110"
                       />

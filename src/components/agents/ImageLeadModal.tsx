@@ -3,7 +3,7 @@
 import React from "react";
 import Image from "next/image";
 import { Icons } from "@/components/ui/icons";
-import { cn } from "@/lib/utils";
+import { cn, normalizeAssetUrl } from "@/lib/utils";
 
 interface Scene {
   id: string;
@@ -309,8 +309,8 @@ export default function ImageLeadModal({
               <div className="w-full lg:w-[400px] flex flex-col gap-4">
                  <h4 className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] px-2">Visual Style Preview</h4>
                  <div className="relative aspect-square bg-[#F8FAFC] rounded-[40px] overflow-hidden border border-slate-100 shadow-inner group">
-                    {selectedImage && selectedImage.startsWith("http") ? (
-                      <Image src={selectedImage} alt="Enhance preview" fill className="object-cover" />
+                    {selectedImage ? (
+                      <Image src={normalizeAssetUrl(selectedImage)} alt="Enhance preview" fill className="object-cover" />
                     ) : (
                       <div className="absolute inset-0 flex flex-col items-center justify-center text-slate-300 gap-4">
                          <Icons.Image className="w-20 h-20" />

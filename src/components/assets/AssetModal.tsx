@@ -3,7 +3,7 @@
 import React from "react";
 import Image from "next/image";
 import { Icons } from "@/components/ui/icons";
-import { cn, formatFileSize } from "@/lib/utils";
+import { cn, formatFileSize, normalizeAssetUrl } from "@/lib/utils";
 
 interface Asset {
   id: string | number;
@@ -66,13 +66,13 @@ export default function AssetModal({ asset, isOpen, onClose, onDelete }: AssetMo
              </div>
           ) : isVideo ? (
             <video 
-              src={assetUrl} 
+              src={normalizeAssetUrl(assetUrl)} 
               controls
               className="w-full h-full object-contain"
             />
           ) : (
             <Image 
-              src={assetUrl} 
+              src={normalizeAssetUrl(assetUrl)} 
               alt={asset.name || asset.title || "Asset"}
               fill
               className="object-contain p-4"

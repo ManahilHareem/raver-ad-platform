@@ -55,7 +55,10 @@ import {
   ChevronDown,
   Menu,
   Layers,
-  Music
+  Music,
+  RefreshCcw,
+  AlertTriangle,
+  Filter
 } from "lucide-react";
 import { CustomIcons } from "./custom-icons";
 
@@ -128,5 +131,10 @@ export const Icons = {
   Play: Play,
   Pause: Pause,
   Layers: Layers,
-  Music: Music
+  Music: Music,
+  RefreshCcw: RefreshCcw,
+  AlertTriangle: AlertTriangle,
+  Filter: Filter,
+  ShieldCheck: ShieldCheck,
+  Zap: Zap
 };
