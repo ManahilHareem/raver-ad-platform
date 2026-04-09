@@ -81,7 +81,7 @@ export default function CreateCampaignModal({ isOpen, onClose, onSuccess }: Crea
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex justify-end bg-black/40 backdrop-blur-sm">
+    <div className="fixed inset-y-0 right-0 left-0 lg:left-[280px] z-50 flex justify-end bg-black/40 backdrop-blur-sm">
       <div className="bg-[#F8FAFC] w-full max-w-[640px] h-screen flex flex-col shadow-2xl animate-in slide-in-from-right duration-300 rounded-l-[24px] overflow-hidden">
         {/* Modal Header */}
         <div className="bg-white px-8 pt-6 pb-2 border-b border-[#F1F5F9] shrink-0">

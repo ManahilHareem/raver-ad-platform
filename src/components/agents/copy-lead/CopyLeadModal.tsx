@@ -16,7 +16,7 @@ export function CopyLeadModal({ isOpen, onClose, onGenerate, isLoading }: CopyLe
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-100 flex items-center justify-center p-4 sm:p-6 bg-black/40 backdrop-blur-sm animate-in fade-in duration-300">
+    <div className="fixed inset-y-0 right-0 left-0 lg:left-[280px] z-100 flex items-center justify-center p-4 sm:p-6 bg-black/40 backdrop-blur-sm animate-in fade-in duration-300">
       {/* Click-through backdrop */}
       <div className="absolute inset-0" onClick={onClose} />
       

@@ -76,7 +76,7 @@ export default function AddPaymentMethodModal({ isOpen, onClose, onSuccess, card
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm p-4">
+    <div className="fixed inset-y-0 right-0 left-0 lg:left-[280px] z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm p-4">
       <div className="bg-white w-full max-w-[500px] rounded-[24px] overflow-hidden shadow-2xl animate-in fade-in zoom-in-95 duration-200 border border-[#F1F5F9]">
         <div className="p-[24px] flex flex-col gap-6">
           <div className="flex items-center justify-between">

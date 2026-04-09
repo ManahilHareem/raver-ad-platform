@@ -24,7 +24,7 @@ export default function AgentModal({ agent, isOpen, onClose, onAction }: AgentMo
   if (!isOpen || !agent) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm p-4">
+    <div className="fixed inset-y-0 right-0 left-0 lg:left-[280px] z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm p-4">
       <div className="bg-white w-full max-w-[541px] h-fit max-h-[95vh] p-3 sm:p-4 rounded-[32px] flex flex-col overflow-hidden gap-3 sm:gap-4 shadow-2xl animate-in fade-in zoom-in-95 duration-200 border border-slate-100">
         {/* Top Image Section */}
         <div className="relative w-full h-[200px] sm:h-[240px] bg-[#F8F8F8] flex items-center justify-center p-3 sm:p-4 rounded-[24px] shrink-0">

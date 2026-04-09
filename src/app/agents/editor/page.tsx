@@ -165,22 +165,7 @@ function EditorContent() {
             </button>
           </div>
         </div>
-      </div>
-
-      {/* Visual Synthesis Insights */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        {stats.map((stat, i) => (
-          <div key={i} className="bg-white border border-slate-100 rounded-[28px] p-6 flex items-center justify-between shadow-sm hover:shadow-md transition-shadow group">
-            <div className="flex flex-col gap-1">
-              <span className="text-[10px] font-black uppercase tracking-widest text-slate-400">{stat.label}</span>
-              <span className="text-2xl font-black text-[#01012A] tracking-tight">{stat.value}</span>
-            </div>
-            <div className={cn("w-12 h-12 rounded-2xl bg-slate-50 flex items-center justify-center transition-colors group-hover:bg-slate-100", stat.color)}>
-              <stat.icon className="w-6 h-6" />
-            </div>
-          </div>
-        ))}
-      </div>
+      </div>  
 
       <div className="h-px bg-slate-50 w-full" />
 

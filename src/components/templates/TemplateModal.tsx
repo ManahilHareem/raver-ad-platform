@@ -19,7 +19,7 @@ export default function TemplateModal({ template, isOpen, onClose }: TemplateMod
   if (!isOpen || !template) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-end justify-end bg-black/60 backdrop-blur-sm p-4">
+    <div className="fixed inset-y-0 right-0 left-0 lg:left-[280px] z-50 flex items-end justify-end bg-black/60 backdrop-blur-sm p-4">
       <div className="bg-white w-full max-w-[541px] max-h-[98vh] rounded-[16px] overflow-hidden shadow-2xl animate-in fade-in zoom-in-95 duration-200 flex flex-col p-[12px] relative border-b border-[#0000001A]">
         
         {/* Close Button */}

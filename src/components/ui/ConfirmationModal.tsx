@@ -42,7 +42,7 @@ export default function ConfirmationModal({
   };
 
   return (
-    <div className="fixed inset-0 z-100 flex items-center justify-center bg-black/40 backdrop-blur-sm p-4 animate-in fade-in duration-200">
+    <div className="fixed inset-y-0 right-0 left-0 lg:left-[280px] z-100 flex items-center justify-center bg-black/40 backdrop-blur-sm p-4 animate-in fade-in duration-200">
       <div 
         className="bg-white w-full max-w-[400px] rounded-[24px] overflow-hidden shadow-2xl animate-in zoom-in-95 duration-200 flex flex-col p-[24px] gap-[20px] relative border-[0.35px] border-[#0000001A]"
         onClick={(e) => e.stopPropagation()}

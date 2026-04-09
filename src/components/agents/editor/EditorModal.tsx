@@ -15,10 +15,10 @@ export function EditorModal({ isOpen, onClose, onGenerate, isLoading }: EditorMo
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 sm:p-6">
+    <div className="fixed inset-y-0 right-0 left-0 lg:left-[280px] z-100 flex items-center justify-center p-4 sm:p-6">
       {/* Backdrop */}
       <div 
-        className="absolute inset-0 bg-linear-to-r from-[#01012A] to-[#2E2C66] backdrop-blur-xl animate-in fade-in duration-300"
+        className="absolute inset-0 backdrop-blur-xl animate-in fade-in duration-300"
         onClick={onClose}
       />
 

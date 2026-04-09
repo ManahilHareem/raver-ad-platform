@@ -84,7 +84,7 @@ export default function ImageLeadModal({
   const canContinueToStyle = businessName.trim() && productName.trim() && targetAudience.trim() && brandTone.trim() && hasAtLeastOneScene;
 
   return (
-    <div className="fixed inset-0 z-100 flex items-center justify-center p-4 sm:p-6 overflow-hidden">
+    <div className="fixed inset-y-0 right-0 left-0 lg:left-[280px] z-100 flex items-center justify-center p-4 sm:p-6 overflow-hidden">
       <div className="absolute inset-0 bg-[#02022C]/40 backdrop-blur-sm transition-opacity" onClick={onClose} />
       
       <div className="relative bg-white w-full max-w-6xl max-h-[95vh] sm:max-h-[90vh] rounded-[24px] sm:rounded-[40px] shadow-2xl flex flex-col overflow-hidden animate-in zoom-in-95 duration-200">

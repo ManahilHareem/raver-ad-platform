@@ -83,7 +83,7 @@ export function VoiceSelector({ selectedVoice, onSelect, className }: VoiceSelec
 
       {isOpen && (
         <>
-          <div className="fixed inset-0 z-40" onClick={() => setIsOpen(false)} />
+          <div className="fixed inset-y-0 right-0 left-0 lg:left-[280px] z-40" onClick={() => setIsOpen(false)} />
           <div className="absolute top-[calc(100%+8px)] left-0 right-0 bg-white border border-slate-100 rounded-[24px] shadow-2xl p-2 z-50 flex flex-col gap-1 max-h-[400px] overflow-y-auto animate-in fade-in zoom-in-95 duration-200 custom-scrollbar">
             {VOICE_OPTIONS.map((voice) => {
               const itemIsMale = voice.category.startsWith("Male");
