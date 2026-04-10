@@ -5,49 +5,47 @@ import { Icons } from "@/components/ui/icons";
 import { cn } from "@/lib/utils";
 
 export const VOICE_OPTIONS = [
-  // Professional Male Narrators
-  { id: "adam", name: "Adam - Deep Casual American (Default)", category: "Male - Professional", accent: "American" },
-  { id: "arnold", name: "Arnold - Crisp Calm Narrator", category: "Male - Professional", accent: "American" },
-  { id: "callum", name: "Callum - Strong Middle-Aged", category: "Male - Professional", accent: "American" },
-  { id: "clyde", name: "Clyde - American Narrator", category: "Male - Professional", accent: "American" },
-  { id: "daniel", name: "Daniel - Deep Authoritative", category: "Male - Professional", accent: "British" },
-  { id: "george", name: "George - Warm Narrator", category: "Male - Professional", accent: "British" },
-  { id: "james", name: "James - Professional Calm", category: "Male - Professional", accent: "British" },
-  { id: "joseph", name: "Joseph - Professional British", category: "Male - Professional", accent: "British" },
-  { id: "liam", name: "Liam - Neutral Professional", category: "Male - Professional", accent: "American" },
-  { id: "michael", name: "Michael - Deep American", category: "Male - Professional", accent: "American" },
+  // Male Voices
+  { id: "adam", voiceId: "pNInz6obpgDQGcFmaJgB", name: "Adam", description: "Deep, causal American male", category: "Male - Casual", accent: "American" },
+  { id: "antoni", voiceId: "ErXwobaYiN019PkySvjV", name: "Antoni", description: "Well-rounded, warm male", category: "Male - Professional", accent: "American" },
+  { id: "arnold", voiceId: "VR6AewLTigWG4xSOukaG", name: "Arnold", description: "Crisp, calm narrator", category: "Male - Professional", accent: "American" },
+  { id: "callum", voiceId: "N2lVS1w4EtoT3dr4eOWO", name: "Callum", description: "Strong, middle-aged American", category: "Male - Professional", accent: "American" },
+  { id: "charlie", voiceId: "IKne3meq5aSn9XLyUdCD", name: "Charlie", description: "Casual, Australian male", category: "Male - Casual", accent: "Australian" },
+  { id: "clyde", voiceId: "2EiwWnXFnvU5JabPnv8n", name: "Clyde", description: "Middle-aged American narrator", category: "Male - Professional", accent: "American" },
+  { id: "daniel", voiceId: "onwK4e9ZLuTAKqWW03F9", name: "Daniel", description: "Deep, authoritative British", category: "Male - Professional", accent: "British" },
+  { id: "drew", voiceId: "29vD33N1CtxCmqQRPOHJ", name: "Drew", description: "Young, energetic male", category: "Male - Casual", accent: "American" },
+  { id: "ethan", voiceId: "g5CIjZEefAph4nQFvHAz", name: "Ethan", description: "American, conversational", category: "Male - Casual", accent: "American" },
+  { id: "fin", voiceId: "D38z5RcWu1voky8WS1ja", name: "Fin", description: "Warm Irish narrator", category: "Male - Professional", accent: "Irish" },
+  { id: "george", voiceId: "JBFqnCBsd6RMkjVDRZzb", name: "George", description: "Warm British narrator", category: "Male - Professional", accent: "British" },
+  { id: "harry", voiceId: "SOYHLrjzK2X1ezoPC6cr", name: "Harry", description: "Anxious, British young male", category: "Male - Character", accent: "British" },
+  { id: "james", voiceId: "ZQe5CZNOzWyzPSCn5a3c", name: "James", description: "Professional, calm", category: "Male - Professional", accent: "British" },
+  { id: "jeremy", voiceId: "bVMeCyTHy58xNoL34h3p", name: "Jeremy", description: "Animated, expressive Irish", category: "Male - Casual", accent: "Irish" },
+  { id: "joseph", voiceId: "Zlb1dXrM653N07WRdFW3", name: "Joseph", description: "Professional British", category: "Male - Professional", accent: "British" },
+  { id: "josh", voiceId: "TxGEqnHWrfWFTfGW9XjX", name: "Josh", description: "Young American male", category: "Male - Casual", accent: "American" },
+  { id: "liam", voiceId: "TX3LPaxmHKxFdv7VOQHJ", name: "Liam", description: "Neutral, professional American", category: "Male - Professional", accent: "American" },
+  { id: "matilda", voiceId: "XrExE9yKIg1WjnnlVkGX", name: "Matilda", description: "Warm American female", category: "Female - Professional", accent: "American" },
+  { id: "michael", voiceId: "flq6f7yk4E4fJM5XTYuZ", name: "Michael", description: "Deep American male", category: "Male - Professional", accent: "American" },
+  { id: "patrick", voiceId: "ODq5zmih8GrVes37Dizd", name: "Patrick", description: "Conversational American", category: "Male - Casual", accent: "American" },
+  { id: "sam", voiceId: "yoZ06aMxZJJ28mfd3POQ", name: "Sam", description: "Raspy American male", category: "Male - Casual", accent: "American" },
+  { id: "thomas", voiceId: "GBv7mTt0atIp3Br8iCZE", name: "Thomas", description: "Young, energetic American", category: "Male - Casual", accent: "American" },
 
-  // Casual/Young Male
-  { id: "antoni", name: "Antoni - Well-Rounded Warm", category: "Male - Casual", accent: "American" },
-  { id: "charlie", name: "Charlie - Casual Australian", category: "Male - Casual", accent: "Australian" },
-  { id: "drew", name: "Drew - Young Energetic", category: "Male - Casual", accent: "American" },
-  { id: "ethan", name: "Ethan - Conversational", category: "Male - Casual", accent: "American" },
-  { id: "fin", name: "Fin - Warm Irish", category: "Male - Casual", accent: "Irish" },
-  { id: "harry", name: "Harry - British Young", category: "Male - Casual", accent: "British" },
-  { id: "jeremy", name: "Jeremy - Animated Irish", category: "Male - Casual", accent: "Irish" },
-  { id: "josh", name: "Josh - Young American", category: "Male - Casual", accent: "American" },
-  { id: "patrick", name: "Patrick - Conversational", category: "Male - Casual", accent: "American" },
-  { id: "sam", name: "Sam - Raspy American", category: "Male - Casual", accent: "American" },
-  { id: "thomas", name: "Thomas - Young Energetic", category: "Male - Casual", accent: "American" },
-
-  // Professional Female
-  { id: "charlotte", name: "Charlotte - Clear British Narrator", category: "Female - Professional", accent: "British" },
-  { id: "domi", name: "Domi - Strong Confident", category: "Female - Professional", accent: "American" },
-  { id: "dorothy", name: "Dorothy - Warm Pleasant", category: "Female - Professional", accent: "British" },
-  { id: "emily", name: "Emily - Calm Professional", category: "Female - Professional", accent: "American" },
-  { id: "rachel", name: "Rachel - Calm Narrator", category: "Female - Professional", accent: "American" },
-  { id: "sarah", name: "Sarah - Soft Professional", category: "Female - Professional", accent: "American" },
-  { id: "alice", name: "Alice - Confident British", category: "Female - Professional", accent: "British" },
-  { id: "matilda", name: "Matilda - Warm American", category: "Female - Professional", accent: "American" },
-
-  // Casual/Young Female
-  { id: "elli", name: "Elli - Emotional Young", category: "Female - Casual", accent: "American" },
-  { id: "freya", name: "Freya - Young Expressive", category: "Female - Casual", accent: "American" },
-  { id: "gigi", name: "Gigi - Upbeat", category: "Female - Casual", accent: "American" },
-  { id: "grace", name: "Grace - Soft Southern", category: "Female - Casual", accent: "American Southern" },
-  { id: "jessica", name: "Jessica - Young American", category: "Female - Casual", accent: "American" },
-  { id: "lily", name: "Lily - British Conversational", category: "Female - Casual", accent: "British" },
-  { id: "nicole", name: "Nicole - Whisper Soft", category: "Female - Casual", accent: "American" },
+  // Female Voices
+  { id: "alice", voiceId: "Xb7hH8MSUJpSbSDYk0k2", name: "Alice", description: "Confident British female", category: "Female - Professional", accent: "British" },
+  { id: "charlotte", voiceId: "XB0fDUnXU5powFXDhCwa", name: "Charlotte", description: "Clear British narrator", category: "Female - Professional", accent: "British" },
+  { id: "domi", voiceId: "AZnzlk1XvdvUeBnXmlld", name: "Domi", description: "Strong, confident American", category: "Female - Professional", accent: "American" },
+  { id: "dorothy", voiceId: "ThT5KcBeYPX3keUQqHPh", name: "Dorothy", description: "Warm, pleasant British", category: "Female - Professional", accent: "British" },
+  { id: "elli", voiceId: "MF3mGyEYCl7XYWbV9V6O", name: "Elli", description: "Emotional, young American", category: "Female - Casual", accent: "American" },
+  { id: "emily", voiceId: "LcfcDJNUP1GQjkzn1xUU", name: "Emily", description: "Calm, professional American", category: "Female - Professional", accent: "American" },
+  { id: "freya", voiceId: "jsCqWAovK2LkecY7zXl4", name: "Freya", description: "Young, expressive American", category: "Female - Casual", accent: "American" },
+  { id: "gigi", voiceId: "jBpfuIE2acCO8z3wKNLl", name: "Gigi", description: "Upbeat, American female", category: "Female - Casual", accent: "American" },
+  { id: "glinda", voiceId: "z9fAnlkpzviPz146aGWa", name: "Glinda", description: "Witch-like, characterful", category: "Female - Character", accent: "American" },
+  { id: "grace", voiceId: "oWAxZDx7w5VEj9dCyTzz", name: "Grace", description: "Soft Southern American", category: "Female - Casual", accent: "American Southern" },
+  { id: "jessica", voiceId: "cgSgspJ2msm6clMCkdW9", name: "Jessica", description: "Young American female", category: "Female - Casual", accent: "American" },
+  { id: "lily", voiceId: "pFZP5JQG7iQjIQuC4Bku", name: "Lily", description: "British, conversational", category: "Female - Casual", accent: "British" },
+  { id: "mimi", voiceId: "zrHiDhphv9ZnVXBqCLjz", name: "Mimi", description: "Childlike, energetic", category: "Female - Character", accent: "American" },
+  { id: "nicole", voiceId: "piTKgcLEGmPE4e6mEKli", name: "Nicole", description: "Whisper, soft American", category: "Female - Character", accent: "American" },
+  { id: "rachel", voiceId: "21m00Tcm4TlvDq8ikWAM", name: "Rachel", description: "Calm American narrator", category: "Female - Professional", accent: "American" },
+  { id: "sarah", voiceId: "EXAVITQu4vr4xnSDxMaL", name: "Sarah", description: "Soft, professional American", category: "Female - Professional", accent: "American" },
 ];
 
 interface VoiceSelectorProps {
@@ -58,6 +56,36 @@ interface VoiceSelectorProps {
 
 export function VoiceSelector({ selectedVoice, onSelect, className }: VoiceSelectorProps) {
   const [isOpen, setIsOpen] = useState(false);
+  const [playingId, setPlayingId] = useState<string | null>(null);
+  const [audioRef] = useState(typeof Audio !== "undefined" ? new Audio() : null);
+
+  React.useEffect(() => {
+    if (audioRef) {
+      audioRef.onended = () => setPlayingId(null);
+    }
+    return () => {
+      audioRef?.pause();
+    };
+  }, [audioRef]);
+
+  const togglePlay = (e: React.MouseEvent, voiceId: string) => {
+    e.stopPropagation();
+    if (!audioRef) return;
+
+    if (playingId === voiceId) {
+      audioRef.pause();
+      setPlayingId(null);
+    } else {
+      // Use the actual long voiceId for the sample URL
+      const voice = VOICE_OPTIONS.find(v => v.id === voiceId);
+      if (voice) {
+        audioRef.src = `https://raver-ad-platform.s3.us-east-1.amazonaws.com/samples/voices/${voice.voiceId}.mp3`;
+        audioRef.play().catch(err => console.error("Audio play failed:", err));
+        setPlayingId(voiceId);
+      }
+    }
+  };
+
   const currentVoice = VOICE_OPTIONS.find(v => v.id === selectedVoice) || VOICE_OPTIONS[0];
   const isMale = currentVoice.category.startsWith("Male");
 
@@ -83,36 +111,68 @@ export function VoiceSelector({ selectedVoice, onSelect, className }: VoiceSelec
 
       {isOpen && (
         <>
-          <div className="fixed inset-y-0 right-0 left-0 lg:left-[280px] z-40" onClick={() => setIsOpen(false)} />
+          <div className="fixed inset-0 z-40" onClick={() => setIsOpen(false)} />
           <div className="absolute top-[calc(100%+8px)] left-0 right-0 bg-white border border-slate-100 rounded-[24px] shadow-2xl p-2 z-50 flex flex-col gap-1 max-h-[400px] overflow-y-auto animate-in fade-in zoom-in-95 duration-200 custom-scrollbar">
             {VOICE_OPTIONS.map((voice) => {
               const itemIsMale = voice.category.startsWith("Male");
+              const isCurrentlyPlaying = playingId === voice.id;
+              
               return (
-                <button
+                <div 
                   key={voice.id}
-                  type="button"
-                  onClick={() => { onSelect(voice.id); setIsOpen(false); }}
                   className={cn(
-                    "w-full p-4 rounded-[18px] flex items-center gap-4 transition-all text-left group",
-                    selectedVoice === voice.id ? "bg-linear-to-r from-[#01012A] to-[#2E2C66]  text-white" : "hover:bg-slate-50"
+                    "w-full p-2 rounded-[18px] flex items-center gap-4 transition-all group relative",
+                    selectedVoice === voice.id ? "bg-linear-to-r from-[#01012A] to-[#2E2C66]" : "hover:bg-slate-50"
                   )}
                 >
-                  <div className={cn(
-                    "w-10 h-10 rounded-full flex items-center justify-center border transition-all",
-                    selectedVoice === voice.id ? "bg-white/10 border-white/20" : "bg-white border-slate-100"
-                  )}>
-                    {itemIsMale ? (
-                      <Icons.Mic className={cn("w-5 h-5", selectedVoice === voice.id ? "text-white" : "text-blue-500")} />
-                    ) : (
-                      <Icons.Mic className={cn("w-5 h-5", selectedVoice === voice.id ? "text-white" : "text-pink-500")} />
-                    )}
+                  <button
+                    type="button"
+                    onClick={() => { onSelect(voice.id); setIsOpen(false); }}
+                    className="flex-1 flex items-center gap-4 text-left"
+                  >
+                    <div className={cn(
+                      "w-10 h-10 rounded-full flex items-center justify-center border transition-all",
+                      selectedVoice === voice.id ? "bg-white/10 border-white/20" : "bg-white border-slate-100"
+                    )}>
+                      {itemIsMale ? (
+                        <Icons.Mic className={cn("w-5 h-5", selectedVoice === voice.id ? "text-white" : "text-blue-500")} />
+                      ) : (
+                        <Icons.Mic className={cn("w-5 h-5", selectedVoice === voice.id ? "text-white" : "text-pink-500")} />
+                      )}
+                    </div>
+                    <div className="flex flex-col overflow-hidden">
+                       <span className={cn("text-xs font-black tracking-tight", selectedVoice === voice.id ? "text-white" : "text-[#01012A]")}>{voice.name}</span>
+                       <span className={cn("text-[8px] font-bold uppercase tracking-tighter opacity-60 leading-none mb-1", selectedVoice === voice.id ? "text-white" : "text-slate-400")}>
+                         {voice.accent} • {voice.category}
+                       </span>
+                       <span className={cn("text-[10px] truncate max-w-[150px]", selectedVoice === voice.id ? "text-white/70" : "text-slate-500")}>
+                          {voice.description}
+                       </span>
+                    </div>
+                  </button>
+
+                  <div className="flex items-center gap-2 pr-2">
+                    <button
+                      onClick={(e) => togglePlay(e, voice.id)}
+                      className={cn(
+                        "w-8 h-8 rounded-full flex items-center justify-center transition-all shadow-sm active:scale-95",
+                        isCurrentlyPlaying 
+                          ? "bg-white text-[#01012A] animate-pulse" 
+                          : selectedVoice === voice.id 
+                            ? "bg-white/10 text-white hover:bg-white/20" 
+                            : "bg-white border border-slate-100 text-[#01012A] hover:bg-slate-100"
+                      )}
+                      title="Preview Voice"
+                    >
+                      {isCurrentlyPlaying ? (
+                        <Icons.Pause className="w-3.5 h-3.5" />
+                      ) : (
+                        <Icons.Play className="w-3.5 h-3.5 ml-0.5" />
+                      )}
+                    </button>
+                    {selectedVoice === voice.id && <Icons.Success className="w-4 h-4 text-emerald-400" />}
                   </div>
-                  <div className="flex flex-col overflow-hidden">
-                     <span className={cn("text-xs font-black tracking-tight", selectedVoice === voice.id ? "text-white" : "text-[#01012A]")}>{voice.name}</span>
-                     <span className={cn("text-[9px] font-bold uppercase tracking-tighter", selectedVoice === voice.id ? "text-white/60" : "text-slate-400")}>{voice.accent} • {voice.category}</span>
-                  </div>
-                  {selectedVoice === voice.id && <Icons.Success className="w-4 h-4 text-emerald-400 ml-auto" />}
-                </button>
+                </div>
               );
             })}
           </div>

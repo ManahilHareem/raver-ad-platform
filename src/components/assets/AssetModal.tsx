@@ -50,7 +50,7 @@ export default function AssetModal({ asset, isOpen, onClose, onDelete }: AssetMo
       <div className="bg-white w-full max-w-[541px] rounded-[24px] overflow-hidden shadow-2xl animate-in fade-in zoom-in-95 duration-200 flex flex-col p-[12px] gap-[12px] relative">
         
         {/* Top Image Section */}
-        <div className="relative w-[517px] h-[252px] bg-[#F8F8F8] rounded-[16px] overflow-hidden flex items-center justify-center">
+        <div className="relative w-full aspect-square bg-[#F8F8F8] rounded-[16px] overflow-hidden flex items-center justify-center">
           <button 
             onClick={onClose}
             className="absolute top-4 right-4 z-20 w-[40px] h-[40px] bg-white rounded-full flex items-center justify-center shadow-sm hover:bg-gray-50 transition-colors"
@@ -59,15 +59,22 @@ export default function AssetModal({ asset, isOpen, onClose, onDelete }: AssetMo
           </button>
           
           {asset.type === "audio" ? (
-             <div className="flex flex-col items-center gap-4">
-                <div className="w-[120px] h-[120px] bg-white rounded-[24px] shadow-sm flex items-center justify-center">
-                    <Icons.AudioWave className="w-16 h-16 text-[#02022C]" />
+             <div className="flex flex-col items-center gap-6 w-full px-6">
+                <div className="w-[100px] h-[100px] bg-white rounded-[24px] shadow-sm flex items-center justify-center">
+                    <Icons.AudioWave className="w-12 h-12 text-[#02022C]" />
                 </div>
+                <audio 
+                  src={normalizeAssetUrl(assetUrl)} 
+                  controls 
+                  className="w-full h-[40px] custom-audio-player"
+                  autoPlay
+                />
              </div>
           ) : isVideo ? (
             <video 
               src={normalizeAssetUrl(assetUrl)} 
               controls
+              autoPlay
               className="w-full h-full object-contain"
             />
           ) : (
@@ -119,7 +126,7 @@ export default function AssetModal({ asset, isOpen, onClose, onDelete }: AssetMo
             <button className="flex-[1.5] h-[48px] bg-[linear-gradient(90deg,#01012A_0%,#2E2C66_100%)] text-white rounded-[12px] text-[16px] font-bold hover:opacity-90 transition-all flex items-center justify-center gap-2 shadow-[inset_0px_-5px_5px_0px_#4F569B]">
               <Icons.whiteMagicWand className="w-5 h-5 text-white" /> Use in Project
             </button>
-            {onDelete && (
+            {/* {onDelete && (
               <button 
                 onClick={() => onDelete(asset.id)}
                 className="w-[48px] h-[48px] bg-red-50 text-red-500 rounded-[12px] border border-red-100 flex items-center justify-center hover:bg-red-100 transition-all"
@@ -127,7 +134,7 @@ export default function AssetModal({ asset, isOpen, onClose, onDelete }: AssetMo
               >
                 <Icons.Trash className="w-5 h-5" />
               </button>
-            )}
+            )} */}
           </div>
         </div>
       </div>

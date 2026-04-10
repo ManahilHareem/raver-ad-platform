@@ -30,7 +30,32 @@ export default function AssetsPage() {
   const [searchQuery, setSearchQuery] = useState("");
   const [assetToDelete, setAssetToDelete] = useState<any>(null);
   const [isDeleting, setIsDeleting] = useState(false);
+  const [playingId, setPlayingId] = useState<string | null>(null);
+  const [audioRef] = useState(typeof Audio !== "undefined" ? new Audio() : null);
   const fileInputRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    if (audioRef) {
+      audioRef.onended = () => setPlayingId(null);
+    }
+    return () => {
+      audioRef?.pause();
+    };
+  }, [audioRef]);
+
+  const togglePlay = (e: React.MouseEvent, asset: any) => {
+    e.stopPropagation();
+    if (!audioRef) return;
+
+    if (playingId === asset.id) {
+      audioRef.pause();
+      setPlayingId(null);
+    } else {
+      audioRef.src = asset.url;
+      audioRef.play();
+      setPlayingId(asset.id);
+    }
+  };
 
   const fetchAssets = async () => {
     try {
@@ -256,9 +281,11 @@ export default function AssetsPage() {
                   members={asset.members || 1}
                   fileSize={asset.fileSize}
                   type={(asset.type || 'image') as any}
-                  aspectRatio={(asset.aspectRatio || 'square') as any}
+                  aspectRatio="square"
                   hasVolume={asset.hasVolume}
                   isSelected={selectedAsset?.id === asset.id}
+                  isPlaying={playingId === asset.id}
+                  onPlayToggle={(e) => togglePlay(e, asset)}
                   onClick={() => setSelectedAsset(asset)}
                   className="break-inside-avoid"
                 />

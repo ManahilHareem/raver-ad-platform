@@ -18,6 +18,8 @@ interface AssetCardProps {
   hasVolume?: boolean;
   isSelectable?: boolean;
   isSelected?: boolean;
+  isPlaying?: boolean;
+  onPlayToggle?: (e: React.MouseEvent) => void;
 }
 
 export default function AssetCard({ 
@@ -32,7 +34,9 @@ export default function AssetCard({
   aspectRatio = "portrait",
   hasVolume = false,
   isSelectable = false,
-  isSelected = false
+  isSelected = false,
+  isPlaying = false,
+  onPlayToggle
 }: AssetCardProps) {
   const aspectClasses = {
     portrait: "aspect-3/4",
@@ -57,10 +61,30 @@ export default function AssetCard({
     >
       {type === "audio" ? (
          <div className="absolute inset-0 flex items-center justify-center p-8 bg-[#F8FAFC]">
-            <div className="w-full h-full relative flex items-center justify-center opacity-80 group-hover:scale-105 transition-transform duration-500">
-               <div className="w-[120px] h-[120px] bg-white rounded-[24px] shadow-sm flex items-center justify-center">
-                  <Icons.AudioWave className="w-16 h-16 text-[#02022C]" />
+            <div className="w-full h-full relative flex flex-col items-center justify-center opacity-80 group-hover:scale-105 transition-transform duration-500 gap-4">
+               <div className="w-[120px] h-[120px] bg-white rounded-[24px] shadow-sm flex flex-col items-center justify-center relative overflow-hidden group/play">
+                  <Icons.AudioWave className={cn("w-16 h-16 text-[#02022C]/10", isPlaying && "animate-pulse")} />
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      onPlayToggle?.(e);
+                    }}
+                    className={cn(
+                      "absolute inset-0 flex items-center justify-center transition-all",
+                      isPlaying ? "bg-[#02022C]/5" : "bg-transparent hover:bg-[#02022C]/5"
+                    )}
+                  >
+                    <div className={cn(
+                      "w-12 h-12 rounded-full flex items-center justify-center shadow-lg transition-all",
+                      isPlaying ? "bg-[#02022C] text-white scale-110" : "bg-white text-[#02022C] scale-100 group-hover/play:scale-110"
+                    )}>
+                      {isPlaying ? <Icons.Pause className="w-6 h-6" /> : <Icons.Play className="w-6 h-6 ml-1" />}
+                    </div>
+                  </button>
                </div>
+               <span className="text-[10px] font-black text-[#02022C]/40 uppercase tracking-[0.2em]">
+                 {isPlaying ? "Live Stream" : "Neural Audio"}
+               </span>
             </div>
          </div>
       ) : isVideo ? (
@@ -109,8 +133,20 @@ export default function AssetCard({
             </div>
           </div>
 
-          <button className="w-full h-[32px] bg-white text-[#121212] rounded-[5px] text-[12px] font-medium hover:bg-white/90 border-[0.35px] border-[#0000001A] transition-colors shadow-lg">
-            Preview
+          <button 
+            onClick={(e) => {
+              e.stopPropagation();
+              if (type === "audio") {
+                // For audio, we still allow inline play, but we also want to allow opening the modal
+                // Let's make the button toggle play, and the card click open the modal
+                onPlayToggle?.(e);
+              } else {
+                onClick?.();
+              }
+            }}
+            className="w-full h-[32px] bg-white text-[#121212] rounded-[5px] text-[12px] font-medium hover:bg-white/90 border-[0.35px] border-[#0000001A] transition-colors shadow-lg"
+          >
+            {type === "audio" ? (isPlaying ? "Pause Preview" : "Play Preview") : "Preview"}
           </button>
         </div>
       </div>

@@ -289,14 +289,19 @@ function StudioPageContent() {
     setSelectedVoice(voice);
   };
 
-  const handlePromptSend = async (prompt: string) => {
+  const handlePromptSend = async (prompt: string, assets?: any[]) => {
     if (isSending) return;
     setIsSending(true);
 
     const sessionId = Date.now().toString();
     const API_BASE = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
 
-    const enrichedMessage = enrichMessageWithCampaign(prompt, selectedCampaign);
+    // Combine assets into the prompt text for AI visibility if provided
+    let enrichedMessage = enrichMessageWithCampaign(prompt, selectedCampaign);
+    if (assets && assets.length > 0) {
+      const assetListStr = assets.map(a => `${a.name} (${a.type})`).join(", ");
+      enrichedMessage = `${enrichedMessage}\n\n[Attached Media: ${assetListStr}]`;
+    }
 
     try {
       const response = await apiFetch(`${API_BASE}/ai/director/chat`, {
@@ -308,6 +313,7 @@ function StudioPageContent() {
         body: JSON.stringify({
           session_id: sessionId,
           message: enrichedMessage,
+          assets: assets || [],
           professional_name: "",
           tag: "director"
         }),

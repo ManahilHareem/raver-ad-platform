@@ -2,12 +2,21 @@
 
 import Image from "next/image";
 import { Icons } from "@/components/ui/icons";
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect } from "react";
 import CampaignSelectionModal from "./CampaignSelectionModal";
+import AssetSelectionModal from "./AssetSelectionModal";
 import { useVoiceInput } from "@/hooks/useVoiceInput";
-import { cn } from "@/lib/utils";
+import { cn, normalizeAssetUrl } from "@/lib/utils";
 
 import { VoiceSelector, VOICE_OPTIONS } from "@/components/agents/audio-lead/VoiceSelector";
+
+interface Asset {
+  id: string;
+  name: string;
+  url: string;
+  type: "image" | "video" | "audio" | "graphic";
+  createdAt?: string;
+}
 
 interface Campaign {
   id?: string;
@@ -32,7 +41,7 @@ interface StudioHeroProps {
   selectedCampaign?: Campaign | null;
   onCampaignDelete?: (campaign: Campaign) => void;
   onViewDetails?: (campaign: Campaign) => void;
-  onSend?: (prompt: string) => void;
+  onSend?: (prompt: string, assets?: Asset[]) => void;
   isSending?: boolean;
 }
 
@@ -54,9 +63,11 @@ export default function StudioHero({
   isSending
 }: StudioHeroProps) {
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isAssetModalOpen, setIsAssetModalOpen] = useState(false);
   const [prompt, setPrompt] = useState("");
   const [selectedVoice, setSelectedVoice] = useState("");
   const [voiceError, setVoiceError] = useState(false);
+  const [selectedAssets, setSelectedAssets] = useState<Asset[]>([]);
 
   // Real-time voice input
   const handleVoiceResult = useCallback((text: string) => {
@@ -91,15 +102,52 @@ export default function StudioHero({
     const voiceName = VOICE_OPTIONS.find(v => v.id === selectedVoice)?.name || selectedVoice;
     const enrichedPrompt = `${prompt.trim()}\n\n[Voice: ${selectedVoice} (${voiceName})]`;
 
-    onSend?.(enrichedPrompt);
+    onSend?.(enrichedPrompt, selectedAssets);
     setPrompt("");
+    setSelectedAssets([]);
+    audioRef?.pause();
+    setPlayingId(null);
+  };
+
+  const [playingId, setPlayingId] = useState<string | null>(null);
+  const [audioRef] = useState(typeof Audio !== "undefined" ? new Audio() : null);
+
+  useEffect(() => {
+    if (audioRef) {
+      audioRef.onended = () => setPlayingId(null);
+    }
+    return () => {
+      audioRef?.pause();
+    };
+  }, [audioRef]);
+
+  const togglePlay = (e: React.MouseEvent, asset: Asset) => {
+    e.stopPropagation();
+    if (!audioRef) return;
+
+    if (playingId === asset.id) {
+      audioRef.pause();
+      setPlayingId(null);
+    } else {
+      audioRef.src = normalizeAssetUrl(asset.url);
+      audioRef.play();
+      setPlayingId(asset.id);
+    }
+  };
+
+  const removeAsset = (id: string) => {
+    if (playingId === id) {
+      audioRef?.pause();
+      setPlayingId(null);
+    }
+    setSelectedAssets(prev => prev.filter(a => a.id !== id));
   };
 
   // Compose display value: committed text + interim (greyed) text
   const displayValue = prompt + (interimText ? " " + interimText : "");
 
   return (
-    <div className="bg-white rounded-3xl p-8 overflow-hidden min-h-[340px] border border-[#F1F5F9] shadow-sm relative flex flex-col gap-[16px]">
+    <div className="bg-white rounded-3xl p-8 min-h-[340px] border border-[#F1F5F9] shadow-sm relative flex flex-col gap-[16px]">
       <div className="flex justify-between gap-8 h-[235px]">
         {/* Left Content Stack */}
         <div className="flex flex-col gap-6 max-w-[379px] flex-1">
@@ -120,56 +168,95 @@ export default function StudioHero({
       </div>
       <div className="relative group flex flex-col gap-5">
         <div className="relative">
-          <textarea
-            value={displayValue}
-            onChange={(e) => setPrompt(e.target.value)}
-            placeholder={selectedCampaign ? `Prompt for: ${selectedCampaign.title}` : "Create a summer balayage instagram promotion"}
-            className="w-full h-[120px] bg-white rounded-2xl p-5 pr-14 text-[15px] text-[#121212] placeholder:text-[#94A3B8] border border-[#02022C] transition-all resize-none outline-none"
-          />
+          <div className="flex flex-col bg-white rounded-2xl border border-[#02022C] transition-all overflow-hidden relative group/input">
+            <textarea
+              value={displayValue}
+              onChange={(e) => setPrompt(e.target.value)}
+              placeholder={selectedCampaign ? `Prompt for: ${selectedCampaign.title}` : "Create a summer balayage instagram promotion"}
+              className="w-full h-[140px] p-5 text-[15px] text-[#121212] placeholder:text-[#94A3B8] border-none transition-all resize-none outline-none"
+            />
+            
+            {/* Selected Assets Display */}
+            {selectedAssets.length > 0 && (
+              <div className="px-5 pb-14 flex flex-wrap gap-2 animate-in fade-in slide-in-from-bottom-2 duration-300">
+                {selectedAssets.map((asset) => (
+                  <div key={asset.id} className="relative group/asset w-14 h-14 rounded-lg overflow-hidden border border-[#E2E8F0] shadow-sm shrink-0">
+                    <img src={normalizeAssetUrl(asset.url)} alt="" className="w-full h-full object-cover transition-transform group-hover/asset:scale-110" />
+                    <div className="absolute inset-0 bg-black/40 opacity-0 group-hover/asset:opacity-100 transition-opacity flex items-center justify-center">
+                      <button 
+                        onClick={() => removeAsset(asset.id)}
+                        className="text-white hover:text-red-400 transition-colors p-1"
+                      >
+                        <Icons.Plus className="w-4 h-4 rotate-45" />
+                      </button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+
+            {/* Structured Action Bar */}
+            <div className="absolute bottom-0 left-0 right-0 p-3 flex items-center justify-between border-t border-[#F8FAFC] bg-white/80 backdrop-blur-md z-10 transition-colors group-hover/input:bg-white">
+              <div className="flex items-center gap-2">
+                {/* Mic Button */}
+                <div className="relative">
+                  <button
+                    onClick={handleMicClick}
+                    className={`w-9 h-9 rounded-xl flex items-center justify-center transition-all ${
+                      isListening
+                        ? "bg-red-500 text-white animate-pulse shadow-lg shadow-red-500/30 font-bold text-[10px]"
+                        : "bg-[#F8FAFC] text-[#94A3B8] hover:text-[#121212] hover:bg-[#F1F5F9]"
+                    }`}
+                    title={isListening ? "Stop listening" : "Voice input"}
+                  >
+                    <Icons.Mic className="w-4 h-4" />
+                  </button>
+                </div>
+
+                {/* Add Assets Button */}
+                <button
+                  onClick={() => setIsAssetModalOpen(true)}
+                  className="w-9 h-9 rounded-xl bg-[#F8FAFC] text-[#94A3B8] hover:text-[#121212] hover:bg-[#F1F5F9] flex items-center justify-center transition-all"
+                  title="Add reference images"
+                >
+                  <Icons.Image className="w-4 h-4" />
+                </button>
+              </div>
+
+              {/* Send Button */}
+              <button 
+                onClick={handleSend}
+                disabled={isSending || !prompt.trim()}
+                className={cn(
+                  "px-4 h-9 rounded-xl flex items-center gap-2 transition-all font-bold text-[12px] shadow-sm",
+                  prompt.trim() 
+                    ? "bg-[#02022C] text-white shadow-[#02022C]/10 active:scale-95" 
+                    : "bg-[#F8FAFC] text-[#CBD5E1] cursor-not-allowed"
+                )}
+              >
+                {isSending ? (
+                  <Icons.Loader className="w-4 h-4 animate-spin" />
+                ) : (
+                  <>
+                <Icons.Send className="w-4 h-4" />
+                  </>
+                )}
+              </button>
+            </div>
+          </div>
+
           {selectedCampaign && (
-            <div className="absolute top-2 right-4 flex items-center gap-2 px-3 py-1 bg-[#F1F5F9] rounded-full">
-              <span className="text-[11px] font-bold text-[#02022C] uppercase">Active: {selectedCampaign.title}</span>
+            <div className="absolute -top-3 right-4 flex items-center gap-2 px-3 py-1 bg-[#F1F5F9] border border-[#E2E8F0] rounded-full z-20 shadow-sm animate-in fade-in slide-in-from-top-1">
+              <span className="text-[10px] font-black text-[#01012A] uppercase tracking-wider">Campaign: {selectedCampaign.title}</span>
               <button 
                 onClick={() => onCampaignSelect?.(null)}
-                className="hover:text-red-500 transition-colors"
+                className="text-[#94A3B8] hover:text-red-500 transition-colors"
+                title="Clear campaign context"
               >
                 <Icons.Plus className="w-3 h-3 rotate-45" />
               </button>
             </div>
           )}
-          {/* Mic Button */}
-          <div className="absolute left-4 bottom-4">
-            <button
-              onClick={handleMicClick}
-              className={`w-8 h-8 rounded-lg flex items-center justify-center transition-all ${
-                isListening
-                  ? "bg-red-500 text-white animate-pulse shadow-lg shadow-red-500/30"
-                  : "bg-[#F8FAFC] text-[#94A3B8] hover:text-[#121212] hover:bg-[#F1F5F9]"
-              }`}
-              title={isListening ? "Click to stop listening" : "Click to start voice input"}
-            >
-              <Icons.Mic className="w-4 h-4" />
-            </button>
-            {isListening && (
-              <span className="absolute -bottom-6 left-0 text-[10px] text-red-500 font-bold animate-pulse whitespace-nowrap">
-                Listening...
-              </span>
-            )}
-          </div>
-          {/* Send Button */}
-          <div className="absolute right-4 bottom-4">
-            <button 
-              onClick={handleSend}
-              disabled={isSending || !prompt.trim()}
-              className="w-8 h-8 rounded-lg bg-[#F8FAFC] flex items-center justify-center text-[#94A3B8] hover:text-[#121212] transition-colors disabled:opacity-50"
-            >
-              {isSending ? (
-                <Icons.Loader className="w-4 h-4 animate-spin" />
-              ) : (
-                <Icons.Send className="w-4 h-4" />
-              )}
-            </button>
-          </div>
         </div>
 
         <div className="flex flex-col gap-2">
@@ -220,13 +307,6 @@ export default function StudioHero({
               </button>
             </div>
             <div className="flex flex-wrap gap-2">
-              <button
-                onClick={onCreateClick}
-                className="px-3 py-1.5 bg-white border border-[#E2E8F0] rounded-lg text-[11px] font-bold text-[#02022C] hover:border-[#02022C] hover:bg-[#F8FAFC] transition-all flex items-center gap-1.5 shadow-sm active:scale-95"
-              >
-                <Icons.Plus className="w-3 h-3" />
-                Create New
-              </button>
               {campaigns.slice(0, 4).map((campaign, i) => (
                 <div
                   key={i}
@@ -265,22 +345,6 @@ export default function StudioHero({
               ))}
             </div>
           </div>
-
-          {/* Quick Prompts */}
-          <div className="flex flex-col gap-3">
-            <span className="text-[13px] font-semibold text-[#64748B]">Quick Ideas:</span>
-            <div className="flex flex-wrap gap-2">
-              {quickPrompts.slice(0, 3).map((idea, i) => (
-                <button
-                  key={i}
-                  onClick={() => handlePromptSelect(idea)}
-                  className="px-3 py-1.5 bg-white border border-[#E2E8F0] rounded-lg text-[11px] font-medium text-[#475569] hover:border-[#02022C] hover:text-[#02022C] transition-all"
-                >
-                  {idea}
-                </button>
-              ))}
-            </div>
-          </div>
         </div>
       </div>
 
@@ -291,6 +355,14 @@ export default function StudioHero({
         onSelect={(c) => onCampaignSelect?.(c)}
         onCreateNew={onCreateClick}
         onDelete={onCampaignDelete}
+      />
+
+      <AssetSelectionModal
+        isOpen={isAssetModalOpen}
+        onClose={() => setIsAssetModalOpen(false)}
+        onSelect={setSelectedAssets}
+        selectedAssets={selectedAssets}
+        onlyImages={true}
       />
     </div>
   );
