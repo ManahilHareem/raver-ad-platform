@@ -4,160 +4,187 @@ import React, { useState, useEffect } from "react";
 import { NotificationCard, Notification, NotificationType } from "./NotificationCard";
 import { Icons } from "@/components/ui/icons";
 import { cn } from "@/lib/utils";
+import { apiFetch } from "@/lib/api";
+import { getDateCategory } from "@/lib/time";
+import { motion, AnimatePresence } from "framer-motion";
 
-const MOCK_NOTIFICATIONS: Notification[] = [
-  {
-    id: "1",
-    title: "Neural Audit Verified",
-    message: "Audio Synthesis #raver_au_8822 has passed all governance dimensions with a score of 9.2/10.",
-    type: "neural",
-    timestamp: new Date().toISOString(),
-    isRead: false,
-    link: "/agents/quality-lead"
-  },
-  {
-    id: "2",
-    title: "Production Render Complete",
-    message: "Your 4K render for 'Spring Campaign 2026' is now available in the Editor Vault.",
-    type: "production",
-    timestamp: new Date(Date.now() - 3600000).toISOString(),
-    isRead: false,
-    link: "/agents/editor"
-  },
-  {
-    id: "3",
-    title: "Storage Quota Update",
-    message: "You have reached 65% of your high-fidelity asset storage. Consider archiving old sessions.",
-    type: "system",
-    timestamp: new Date(Date.now() - 86400000).toISOString(),
-    isRead: true
-  },
-  {
-    id: "4",
-    title: "Creative Insight Generated",
-    message: "AI Director has suggested 3 new scene variations for high-engagement hashtags.",
-    type: "creative",
-    timestamp: new Date(Date.now() - 172800000).toISOString(),
-    isRead: true,
-    link: "/studio"
-  }
-];
+const API_BASE = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000/api";
 
 export function NotificationList() {
   const [notifications, setNotifications] = useState<Notification[]>([]);
-  const [filter, setFilter] = useState<NotificationType | "all">("all");
   const [isLoading, setIsLoading] = useState(true);
 
-  useEffect(() => {
-    const saved = localStorage.getItem("raver_notifications");
-    if (saved) {
-      setNotifications(JSON.parse(saved));
-    } else {
-      setNotifications(MOCK_NOTIFICATIONS);
-      localStorage.setItem("raver_notifications", JSON.stringify(MOCK_NOTIFICATIONS));
+  const fetchNotifications = async () => {
+    setIsLoading(true);
+    try {
+      const response = await apiFetch(`${API_BASE}/notifications`);
+      if (response.ok) {
+        const data = await response.json();
+        if (data.success && Array.isArray(data.data)) {
+          const formatted = data.data.map((n: any) => ({
+            id: n.id,
+            title: n.title,
+            message: n.message,
+            type: n.type?.toLowerCase() as NotificationType || "system",
+            timestamp: n.createdAt,
+            isRead: n.isRead,
+            link: n.metadata?.link
+          }));
+          setNotifications(formatted);
+          window.dispatchEvent(new CustomEvent("notifications_updated", { 
+            detail: { unreadCount: formatted.filter((n: any) => !n.isRead).length } 
+          }));
+        }
+      }
+    } catch (error) {
+      console.error("Failed to fetch notifications:", error);
+    } finally {
+      setIsLoading(false);
     }
-    setIsLoading(false);
+  };
+
+  useEffect(() => {
+    fetchNotifications();
   }, []);
 
   useEffect(() => {
     if (!isLoading) {
-      localStorage.setItem("raver_notifications", JSON.stringify(notifications));
-      // Dispatch custom event for sidebar badge sync
       window.dispatchEvent(new CustomEvent("notifications_updated", { detail: { unreadCount: notifications.filter(n => !n.isRead).length } }));
     }
   }, [notifications, isLoading]);
 
-  const handleRead = (id: string) => {
-    setNotifications(prev => prev.map(n => n.id === id ? { ...n, isRead: true } : n));
+  const handleRead = async (id: string) => {
+    try {
+      setNotifications(prev => prev.map(n => n.id === id ? { ...n, isRead: true } : n));
+      await apiFetch(`${API_BASE}/notifications/${id}`);
+    } catch (error) {
+      console.error("Failed to mark read:", error);
+      fetchNotifications();
+    }
   };
 
-  const handleDelete = (id: string) => {
-    setNotifications(prev => prev.filter(n => n.id !== id));
+  const handleDelete = async (id: string) => {
+    try {
+      setNotifications(prev => prev.filter(n => n.id !== id));
+      await apiFetch(`${API_BASE}/notifications/${id}`, { method: 'DELETE' });
+    } catch (error) {
+      console.error("Failed to delete notification:", error);
+      fetchNotifications();
+    }
   };
 
-  const handleMarkAllRead = () => {
-    setNotifications(prev => prev.map(n => ({ ...n, isRead: true })));
+  const handleMarkAllRead = async () => {
+    try {
+      setNotifications(prev => prev.map(n => ({ ...n, isRead: true })));
+      await apiFetch(`${API_BASE}/notifications/read-all`, { method: 'PATCH' });
+    } catch (error) {
+      console.error("Failed to mark all as read:", error);
+      fetchNotifications();
+    }
   };
 
-  const handleClearAll = () => {
-    setNotifications([]);
+  const handleClearAll = async () => {
+    try {
+      const toDelete = [...notifications];
+      setNotifications([]);
+      await Promise.all(toDelete.map(n => apiFetch(`${API_BASE}/notifications/${n.id}`, { method: 'DELETE' })));
+    } catch (error) {
+      console.error("Failed to clear notifications:", error);
+      fetchNotifications();
+    }
   };
 
-  const filteredNotifications = notifications.filter(n => filter === "all" || n.type === filter);
   const unreadCount = notifications.filter(n => !n.isRead).length;
+
+  // Group notifications by date
+  const groups = notifications.reduce((acc, n) => {
+    const category = getDateCategory(n.timestamp);
+    if (!acc[category]) acc[category] = [];
+    acc[category].push(n);
+    return acc;
+  }, {} as Record<string, Notification[]>);
 
   if (isLoading) {
     return (
       <div className="space-y-6">
         {[...Array(3)].map((_, i) => (
-          <div key={i} className="h-32 bg-slate-50 rounded-[32px] animate-pulse" />
+          <div key={i} className="h-32 bg-slate-50 rounded-[40px] animate-pulse" />
         ))}
       </div>
     );
   }
 
   return (
-    <div className="space-y-10">
-      {/* Header / Actions */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-6 px-2">
-        <div className="flex flex-wrap items-center gap-3">
-          {(["all", "neural", "production", "creative", "system"] as const).map((t) => (
-            <button
-              key={t}
-              onClick={() => setFilter(t)}
-              className={cn(
-                "px-4 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all",
-                filter === t 
-                  ? "bg-[#01012A] text-white shadow-lg shadow-[#01012A]/10" 
-                  : "bg-slate-50 text-slate-400 hover:bg-slate-100"
-              )}
-            >
-              {t}
-            </button>
-          ))}
-        </div>
-
-        <div className="flex items-center gap-4">
-          <button 
-            onClick={handleMarkAllRead}
-            disabled={unreadCount === 0}
-            className="text-[10px] font-black uppercase tracking-widest text-blue-500 hover:text-blue-600 disabled:opacity-30 flex items-center gap-2"
-          >
+    <div className="space-y-12">
+      {/* Action Controls */}
+      <div className="flex items-center justify-end gap-6 pb-2">
+        <button 
+          onClick={handleMarkAllRead}
+          disabled={unreadCount === 0}
+          className="group flex items-center gap-2 text-[10px] font-black uppercase tracking-[0.15em] text-blue-500 disabled:opacity-20 transition-all hover:translate-y-[-1px]"
+        >
+          <div className="w-8 h-8 rounded-full bg-blue-50 flex items-center justify-center group-hover:bg-blue-500 group-hover:text-white transition-colors">
             <Icons.CheckCircle className="w-4 h-4" />
-            Mark All Read
-          </button>
-          <button 
-            onClick={handleClearAll}
-            disabled={notifications.length === 0}
-            className="text-[10px] font-black uppercase tracking-widest text-rose-500 hover:text-rose-600 disabled:opacity-30 flex items-center gap-2"
-          >
+          </div>
+          Mark All Read
+        </button>
+        
+        <button 
+          onClick={handleClearAll}
+          disabled={notifications.length === 0}
+          className="group flex items-center gap-2 text-[10px] font-black uppercase tracking-[0.15em] text-rose-500 disabled:opacity-20 transition-all hover:translate-y-[-1px]"
+        >
+          <div className="w-8 h-8 rounded-full bg-rose-50 flex items-center justify-center group-hover:bg-rose-500 group-hover:text-white transition-colors">
             <Icons.Trash className="w-4 h-4" />
-            Clear All
-          </button>
-        </div>
+          </div>
+          Clear Everything
+        </button>
       </div>
 
-      {/* Feed */}
-      <div className="space-y-6">
-        {filteredNotifications.length > 0 ? (
-          filteredNotifications.map((notification) => (
-            <NotificationCard
-              key={notification.id}
-              notification={notification}
-              onRead={handleRead}
-              onDelete={handleDelete}
-            />
-          ))
+      {/* Grouped Feed */}
+      <div className="space-y-12">
+        {notifications.length > 0 ? (
+          (["TODAY", "YESTERDAY", "EARLIER"] as const).map((category) => {
+            const groupNotifications = groups[category];
+            if (!groupNotifications || groupNotifications.length === 0) return null;
+
+            return (
+              <div key={category} className="space-y-6">
+                <div className="flex items-center gap-4 px-2">
+                  <span className="text-[11px] font-black text-slate-300 uppercase tracking-[0.3em] font-mono">{category}</span>
+                  <div className="h-px bg-slate-100 flex-1" />
+                </div>
+                
+                <div className="grid grid-cols-1 gap-6">
+                  <AnimatePresence mode="popLayout">
+                    {groupNotifications.map((notification) => (
+                      <NotificationCard
+                        key={notification.id}
+                        notification={notification}
+                        onRead={handleRead}
+                        onDelete={handleDelete}
+                      />
+                    ))}
+                  </AnimatePresence>
+                </div>
+              </div>
+            );
+          })
         ) : (
-          <div className="bg-slate-50 border border-dashed border-slate-200 rounded-[32px] py-24 flex flex-col items-center justify-center gap-4">
-            <div className="w-16 h-16 rounded-full bg-white flex items-center justify-center shadow-sm">
-              <Icons.Bell className="w-8 h-8 text-slate-200" />
+          <motion.div 
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
+            className="bg-slate-50/50 backdrop-blur-sm border-2 border-dashed border-slate-200 rounded-[40px] py-40 flex flex-col items-center justify-center gap-6"
+          >
+            <div className="w-20 h-20 rounded-3xl bg-white flex items-center justify-center shadow-xl shadow-slate-200/50 relative">
+               <div className="absolute inset-0 bg-blue-500 opacity-5 blur-2xl rounded-full" />
+               <Icons.Bell className="w-10 h-10 text-slate-200" />
             </div>
-            <div className="text-center">
-              <h3 className="text-[16px] font-black text-[#01012A] tracking-tighter lowercase">Digital silence_</h3>
-              <p className="text-[12px] font-bold text-slate-400 uppercase tracking-widest mt-1">No alerts found in the {filter !== 'all' ? filter : ''} stack.</p>
+            <div className="text-center space-y-2">
+              <h3 className="text-[20px] font-black text-[#01012A] tracking-tighter lowercase">the matrix is currently silent_</h3>
+              <p className="text-[11px] font-bold text-slate-400 uppercase tracking-widest">No alerts registered in the neural sectors.</p>
             </div>
-          </div>
+          </motion.div>
         )}
       </div>
     </div>

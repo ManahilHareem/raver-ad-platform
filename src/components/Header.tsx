@@ -5,6 +5,9 @@ import Image from "next/image";
 import Link from "next/link";
 import { logout } from "@/lib/auth";
 import { useUser } from "@/context/UserContext";
+import { apiFetch } from "@/lib/api";
+
+const API_BASE = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000/api";
 
 interface HeaderProps {
   onMenuClick: () => void;
@@ -17,24 +20,39 @@ export default function Header({ onMenuClick }: HeaderProps) {
   const [unreadCount, setUnreadCount] = useState(0);
 
   useEffect(() => {
-    // Initial check
-    const saved = localStorage.getItem("raver_notifications");
-    if (saved) {
+    const fetchUnreadCount = async () => {
+      if (!user) return;
       try {
-        const notifications = JSON.parse(saved);
-        setUnreadCount(notifications.filter((n: any) => !n.isRead).length);
-      } catch (e) {
-        console.error("Failed to parse notifications", e);
+        const response = await apiFetch(`${API_BASE}/notifications`);
+        if (response.ok) {
+          const result = await response.json();
+          if (result.success && Array.isArray(result.data)) {
+            const count = result.data.filter((n: any) => !n.isRead).length;
+            setUnreadCount(count);
+          }
+        }
+      } catch (error) {
+        console.error("Failed to fetch notification count", error);
       }
-    }
+    };
+
+    // Initial fetch
+    fetchUnreadCount();
+
+    // Set up polling every 2 seconds
+    const interval = setInterval(fetchUnreadCount, 2000);
 
     const handleUpdate = (e: any) => {
       setUnreadCount(e.detail?.unreadCount || 0);
     };
 
     window.addEventListener("notifications_updated", handleUpdate);
-    return () => window.removeEventListener("notifications_updated", handleUpdate);
-  }, []);
+    
+    return () => {
+      clearInterval(interval);
+      window.removeEventListener("notifications_updated", handleUpdate);
+    };
+  }, [user]);
 
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
@@ -78,11 +96,14 @@ export default function Header({ onMenuClick }: HeaderProps) {
             <Icons.MessageCircle className="w-5 h-5 text-slate-400 group-hover:text-[#01012A]" />
           </Link>
           <Link href="/notifications" className="p-2.5 hover:bg-slate-50 rounded-xl transition-colors relative group">
-            <Icons.Bell className="w-5 h-5 text-slate-400 group-hover:text-[#01012A]" />
+            <Icons.Bell className="w-5 h-5 text-slate-400 group-hover:text-[#01012A] transition-colors" />
             {unreadCount > 0 && (
-              <span className="absolute top-2 right-2 px-1.5 py-0.5 min-w-[18px] h-[18px] bg-rose-500 text-white text-[9px] font-black rounded-full border-2 border-white flex items-center justify-center shadow-lg transition-transform group-hover:scale-110">
-                {unreadCount}
-              </span>
+              <>
+                <span className="absolute top-2.5 right-2.5 w-2 h-2 bg-rose-500 rounded-full border-2 border-white animate-pulse shadow-[0_0_10px_rgba(244,63,94,0.5)]" />
+                <span className="absolute top-2 right-2 px-1.5 py-0.5 min-w-[18px] h-[18px] bg-linear-to-r from-[#01012A] to-[#2E2C66] text-white text-[9px] font-black rounded-full border-2 border-white flex items-center justify-center shadow-lg transition-transform group-hover:scale-110 z-10">
+                  {unreadCount}
+                </span>
+              </>
             )}
           </Link>
         </div>
