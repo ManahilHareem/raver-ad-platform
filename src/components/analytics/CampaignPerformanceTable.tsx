@@ -112,6 +112,20 @@ export default function CampaignPerformanceTable({ data }: { data?: Campaign[] }
   const startIndex = (currentPage - 1) * itemsPerPage;
   const paginatedCampaigns = campaignsList.slice(startIndex, startIndex + itemsPerPage);
 
+  const getStatusColor = (status: string) => {
+    const s = status.toLowerCase();
+    if (s.includes('active') || s.includes('approved') || s.includes('live')) {
+      return "bg-[#EEFDF3] text-[#22C55E]"; // Green
+    }
+    if (s.includes('failed') || s.includes('rejected') || s.includes('error')) {
+      return "bg-[#FEF2F2] text-[#EF4444]"; // Red
+    }
+    if (s.includes('progress') || s.includes('generating') || s.includes('pending') || s.includes('production')) {
+      return "bg-[#EFF6FF] text-[#3B82F6]"; // Blue
+    }
+    return "bg-[#F1F5F9] text-[#64748B]"; // Default Draft/Slate
+  };
+
   return (
     <div className="w-full flex flex-col">
       <div className="w-full overflow-hidden rounded-t-[12px] border-x border-t border-[#F1F5F9]">
@@ -142,7 +156,7 @@ export default function CampaignPerformanceTable({ data }: { data?: Campaign[] }
                   </div>
                 </td>
                 <td className="py-4 px-6 text-left">
-                  <span className="inline-flex items-center justify-center px-[8px] py-[4px] rounded-[4px] bg-[#EEFDF3] text-[12px] font-bold text-[#22C55E]">
+                  <span className={`inline-flex items-center justify-center px-[8px] py-[4px] rounded-[4px] text-[12px] font-bold ${getStatusColor(campaign.status || '')}`}>
                     {campaign.status}
                   </span>
                 </td>

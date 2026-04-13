@@ -37,7 +37,7 @@ export default function AnalyticsPage() {
 
   // Map API data to standard AI Studio platform metrics natively
   const topStats = data ? [
-    { label: "Assets Generated", value: data.overview.totalAssets, trend: "+42%", color: "#02022C" },
+    { label: "Assets Generated", value: data.overview.totalAgentOutputs, trend: "+42%", color: "#02022C" },
     { label: "Studio Sessions", value: data.overview.totalSessions, trend: "+21%", color: "#02022C" },
     { label: "Active Campaigns", value: data.overview.totalCampaigns, trend: "+12%", color: "#02022C" },
     { label: "Quality Audits", value: data.overview.totalQualityAudits, trend: "+8%", color: "#02022C" },
