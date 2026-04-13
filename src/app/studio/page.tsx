@@ -5,7 +5,7 @@ import { useSearchParams, useRouter } from "next/navigation";
 import DashboardLayout from "@/components/DashboardLayout";
 import StudioHero from "@/components/studio/StudioHero";
 import CampaignSelectionModal from "@/components/studio/CampaignSelectionModal";
-import CampaignCard from "@/components/studio/CampaignCard";
+import ProjectCard from "@/components/dashboard/ProjectCard";
 import ProductionPipeline from "@/components/studio/ProductionPipeline";
 import CreateCampaignModal from "@/components/studio/CreateCampaignModal";
 import CampaignPreviewModal from "@/components/studio/CampaignPreviewModal";
@@ -78,7 +78,7 @@ function StudioLoadingState() {
   );
 }
 
-function ActiveCampaignsGrid({ campaigns, onDelete, onViewMore, activeIndex, onSelect, onRefresh }: any) {
+function ActiveCampaignsGrid({ campaigns, onDelete, onViewMore, onViewDetails, activeIndex, onSelect, onRefresh }: any) {
   console.log("Campaigns:", campaigns);
   return (
     <div className="flex flex-col gap-[16px] bg-[#FFFFFF] border-[0.35px] border-[#0000001A] rounded-[12px] p-[16px]">
@@ -94,20 +94,29 @@ function ActiveCampaignsGrid({ campaigns, onDelete, onViewMore, activeIndex, onS
       </div>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-[12px]">
         {campaigns.length > 0 ? (
-          campaigns.slice(0, 3).map((campaign: any, i: number) => (
-            <CampaignCard
-              key={campaign.sessionId || campaign.id || i}
-              {...campaign}
-              session_id={campaign.sessionId}
-              videoUrl={campaign.videoUrl}
-              voiceover_url={campaign.voiceoverUrl}
-              music_url={campaign.musicUrl}
-              onDelete={() => onDelete(campaign)}
-              isSelected={i === activeIndex}
-              onClick={() => onSelect(i)}
-              onRefresh={onRefresh}
-            />
-          ))
+          campaigns.slice(0, 3).map((campaign: any, i: number) => {
+            const createdAt = campaign.createdAt ? new Date(campaign.createdAt) : new Date();
+            const diffTime = Math.abs(new Date().getTime() - createdAt.getTime());
+            const hours = Math.floor(diffTime / (1000 * 60 * 60));
+            const timeStr = hours > 24 ? `${Math.floor(hours / 24)}d` : hours < 1 ? "now" : `${hours}h`;
+
+            return (
+              <ProjectCard
+                key={campaign.sessionId || campaign.id || i}
+                title={campaign.title}
+                image={campaign.image || "/assets/hashtag-campaign.jpg"}
+                status={campaign.status}
+                message={campaign.message}
+                videoUrl={campaign.videoUrl}
+                time={timeStr}
+                description={campaign.script || campaign.message || ""}
+                isSelected={i === activeIndex}
+                onClick={() => onSelect(i)}
+                onPreview={() => onViewDetails(campaign)}
+                onDelete={() => onDelete(campaign)}
+              />
+            );
+          })
         ) : (
           <div className="col-span-full h-[150px] flex flex-col items-center justify-center bg-[#F8FAFC] border border-dashed border-slate-200 rounded-[12px] gap-2">
             <Icons.Activity className="w-8 h-8 text-slate-300" />
@@ -587,6 +596,7 @@ function StudioPageContent() {
           campaigns={activeVideos}
           onDelete={handleDeleteCampaign}
           onViewMore={() => router.push("/projects")}
+          onViewDetails={handleViewDetails}
           activeIndex={activePipelineIndex}
           onSelect={setActivePipelineIndex}
           onRefresh={fetchCampaigns}

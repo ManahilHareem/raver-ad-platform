@@ -287,6 +287,7 @@ function ProjectsContent() {
                     status={campaign.status}
                     message={campaign.message}
                     videoUrl={campaign.videoUrl}
+                    description={campaign.script || campaign.message || ""}
                     onPreview={() => {
                       const hasBrief = Object.keys(campaign.briefDraft || {}).length > 0;
                       if (!hasBrief) {

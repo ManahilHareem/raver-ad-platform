@@ -7,8 +7,8 @@ import { toast } from "react-toastify";
 
 interface ProjectCardProps {
   title: string;
-  time: string;
-  members: number;
+  time?: string;
+  members?: number;
   image: string;
   status?: string;
   message?: string;
@@ -16,6 +16,9 @@ interface ProjectCardProps {
   onPreview?: () => void;
   onHistory?: () => void;
   onDelete?: () => void;
+  description?: string;
+  isSelected?: boolean;
+  onClick?: () => void;
 }
 
 export default function ProjectCard({ 
@@ -28,7 +31,10 @@ export default function ProjectCard({
   videoUrl,
   onPreview,
   onHistory,
-  onDelete
+  onDelete,
+  description,
+  isSelected,
+  onClick
 }: ProjectCardProps) {
   const [isMuted, setIsMuted] = useState(true);
   const [videoError, setVideoError] = useState(false);
@@ -59,11 +65,33 @@ export default function ProjectCard({
     setIsMuted(!isMuted);
   };
 
+  const handleCopy = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    const linkToCopy = videoUrl || image;
+    if (linkToCopy) {
+      navigator.clipboard.writeText(linkToCopy);
+      toast.success("Video link synced to clipboard!");
+    } else {
+      toast.warn("No link available to sync.");
+    }
+  };
+
   return (
-    <div className="group p-[8px] bg-white rounded-[12px] border border-slate-100 overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 flex flex-col h-full">
+    <div 
+      onClick={onClick}
+      className={cn(
+        "group p-[8px] bg-white rounded-[12px] border overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 flex flex-col h-full cursor-pointer",
+        isSelected ? "border-[#01012A] border-2 shadow-lg scale-[1.01]" : "border-slate-100"
+      )}
+    >
         {/* We remove gap-[8px] here because it interferes with the Thumbnail/Content relationship; padding should handle it */}
       {/* Thumbnail Container with 8px padding */}
-      <div className=" w-full" onClick={onPreview}>
+      <div className=" w-full" onClick={(e) => {
+        if (onPreview) {
+          e.stopPropagation();
+          onPreview();
+        }
+      }}>
         <div className="relative h-[192px] w-full rounded-[8px] overflow-hidden bg-slate-100 cursor-pointer">
           {videoUrl && !videoError ? (
             <div className="relative w-full h-full">
@@ -118,9 +146,7 @@ export default function ProjectCard({
                 </p>
               )}
             </div>
-          )}
-
-          <div className="absolute top-2 right-2 z-20">
+          )}          <div className="absolute top-2 right-2 z-20">
             <span className={cn(
               "px-[6px] py-[3px] rounded-[4px] text-[9px] font-bold uppercase tracking-wider shadow-sm",
               isReady ? "bg-linear-to-r from-[#059669] to-[#10B981] text-white shadow-lg shadow-emerald-500/20" 
@@ -165,6 +191,14 @@ export default function ProjectCard({
             title="Download Asset"
           >
             <Icons.Download className="w-5 h-5" />
+          </button>
+
+          <button 
+            onClick={handleCopy}
+            className="h-[40px] w-[40px] border border-slate-200 rounded-xl text-[#4F4F4F] hover:bg-slate-50 transition-all active:scale-95 flex items-center justify-center"
+            title="Copy Ad Text"
+          >
+            <Icons.Copy className="w-4 h-4" />
           </button>
 
           {onDelete && (
