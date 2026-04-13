@@ -64,7 +64,7 @@ export default function AssetModal({ asset, isOpen, onClose, onDelete }: AssetMo
           {asset.type === "audio" ? (
              <div className="flex flex-col items-center gap-10 w-full px-12 text-center">
                 <div className="relative">
-                   <div className="absolute inset-0 bg-blue-500/20 blur-[40px] animate-pulse rounded-full" />
+                   <div className="absolute inset-0 bg-blue-500/20 blur-2xl animate-pulse rounded-full" />
                    <div className="relative w-[140px] h-[140px] bg-white/5 backdrop-blur-xl border border-white/10 rounded-[48px] flex items-center justify-center shadow-2xl">
                        <Icons.AudioWave className="w-16 h-16 text-white animate-pulse" />
                    </div>

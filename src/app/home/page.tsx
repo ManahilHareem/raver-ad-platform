@@ -11,6 +11,7 @@ import {CustomIcons} from "@/components/ui/custom-icons";
 import Link from "next/link";
 import { apiFetch } from "@/lib/api";
 import { useUser } from "@/context/UserContext";
+import { RaverLoadingState } from "@/components/ui/RaverLoadingState";
 import CampaignPreviewModal from "@/components/studio/CampaignPreviewModal";
 import { toast } from "react-toastify";
 
@@ -122,6 +123,8 @@ export default function HomePage() {
   };
   fetchDashboardData();
 }, []);
+
+  if (isProjectsLoading) return <RaverLoadingState title="Loading Workspace" description="Checking agent statuses and gathering your dashboard activity..." />;
 
   return (
     <DashboardLayout>

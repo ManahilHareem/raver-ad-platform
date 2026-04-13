@@ -10,6 +10,7 @@ import { Icons } from "@/components/ui/icons";
 import { apiFetch } from "@/lib/api";
 import { CampaignHistoryList } from "@/components/producer/CampaignHistoryList";
 import ConfirmationModal from "@/components/ui/ConfirmationModal";
+import { RaverLoadingState } from "@/components/ui/RaverLoadingState";
 
 const agents = [
   {
@@ -89,6 +90,7 @@ export default function AgentsPage() {
   const router = useRouter();
   const [selectedAgent, setSelectedAgent] = useState<typeof agents[0] | null>(null);
   const [history, setHistory] = useState<any[]>([]);
+  const [taskCounts, setTaskCounts] = useState<Record<string, number>>({});
   const [isSyncing, setIsSyncing] = useState(true);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [campaignToDelete, setCampaignToDelete] = useState<any>(null);
@@ -110,8 +112,23 @@ export default function AgentsPage() {
     }
   };
 
+  const fetchTaskCounts = async () => {
+    try {
+      const response = await apiFetch(`${process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000/api"}/agents/task-counts`);
+      if (response.ok) {
+        const data = await response.json();
+        if (data.success && data.data) {
+          setTaskCounts(data.data);
+        }
+      }
+    } catch (err) {
+      console.warn("Failed to fetch task counts:", err);
+    }
+  };
+
   useEffect(() => {
     fetchHistory();
+    fetchTaskCounts();
   }, []);
 
   const handleDelete = (id: string) => {
@@ -142,6 +159,8 @@ export default function AgentsPage() {
     }
   };
 
+  if (isSyncing) return <RaverLoadingState title="Loading AI Suite" description="Activating neural modules and aligning your digital creative team..." />;
+
   return (
     <DashboardLayout>
       <div className="flex flex-col gap-3 sm:gap-4 p-2 sm:p-4 md:p-6 bg-[#F8FAFC] min-h-screen">
@@ -158,7 +177,7 @@ export default function AgentsPage() {
       <div className="flex flex-col sm:flex-row w-full gap-3 sm:gap-4">
         {[
           { label: "Active Agents", value: "10/10", sub: "100%", trend: "up" },
-          { label: "Total Tasks Completed", value: "4,798", sub: "This Month", trend: "up" },
+          { label: "Total Tasks Completed", value: (Object.values(taskCounts).reduce((a, b) => a + b, 0) || 4798).toLocaleString(), sub: "All Time", trend: "up" },
           { label: "Campaign Success Rate", value: "94%", sub: "+8%", trend: "up" }
         ].map((stat, i) => (
           <div key={i} className="bg-[#F8F8F8] w-full h-[88px] sm:h-[98px] px-5 sm:px-[21px] py-4 sm:pt-[21px] sm:pb-px rounded-[8px] border border-[#F1F5F9] shadow-sm flex flex-col justify-center sm:justify-start gap-1 sm:gap-2">
@@ -180,10 +199,17 @@ export default function AgentsPage() {
             <AgentCard 
               key={i} 
               {...agent} 
-              onClick={() => setSelectedAgent(agent)}
-              actionLabel={(agent.name === "Raver Image Lead" || agent.name === "Raver Producer" || agent.name === "Raver Audio Lead" || agent.name === "Raver Copy Lead" || agent.name === "Raver Editor" || agent.name === "Raver Quality Lead") ? "Start Creating" : undefined}
+              tasksCompleted={taskCounts[agent.name] !== undefined ? taskCounts[agent.name] : agent.tasksCompleted}
+              onClick={() => setSelectedAgent({
+                ...agent,
+                tasksCompleted: taskCounts[agent.name] !== undefined ? taskCounts[agent.name] : agent.tasksCompleted
+              })}
+              actionLabel={(agent.name === "Raver Director" || agent.name === "Raver Image Lead" || agent.name === "Raver Producer" || agent.name === "Raver Audio Lead" || agent.name === "Raver Copy Lead" || agent.name === "Raver Editor" || agent.name === "Raver Quality Lead") ? "Start Creating" : undefined}
               onAction={(e) => {
-                if (agent.name === "Raver Image Lead") {
+                if (agent.name === "Raver Director") {
+                  e.stopPropagation();
+                  router.push("/studio");
+                } else if (agent.name === "Raver Image Lead") {
                   e.stopPropagation();
                   router.push("/agents/image-lead");
                 } else if (agent.name === "Raver Producer") {
@@ -248,7 +274,9 @@ export default function AgentsPage() {
         isOpen={!!selectedAgent} 
         onClose={() => setSelectedAgent(null)} 
         onAction={() => {
-          if (selectedAgent?.name === "Raver Image Lead") {
+          if (selectedAgent?.name === "Raver Director") {
+            router.push("/studio");
+          } else if (selectedAgent?.name === "Raver Image Lead") {
             router.push("/agents/image-lead");
           } else if (selectedAgent?.name === "Raver Producer") {
             router.push("/agents/producer");

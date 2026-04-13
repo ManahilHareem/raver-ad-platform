@@ -99,7 +99,7 @@ export function NotificationCard({ notification, onRead, onDelete }: Notificatio
         <div className="flex items-center justify-between">
            <div className="flex items-center gap-2">
              <span className={cn(
-               "text-[9px] font-black uppercase tracking-[0.1em] px-2 py-0.5 rounded-full",
+               "text-[9px] font-black uppercase tracking-widest px-2 py-0.5 rounded-full",
                config.bg,
                config.border,
                "text-slate-500"

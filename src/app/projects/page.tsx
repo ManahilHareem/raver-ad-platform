@@ -9,6 +9,7 @@ import CampaignSelectionModal from "@/components/studio/CampaignSelectionModal";
 import CampaignPreviewModal from "@/components/studio/CampaignPreviewModal";
 import AIResponseModal from "@/components/studio/AIResponseModal";
 import ConfirmationModal from "@/components/ui/ConfirmationModal";
+import { RaverLoadingState } from "@/components/ui/RaverLoadingState";
 import { Icons } from "@/components/ui/icons";
 import { apiFetch } from "@/lib/api";
 import { cn } from "@/lib/utils";
@@ -238,6 +239,8 @@ function ProjectsContent() {
     c.title.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
+  if (isLoading) return <RaverLoadingState title="Loading Projects" description="Gathering your creative generated assets and active campaigns..." />;
+
   return (
     <DashboardLayout>
       <div className="flex flex-col gap-[16px] p-[16px] bg-[#FFFFFF] min-h-screen border-[0.35px] border-[#0000001A] rounded-[12px]">
@@ -265,12 +268,7 @@ function ProjectsContent() {
 
         {/* Content */}
         <div className="flex flex-col gap-[16px] bg-[#FFFFFF] rounded-[12px]">
-          {isLoading ? (
-            <div className="flex flex-col items-center justify-center h-[400px] gap-3">
-              <Icons.Loader className="w-8 h-8 animate-spin text-[#02022C]" />
-              <p className="text-slate-400 font-medium">Fetching your projects...</p>
-            </div>
-          ) : filteredCampaigns.length > 0 ? (
+          {filteredCampaigns.length > 0 ? (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-[16px] w-full">
               {filteredCampaigns.map((campaign, i) => {
                 // Map campaign data to ProjectCard props
@@ -312,6 +310,7 @@ function ProjectsContent() {
                       setCampaignToView(campaign);
                       setIsSelectionModalOpen(true);
                     }}
+                    onDelete={() => handleDeleteCampaign(campaign)}
                   />
                 );
               })}

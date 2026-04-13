@@ -52,7 +52,7 @@ export function EditorModal({ isOpen, onClose, onGenerate, isLoading }: EditorMo
         </div>
 
         {/* Footer Overlay Shadow */}
-        <div className="absolute bottom-0 left-0 right-0 h-10 bg-gradient-to-t from-[#F8FAFC] to-transparent pointer-events-none" />
+        <div className="absolute bottom-0 left-0 right-0 h-10 bg-linear-to-t from-[#F8FAFC] to-transparent pointer-events-none" />
       </div>
 
       <style jsx global>{`

@@ -15,6 +15,7 @@ interface ProjectCardProps {
   videoUrl?: string | null;
   onPreview?: () => void;
   onHistory?: () => void;
+  onDelete?: () => void;
 }
 
 export default function ProjectCard({ 
@@ -26,7 +27,8 @@ export default function ProjectCard({
   message,
   videoUrl,
   onPreview,
-  onHistory
+  onHistory,
+  onDelete
 }: ProjectCardProps) {
   const [isMuted, setIsMuted] = useState(true);
   const [videoError, setVideoError] = useState(false);
@@ -164,6 +166,19 @@ export default function ProjectCard({
           >
             <Icons.Download className="w-5 h-5" />
           </button>
+
+          {onDelete && (
+            <button 
+              onClick={(e) => {
+                e.stopPropagation();
+                onDelete();
+              }}
+              className="h-[40px] w-[40px] border border-rose-100 bg-rose-50/50 rounded-xl text-rose-500 hover:bg-rose-500 hover:text-white transition-all active:scale-95 flex items-center justify-center"
+              title="Delete Project"
+            >
+              <Icons.Trash className="w-4 h-4" />
+            </button>
+          )}
         </div>
       </div>
     </div>

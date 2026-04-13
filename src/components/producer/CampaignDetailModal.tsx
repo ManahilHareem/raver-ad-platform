@@ -251,7 +251,7 @@ export function CampaignDetailModal({ isOpen, onClose, campaign }: CampaignDetai
 
                 <div className="flex flex-col gap-8 relative z-10">
                    {/* Neural Thread Line */}
-                   <div className="absolute left-[13.5px] top-4 bottom-4 w-[1px] bg-white/10" />
+                   <div className="absolute left-[13.5px] top-4 bottom-4 w-px bg-white/10" />
 
                    {steps.map((step, idx) => {
                      const status = getNodeStatus(step.id);

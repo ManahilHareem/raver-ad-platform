@@ -20,6 +20,7 @@ export default function CampaignDetailPage() {
   const [error, setError] = useState<string | null>(null);
   const [isPreviewOpen, setIsPreviewOpen] = useState(false);
   const [selectedImage, setSelectedImage] = useState<string>("");
+  const [isApproving, setIsApproving] = useState(false);
 
   useEffect(() => {
     const fetchCampaign = async () => {
@@ -138,6 +139,38 @@ export default function CampaignDetailPage() {
     document.body.removeChild(link);
   };
 
+  const handleApprove = async () => {
+    setIsApproving(true);
+    const toastId = toast.loading("Finalizing production archives...");
+    try {
+      const response = await apiFetch(`${process.env.NEXT_PUBLIC_API_URL}/ai/producer/campaign/${id}/approve`, {
+        method: "POST",
+        body: JSON.stringify({ approved: true, notes: "Approved by Human Creative Director" })
+      });
+
+      if (response.ok) {
+        setCampaign((prev: any) => ({ ...prev, status: "approved" }));
+        toast.update(toastId, {
+          render: "✓ Production synchronization finalized!",
+          type: "success",
+          isLoading: false,
+          autoClose: 3000
+        });
+      } else {
+        throw new Error("Failed to approve production");
+      }
+    } catch (err) {
+      toast.update(toastId, {
+        render: "Finalization failed. Please check neural connection.",
+        type: "error",
+        isLoading: false,
+        autoClose: 3000
+      });
+    } finally {
+      setIsApproving(false);
+    }
+  };
+
   const steps = [
     { id: "generate_image", label: "Visual Matrix", icon: Icons.Image },
     { id: "generate_text", label: "Narrative Synthesis", icon: Icons.Mic },
@@ -183,9 +216,25 @@ export default function CampaignDetailPage() {
           </div>
 
           <div className="flex items-center gap-3 w-full sm:w-auto">
-            <button className="flex-1 sm:flex-none h-11 sm:h-14 px-6 sm:px-8 bg-white border border-slate-200 text-[#01012A] rounded-xl sm:rounded-[22px] text-[10px] font-black uppercase tracking-widest transition-all hover:bg-slate-50 active:scale-95">
-              Protocol PDF
-            </button>
+            {campaign.status === "ready_for_human_review" && (
+              <>
+                <button 
+                  onClick={handleApprove}
+                  disabled={isApproving}
+                  className="flex-1 sm:flex-none h-11 sm:h-14 px-6 sm:px-10 bg-linear-to-r from-[#01012A] to-[#2E2C66] text-white rounded-xl sm:rounded-[22px] text-[10px] font-black uppercase tracking-widest shadow-xl shadow-[#01012A]/10 transition-all hover:scale-[1.02] active:scale-95 disabled:opacity-50 flex items-center justify-center gap-2"
+                >
+                  {isApproving ? <Icons.Loader className="w-3 h-3 animate-spin"/> : <Icons.CheckCircle className="w-3.5 h-3.5"/>}
+                  Approve Production
+                </button>
+              </>
+            )}
+            
+            {campaign.status === "approved" && (
+              <div className="h-11 sm:h-14 px-6 sm:px-8 bg-emerald-50 border border-emerald-100 text-emerald-600 rounded-xl sm:rounded-[22px] flex items-center gap-2">
+                <Icons.Success className="w-4 h-4" />
+                <span className="text-[10px] font-black uppercase tracking-widest">Production Finalized</span>
+              </div>
+            )}
           </div>
         </div>
 

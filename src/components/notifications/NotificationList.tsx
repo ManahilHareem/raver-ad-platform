@@ -121,7 +121,7 @@ export function NotificationList() {
         <button 
           onClick={handleMarkAllRead}
           disabled={unreadCount === 0}
-          className="group flex items-center gap-2 text-[10px] font-black uppercase tracking-[0.15em] text-blue-500 disabled:opacity-20 transition-all hover:translate-y-[-1px]"
+          className="group flex items-center gap-2 text-[10px] font-black uppercase tracking-[0.15em] text-blue-500 disabled:opacity-20 transition-all hover:-translate-y-px"
         >
           <div className="w-8 h-8 rounded-full bg-blue-50 flex items-center justify-center group-hover:bg-blue-500 group-hover:text-white transition-colors">
             <Icons.CheckCircle className="w-4 h-4" />
@@ -132,7 +132,7 @@ export function NotificationList() {
         <button 
           onClick={handleClearAll}
           disabled={notifications.length === 0}
-          className="group flex items-center gap-2 text-[10px] font-black uppercase tracking-[0.15em] text-rose-500 disabled:opacity-20 transition-all hover:translate-y-[-1px]"
+          className="group flex items-center gap-2 text-[10px] font-black uppercase tracking-[0.15em] text-rose-500 disabled:opacity-20 transition-all hover:-translate-y-px"
         >
           <div className="w-8 h-8 rounded-full bg-rose-50 flex items-center justify-center group-hover:bg-rose-500 group-hover:text-white transition-colors">
             <Icons.Trash className="w-4 h-4" />

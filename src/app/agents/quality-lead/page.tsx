@@ -11,6 +11,7 @@ import { QualityAuditModal } from "@/components/agents/quality-lead/QualityAudit
 import ConfirmationModal from "@/components/ui/ConfirmationModal";
 import { toast } from "react-toastify";
 import { cn } from "@/lib/utils";
+import { RaverLoadingState } from "@/components/ui/RaverLoadingState";
 
 export default function QualityLeadPage() {
   const [candidates, setCandidates] = useState<any>(null);
@@ -123,6 +124,8 @@ export default function QualityLeadPage() {
       setIsDeleting(false);
     }
   };
+
+  if (isLoading) return <RaverLoadingState title="Loading Quality Metrics" description="Calculating neural integrity and brand alignment scores..." />;
 
   return (
     <DashboardLayout>

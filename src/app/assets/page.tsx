@@ -5,6 +5,7 @@ import DashboardLayout from "@/components/DashboardLayout";
 import AssetCard from "@/components/assets/AssetCard";
 import AssetModal from "@/components/assets/AssetModal";
 import ConfirmationModal from "@/components/ui/ConfirmationModal";
+import { RaverLoadingState } from "@/components/ui/RaverLoadingState";
 import { cn } from "@/lib/utils";
 import { Icons } from "@/components/ui/icons";
 import { apiFetch } from "@/lib/api";
@@ -173,6 +174,8 @@ export default function AssetsPage() {
     
     return matchesCategory && matchesSearch;
   });
+
+  if (isLoading) return <RaverLoadingState title="Loading Media Vault" description="Synchronizing your generated assets and library inventory..." />;
 
   return (
     <DashboardLayout>

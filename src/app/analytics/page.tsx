@@ -9,6 +9,7 @@ import {
   QualityAuditChart
 } from "@/components/analytics/AnalyticsCharts";
 import CampaignPerformanceTable from "@/components/analytics/CampaignPerformanceTable";
+import { RaverLoadingState } from "@/components/ui/RaverLoadingState";
 import { Icons } from "@/components/ui/icons";
 import { apiFetch } from "@/lib/api";
 
@@ -84,6 +85,8 @@ export default function AnalyticsPage() {
   ] : undefined;
 
 
+  if (isLoading) return <RaverLoadingState title="Compiling Analytics" description="Gathering comprehensive platform metrics across AI generation, campaigns, and quality governance..." />;
+
   return (
     <DashboardLayout>
       <div className="flex flex-col gap-[10px] p-[20px] mx-auto w-full bg-[#FFFFFF] border-[0.35px] border-[#0000001A] rounded-[12px]">
@@ -98,72 +101,65 @@ export default function AnalyticsPage() {
         </div>
 
         {/* Top Stats Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-          {isLoading ? (
-            [...Array(4)].map((_, i) => (
-              <div key={i} className="bg-white p-6 rounded-[16px] border border-[#0000000D] shadow-sm animate-pulse h-[100px]" />
-            ))
-          ) : (
-            topStats.map((stat, i) => (
-              <div key={i} className="bg-white p-6 rounded-[16px] border border-[#0000000D] shadow-sm flex flex-col gap-2">
-                <span className="text-[12px] font-medium text-[#4F4F4F] uppercase tracking-wider">{stat.label}</span>
-                <div className="flex items-baseline justify-between transition-transform hover:scale-105 duration-300">
-                  <span className="text-[28px] font-bold text-[#02022C]">{stat.value}</span>
-                  <span className={`text-[12px] font-bold px-2 py-1 rounded-full ${stat.trend.startsWith('+') ? 'text-green-600 bg-green-50' : 'text-red-600 bg-red-50'
-                    }`}>
-                    {stat.trend}
-                  </span>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+              {topStats.map((stat, i) => (
+                <div key={i} className="bg-white p-6 rounded-[16px] border border-[#0000000D] shadow-sm flex flex-col gap-2">
+                  <span className="text-[12px] font-medium text-[#4F4F4F] uppercase tracking-wider">{stat.label}</span>
+                  <div className="flex items-baseline justify-between transition-transform hover:scale-105 duration-300">
+                    <span className="text-[28px] font-bold text-[#02022C]">{stat.value}</span>
+                    <span className={`text-[12px] font-bold px-2 py-1 rounded-full ${stat.trend.startsWith('+') ? 'text-green-600 bg-green-50' : 'text-red-600 bg-red-50'}`}>
+                      {stat.trend}
+                    </span>
+                  </div>
                 </div>
+              ))}
+            </div>
+
+            {/* Main Charts Row */}
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+              <div className="lg:col-span-2 bg-white p-6 rounded-[16px] border border-[#0000000D] shadow-sm">
+                <div className="flex flex-col gap-[12px]">
+                  <h3 className="text-[18px] font-bold text-[#121212]">Asset Generation Timeline</h3>
+                  <p className="text-[12px] text-[#4F4F4F]">Daily studio production output over the last 30 days</p>
+                </div>
+                <GenerationTimelineChart data={generationTimelineData} />
               </div>
-            ))
-          )}
-        </div>
 
-        {/* Main Charts Row */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          <div className="lg:col-span-2 bg-white p-6 rounded-[16px] border border-[#0000000D] shadow-sm">
-            <div className="flex flex-col gap-[12px]">
-              <h3 className="text-[18px] font-bold text-[#121212]">Asset Generation Timeline</h3>
-              <p className="text-[12px] text-[#4F4F4F]">Daily studio production output over the last 30 days</p>
+              <div className="bg-white p-6 rounded-[16px] border border-[#0000000D] shadow-sm">
+                <div className="flex flex-col gap-[12px]">
+                  <h3 className="text-[18px] font-bold text-[#121212]">Asset Distribution</h3>
+                  <p className="text-[12px] text-[#4F4F4F]">Breakdown of generated AI properties</p>
+                </div>
+                <AssetDistributionChart data={assetDistributionData} />
+              </div>
             </div>
-            <GenerationTimelineChart data={generationTimelineData} />
-          </div>
 
-          <div className="bg-white p-6 rounded-[16px] border border-[#0000000D] shadow-sm">
-            <div className="flex flex-col gap-[12px]">
-              <h3 className="text-[18px] font-bold text-[#121212]">Asset Distribution</h3>
-              <p className="text-[12px] text-[#4F4F4F]">Breakdown of generated AI properties</p>
+            {/* Campaign Performance Table Section */}
+            <div className=" rounded-[16px]">
+              <div className="flex flex-col gap-[12px]">
+                <h3 className="text-[18px] font-bold text-[#121212]">Campaign Roster & Activity</h3>
+              </div>
+              <CampaignPerformanceTable data={data?.campaignRanking} />
             </div>
-            <AssetDistributionChart data={assetDistributionData} />
-          </div>
-        </div>
 
-        {/* Campaign Performance Table Section */}
-        <div className=" rounded-[16px]">
-          <div className="flex flex-col gap-[12px]">
-            <h3 className="text-[18px] font-bold text-[#121212]">Campaign Roster & Activity</h3>
-          </div>
-          <CampaignPerformanceTable data={data?.campaignRanking} />
-        </div>
+            {/* Details and Execution Output */}
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+              <div className="bg-[#F8F8F8] p-6 rounded-[16px] border border-[#0000000D] shadow-sm">
+                <div className="flex flex-col gap-1 mb-8">
+                  <h3 className="text-[18px] font-bold text-[#121212]">Agent Utilization</h3>
+                  <p className="text-[13px] font-regular text-[#4F4F4F]">Frequency of discrete AI service calls</p>
+                </div>
+                <AgentUtilizationChart data={agentUtilizationData} />
+              </div>
 
-        {/* Details and Execution Output */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          <div className="bg-[#F8F8F8] p-6 rounded-[16px] border border-[#0000000D] shadow-sm">
-            <div className="flex flex-col gap-1 mb-8">
-              <h3 className="text-[18px] font-bold text-[#121212]">Agent Utilization</h3>
-              <p className="text-[13px] font-regular text-[#4F4F4F]">Frequency of discrete AI service calls</p>
+              <div className="bg-[#F8F8F8] p-6 rounded-[16px] border border-[#0000000D] shadow-sm">
+                <div className="flex flex-col gap-1 mb-6">
+                  <h3 className="text-[18px] font-bold text-[#121212]">Quality Audit Scores</h3>
+                  <p className="text-[13px] font-regular text-[#4F4F4F]">Average governance grades mapped across dimensions</p>
+                </div>
+                <QualityAuditChart data={qualityScoresData} />
+              </div>
             </div>
-            <AgentUtilizationChart data={agentUtilizationData} />
-          </div>
-
-          <div className="bg-[#F8F8F8] p-6 rounded-[16px] border border-[#0000000D] shadow-sm">
-            <div className="flex flex-col gap-1 mb-6">
-              <h3 className="text-[18px] font-bold text-[#121212]">Quality Audit Scores</h3>
-              <p className="text-[13px] font-regular text-[#4F4F4F]">Average governance grades mapped across dimensions</p>
-            </div>
-            <QualityAuditChart data={qualityScoresData} />
-          </div>
-        </div>
       </div>
     </DashboardLayout>
   );
