@@ -17,6 +17,8 @@ import {
   Legend,
 } from "recharts";
 
+import { Icons } from "@/components/ui/icons";
+
 const engagementData = [
   { name: "Day 1", views: 2400, engagement: 400 },
   { name: "Day 2", views: 1398, engagement: 300 },
@@ -144,18 +146,17 @@ export const PlatformDistributionChart = () => (
 export const ContentPerformanceChart = () => (
   <div className="flex flex-col gap-4">
     {contentTypeData.map((item) => (
-      <div key={item.name} className="flex flex-col gap-2">
+      <div key={item.name} className="flex flex-col gap-2 transition-all hover:translate-x-1 duration-300">
         <div className="flex justify-between text-[12px] font-medium">
-          <span className="text-[#121212]">{item.name}</span>
+          <span className="text-[#121212] font-semibold">{item.name}</span>
           <div className="flex items-center gap-2">
-            <span className="text-[#64748B]">24 posts</span>
-            <span className="text-[#64748B]">{item.value}%</span>
-
+            <span className="text-[#64748B] text-[10px] uppercase font-bold tracking-widest">24 Assets</span>
+            <span className="text-[#121212] font-black">{item.value}%</span>
           </div>
         </div>
-        <div className="w-full h-[8px] bg-[#F1F5F9] rounded-full overflow-hidden">
+        <div className="w-full h-[8px] bg-slate-100 rounded-full overflow-hidden border-[0.5px] border-slate-50">
           <div 
-            className="h-full bg-[#02022C] rounded-full transition-all duration-1000" 
+            className="h-full bg-[linear-to-r(90deg,#01012A_0%,#2E2C66_100%)] rounded-full transition-all duration-1000 shadow-sm" 
             style={{ width: `${item.value}%` }}
           />
         </div>
@@ -188,9 +189,9 @@ export const DemographicsChart = () => (
               boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)' 
             }} 
           />
-          <Legend verticalAlign="top" align="right" iconType="circle" />
-          <Bar dataKey="female" fill="#3B82F6" radius={[4, 4, 0, 0]} barSize={20} />
-          <Bar dataKey="male" fill="#93C5FD" radius={[4, 4, 0, 0]} barSize={20} />
+          <Legend verticalAlign="top" align="right" iconType="circle" wrapperStyle={{ paddingBottom: '20px' }} />
+          <Bar dataKey="female" name="Female" fill="#01012A" radius={[4, 4, 0, 0]} barSize={20} />
+          <Bar dataKey="male" name="Male" fill="#6366F1" radius={[4, 4, 0, 0]} barSize={20} />
         </BarChart>
       </ResponsiveContainer>
     </div>

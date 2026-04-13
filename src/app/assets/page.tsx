@@ -219,20 +219,48 @@ export default function AssetsPage() {
                 <div className="h-8 w-24 bg-[#E2E8F0] rounded" />
               </div>
             ))
-          ) : stats.length > 0 ? (
-            stats.map((stat, i) => (
-              <div key={i} className="bg-[#F8F8F8] min-w-[200px] flex-1 h-[98px] px-[21px] flex flex-col justify-center rounded-[8px] border border-[#F1F5F9] shadow-sm gap-2">
-                <span className="text-[12px] font-medium text-[#64748B] uppercase tracking-wider">{stat.label}</span>
-                <span className="text-[24px] font-bold text-[#02022C]">{stat.value}</span>
-              </div>
-            ))
           ) : (
-            statsData.map((stat, i) => (
-              <div key={i} className="bg-[#F8F8F8] min-w-[200px] flex-1 h-[98px] px-[21px] flex flex-col justify-center rounded-[8px] border border-[#F1F5F9] shadow-sm gap-2">
-                <span className="text-[12px] font-medium text-[#64748B] uppercase tracking-wider">{stat.label}</span>
-                <span className="text-[24px] font-bold text-[#02022C]">{stat.value}</span>
+            <>
+              {/* Total Assets Pill */}
+              <div className="bg-[#F8F8F8] flex-1 h-[98px] px-[21px] flex flex-col justify-center rounded-[8px] border border-[#F1F5F9] shadow-sm gap-2">
+                <span className="text-[12px] font-medium text-[#64748B] uppercase tracking-wider">Total Assets</span>
+                <span className="text-[24px] font-bold text-[#02022C]">{assetList.length}</span>
               </div>
-            ))
+              
+              {/* Storage Used Pill with Progress Bar */}
+              <div className="bg-[#F8F8F8] flex-1 h-[98px] px-[21px] flex flex-col justify-center rounded-[8px] border border-[#F1F5F9] shadow-sm gap-2 overflow-hidden relative group">
+                <div className="flex items-center justify-between">
+                  <span className="text-[12px] font-medium text-[#64748B] uppercase tracking-wider">Storage Used</span>
+                  <span className="text-[10px] font-black text-indigo-500">
+                    {((assetList.reduce((acc, curr) => acc + (curr.fileSize || 0), 0) / (1024 * 1024 * 1024)) * 100).toFixed(1)}%
+                  </span>
+                </div>
+                <div className="flex items-baseline gap-1">
+                  <span className="text-[24px] font-bold text-[#02022C]">
+                    {(assetList.reduce((acc, curr) => acc + (curr.fileSize || 0), 0) / (1024 * 1024)).toFixed(2)}
+                  </span>
+                  <span className="text-[12px] font-bold text-slate-300">/ 1024 MB</span>
+                </div>
+                {/* Realtime Bar */}
+                <div className="absolute bottom-0 left-0 w-full h-[3px] bg-slate-200">
+                  <div 
+                    className="h-full bg-linear-to-r from-indigo-500 to-[#01012A] transition-all duration-700"
+                    style={{ width: `${Math.min((assetList.reduce((acc, curr) => acc + (curr.fileSize || 0), 0) / (1024 * 1024 * 1024)) * 100, 100)}%` }}
+                  />
+                </div>
+              </div>
+
+              {/* Remaining Storage Pill */}
+              <div className="bg-[#F8F8F8] flex-1 h-[98px] px-[21px] flex flex-col justify-center rounded-[8px] border border-[#F1F5F9] shadow-sm gap-2">
+                <span className="text-[12px] font-medium text-[#64748B] uppercase tracking-wider">Storage Remaining</span>
+                <div className="flex items-baseline gap-1">
+                  <span className="text-[24px] font-bold text-[#02022C]">
+                    {(1024 - (assetList.reduce((acc, curr) => acc + (curr.fileSize || 0), 0) / (1024 * 1024))).toFixed(2)}
+                  </span>
+                  <span className="text-[10px] font-bold text-slate-300 uppercase">MB</span>
+                </div>
+              </div>
+            </>
           )}
         </div>
 </div>

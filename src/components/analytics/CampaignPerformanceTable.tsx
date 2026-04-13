@@ -74,7 +74,7 @@ export default function CampaignPerformanceTable() {
   const [currentPage, setCurrentPage] = React.useState(1);
   const itemsPerPage = 5;
   const totalPages = Math.ceil(campaigns.length / itemsPerPage);
-  
+
   const startIndex = (currentPage - 1) * itemsPerPage;
   const paginatedCampaigns = campaigns.slice(startIndex, startIndex + itemsPerPage);
 
@@ -97,8 +97,8 @@ export default function CampaignPerformanceTable() {
                 <td className="py-4 px-6">
                   <div className="flex items-center gap-3">
                     <div className="relative w-[32px] h-[32px] rounded-[8px] overflow-hidden bg-gray-100 shrink-0">
-                      <Image 
-                        src={campaign.image} 
+                      <Image
+                        src={campaign.image}
                         alt={campaign.name}
                         fill
                         className="object-cover"
@@ -120,26 +120,26 @@ export default function CampaignPerformanceTable() {
           </tbody>
         </table>
       </div>
-      
+
       {/* Pagination Controls */}
       <div className="flex items-center justify-end bg-[#F8F8F8] p-[12px] rounded-b-[12px] border-x border-b border-[#F1F5F9]">
-         <div className="flex items-center p-1 bg-white border border-[#F1F5F9] rounded-[8px] shadow-sm">
-            <button 
-              onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
-              disabled={currentPage === 1}
-              className="p-2 hover:bg-gray-100 rounded-lg transition-colors text-gray-400 hover:text-gray-600 disabled:opacity-30 disabled:cursor-not-allowed"
-            >
-                <Icons.ArrowLeft className="w-4 h-4" />
-            </button>
-            <div className="w-px h-4 bg-[#F1F5F9]" />
-            <button 
-              onClick={() => setCurrentPage(prev => Math.min(totalPages, prev + 1))}
-              disabled={currentPage === totalPages}
-              className="p-2 hover:bg-gray-100 rounded-lg transition-colors text-gray-400 hover:text-gray-600 disabled:opacity-30 disabled:cursor-not-allowed"
-            >
-                <Icons.ArrowRight className="w-4 h-4" />
-            </button>
-         </div>
+        <div className="flex items-center p-1 bg-white border border-[#F1F5F9] rounded-[8px] shadow-sm">
+          <button
+            onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
+            disabled={currentPage === 1}
+            className="p-2 hover:bg-gray-100 rounded-lg transition-colors text-gray-400 hover:text-gray-600 disabled:opacity-30 disabled:cursor-not-allowed"
+          >
+            <Icons.ArrowLeft className="w-4 h-4" />
+          </button>
+          <div className="w-px h-4 bg-[#F1F5F9]" />
+          <button
+            onClick={() => setCurrentPage(prev => Math.min(totalPages, prev + 1))}
+            disabled={currentPage === totalPages}
+            className="p-2 hover:bg-gray-100 rounded-lg transition-colors text-gray-400 hover:text-gray-600 disabled:opacity-30 disabled:cursor-not-allowed"
+          >
+            <Icons.ArrowRight className="w-4 h-4" />
+          </button>
+        </div>
       </div>
     </div>
   );

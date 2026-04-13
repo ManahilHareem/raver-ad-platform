@@ -1,3 +1,4 @@
+import React, { useState, useRef } from "react";
 import Image from "next/image";
 import { Icons } from "@/components/ui/icons";
 import Link from "next/link";
@@ -27,6 +28,10 @@ export default function ProjectCard({
   onPreview,
   onHistory
 }: ProjectCardProps) {
+  const [isMuted, setIsMuted] = useState(true);
+  const [videoError, setVideoError] = useState(false);
+  const videoRef = useRef<HTMLVideoElement>(null);
+
   const isReady = status === "Ready" || status === "completed" || status === "delivered" || status?.toLowerCase() === "approved";
   const isInProduction = status === "in_production" || status === "queued" || status === "In Production";
 
@@ -47,31 +52,56 @@ export default function ProjectCard({
     document.body.removeChild(link);
   };
 
+  const toggleMute = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    setIsMuted(!isMuted);
+  };
+
   return (
     <div className="group p-[8px] bg-white rounded-[12px] border border-slate-100 overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 flex flex-col h-full">
         {/* We remove gap-[8px] here because it interferes with the Thumbnail/Content relationship; padding should handle it */}
       {/* Thumbnail Container with 8px padding */}
       <div className=" w-full" onClick={onPreview}>
         <div className="relative h-[192px] w-full rounded-[8px] overflow-hidden bg-slate-100 cursor-pointer">
-          {videoUrl ? (
-            <video 
-              src={videoUrl} 
-              autoPlay 
-              loop 
-              muted 
-              playsInline 
-              className="object-cover w-full h-full group-hover:scale-105 transition-transform duration-500" 
-            />
+          {videoUrl && !videoError ? (
+            <div className="relative w-full h-full">
+              <video 
+                ref={videoRef}
+                src={videoUrl} 
+                autoPlay 
+                loop 
+                muted={isMuted} 
+                playsInline 
+                className="object-cover w-full h-full group-hover:scale-105 transition-transform duration-500" 
+                onError={() => setVideoError(true)}
+              />
+              <button 
+                onClick={toggleMute}
+                className="absolute top-2 left-2 z-30 w-8 h-8 bg-black/40 backdrop-blur-md rounded-lg border border-white/10 flex items-center justify-center text-white hover:bg-black/60 transition-all opacity-0 group-hover:opacity-100 shadow-lg"
+                title={isMuted ? "Unmute" : "Mute"}
+              >
+                {isMuted ? <Icons.Mute className="w-3.5 h-3.5" /> : <Icons.Volume className="w-3.5 h-3.5" />}
+              </button>
+            </div>
           ) : (
-            <Image 
-              src={image} 
-              alt={title}
-              fill
-              className={cn(
-                "object-cover transition-transform duration-500",
-                isInProduction ? "scale-105 blur-sm" : "group-hover:scale-110"
+            <div className="relative w-full h-full flex items-center justify-center bg-slate-50">
+              <Image 
+                src={image} 
+                alt={title}
+                fill
+                className={cn(
+                  "object-cover transition-transform duration-500",
+                  isInProduction ? "scale-105 blur-sm" : "group-hover:scale-110",
+                  videoError && "opacity-40 grayscale"
+                )}
+              />
+              {videoError && (
+                <div className="absolute inset-0 flex flex-col items-center justify-center bg-white/10 backdrop-blur-[2px] z-10">
+                   <Icons.AlertTriangle className="w-6 h-6 text-amber-500/80 mb-2" />
+                   <span className="text-[8px] font-black uppercase tracking-widest text-[#01012A]/60">Source Offline</span>
+                </div>
               )}
-            />
+            </div>
           )}
 
           {isInProduction && (

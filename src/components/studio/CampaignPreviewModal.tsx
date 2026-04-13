@@ -49,6 +49,8 @@ export default function CampaignPreviewModal({
   const [isGenerating, setIsGenerating] = useState(false);
   const [localStatus, setLocalStatus] = useState<string | undefined>(campaignData?.status);
   const chatEndRef = useRef<HTMLDivElement>(null);
+  const [isMuted, setIsMuted] = useState(true);
+  const [videoError, setVideoError] = useState(false);
   // Editing states
   const [isEditingScript, setIsEditingScript] = useState(false);
   const [editedScript, setEditedScript] = useState(campaignData?.script || "");
@@ -358,7 +360,50 @@ export default function CampaignPreviewModal({
             </div>
             <div className="relative aspect-video rounded-3xl overflow-hidden bg-slate-100 border border-[#F1F5F9] shadow-inner group">
               {campaignData.video_url ? (
-                <video src={campaignData.video_url} controls className="w-full h-full object-cover" />
+                <div className="relative w-full h-full">
+                  {videoError ? (
+                    <div className="absolute inset-0 flex flex-col items-center justify-center bg-slate-900/50 text-white gap-3 p-8 text-center italic">
+                       <Icons.AlertTriangle className="w-10 h-10 text-amber-500 animate-pulse" />
+                       <div className="flex flex-col gap-1 items-center">
+                          <p className="text-[11px] font-black uppercase tracking-[0.2em] not-italic">Production Stream Interrupted</p>
+                          <p className="text-[9px] font-bold text-white/40 uppercase tracking-widest max-w-xs">The generation pipeline produced a result, but the visual stream is currently inaccessible.</p>
+                       </div>
+                       <button 
+                         onClick={() => { setVideoError(false); }}
+                         className="mt-2 px-6 py-2 bg-white text-[#02022C] rounded-xl text-[10px] font-black uppercase tracking-widest transition-all active:scale-95"
+                       >
+                         Attempt Reconnection
+                       </button>
+                    </div>
+                  ) : (
+                    <video 
+                      src={campaignData.video_url} 
+                      controls 
+                      muted={isMuted} 
+                      className="w-full h-full object-cover" 
+                      onError={() => setVideoError(true)}
+                    />
+                  )}
+                  
+                  {!videoError && (
+                    <>
+                      <button 
+                        onClick={() => setIsMuted(!isMuted)}
+                        className="absolute bottom-6 right-6 z-30 w-12 h-12 bg-black/40 backdrop-blur-md rounded-2xl border border-white/10 flex items-center justify-center text-white hover:bg-black/60 transition-all shadow-2xl"
+                        title={isMuted ? "Unmute" : "Mute"}
+                      >
+                        {isMuted ? <Icons.Mute className="w-5 h-5" /> : <Icons.Volume className="w-5 h-5" />}
+                      </button>
+                      {isMuted && (
+                        <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+                           <div className="bg-black/40 backdrop-blur-md px-4 py-2 rounded-full border border-white/10 animate-pulse text-white text-[10px] font-black uppercase tracking-widest">
+                              Sound Muted - Click to Listen
+                           </div>
+                        </div>
+                      )}
+                    </>
+                  )}
+                </div>
               ) : (
                 <div className="absolute inset-0 flex flex-col items-center justify-center text-slate-300 gap-4">
                   <Icons.Image className="w-16 h-16" />

@@ -3,6 +3,7 @@
 import React, { useState } from "react";
 import { Icons } from "@/components/ui/icons";
 import { cn } from "@/lib/utils";
+import { apiFetch } from "@/lib/api";
 
 export const VOICE_OPTIONS = [
   // Male Voices
@@ -68,7 +69,7 @@ export function VoiceSelector({ selectedVoice, onSelect, className }: VoiceSelec
     };
   }, [audioRef]);
 
-  const togglePlay = (e: React.MouseEvent, voiceId: string) => {
+  const togglePlay = async (e: React.MouseEvent, voiceId: string) => {
     e.stopPropagation();
     if (!audioRef) return;
 
@@ -79,9 +80,25 @@ export function VoiceSelector({ selectedVoice, onSelect, className }: VoiceSelec
       // Use the actual long voiceId for the sample URL
       const voice = VOICE_OPTIONS.find(v => v.id === voiceId);
       if (voice) {
-        audioRef.src = `https://raver-ad-platform.s3.us-east-1.amazonaws.com/samples/voices/${voice.voiceId}.mp3`;
-        audioRef.play().catch(err => console.error("Audio play failed:", err));
-        setPlayingId(voiceId);
+        try {
+          setPlayingId(voiceId);
+          const response = await apiFetch(`${process.env.NEXT_PUBLIC_API_URL}/voice/get-voice/${voice.voiceId}`);
+          const result = await response.json();
+          
+          if (result.success && result.data.preview_url) {
+            audioRef.src = result.data.preview_url;
+            audioRef.play().catch(err => {
+              console.error("Audio play failed:", err);
+              setPlayingId(null);
+            });
+          } else {
+            console.error("Failed to get preview URL");
+            setPlayingId(null);
+          }
+        } catch (error) {
+          console.error("Error fetching voice preview:", error);
+          setPlayingId(null);
+        }
       }
     }
   };

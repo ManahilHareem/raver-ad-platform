@@ -30,6 +30,9 @@ interface AssetModalProps {
 }
 
 export default function AssetModal({ asset, isOpen, onClose, onDelete }: AssetModalProps) {
+  const [isMuted, setIsMuted] = React.useState(true);
+  const [videoError, setVideoError] = React.useState(false);
+  
   if (!isOpen || !asset) return null;
 
   const handleDownload = () => {
@@ -46,43 +49,81 @@ export default function AssetModal({ asset, isOpen, onClose, onDelete }: AssetMo
     assetUrl.toLowerCase().split('?')[0].endsWith(".mov");
 
   return (
-    <div className="fixed inset-y-0 right-0 left-0 lg:left-[280px] z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm p-4">
-      <div className="bg-white w-full max-w-[541px] rounded-[24px] overflow-hidden shadow-2xl animate-in fade-in zoom-in-95 duration-200 flex flex-col p-[12px] gap-[12px] relative">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-md p-4 lg:pl-[280px]">
+      <div className="bg-white w-full max-w-[541px] rounded-[24px] overflow-hidden shadow-2xl animate-in fade-in zoom-in-95 duration-300 flex flex-col p-3 gap-3 relative border border-white/20">
         
-        {/* Top Image Section */}
-        <div className="relative w-full aspect-square bg-[#F8F8F8] rounded-[16px] overflow-hidden flex items-center justify-center">
+        {/* Top Preview Section */}
+        <div className="relative w-full aspect-square bg-[#01012A] rounded-[24px] overflow-hidden flex items-center justify-center">
           <button 
             onClick={onClose}
-            className="absolute top-4 right-4 z-20 w-[40px] h-[40px] bg-white rounded-full flex items-center justify-center shadow-sm hover:bg-gray-50 transition-colors"
+            className="absolute top-4 right-4 z-20 w-11 h-11 bg-white/10 backdrop-blur-md border border-white/20 rounded-full flex items-center justify-center shadow-xl hover:bg-white/20 transition-all active:scale-95"
           >
-            <Icons.Plus className="w-5 h-5 rotate-45 text-[#64748B]" />
+            <Icons.Plus className="w-5 h-5 rotate-45 text-white" />
           </button>
           
           {asset.type === "audio" ? (
-             <div className="flex flex-col items-center gap-6 w-full px-6">
-                <div className="w-[100px] h-[100px] bg-white rounded-[24px] shadow-sm flex items-center justify-center">
-                    <Icons.AudioWave className="w-12 h-12 text-[#02022C]" />
+             <div className="flex flex-col items-center gap-10 w-full px-12 text-center">
+                <div className="relative">
+                   <div className="absolute inset-0 bg-blue-500/20 blur-[40px] animate-pulse rounded-full" />
+                   <div className="relative w-[140px] h-[140px] bg-white/5 backdrop-blur-xl border border-white/10 rounded-[48px] flex items-center justify-center shadow-2xl">
+                       <Icons.AudioWave className="w-16 h-16 text-white animate-pulse" />
+                   </div>
                 </div>
+                
+                <div className="flex flex-col gap-2">
+                   <h3 className="text-white text-xl font-black tracking-tight">{asset.name || asset.title}</h3>
+                   <span className="text-[10px] font-black text-white/40 uppercase tracking-[0.3em]">Audio Synthesis Master</span>
+                </div>
+
                 <audio 
                   src={normalizeAssetUrl(assetUrl)} 
                   controls 
-                  className="w-full h-[40px] custom-audio-player"
+                  className="w-full h-10 custom-audio-player filter invert brightness-200 opacity-80"
                   autoPlay
                 />
              </div>
           ) : isVideo ? (
-            <video 
-              src={normalizeAssetUrl(assetUrl)} 
-              controls
-              autoPlay
-              className="w-full h-full object-contain"
-            />
+            <div className="relative w-full h-full">
+              {videoError ? (
+                <div className="absolute inset-0 flex flex-col items-center justify-center bg-slate-900/50 text-white gap-3 p-8">
+                   <Icons.AlertTriangle className="w-10 h-10 text-amber-500 animate-pulse" />
+                   <div className="flex flex-col gap-1 items-center">
+                      <p className="text-[11px] font-black uppercase tracking-[0.2em]">Neural Stream Error</p>
+                      <p className="text-[9px] font-bold text-white/40 uppercase tracking-widest text-center">The asset signature could not be verified or the source is unavailable.</p>
+                   </div>
+                   <button 
+                     onClick={() => { setVideoError(false); }}
+                     className="mt-2 px-4 py-2 bg-white/10 hover:bg-white/20 border border-white/20 rounded-xl text-[9px] font-black uppercase tracking-widest transition-all"
+                   >
+                     Retry Connection
+                   </button>
+                </div>
+              ) : (
+                <video 
+                  src={normalizeAssetUrl(assetUrl)} 
+                  controls
+                  autoPlay
+                  muted={isMuted}
+                  className="w-full h-full object-contain"
+                  onError={() => setVideoError(true)}
+                />
+              )}
+              {!videoError && (
+                <button 
+                  onClick={() => setIsMuted(!isMuted)}
+                  className="absolute bottom-4 right-4 z-30 w-10 h-10 bg-black/40 backdrop-blur-md rounded-xl border border-white/10 flex items-center justify-center text-white hover:bg-black/60 transition-all shadow-xl"
+                  title={isMuted ? "Unmute" : "Mute"}
+                >
+                  {isMuted ? <Icons.Mute className="w-5 h-5" /> : <Icons.Volume className="w-5 h-5" />}
+                </button>
+              )}
+            </div>
           ) : (
             <Image 
               src={normalizeAssetUrl(assetUrl)} 
               alt={asset.name || asset.title || "Asset"}
               fill
-              className="object-contain p-4"
+              className="object-contain p-8"
               onError={(e) => {
                 const target = e.target as HTMLImageElement;
                 target.src = "https://placehold.co/800x600?text=Asset";
@@ -91,50 +132,62 @@ export default function AssetModal({ asset, isOpen, onClose, onDelete }: AssetMo
           )}
         </div>
 
-        {/* Content Section */}
+        {/* Info & Actions */}
         <div className="flex flex-col gap-4 p-2">
-          <div className="flex flex-col gap-1">
-            <h2 className="text-[24px] font-bold text-[#121212] leading-tight">{asset.name || asset.title}</h2>
-            <div className="flex items-center gap-2 text-[14px] font-medium text-[#4F4F4F]">
-              <span>{asset.width || 1920}x{asset.height || 1080}</span>
-              <span>•</span>
+          <div className="flex flex-col gap-1.5">
+            <div className="flex items-center gap-3">
+              <h2 className="text-2xl font-black text-[#01012A] leading-tight tracking-tight">{asset.name || asset.title}</h2>
+              <div className={cn(
+                "px-2.5 py-1 rounded-lg text-[9px] font-black uppercase tracking-widest border",
+                asset.type === "video" ? "bg-emerald-50 text-emerald-600 border-emerald-100" :
+                asset.type === "audio" ? "bg-blue-50 text-blue-600 border-blue-100" :
+                "bg-slate-50 text-slate-600 border-slate-100"
+              )}>
+                {asset.type === "audio" ? "Neural Audio" : asset.type === "video" ? "4K Video" : "Static Asset"}
+              </div>
+            </div>
+            <div className="flex items-center gap-2 text-xs font-bold text-slate-400 uppercase tracking-widest">
+              <span>{asset.width || 1920}x{asset.height || 1080} Resolution</span>
+              <span className="w-1 h-1 bg-slate-200 rounded-full" />
               <span>{formatFileSize(asset.fileSize)}</span>
-              <span>•</span>
-              <span>Uploaded {asset.createdAt ? new Date(asset.createdAt).toLocaleDateString() : asset.time}</span>
+              <span className="w-1 h-1 bg-slate-200 rounded-full" />
+              <span className="text-blue-500">Uploaded {asset.createdAt ? new Date(asset.createdAt).toLocaleDateString() : asset.time}</span>
             </div>
           </div>
 
-          <div className="grid grid-cols-2 gap-3 h-[74px]">
-            <div className="bg-[#F8F8F8] p-4 rounded-[12px] flex flex-col gap-1">
-              <span className="text-[12px] text-[#4F4F4F] font-regular uppercase tracking-wider">Type</span>
-              <span className="text-[18px] font-bold text-[#121212] capitalize">{asset.type}</span>
+          <div className="grid grid-cols-2 gap-4">
+            <div className="bg-slate-50/80 p-5 rounded-2xl flex items-center gap-4 border border-slate-100/50">
+              <div className="w-10 h-10 bg-white rounded-xl flex items-center justify-center shadow-sm border border-slate-100">
+                 <Icons.Maximize className="w-4 h-4 text-slate-400" />
+              </div>
+              <div className="flex flex-col">
+                <span className="text-[9px] text-slate-400 font-black uppercase tracking-widest leading-none mb-1">Asset Class</span>
+                <span className="text-sm font-black text-[#01012A] capitalize">{asset.type}</span>
+              </div>
             </div>
-            <div className="bg-[#F8F8F8] p-4 rounded-[12px] flex flex-col gap-1">
-              <span className="text-[12px] text-[#4F4F4F] font-regular uppercase tracking-wider">Used In</span>
-              <span className="text-[18px] font-bold text-[#121212]">{asset.members} Projects</span>
+            <div className="bg-slate-50/80 p-5 rounded-2xl flex items-center gap-4 border border-slate-100/50">
+              <div className="w-10 h-10 bg-white rounded-xl flex items-center justify-center shadow-sm border border-slate-100">
+                 <Icons.Layers className="w-4 h-4 text-slate-400" />
+              </div>
+              <div className="flex flex-col">
+                <span className="text-[9px] text-slate-400 font-black uppercase tracking-widest leading-none mb-1">Production Use</span>
+                <span className="text-sm font-black text-[#01012A]">{asset.members} Projects</span>
+              </div>
             </div>
           </div>
 
-          {/* Action Buttons */}
-          <div className="flex gap-3 pt-2">
+          {/* Action Grid */}
+          <div className="flex gap-4 pt-2">
             <button 
               onClick={handleDownload}
-              className="flex-1 h-[48px] bg-white text-[#121212] rounded-[12px] border border-[#E2E8F0] text-[16px] font-bold hover:bg-gray-50 transition-all flex items-center justify-center gap-2"
+              className="flex-1 h-[48px] bg-white text-[#01012A] rounded-xl border border-slate-200 text-sm font-black uppercase tracking-widest hover:bg-slate-50 transition-all flex items-center justify-center gap-3 active:scale-95 shadow-sm"
             >
-              <Icons.Download className="w-5 h-5" /> Download
+              <Icons.Download className="w-4 h-4" /> Download
             </button>
-            <button className="flex-[1.5] h-[48px] bg-[linear-gradient(90deg,#01012A_0%,#2E2C66_100%)] text-white rounded-[12px] text-[16px] font-bold hover:opacity-90 transition-all flex items-center justify-center gap-2 shadow-[inset_0px_-5px_5px_0px_#4F569B]">
-              <Icons.whiteMagicWand className="w-5 h-5 text-white" /> Use in Project
+            <button className="flex-[1.8] h-[48px] bg-linear-to-r from-[#01012A] to-[#2E2C66] text-white rounded-xl text-[13px] font-black uppercase tracking-[0.2em] hover:opacity-90 transition-all flex items-center justify-center gap-3 shadow-xl active:scale-95 group">
+              <Icons.whiteMagicWand className="w-4 h-4 text-white group-hover:rotate-12 transition-transform" /> 
+              Deploy to Project
             </button>
-            {/* {onDelete && (
-              <button 
-                onClick={() => onDelete(asset.id)}
-                className="w-[48px] h-[48px] bg-red-50 text-red-500 rounded-[12px] border border-red-100 flex items-center justify-center hover:bg-red-100 transition-all"
-                title="Delete Asset"
-              >
-                <Icons.Trash className="w-5 h-5" />
-              </button>
-            )} */}
           </div>
         </div>
       </div>
