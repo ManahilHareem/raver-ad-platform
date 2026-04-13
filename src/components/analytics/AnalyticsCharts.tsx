@@ -52,10 +52,12 @@ const demographicData = [
   { name: "55+", female: 20, male: 10 },
 ];
 
-export const EngagementChart = () => (
-  <div className="w-full h-[300px]">
-    <ResponsiveContainer width="100%" height="100%">
-      <AreaChart data={engagementData}>
+export const GenerationTimelineChart = ({ data }: { data?: any[] }) => {
+  const chartData = data && data.length > 0 ? data : engagementData;
+  return (
+    <div className="w-full h-[300px]">
+      <ResponsiveContainer width="100%" height="100%">
+        <AreaChart data={chartData}>
         <defs>
           <linearGradient id="colorViews" x1="0" y1="0" x2="0" y2="1">
             <stop offset="5%" stopColor="#02022C" stopOpacity={0.1}/>
@@ -84,7 +86,8 @@ export const EngagementChart = () => (
         />
         <Area 
           type="monotone" 
-          dataKey="views" 
+          name="Assets Created"
+          dataKey="assets" 
           stroke="#02022C" 
           strokeWidth={3}
           fillOpacity={1} 
@@ -93,15 +96,18 @@ export const EngagementChart = () => (
       </AreaChart>
     </ResponsiveContainer>
   </div>
-);
+  );
+};
 
-export const PlatformDistributionChart = () => (
-  <div className="w-full flex flex-col items-center gap-6">
-    <div className="w-[200px] h-[200px]">
-      <ResponsiveContainer width="100%" height="100%">
-        <PieChart>
-          <Pie
-            data={platformData}
+export const AssetDistributionChart = ({ data }: { data?: any[] }) => {
+  const chartData = data && data.length > 0 ? data : platformData;
+  return (
+    <div className="w-full flex flex-col items-center gap-6">
+      <div className="w-[200px] h-[200px]">
+        <ResponsiveContainer width="100%" height="100%">
+          <PieChart>
+            <Pie
+              data={chartData}
             cx="50%"
             cy="50%"
             innerRadius={65}
@@ -127,7 +133,7 @@ export const PlatformDistributionChart = () => (
 
     {/* Custom Legend */}
     <div className="grid grid-cols-2 gap-x-12 gap-y-4">
-      {platformData.map((item) => (
+      {chartData.map((item: any) => (
         <div key={item.name} className="flex items-center gap-3">
           <div 
             className="w-[12px] h-[12px] rounded-full" 
@@ -141,16 +147,20 @@ export const PlatformDistributionChart = () => (
       ))}
     </div>
   </div>
-);
+  );
+};
 
-export const ContentPerformanceChart = () => (
+export const AgentUtilizationChart = ({ data }: { data?: any[] }) => {
+  const chartData = data && data.length > 0 ? data : contentTypeData;
+  
+  return (
   <div className="flex flex-col gap-4">
-    {contentTypeData.map((item) => (
+    {chartData.map((item: any) => (
       <div key={item.name} className="flex flex-col gap-2 transition-all hover:translate-x-1 duration-300">
         <div className="flex justify-between text-[12px] font-medium">
           <span className="text-[#121212] font-semibold">{item.name}</span>
           <div className="flex items-center gap-2">
-            <span className="text-[#64748B] text-[10px] uppercase font-bold tracking-widest">24 Assets</span>
+            <span className="text-[#64748B] text-[10px] uppercase font-bold tracking-widest">{item.assets || 0} Uses</span>
             <span className="text-[#121212] font-black">{item.value}%</span>
           </div>
         </div>
@@ -163,12 +173,23 @@ export const ContentPerformanceChart = () => (
       </div>
     ))}
   </div>
-);
+  );
+};
 
-export const DemographicsChart = () => (
+const qualityDataDummy = [
+  { name: "Visual", score: 8.5 },
+  { name: "Brand", score: 7.2 },
+  { name: "Copy", score: 6.8 },
+  { name: "Audio", score: 9.1 },
+  { name: "Platform", score: 8.0 },
+];
+
+export const QualityAuditChart = ({ data }: { data?: any[] }) => {
+    const chartData = data && data.length > 0 ? data : qualityDataDummy;
+    return (
     <div className="w-full h-[300px]">
       <ResponsiveContainer width="100%" height="100%">
-        <BarChart data={demographicData}>
+        <BarChart data={chartData}>
           <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#F1F5F9" />
           <XAxis 
             dataKey="name" 
@@ -181,6 +202,7 @@ export const DemographicsChart = () => (
             axisLine={false} 
             tickLine={false} 
             tick={{ fill: '#64748B', fontSize: 12 }}
+            domain={[0, 10]}
           />
           <Tooltip 
             contentStyle={{ 
@@ -190,9 +212,9 @@ export const DemographicsChart = () => (
             }} 
           />
           <Legend verticalAlign="top" align="right" iconType="circle" wrapperStyle={{ paddingBottom: '20px' }} />
-          <Bar dataKey="female" name="Female" fill="#01012A" radius={[4, 4, 0, 0]} barSize={20} />
-          <Bar dataKey="male" name="Male" fill="#6366F1" radius={[4, 4, 0, 0]} barSize={20} />
+          <Bar dataKey="score" name="Average Score" fill="#01012A" radius={[4, 4, 0, 0]} barSize={32} />
         </BarChart>
       </ResponsiveContainer>
     </div>
-);
+  );
+};

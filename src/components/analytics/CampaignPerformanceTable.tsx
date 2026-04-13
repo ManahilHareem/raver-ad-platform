@@ -70,13 +70,47 @@ const campaigns = [
   }
 ];
 
-export default function CampaignPerformanceTable() {
+interface Campaign {
+  id?: string;
+  name: string;
+  image?: string;
+  status?: string;
+  budget?: number;
+  platforms?: string[];
+  createdAt?: string;
+
+  // Fallback backwards compatibility keys for dummy data
+  views?: string | number;
+  engagement?: string;
+  conversions?: string | number;
+  revenue?: string | number;
+}
+
+export default function CampaignPerformanceTable({ data }: { data?: Campaign[] }) {
   const [currentPage, setCurrentPage] = React.useState(1);
   const itemsPerPage = 5;
-  const totalPages = Math.ceil(campaigns.length / itemsPerPage);
+  
+  // Transform API data or fallback to default dummy data but conform to AI metrics
+  const campaignsList = data && data.length > 0 ? data.map(c => ({
+    name: c.name,
+    image: c.image || "https://images.unsplash.com/photo-1562322140-8baeececf3df?q=80&w=2669&auto=format&fit=crop",
+    status: c.status ? c.status.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase()) : 'Draft',
+    platform: (c.platforms && c.platforms.length > 0) ? c.platforms[0].charAt(0).toUpperCase() + c.platforms[0].slice(1) : 'Omnichannel',
+    budget: c.budget && c.budget > 0 ? `$${c.budget.toLocaleString()}` : 'Flexible',
+    createdDate: c.createdAt ? new Date(c.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric'}) : 'Recent'
+  })) : campaigns.map(c => ({
+    name: c.name,
+    image: c.image,
+    status: 'In Production',
+    platform: 'Omnichannel',
+    budget: '$1,200',
+    createdDate: 'Recently'
+  }));
+
+  const totalPages = Math.ceil(campaignsList.length / itemsPerPage);
 
   const startIndex = (currentPage - 1) * itemsPerPage;
-  const paginatedCampaigns = campaigns.slice(startIndex, startIndex + itemsPerPage);
+  const paginatedCampaigns = campaignsList.slice(startIndex, startIndex + itemsPerPage);
 
   return (
     <div className="w-full flex flex-col">
@@ -85,10 +119,10 @@ export default function CampaignPerformanceTable() {
           <thead>
             <tr className="bg-[#F8F8F8] border-b border-[#F1F5F9]">
               <th className="text-left py-4 px-6 text-[12px] font-bold text-[#4F4F4F] uppercase tracking-wider">Campaign Name</th>
-              <th className="text-right py-4 px-6 text-[12px] font-bold text-[#4F4F4F] uppercase tracking-wider">Views</th>
-              <th className="text-center py-4 px-6 text-[12px] font-bold text-[#4F4F4F] uppercase tracking-wider">Engagement</th>
-              <th className="text-right py-4 px-6 text-[12px] font-bold text-[#4F4F4F] uppercase tracking-wider">Conversions</th>
-              <th className="text-right py-4 px-6 text-[12px] font-bold text-[#4F4F4F] uppercase tracking-wider">Revenue</th>
+              <th className="text-left py-4 px-6 text-[12px] font-bold text-[#4F4F4F] uppercase tracking-wider">Status</th>
+              <th className="text-left py-4 px-6 text-[12px] font-bold text-[#4F4F4F] uppercase tracking-wider">Target Network</th>
+              <th className="text-right py-4 px-6 text-[12px] font-bold text-[#4F4F4F] uppercase tracking-wider">Production Budget</th>
+              <th className="text-right py-4 px-6 text-[12px] font-bold text-[#4F4F4F] uppercase tracking-wider">Created</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-[#F1F5F9] bg-white">
@@ -107,14 +141,14 @@ export default function CampaignPerformanceTable() {
                     <span className="text-[14px] font-medium text-[#121212]">{campaign.name}</span>
                   </div>
                 </td>
-                <td className="py-4 px-6 text-right text-[14px] font-bold text-[#121212]">{campaign.views}</td>
-                <td className="py-4 px-6 text-center">
+                <td className="py-4 px-6 text-left">
                   <span className="inline-flex items-center justify-center px-[8px] py-[4px] rounded-[4px] bg-[#EEFDF3] text-[12px] font-bold text-[#22C55E]">
-                    {campaign.engagement}
+                    {campaign.status}
                   </span>
                 </td>
-                <td className="py-4 px-6 text-right text-[14px] font-bold text-[#121212]">{campaign.conversions}</td>
-                <td className="py-4 px-6 text-right text-[14px] font-bold text-[#121212]">{campaign.revenue}</td>
+                <td className="py-4 px-6 text-left text-[14px] font-bold text-[#121212]">{campaign.platform}</td>
+                <td className="py-4 px-6 text-right text-[14px] font-bold text-[#121212]">{campaign.budget}</td>
+                <td className="py-4 px-6 text-right text-[14px] font-bold text-[#64748B]">{campaign.createdDate}</td>
               </tr>
             ))}
           </tbody>
