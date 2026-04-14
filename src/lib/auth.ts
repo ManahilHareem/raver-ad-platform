@@ -22,7 +22,12 @@ export const setToken = (token: string): void => {
   if (typeof document === 'undefined') return;
   const expires = new Date();
   expires.setTime(expires.getTime() + 1 * 24 * 60 * 60 * 1000);
-  document.cookie = `${TOKEN_NAME}=${token}; path=/; expires=${expires.toUTCString()}; SameSite=Lax`;
+  
+  // Set security flags: 
+  // - SameSite=Strict to mitigate CSRF
+  // - Secure=true if on HTTPS to mitigate MITM
+  const isSecure = window.location.protocol === 'https:';
+  document.cookie = `${TOKEN_NAME}=${token}; path=/; expires=${expires.toUTCString()}; SameSite=Strict${isSecure ? '; Secure' : ''}`;
 };
 
 /**
@@ -30,7 +35,8 @@ export const setToken = (token: string): void => {
  */
 export const removeToken = (): void => {
   if (typeof document === 'undefined') return;
-  document.cookie = `${TOKEN_NAME}=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT; SameSite=Lax`;
+  const isSecure = window.location.protocol === 'https:';
+  document.cookie = `${TOKEN_NAME}=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT; SameSite=Strict${isSecure ? '; Secure' : ''}`;
 };
 
 /**

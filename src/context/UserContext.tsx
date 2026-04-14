@@ -58,8 +58,13 @@ export function UserProvider({ children }: { children: ReactNode }) {
         setError(errData.message || "Unauthorized");
       }
     } catch (err: any) {
-      console.error("User context fetch failure:", err);
-      setError(err?.message || "Failed to fetch user");
+      if (err.message === 'AUTH_UNAUTHORIZED') {
+        setUser(null);
+        setError("Session expired");
+      } else {
+        console.error("User context fetch failure:", err);
+        setError(err?.message || "Failed to fetch user");
+      }
     } finally {
       setIsLoading(false);
     }
