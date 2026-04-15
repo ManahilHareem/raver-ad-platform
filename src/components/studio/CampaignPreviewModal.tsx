@@ -7,6 +7,7 @@ import { MarkdownRenderer } from "@/components/ui/MarkdownRenderer";
 import { apiFetch } from "@/lib/api";
 import { getToken } from "@/lib/auth";
 import { VoiceSelector, VOICE_OPTIONS } from "@/components/agents/audio-lead/VoiceSelector";
+import { normalizeAssetUrl } from "@/lib/utils";
 import { toast } from "react-toastify";
 
 interface CampaignPreviewModalProps {
@@ -26,6 +27,7 @@ interface CampaignPreviewModalProps {
     prompt?: string | null;
     voice_id?: string | null;          // Added: voice_id from campaign
     campaign_status?: string | null;
+    hitl?: any;
   } | null;
   showHistory?: boolean;
   onRefresh?: () => void;
@@ -58,6 +60,11 @@ export default function CampaignPreviewModal({
   const [musicPrompt, setMusicPrompt] = useState("");
   const [isApplyingChanges, setIsApplyingChanges] = useState(false);
   const [isApproving, setIsApproving] = useState(false);
+  const [isProcessingStep, setIsProcessingStep] = useState(false);
+  const [stepNotes, setStepNotes] = useState("");
+  const [selectedAssetId, setSelectedAssetId] = useState<string | null>(null);
+  const [localHitl, setLocalHitl] = useState<any>(campaignData?.hitl);
+  const [isRefreshing, setIsRefreshing] = useState(false);
 
   // Get the name of the selected voice for display
   const selectedVoiceName =
@@ -76,8 +83,48 @@ export default function CampaignPreviewModal({
       if (campaignData.voice_id) {
         setSelectedVoice(campaignData.voice_id.toLowerCase());
       }
+
+      setLocalHitl(campaignData.hitl);
+
+      // Proactively fetch latest DB state for hitl/approval info
+      if (campaignData.session_id) {
+        fetchDbUpdate();
+      }
     }
   }, [isOpen, campaignData]);
+
+  const fetchDbUpdate = async () => {
+    if (!campaignData?.session_id) return;
+    setIsRefreshing(true);
+    try {
+      const API_BASE = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
+      const res = await apiFetch(`${API_BASE}/ai/director/session/${campaignData.session_id}/db-update`);
+      if (res.ok) {
+        const resData = await res.json();
+        const data = resData.data;
+        if (data) {
+          setLocalHitl(data);
+          // Sync newer state if available in DB
+          if (data.status) setLocalStatus(data.status);
+          if (data.history) setLocalHistory(data.history);
+          if (data.script) setEditedScript(data.script);
+        }
+      }
+    } catch (e) {
+      console.warn("Manual db-update fetch failed:", e);
+    } finally {
+      setIsRefreshing(false);
+    }
+  };
+
+  // Auto-select asset if only one is available
+  useEffect(() => {
+    const candidates = localHitl?.candidates || localHitl?.image_urls || [];
+    if (candidates.length === 1 && !selectedAssetId) {
+      const firstId = candidates[0]?.id || "0";
+      setSelectedAssetId(firstId);
+    }
+  }, [localHitl, selectedAssetId]);
 
   const handleApplyChanges = async () => {
     if (!campaignData?.session_id && !campaignData?.campaign_id) return;
@@ -214,6 +261,77 @@ export default function CampaignPreviewModal({
     }
   };
 
+  const handleStepAction = async (action: "approve" | "improve" | "reject") => {
+    const sId = campaignData?.session_id || campaignData?.campaign_id;
+    if (!sId) {
+      toast.error("No session identifier found.");
+      return;
+    }
+
+    const currentStatus = localStatus?.toLowerCase() || "";
+    const stepName = currentStatus.startsWith("awaiting_approval_") 
+      ? currentStatus.replace("awaiting_approval_", "") 
+      : "render"; // Fallback to render if status is ambiguous
+
+    setIsProcessingStep(true);
+    const toastId = toast.loading(`${action.charAt(0).toUpperCase() + action.slice(1)}ing ${stepName.replace("_", " ")}...`);
+
+    try {
+      const API_BASE = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
+      const token = getToken();
+
+      // Ensure we have correct step name for the API if it's rendered slightly differently in status
+      // Mapping common statuses back to API expected step names if needed
+      
+      const bodyData: any = {
+        step_name: stepName,
+        action: action,
+        notes: stepNotes || (action === "approve" ? "Looks good" : "Requires changes")
+      };
+
+      if (selectedAssetId) {
+        bodyData.selected_asset_id = selectedAssetId;
+      }
+
+      const response = await fetch(`${API_BASE}/ai/director/session/${sId}/approve-step`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'accept': '*/*',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify(bodyData)
+      });
+
+      if (!response.ok) {
+        throw new Error(`Failed to ${action} step: ${response.statusText}`);
+      }
+
+      toast.update(toastId, {
+        render: `Successfully ${action}d ${stepName.replace("_", " ")}!`,
+        type: "success",
+        isLoading: false,
+        autoClose: 3000
+      });
+
+      setStepNotes("");
+      setSelectedAssetId(null);
+      
+      if (onRefresh) onRefresh();
+      // Status will be updated by polling in parent
+    } catch (error: any) {
+      console.error(`Step ${action} error:`, error);
+      toast.update(toastId, {
+        render: `Error: ${error.message}`,
+        type: "error",
+        isLoading: false,
+        autoClose: 5000
+      });
+    } finally {
+      setIsProcessingStep(false);
+    }
+  };
+
   // Auto-scroll chat
   useEffect(() => {
     if (chatEndRef.current) {
@@ -277,6 +395,7 @@ export default function CampaignPreviewModal({
   );
   const isApproved = (localStatus?.toLowerCase() === "approved" || localStatus?.toLowerCase() === "delivered");
   const isDraft = localStatus === "ready_for_human_review";
+  const isAwaitingApproval = localStatus?.toLowerCase().startsWith("awaiting_approval_");
   const canChat = (!isLaunched || isDraft) && !isApproved; // Allow chat during review to request revisions
 
   return (
@@ -549,6 +668,143 @@ export default function CampaignPreviewModal({
           </>
           }
 
+          {/* HITL Approval Section */}
+          {isAwaitingApproval && (
+            <div className="p-8 bg-[#F8FAFC] border border-[#E2E8F0] rounded-[32px] space-y-6 shadow-sm border-t-4 border-t-[#02022C] animate-in slide-in-from-bottom-4 duration-500">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 bg-[#02022C] rounded-xl flex items-center justify-center">
+                    <Icons.MagicWand className="w-5 h-5 text-white" />
+                  </div>
+                  <div className="flex flex-col">
+                    <h3 className="text-[14px] font-black text-[#121212] uppercase tracking-widest">AI Action Required</h3>
+                    <p className="text-[11px] text-[#64748B] font-bold uppercase tracking-widest">
+                      Review {localStatus?.replace("awaiting_approval_", "").replace("_", " ")}
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              {/* Asset Candidates - Only show if current step is image generation */}
+              {(localStatus?.includes("image")) && (localHitl?.candidates || localHitl?.image_urls) && (
+                <div className="space-y-4">
+                  <p className="text-[11px] font-black text-slate-400 uppercase tracking-widest pl-1">
+                    {localStatus?.includes("image") ? "Select the best generation candidate:" : "Generated Assets:"}
+                  </p>
+                  <div className="grid grid-cols-2 gap-4">
+                    {(localHitl?.candidates || localHitl?.image_urls || []).map((candidate: any, idx: number) => {
+                      const assetUrl = normalizeAssetUrl(candidate.url || candidate.image_url || (typeof candidate === "string" ? candidate : null));
+                      const assetId = candidate.id || idx.toString();
+                      if (!assetUrl) return null;
+
+                      return (
+                        <div 
+                          key={assetId}
+                          onClick={() => setSelectedAssetId(assetId)}
+                          className={cn(
+                            "relative aspect-video rounded-2xl overflow-hidden border-2 cursor-pointer transition-all group/cand shadow-sm",
+                            selectedAssetId === assetId 
+                              ? "border-[#02022C] ring-4 ring-[#02022C]/10 shadow-lg scale-[1.02]" 
+                              : "border-white opacity-60 hover:opacity-90 grayscale hover:grayscale-0"
+                          )}
+                        >
+                          <img src={assetUrl} alt={`Option ${idx + 1}`} className="w-full h-full object-cover" />
+                          <div className={cn(
+                            "absolute top-3 right-3 w-6 h-6 rounded-full flex items-center justify-center transition-all",
+                            selectedAssetId === assetId ? "bg-[#02022C] text-white shadow-md" : "bg-white/40 backdrop-blur-md"
+                          )}>
+                            {selectedAssetId === assetId ? <Icons.CheckCircle className="w-4 h-4" /> : <div className="w-1.5 h-1.5 bg-white/50 rounded-full" />}
+                          </div>
+                          <div className="absolute bottom-3 left-3 px-2 py-1 bg-black/40 backdrop-blur-md rounded-md text-[9px] font-black text-white uppercase tracking-widest opacity-0 group-hover/cand:opacity-100 transition-opacity">
+                            Option {idx + 1}
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+              )}
+
+              {/* Voice Generation Preview - Only show if current step is voice generation */}
+              {(localStatus?.includes("voice")) && localHitl?.voiceover_url && (
+                <div className="space-y-4 p-6 bg-white border border-[#E2E8F0] rounded-[24px] shadow-sm">
+                  <div className="flex items-center gap-3">
+                    <div className="w-8 h-8 bg-[#02022C]/5 rounded-lg flex items-center justify-center">
+                      <Icons.Mic className="w-4 h-4 text-[#02022C]" />
+                    </div>
+                    <p className="text-[11px] font-black text-[#02022C] uppercase tracking-widest">Review Voice Generation</p>
+                  </div>
+                  <audio src={normalizeAssetUrl(localHitl.voiceover_url)} controls className="w-full h-10" />
+                </div>
+              )}
+
+              {/* Music Generation Preview - Only show if current step is music generation */}
+              {(localStatus?.includes("music")) && localHitl?.music_url && (
+                <div className="space-y-4 p-6 bg-white border border-[#E2E8F0] rounded-[24px] shadow-sm">
+                  <div className="flex items-center gap-3">
+                    <div className="w-8 h-8 bg-[#02022C]/5 rounded-lg flex items-center justify-center">
+                      <Icons.Music className="w-4 h-4 text-[#02022C]" />
+                    </div>
+                    <p className="text-[11px] font-black text-[#02022C] uppercase tracking-widest">Review Background Music</p>
+                  </div>
+                  <audio src={normalizeAssetUrl(localHitl.music_url)} controls className="w-full h-10" />
+                </div>
+              )}
+
+              {/* Script/Text Preview - Only show if current step is text generation */}
+              {localStatus?.includes("text") && localHitl?.script && (
+                <div className="space-y-4 p-6 bg-white border border-[#E2E8F0] rounded-[24px] shadow-sm">
+                  <div className="flex items-center gap-3">
+                    <div className="w-8 h-8 bg-[#02022C]/5 rounded-lg flex items-center justify-center">
+                      <Icons.PenLine className="w-4 h-4 text-[#02022C]" />
+                    </div>
+                    <p className="text-[11px] font-black text-[#02022C] uppercase tracking-widest">Review Generated Script</p>
+                  </div>
+                  <div className="p-4 bg-slate-50 rounded-xl text-[13px] font-medium text-slate-700 leading-relaxed border border-slate-100">
+                    {typeof localHitl.script === 'string' ? localHitl.script : localHitl.script?.script || "No script content available."}
+                  </div>
+                </div>
+              )}
+
+              {/* Feedback Input */}
+              <div className="space-y-3">
+                <p className="text-[11px] font-black text-slate-400 uppercase tracking-widest pl-1">Feedback / Instructions (Optional):</p>
+                <textarea
+                  value={stepNotes}
+                  onChange={(e) => setStepNotes(e.target.value)}
+                  placeholder="e.g., Make it more vibrant, change the lighting, looks perfect..."
+                  className="w-full min-h-[100px] p-5 bg-white border border-[#E2E8F0] rounded-[24px] text-[14px] font-medium text-[#121212] outline-none focus:border-[#02022C] transition-all placeholder:text-slate-300 resize-none shadow-inner"
+                />
+              </div>
+
+              {/* Action Buttons */}
+              <div className="flex items-center gap-3 pt-2">
+                <button
+                  onClick={() => handleStepAction("approve")}
+                  disabled={isProcessingStep || (localStatus?.includes("image") && !selectedAssetId)}
+                  className="flex-1 h-14 bg-[#02022C] text-white rounded-2xl flex items-center justify-center gap-2 font-black text-[12px] uppercase tracking-widest transition-all hover:scale-[1.02] active:scale-95 disabled:opacity-50 shadow-lg shadow-[#02022C]/20"
+                >
+                  <Icons.CheckCircle className="w-4 h-4" /> Approve Step
+                </button>
+                <button
+                  onClick={() => handleStepAction("improve")}
+                  disabled={isProcessingStep}
+                  className="flex-1 h-14 bg-white border border-[#E2E8F0] text-[#02022C] rounded-2xl flex items-center justify-center gap-2 font-black text-[12px] uppercase tracking-widest transition-all hover:bg-slate-50 active:scale-95 disabled:opacity-50 shadow-xs"
+                >
+                  <Icons.MagicWand className="w-4 h-4" /> Improve
+                </button>
+                <button
+                  onClick={() => handleStepAction("reject")}
+                  disabled={isProcessingStep}
+                  className="w-14 h-14 bg-red-50 border border-red-100 text-red-500 rounded-2xl flex items-center justify-center transition-all hover:bg-red-500 hover:text-white active:scale-95 disabled:opacity-50"
+                  title="Reject and Stop"
+                >
+                  <Icons.Plus className="w-6 h-6 rotate-45" />
+                </button>
+              </div>
+            </div>
+          )}
+
           {/* Interactive Chat & Session History */}
           {showHistory && (
             <div className="space-y-4 pt-4 border-t border-[#F1F5F9]">
@@ -683,7 +939,7 @@ export default function CampaignPreviewModal({
         <div className="p-6 border-t border-[#F1F5F9] bg-[#FDFDFF] flex items-center justify-between sticky bottom-0">
           <div className="flex flex-col gap-1"></div>
           <div className="flex items-center gap-3">
-            {!isApproved && (
+            {!isApproved && !isAwaitingApproval && (
               <button
                 onClick={handleApprove}
                 disabled={isApproving}

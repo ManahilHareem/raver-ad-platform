@@ -14,7 +14,7 @@ interface ProductionPipelineProps {
 }
 
 export default function ProductionPipeline({ status, message, videoUrl, completedNodes = [], campaignStatus }: ProductionPipelineProps) {
-  const getStepStatus = (label: string): "completed" | "active" | "pending" => {
+  const getStepStatus = (label: string): "completed" | "active" | "pending" | "awaiting_approval" => {
     const s = status?.toLowerCase() || "";
     const msg = message?.toLowerCase() || "";
     
@@ -109,6 +109,12 @@ export default function ProductionPipeline({ status, message, videoUrl, complete
         break;
     }
 
+    // HITL check: if status is awaiting_approval_x and x matches our current label
+    const awaitingStep = s.startsWith("awaiting_approval_") ? s.replace("awaiting_approval_", "") : null;
+    if (awaitingStep && nodeMap[label]?.some(node => awaitingStep.includes(node))) {
+      return "awaiting_approval";
+    }
+
     return "pending";
   };
 
@@ -133,6 +139,10 @@ export default function ProductionPipeline({ status, message, videoUrl, complete
             <div className="w-[48px] h-[48px] rounded-[8px] flex items-center justify-center border-[0.35px] border-[#0000001A] backdrop-blur-sm transition-all">
               {step.status === "completed" ? (
                 <CustomIcons.Success className="w-5 h-5"/> 
+              ) : step.status === "awaiting_approval" ? (
+                <div className="flex items-center justify-center bg-amber-500/10 border-amber-500 animate-pulse rounded-lg p-2">
+                  <Icons.Eye className="w-5 h-5 text-amber-600" />
+                </div>
               ) : (
                 <div className={cn(
                   "w-[20px] h-[20px] rounded-[8px] flex items-center justify-center border-[0.35px] border-[#0000001A] backdrop-blur-sm transition-all",
@@ -142,7 +152,7 @@ export default function ProductionPipeline({ status, message, videoUrl, complete
             </div>
             <span className={cn(
               "text-[12px] font-medium text-center whitespace-nowrap text-[#121212]",
-              step.status === "active" && "text-[#02022C] font-bold"
+              (step.status === "active" || step.status === "awaiting_approval") && "text-[#02022C] font-bold"
             )}>
               {step.label}
             </span>

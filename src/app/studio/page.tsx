@@ -50,6 +50,7 @@ interface Campaign {
   completed_nodes?: string[];
   voice?: string | null;
   campaign_status?: string | null;
+  hitl?: any;
 }
 
 function StudioLoadingState() {
@@ -286,12 +287,7 @@ function StudioPageContent() {
     setShowAIResponse(false);
     setCampaignToView(campaign);
 
-    // Intelligently route based on whether it's an active campaign session
-    if (campaign.sessionId) {
-      setIsPreviewOpen(true);
-    } else {
-      setIsSelectionModalOpen(true);
-    }
+    setIsPreviewOpen(true);
   };
 
   const handleSelectVoice = (voice: string) => {
@@ -490,6 +486,21 @@ function StudioPageContent() {
               const updateData = resData.data;
               sessionFailuresRef.current[v.sessionId] = 0;
 
+              // HITL: If status is awaiting approval, get the latest DB state for assets
+              const isAwaitingApproval = updateData?.status?.toLowerCase().startsWith("awaiting_approval_");
+              let hitlData = null;
+              if (isAwaitingApproval) {
+                try {
+                  const dbUpdateRes = await apiFetch(`${API_BASE}/ai/director/session/${v.sessionId}/db-update`);
+                  if (dbUpdateRes.ok) {
+                    const dbData = await dbUpdateRes.json();
+                    hitlData = dbData.data;
+                  }
+                } catch (e) {
+                  console.warn("db-update fetch failed:", e);
+                }
+              }
+
               if (updateData) {
                 setVideos(prevVideos => {
                   const updatedVideos = [...prevVideos];
@@ -516,7 +527,9 @@ function StudioPageContent() {
                         script: updateData.script || updatedVideos[index].script,
                         history: updateData.history || updatedVideos[index].history,
                         prompt: updateData.prompt || updatedVideos[index].prompt,
-                        completed_nodes: updateData.completed_nodes || []
+                        completed_nodes: updateData.completed_nodes || [],
+                        // Merge hitl data if available
+                        ...(hitlData ? { hitl: hitlData } : {})
                       };
                       return updatedVideos;
                     }
@@ -682,8 +695,9 @@ function StudioPageContent() {
           voice_id: campaignToView.voice,
           campaign_id: campaignToView.id,
           campaign_status: campaignToView.campaign_status,
+          hitl: campaignToView.hitl,
         } : null}
-        showHistory={false}
+        showHistory={true}
         onSelectVoice={handleSelectVoice}
         onSwitchCampaign={() => {
           setIsPreviewOpen(false);
@@ -703,6 +717,7 @@ function StudioPageContent() {
         initialUserMessage={initialUserPrompt}
         initialAIResponse={aiResponseContent}
         sessionId={currentSessionId}
+        initialHistory={campaignToView?.history || []}
         selectedCampaign={selectedCampaign}
         onCampaignStart={(campaign: Campaign) => {
           setVideos(prev => [campaign, ...prev]);

@@ -7,7 +7,6 @@ import ProjectCard from "@/components/dashboard/ProjectCard";
 import CreateCampaignModal from "@/components/studio/CreateCampaignModal";
 import CampaignSelectionModal from "@/components/studio/CampaignSelectionModal";
 import CampaignPreviewModal from "@/components/studio/CampaignPreviewModal";
-import AIResponseModal from "@/components/studio/AIResponseModal";
 import ConfirmationModal from "@/components/ui/ConfirmationModal";
 import { RaverLoadingState } from "@/components/ui/RaverLoadingState";
 import { Icons } from "@/components/ui/icons";
@@ -43,10 +42,6 @@ function ProjectsContent() {
   const [campaignToDelete, setCampaignToDelete] = useState<Campaign | null>(null);
   const [campaignToView, setCampaignToView] = useState<Campaign | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
-  const [showAIResponse, setShowAIResponse] = useState(false);
-  const [aiResponseContent, setAiResponseContent] = useState("");
-  const [initialUserPrompt, setInitialUserPrompt] = useState("");
-  const [currentSessionId, setCurrentSessionId] = useState("");
   const [selectedCampaign, setSelectedCampaign] = useState<Campaign | null>(null);
   const router = useRouter();
 
@@ -289,23 +284,8 @@ function ProjectsContent() {
                     videoUrl={campaign.videoUrl}
                     description={campaign.script || campaign.message || ""}
                     onPreview={() => {
-                      const hasBrief = Object.keys(campaign.briefDraft || {}).length > 0;
-                      if (!hasBrief) {
-                        // Open Consultation Chat
-                        const history = campaign.history || [];
-                        const userMsg = history.find(m => m.role === "user")?.content || campaign.prompt || "Starting consultation...";
-                        const aiMsg = history.find(m => m.role === "assistant" || m.role === "ai")?.content || campaign.message || "How can I help you today?";
-                        
-                        setInitialUserPrompt(userMsg);
-                        setAiResponseContent(aiMsg);
-                        setCurrentSessionId(campaign.sessionId || "");
-                        setSelectedCampaign(campaign);
-                        setShowAIResponse(true);
-                      } else {
-                        // Open Asset Preview
-                        setCampaignToView(campaign);
-                        setIsPreviewOpen(true);
-                      }
+                      setCampaignToView(campaign);
+                      setIsPreviewOpen(true);
                     }}
                     onHistory={() => {
                       setCampaignToView(campaign);
@@ -385,23 +365,6 @@ function ProjectsContent() {
           setIsSelectionModalOpen(true);
         }}
         onRefresh={fetchCampaigns}
-      />
-
-      <AIResponseModal 
-        isOpen={showAIResponse}
-        onClose={() => {
-          setShowAIResponse(false);
-          setAiResponseContent("");
-          setInitialUserPrompt("");
-          setCurrentSessionId("");
-          setSelectedCampaign(null);
-        }}
-        initialUserMessage={initialUserPrompt}
-        initialAIResponse={aiResponseContent}
-        sessionId={currentSessionId}
-        initialHistory={selectedCampaign?.history || []}
-        selectedCampaign={selectedCampaign}
-        onCampaignStart={() => fetchCampaigns()}
       />
 
       <ConfirmationModal

@@ -7,6 +7,7 @@ import { toast } from "react-toastify";
 
 import { useState, useEffect } from "react";
 import CampaignPreviewModal from "./CampaignPreviewModal";
+import AIResponseModal from "./AIResponseModal";
 import { apiFetch } from "@/lib/api";
 
 interface CampaignCardProps {
@@ -49,6 +50,7 @@ export default function CampaignCard({
   onRefresh
 }: CampaignCardProps) {
   const [isPreviewOpen, setIsPreviewOpen] = useState(false);
+  const [isChatOpen, setIsChatOpen] = useState(false);
   const [isFetching, setIsFetching] = useState(false);
 
   // Local state to store potentially fresher data from API
@@ -87,6 +89,7 @@ export default function CampaignCard({
 
   const handlePreviewClick = async () => {
     setIsPreviewOpen(true);
+
     if (!session_id && !id) return;
 
     setIsFetching(true);
@@ -284,6 +287,17 @@ export default function CampaignCard({
         onClose={() => setIsPreviewOpen(false)}
         campaignData={localData}
         onRefresh={onRefresh}
+      />
+
+      <AIResponseModal 
+        isOpen={isChatOpen}
+        onClose={() => setIsChatOpen(false)}
+        initialUserMessage={localData.script || localData.message || "Continuing consultation..."}
+        initialAIResponse={localData.message || "How can I help you today?"}
+        sessionId={localData.session_id}
+        initialHistory={[]} // localData doesn't track history yet, but modal will fetch or handle
+        selectedCampaign={localData}
+        onCampaignStart={() => onRefresh?.()}
       />
     </>
   );
