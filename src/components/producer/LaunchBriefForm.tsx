@@ -3,6 +3,7 @@
 import React, { useState } from "react";
 import { Icons } from "@/components/ui/icons";
 import { cn } from "@/lib/utils";
+import { VoiceSelector, VOICE_OPTIONS } from "../agents/audio-lead/VoiceSelector";
 
 interface Scene {
   id: string;
@@ -23,15 +24,25 @@ export function LaunchBriefForm({ onLaunch, isLoading }: LaunchBriefFormProps) {
   const [brandTone, setBrandTone] = useState("luxury");
   const [aspectRatio, setAspectRatio] = useState("9:16");
   const [numScenes, setNumScenes] = useState(7);
-  const [voice, setVoice] = useState("oversea_male1");
+  const [transition, setTransition] = useState("fade");
+  const [musicVolume, setMusicVolume] = useState(0.2);
+  const [voice, setVoice] = useState(VOICE_OPTIONS[0].id);
   const [videoModel, setVideoModel] = useState("kling-video");
   const [logoUrl, setLogoUrl] = useState("");
   const [voiceSpeed, setVoiceSpeed] = useState(1.0);
-  const [transition, setTransition] = useState("fade");
-  const [musicVolume, setMusicVolume] = useState(0.2);
+
+  const isFormValid = businessName.trim() !== "" && 
+                      productDescription.trim() !== "" && 
+                      targetAudience.trim() !== "";
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    if (!isFormValid) return;
+    
+    // Map short ID to ElevenLabs voiceId
+    const selectedVoiceOption = VOICE_OPTIONS.find(v => v.id === voice);
+    const effectiveVoiceId = selectedVoiceOption?.voiceId || voice;
+
     onLaunch({
       business_name: businessName,
       product_description: productDescription,
@@ -40,7 +51,7 @@ export function LaunchBriefForm({ onLaunch, isLoading }: LaunchBriefFormProps) {
       platform: platform,
       tone: brandTone,
       num_scenes: numScenes,
-      voice: voice,
+      voice: effectiveVoiceId,
       format: aspectRatio,
       video_model: videoModel,
       logo_url: logoUrl,
@@ -191,7 +202,7 @@ export function LaunchBriefForm({ onLaunch, isLoading }: LaunchBriefFormProps) {
       </div>
 
       {/* ⚙️ Advanced Orchestration Logic */}
-      <div className="bg-linear-to-r from-[#01012A] to-[#2E2C66] rounded-[32px] p-8 border border-white/5 shadow-2xl flex flex-col gap-8 relative overflow-hidden group">
+      <div className="bg-linear-to-r from-[#01012A] to-[#2E2C66] rounded-[32px] p-8 border border-white/5 shadow-2xl flex flex-col gap-8 relative group">
          <div className="absolute top-0 right-0 w-64 h-64 bg-blue-900/20 rounded-full -mr-32 -mt-32 blur-3xl pointer-events-none" />
          
          <div className="flex items-center justify-between border-b border-white/10 pb-6 relative z-10">
@@ -205,7 +216,7 @@ export function LaunchBriefForm({ onLaunch, isLoading }: LaunchBriefFormProps) {
             </div>
          </div>
 
-         <div className="grid grid-cols-1 md:grid-cols-3 gap-8 relative z-10">
+         <div className="grid grid-cols-1 md:grid-cols-3 gap-x-12 gap-y-10 relative z-20">
             <div className="flex flex-col gap-3">
                <label className="text-[10px] font-black uppercase tracking-widest text-white/40">Scene Matrix Length</label>
                <input 
@@ -223,20 +234,18 @@ export function LaunchBriefForm({ onLaunch, isLoading }: LaunchBriefFormProps) {
                </div>
             </div>
 
-            <div className="flex flex-col gap-3">
-               <label className="text-[10px] font-black uppercase tracking-widest text-white/40">Neural Voice Library</label>
-               <select 
-                 value={voice}
-                 onChange={(e) => setVoice(e.target.value)}
-                 className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-xs text-white font-bold outline-none cursor-pointer hover:bg-white/10 transition-colors"
-               >
-                 <option value="oversea_male1" className="bg-linear-to-r from-[#01012A] to-[#2E2C66]">Neural Male 1</option>
-                 <option value="oversea_female1" className="bg-linear-to-r from-[#01012A] to-[#2E2C66]">Neural Female 1</option>
-                 <option value="uk_man2" className="bg-linear-to-r from-[#01012A] to-[#2E2C66]">UK Man 2</option>
-                 <option value="uk_boy1" className="bg-linear-to-r from-[#01012A] to-[#2E2C66]">UK Boy 1</option>
-                 <option value="calm_story1" className="bg-linear-to-r from-[#01012A] to-[#2E2C66]">Calm Story 1</option>
-                 <option value="genshin_vindi2" className="bg-linear-to-r from-[#01012A] to-[#2E2C66]">Genshin Vindi 2</option>
-               </select>
+            <div className="flex flex-col gap-3 min-h-[100px]">
+               <label className="text-[10px] font-black uppercase tracking-widest text-white/40 px-1">Neural Voice Library Selection</label>
+               <VoiceSelector 
+                 selectedVoice={voice}
+                 onSelect={(v) => setVoice(v)}
+                 className="no-label"
+                 isDark
+               />
+               <p className="text-[9px] font-black text-white/30 uppercase tracking-[0.2em] mt-2 ml-1 flex items-center gap-2">
+                 <span className="w-1.5 h-1.5 rounded-full bg-blue-400 shadow-[0_0_8px_rgba(96,165,250,0.5)]" />
+                 Active: <span className="text-white/80">{VOICE_OPTIONS.find(v => v.id === voice)?.name || "Neural Selection"}</span>
+               </p>
             </div>
 
             <div className="flex flex-col gap-3">
@@ -254,7 +263,7 @@ export function LaunchBriefForm({ onLaunch, isLoading }: LaunchBriefFormProps) {
          </div>
 
          {/* 🎚️ Audio & Cinematic Matrix */}
-         <div className="grid grid-cols-1 md:grid-cols-3 gap-8 relative z-10 pt-4 border-t border-white/10">
+         <div className="grid grid-cols-1 md:grid-cols-3 gap-x-12 gap-y-10 relative z-10 pt-10 border-t border-white/10 mt-6">
             <div className="flex flex-col gap-3">
                <label className="text-[10px] font-black uppercase tracking-widest text-white/40">Voice Speed Dynamics</label>
                <input 
@@ -315,8 +324,13 @@ export function LaunchBriefForm({ onLaunch, isLoading }: LaunchBriefFormProps) {
 
          <button 
            type="submit"
-           disabled={isLoading}
-           className="w-full h-16 bg-white text-[#01012A]  border hover:border-white rounded-2xl font-black text-sm uppercase tracking-[0.3em] hover:bg-linear-to-r hover:from-[#01012A] hover:to-[#2E2C66] hover:text-white transition-all duration-500 shadow-xl shadow-black/20 flex items-center justify-center gap-4 relative z-10 active:scale-[0.98]"
+           disabled={isLoading || !isFormValid}
+           className={cn(
+             "w-full h-16 rounded-2xl font-black text-sm uppercase tracking-[0.3em] transition-all duration-500 shadow-xl flex items-center justify-center gap-4 relative z-10",
+             (isLoading || !isFormValid)
+               ? "bg-white/5 text-white/20 cursor-not-allowed border-white/5"
+               : "bg-white text-[#01012A] border hover:border-white hover:bg-linear-to-r hover:from-[#01012A] hover:to-[#2E2C66] hover:text-white shadow-black/20 active:scale-[0.98]"
+           )}
          >
            {isLoading ? (
              <Icons.Loader className="w-6 h-6 animate-spin" />

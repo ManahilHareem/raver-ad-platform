@@ -39,6 +39,10 @@ export function AudioGenerator({
   };
 
   const handleAction = () => {
+    // Map the short mnemonic ID to the actual ElevenLabs voiceId
+    const selectedVoiceOption = VOICE_OPTIONS.find(v => v.id === formData.voice);
+    const effectiveVoiceId = selectedVoiceOption?.voiceId || formData.voice;
+
     if (activeTab === "music") {
       onGenerateMusic({
         tone: formData.tone,
@@ -51,7 +55,7 @@ export function AudioGenerator({
     } else if (activeTab === "voiceover") {
       onGenerateVoiceover({
         script: formData.script,
-        voice: formData.voice,
+        voice: effectiveVoiceId,
         voice_speed: formData.voiceSpeed
       });
     } else {
@@ -63,7 +67,7 @@ export function AudioGenerator({
         script: formData.script,
         tone: formData.tone,
         music_duration: formData.duration,
-        voice: formData.voice,
+        voice: effectiveVoiceId,
         voice_speed: formData.voiceSpeed,
         music_volume: formData.musicVolume
       });

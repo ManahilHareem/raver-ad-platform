@@ -38,7 +38,7 @@ function AudioLeadContent() {
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [deleteTargetId, setDeleteTargetId] = useState<string | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
-
+  const [refreshTrigger, setRefreshTrigger] = useState(0);
 
   const API_BASE = process.env.NEXT_PUBLIC_API_URL || "https://apiplatform.raver.ai/api";
 
@@ -133,7 +133,7 @@ function AudioLeadContent() {
     } else {
       fetchGlobalVault();
     }
-  }, [sessionId]);
+  }, [sessionId, refreshTrigger]);
 
   // Handle auto-opening the modal via search params
   useEffect(() => {
@@ -160,6 +160,7 @@ function AudioLeadContent() {
       });
 
       if (response.ok) {
+        setRefreshTrigger(prev => prev + 1);
         // Start polling for results
         const interval = setInterval(async () => {
            const vResponse = await apiFetch(`${API_BASE}/ai/audio-lead/vault/${sid}`);
@@ -203,6 +204,7 @@ function AudioLeadContent() {
       });
 
       if (response.ok) {
+        setRefreshTrigger(prev => prev + 1);
         // Polling
         const interval = setInterval(async () => {
            const vResponse = await apiFetch(`${API_BASE}/ai/audio-lead/vault/${sid}`);
@@ -244,6 +246,7 @@ function AudioLeadContent() {
       });
 
       if (response.ok) {
+        setRefreshTrigger(prev => prev + 1);
         // Polling
         const interval = setInterval(async () => {
            const vResponse = await apiFetch(`${API_BASE}/ai/audio-lead/vault/${sid}`);

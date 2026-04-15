@@ -53,9 +53,10 @@ interface VoiceSelectorProps {
   selectedVoice: string;
   onSelect: (voiceId: string) => void;
   className?: string;
+  isDark?: boolean;
 }
 
-export function VoiceSelector({ selectedVoice, onSelect, className }: VoiceSelectorProps) {
+export function VoiceSelector({ selectedVoice, onSelect, className, isDark }: VoiceSelectorProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [playingId, setPlayingId] = useState<string | null>(null);
   const [audioRef] = useState(typeof Audio !== "undefined" ? new Audio() : null);
@@ -108,11 +109,23 @@ export function VoiceSelector({ selectedVoice, onSelect, className }: VoiceSelec
 
   return (
     <div className={cn("relative flex flex-col gap-2", className)}>
-      <label className="text-[10px] font-black uppercase tracking-widest text-[#01012A] ml-1">Selection Voice</label>
+      {!className?.includes("no-label") && (
+        <label className={cn(
+          "text-[10px] font-black uppercase tracking-widest ml-1 transition-colors",
+          isDark ? "text-white/40" : "text-[#01012A]"
+        )}>
+          Selection Voice
+        </label>
+      )}
       <button 
         type="button"
         onClick={() => setIsOpen(!isOpen)}
-        className="w-full h-14 bg-white border border-slate-100 rounded-[20px] px-6 flex items-center justify-between hover:border-slate-300 transition-all active:scale-[0.98] shadow-sm overflow-hidden"
+        className={cn(
+          "w-full h-14 border rounded-[20px] px-6 flex items-center justify-between hover:scale-[1.01] transition-all active:scale-[0.98] shadow-sm overflow-hidden",
+          isDark 
+            ? "bg-white/5 border-white/10 text-white hover:bg-white/10 hover:border-white/20" 
+            : "bg-white border-slate-100 text-[#01012A] hover:border-slate-300"
+        )}
       >
         <div className="flex items-center gap-4">
           <div className="w-8 h-8 rounded-full bg-slate-50 flex items-center justify-center border border-slate-100">
