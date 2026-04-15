@@ -697,7 +697,7 @@ function StudioPageContent() {
           campaign_status: campaignToView.campaign_status,
           hitl: campaignToView.hitl,
         } : null}
-        showHistory={true}
+        showHistory={false}
         onSelectVoice={handleSelectVoice}
         onSwitchCampaign={() => {
           setIsPreviewOpen(false);

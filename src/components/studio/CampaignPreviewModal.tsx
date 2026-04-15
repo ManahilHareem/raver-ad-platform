@@ -269,8 +269,8 @@ export default function CampaignPreviewModal({
     }
 
     const currentStatus = localStatus?.toLowerCase() || "";
-    const stepName = currentStatus.startsWith("awaiting_approval_") 
-      ? currentStatus.replace("awaiting_approval_", "") 
+    const stepName = currentStatus.startsWith("awaiting_approval_")
+      ? currentStatus.replace("awaiting_approval_", "")
       : "render"; // Fallback to render if status is ambiguous
 
     setIsProcessingStep(true);
@@ -282,7 +282,7 @@ export default function CampaignPreviewModal({
 
       // Ensure we have correct step name for the API if it's rendered slightly differently in status
       // Mapping common statuses back to API expected step names if needed
-      
+
       const bodyData: any = {
         step_name: stepName,
         action: action,
@@ -316,7 +316,7 @@ export default function CampaignPreviewModal({
 
       setStepNotes("");
       setSelectedAssetId(null);
-      
+
       if (onRefresh) onRefresh();
       // Status will be updated by polling in parent
     } catch (error: any) {
@@ -482,31 +482,31 @@ export default function CampaignPreviewModal({
                 <div className="relative w-full h-full">
                   {videoError ? (
                     <div className="absolute inset-0 flex flex-col items-center justify-center bg-slate-900/50 text-white gap-3 p-8 text-center italic">
-                       <Icons.AlertTriangle className="w-10 h-10 text-amber-500 animate-pulse" />
-                       <div className="flex flex-col gap-1 items-center">
-                          <p className="text-[11px] font-black uppercase tracking-[0.2em] not-italic">Production Stream Interrupted</p>
-                          <p className="text-[9px] font-bold text-white/40 uppercase tracking-widest max-w-xs">The generation pipeline produced a result, but the visual stream is currently inaccessible.</p>
-                       </div>
-                       <button 
-                         onClick={() => { setVideoError(false); }}
-                         className="mt-2 px-6 py-2 bg-white text-[#02022C] rounded-xl text-[10px] font-black uppercase tracking-widest transition-all active:scale-95"
-                       >
-                         Attempt Reconnection
-                       </button>
+                      <Icons.AlertTriangle className="w-10 h-10 text-amber-500 animate-pulse" />
+                      <div className="flex flex-col gap-1 items-center">
+                        <p className="text-[11px] font-black uppercase tracking-[0.2em] not-italic">Production Stream Interrupted</p>
+                        <p className="text-[9px] font-bold text-white/40 uppercase tracking-widest max-w-xs">The generation pipeline produced a result, but the visual stream is currently inaccessible.</p>
+                      </div>
+                      <button
+                        onClick={() => { setVideoError(false); }}
+                        className="mt-2 px-6 py-2 bg-white text-[#02022C] rounded-xl text-[10px] font-black uppercase tracking-widest transition-all active:scale-95"
+                      >
+                        Attempt Reconnection
+                      </button>
                     </div>
                   ) : (
-                    <video 
-                      src={campaignData.video_url} 
-                      controls 
-                      muted={isMuted} 
-                      className="w-full h-full object-cover" 
+                    <video
+                      src={campaignData.video_url}
+                      controls
+                      muted={isMuted}
+                      className="w-full h-full object-cover"
                       onError={() => setVideoError(true)}
                     />
                   )}
-                  
+
                   {!videoError && (
                     <>
-                      <button 
+                      <button
                         onClick={() => setIsMuted(!isMuted)}
                         className="absolute bottom-6 right-6 z-30 w-12 h-12 bg-black/40 backdrop-blur-md rounded-2xl border border-white/10 flex items-center justify-center text-white hover:bg-black/60 transition-all shadow-2xl"
                         title={isMuted ? "Unmute" : "Mute"}
@@ -515,9 +515,9 @@ export default function CampaignPreviewModal({
                       </button>
                       {isMuted && (
                         <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-                           <div className="bg-black/40 backdrop-blur-md px-4 py-2 rounded-full border border-white/10 animate-pulse text-white text-[10px] font-black uppercase tracking-widest">
-                              Sound Muted - Click to Listen
-                           </div>
+                          <div className="bg-black/40 backdrop-blur-md px-4 py-2 rounded-full border border-white/10 animate-pulse text-white text-[10px] font-black uppercase tracking-widest">
+                            Sound Muted - Click to Listen
+                          </div>
                         </div>
                       )}
                     </>
@@ -540,14 +540,14 @@ export default function CampaignPreviewModal({
                 {campaignData.voiceover_url ? (
                   <>
                     <div className="flex items-center gap-2">
-                       <audio src={campaignData.voiceover_url} controls className="flex-1 h-8" />
-                       <button 
-                         onClick={() => handleCopyUrl(campaignData.voiceover_url!, "Voiceover")}
-                         className="w-8 h-8 rounded-lg bg-slate-50 text-slate-400 hover:text-[#02022C] border border-slate-100 flex items-center justify-center transition-all"
-                         title="Copy Voiceover URL"
-                       >
-                         <Icons.Copy className="w-3.5 h-3.5" />
-                       </button>
+                      <audio src={campaignData.voiceover_url} controls className="flex-1 h-8" />
+                      <button
+                        onClick={() => handleCopyUrl(campaignData.voiceover_url!, "Voiceover")}
+                        className="w-8 h-8 rounded-lg bg-slate-50 text-slate-400 hover:text-[#02022C] border border-slate-100 flex items-center justify-center transition-all"
+                        title="Copy Voiceover URL"
+                      >
+                        <Icons.Copy className="w-3.5 h-3.5" />
+                      </button>
                     </div>
                     <div className="flex items-center gap-2 mt-1">
                       <Icons.Mic className="w-3.5 h-3.5 text-slate-400" />
@@ -568,10 +568,10 @@ export default function CampaignPreviewModal({
                 {campaignData.music_url ? (
                   <div className="flex items-center gap-2">
                     <audio src={campaignData.music_url} controls className="flex-1 h-8" />
-                    <button 
-                         onClick={() => handleCopyUrl(campaignData.music_url!, "Music")}
-                         className="w-8 h-8 rounded-lg bg-slate-50 text-slate-400 hover:text-[#02022C] border border-slate-100 flex items-center justify-center transition-all"
-                         title="Copy Music URL"
+                    <button
+                      onClick={() => handleCopyUrl(campaignData.music_url!, "Music")}
+                      className="w-8 h-8 rounded-lg bg-slate-50 text-slate-400 hover:text-[#02022C] border border-slate-100 flex items-center justify-center transition-all"
+                      title="Copy Music URL"
                     >
                       <Icons.Copy className="w-3.5 h-3.5" />
                     </button>
@@ -616,55 +616,55 @@ export default function CampaignPreviewModal({
 
           {/* Voice & Music Controls */}
           {/* Voice & Music Controls */}
-        {!isApproved && <> 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {/* Voice Selection */}
-            <div className="space-y-4">
-              <h3 className="text-[12px] font-black text-[#02022C] uppercase tracking-[0.2em]">Neural Voice Casting</h3>
-              <VoiceSelector 
-                selectedVoice={selectedVoice}
-                onSelect={(id) => setSelectedVoice(id)}
-              />
-              <p className="text-[10px] text-slate-400 font-bold uppercase tracking-widest mt-1 ml-1 leading-relaxed">
-                Active Selection: <span className="text-[#02022C]">{selectedVoiceName}</span>
-              </p>
+          {!isApproved && <>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {/* Voice Selection */}
+              <div className="space-y-4">
+                <h3 className="text-[12px] font-black text-[#02022C] uppercase tracking-[0.2em]">Neural Voice Casting</h3>
+                <VoiceSelector
+                  selectedVoice={selectedVoice}
+                  onSelect={(id) => setSelectedVoice(id)}
+                />
+                <p className="text-[10px] text-slate-400 font-bold uppercase tracking-widest mt-1 ml-1 leading-relaxed">
+                  Active Selection: <span className="text-[#02022C]">{selectedVoiceName}</span>
+                </p>
+              </div>
+
+              {/* Background Music Prompt */}
+              <div className="space-y-4">
+                <h3 className="text-[12px] font-black text-[#02022C] uppercase tracking-[0.2em]">Background Music Style</h3>
+                <input
+                  type="text"
+                  value={musicPrompt}
+                  onChange={(e) => setMusicPrompt(e.target.value)}
+                  placeholder="e.g., Upbeat electronic music, energetic"
+                  className="w-full p-4 bg-white border border-[#E2E8F0] rounded-2xl text-[13px] font-medium text-[#334155] placeholder:text-[#94A3B8] outline-none focus:border-[#02022C] transition-colors"
+                />
+              </div>
             </div>
 
-            {/* Background Music Prompt */}
-            <div className="space-y-4">
-              <h3 className="text-[12px] font-black text-[#02022C] uppercase tracking-[0.2em]">Background Music Style</h3>
-              <input
-                type="text"
-                value={musicPrompt}
-                onChange={(e) => setMusicPrompt(e.target.value)}
-                placeholder="e.g., Upbeat electronic music, energetic"
-                className="w-full p-4 bg-white border border-[#E2E8F0] rounded-2xl text-[13px] font-medium text-[#334155] placeholder:text-[#94A3B8] outline-none focus:border-[#02022C] transition-colors"
-              />
-            </div>
-          </div>
-
-          {/* Apply Changes Button — always shown since voice must be selected */}
-          {(isEditingScript || selectedVoice || musicPrompt) && (
-            <div className="flex justify-end">
-              <button
-                onClick={handleApplyChanges}
-                disabled={isApplyingChanges}
-                className="px-8 py-4 bg-linear-to-r from-[#01012A] to-[#2E2C66] text-white rounded-xl font-bold text-[13px] uppercase tracking-wider hover:shadow-xl hover:-translate-y-px transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
-              >
-                {isApplyingChanges ? (
-                  <>
-                    <Icons.Loader className="w-4 h-4 animate-spin" />
-                    Regenerating...
-                  </>
-                ) : (
-                  <>
-                    <Icons.CheckCircle className="w-4 h-4" />
-                    Apply Changes & Regenerate
-                  </>
-                )}
-              </button>
-            </div>
-          )}
+            {/* Apply Changes Button — always shown since voice must be selected */}
+            {(isEditingScript || selectedVoice || musicPrompt) && (
+              <div className="flex justify-end">
+                <button
+                  onClick={handleApplyChanges}
+                  disabled={isApplyingChanges}
+                  className="px-8 py-4 bg-linear-to-r from-[#01012A] to-[#2E2C66] text-white rounded-xl font-bold text-[13px] uppercase tracking-wider hover:shadow-xl hover:-translate-y-px transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+                >
+                  {isApplyingChanges ? (
+                    <>
+                      <Icons.Loader className="w-4 h-4 animate-spin" />
+                      Regenerating...
+                    </>
+                  ) : (
+                    <>
+                      <Icons.CheckCircle className="w-4 h-4" />
+                      Apply Changes & Regenerate
+                    </>
+                  )}
+                </button>
+              </div>
+            )}
           </>
           }
 
@@ -698,13 +698,13 @@ export default function CampaignPreviewModal({
                       if (!assetUrl) return null;
 
                       return (
-                        <div 
+                        <div
                           key={assetId}
                           onClick={() => setSelectedAssetId(assetId)}
                           className={cn(
                             "relative aspect-video rounded-2xl overflow-hidden border-2 cursor-pointer transition-all group/cand shadow-sm",
-                            selectedAssetId === assetId 
-                              ? "border-[#02022C] ring-4 ring-[#02022C]/10 shadow-lg scale-[1.02]" 
+                            selectedAssetId === assetId
+                              ? "border-[#02022C] ring-4 ring-[#02022C]/10 shadow-lg scale-[1.02]"
                               : "border-white opacity-60 hover:opacity-90 grayscale hover:grayscale-0"
                           )}
                         >
@@ -762,6 +762,25 @@ export default function CampaignPreviewModal({
                   </div>
                   <div className="p-4 bg-slate-50 rounded-xl text-[13px] font-medium text-slate-700 leading-relaxed border border-slate-100">
                     {typeof localHitl.script === 'string' ? localHitl.script : localHitl.script?.script || "No script content available."}
+                  </div>
+                </div>
+              )}
+
+              {/* Video Preview - Only show if current step is rendering */}
+              {localStatus?.includes("render") && (localHitl?.video_url || localHitl?.video_urls) && (
+                <div className="space-y-4 p-6 bg-white border border-[#E2E8F0] rounded-[24px] shadow-sm">
+                  <div className="flex items-center gap-3">
+                    <div className="w-8 h-8 bg-[#02022C]/5 rounded-lg flex items-center justify-center">
+                      <Icons.Play className="w-4 h-4 text-[#02022C]" />
+                    </div>
+                    <p className="text-[11px] font-black text-[#02022C] uppercase tracking-widest">Review Rendered Video</p>
+                  </div>
+                  <div className="rounded-2xl overflow-hidden bg-black border border-slate-100 shadow-xl">
+                    <video
+                      src={normalizeAssetUrl(localHitl?.video_url || (Array.isArray(localHitl?.video_urls) ? localHitl.video_urls[0] : null))}
+                      controls
+                      className="w-full h-full object-contain"
+                    />
                   </div>
                 </div>
               )}
@@ -950,7 +969,7 @@ export default function CampaignPreviewModal({
                 ) : (
                   <Icons.CheckCircle className="w-4 h-4" />
                 )}
-               Approve
+                Approve
               </button>
             )}
             <button
@@ -963,6 +982,6 @@ export default function CampaignPreviewModal({
         </div>
       </div>
     </div>
-    
+
   );
 }

@@ -49,7 +49,7 @@ function ProjectsContent() {
     setIsLoading(true);
     try {
       const API_BASE = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
-      
+
       // 1. Fetch AI Director Sessions
       let allSessions: Campaign[] = [];
       try {
@@ -60,7 +60,7 @@ function ProjectsContent() {
           if (Array.isArray(sessionsArray)) {
             // STRICT FILTER: Only include sessions that have a valid session_id
             const filteredSessions = sessionsArray.filter((s: any) => s.session_id);
-            
+
             allSessions = filteredSessions.map((s: any) => ({
               id: s.campaign_id || s.id,
               sessionId: s.session_id || s.id,
@@ -117,7 +117,7 @@ function ProjectsContent() {
 
     const poll = async () => {
       if (!isActive) return;
-      
+
       const currentCampaigns = campaignsRef.current;
       const activeStatuses = ["queued", "in_production", "pipeline_running", "In Production", "processing", "rendering"];
       const terminalStatuses = ["completed", "Ready", "delivered", "failed", "ready_for_human_review", "approved"];
@@ -130,15 +130,15 @@ function ProjectsContent() {
         const failureCount = sessionFailuresRef.current[c.sessionId] || 0;
         return isActive && !isTerminal && failureCount < 5;
       });
-      
+
       if (polls.length > 0) {
         let isFirstPoll = true;
         for (const c of polls) {
           if (!isActive) return;
           if (!c.sessionId) continue;
-          
+
           if (!isFirstPoll) {
-             await new Promise(resolve => setTimeout(resolve, 3000));
+            await new Promise(resolve => setTimeout(resolve, 3000));
           }
           isFirstPoll = false;
 
@@ -157,8 +157,8 @@ function ProjectsContent() {
                   const index = updatedCampaigns.findIndex(vid => vid.sessionId === c.sessionId);
                   if (index !== -1) {
                     if (
-                      updatedCampaigns[index].status !== updateData.status || 
-                      updatedCampaigns[index].message !== updateData.message || 
+                      updatedCampaigns[index].status !== updateData.status ||
+                      updatedCampaigns[index].message !== updateData.message ||
                       updatedCampaigns[index].videoUrl !== updateData.video_url
                     ) {
                       updatedCampaigns[index] = {
@@ -230,7 +230,7 @@ function ProjectsContent() {
     }
   };
 
-  const filteredCampaigns = campaigns.filter(c => 
+  const filteredCampaigns = campaigns.filter(c =>
     c.title.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
@@ -250,8 +250,8 @@ function ProjectsContent() {
           <div className="flex items-center gap-3">
             <div className="relative w-full md:w-[320px]">
               <Icons.Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#94A3B8]" />
-              <input 
-                type="text" 
+              <input
+                type="text"
                 placeholder="Search projects..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
@@ -273,7 +273,7 @@ function ProjectsContent() {
                 const timeStr = hours > 24 ? `${Math.floor(hours / 24)} days` : `${hours} hours`;
 
                 return (
-                  <ProjectCard 
+                  <ProjectCard
                     key={campaign.sessionId || campaign.id || i}
                     title={campaign.title}
                     image={campaign.image || "/assets/hashtag-campaign.jpg"}
@@ -305,7 +305,7 @@ function ProjectsContent() {
                 <h3 className="text-[18px] font-bold text-slate-600">No projects found</h3>
                 <p className="text-slate-400 text-[14px]">Try adjusting your search or start a new campaign to see it here.</p>
               </div>
-              <button 
+              <button
                 onClick={() => router.push("/studio")}
                 className="px-6 py-2.5 bg-linear-to-r from-[#01012A] to-[#2E2C66] text-white rounded-xl text-[14px] font-bold hover:opacity-90 transition-all shadow-lg active:scale-95"
               >
@@ -323,14 +323,14 @@ function ProjectsContent() {
         onSuccess={fetchCampaigns}
       />
 
-      <CampaignSelectionModal 
+      <CampaignSelectionModal
         isOpen={isSelectionModalOpen}
         onClose={() => {
           setIsSelectionModalOpen(false);
           setCampaignToView(null);
         }}
         campaigns={campaigns}
-        onSelect={() => {}} // Could be used to highlight a campaign
+        onSelect={() => { }} // Could be used to highlight a campaign
         onCreateNew={() => {
           setIsSelectionModalOpen(false);
           setIsModalOpen(true);
@@ -339,7 +339,7 @@ function ProjectsContent() {
         initialSelectedCampaign={campaignToView}
       />
 
-      <CampaignPreviewModal 
+      <CampaignPreviewModal
         isOpen={isPreviewOpen}
         onClose={() => {
           setIsPreviewOpen(false);
