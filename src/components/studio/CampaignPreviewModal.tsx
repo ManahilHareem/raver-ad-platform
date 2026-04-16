@@ -247,7 +247,13 @@ export default function CampaignPreviewModal({
       });
 
       setLocalStatus("approved");
+
+      // Give the user time to see the success toast, then close and reload
+      await new Promise(resolve => setTimeout(resolve, 1000));
+
       if (onRefresh) onRefresh();
+      onClose();
+      window.location.reload();
     } catch (error: any) {
       console.error("Approval error:", error);
       toast.update(toastId, {
@@ -318,6 +324,7 @@ export default function CampaignPreviewModal({
       setSelectedAssetId(null);
 
       if (onRefresh) onRefresh();
+      onClose();
       // Status will be updated by polling in parent
     } catch (error: any) {
       console.error(`Step ${action} error:`, error);
@@ -463,160 +470,209 @@ export default function CampaignPreviewModal({
             </div>
           )}
 
-          <div className="space-y-4">
-            <div className="flex items-center justify-between">
-              <h3 className="text-[12px] font-black text-[#02022C] uppercase tracking-[0.2em]">Visual & Video</h3>
-              {campaignData.video_url && (
-                <button
-                  onClick={() => handleCopyUrl(campaignData.video_url!, "Video")}
-                  className="text-[11px] font-bold text-[#64748B] hover:text-[#02022C] transition-colors flex items-center gap-1.5 px-3 py-1 bg-slate-50 rounded-lg border border-slate-100"
-                  title="Copy Video URL"
-                >
-                  <Icons.Copy className="w-3.5 h-3.5" />
-                  Copy Link
-                </button>
-              )}
-            </div>
-            <div className="relative aspect-video rounded-3xl overflow-hidden bg-slate-100 border border-[#F1F5F9] shadow-inner group">
-              {campaignData.video_url ? (
-                <div className="relative w-full h-full">
-                  {videoError ? (
-                    <div className="absolute inset-0 flex flex-col items-center justify-center bg-slate-900/50 text-white gap-3 p-8 text-center italic">
-                      <Icons.AlertTriangle className="w-10 h-10 text-amber-500 animate-pulse" />
-                      <div className="flex flex-col gap-1 items-center">
-                        <p className="text-[11px] font-black uppercase tracking-[0.2em] not-italic">Production Stream Interrupted</p>
-                        <p className="text-[9px] font-bold text-white/40 uppercase tracking-widest max-w-xs">The generation pipeline produced a result, but the visual stream is currently inaccessible.</p>
-                      </div>
-                      <button
-                        onClick={() => { setVideoError(false); }}
-                        className="mt-2 px-6 py-2 bg-white text-[#02022C] rounded-xl text-[10px] font-black uppercase tracking-widest transition-all active:scale-95"
-                      >
-                        Attempt Reconnection
-                      </button>
-                    </div>
-                  ) : (
-                    <video
-                      src={campaignData.video_url}
-                      controls
-                      muted={isMuted}
-                      className="w-full h-full object-cover"
-                      onError={() => setVideoError(true)}
-                    />
-                  )}
-
-                  {!videoError && (
-                    <>
-                      <button
-                        onClick={() => setIsMuted(!isMuted)}
-                        className="absolute bottom-6 right-6 z-30 w-12 h-12 bg-black/40 backdrop-blur-md rounded-2xl border border-white/10 flex items-center justify-center text-white hover:bg-black/60 transition-all shadow-2xl"
-                        title={isMuted ? "Unmute" : "Mute"}
-                      >
-                        {isMuted ? <Icons.Mute className="w-5 h-5" /> : <Icons.Volume className="w-5 h-5" />}
-                      </button>
-                      {isMuted && (
-                        <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-                          <div className="bg-black/40 backdrop-blur-md px-4 py-2 rounded-full border border-white/10 animate-pulse text-white text-[10px] font-black uppercase tracking-widest">
-                            Sound Muted - Click to Listen
-                          </div>
-                        </div>
-                      )}
-                    </>
-                  )}
-                </div>
-              ) : (
-                <div className="absolute inset-0 flex flex-col items-center justify-center text-slate-300 gap-4">
-                  <Icons.Image className="w-16 h-16" />
-                  <p className="text-xs font-bold uppercase tracking-widest">Video is still processing</p>
-                </div>
-              )}
-            </div>
-          </div>
-
-          {/* Audio Tracks */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          {(!isAwaitingApproval || localStatus?.includes("render") || localStatus?.includes("image")) && (
             <div className="space-y-4">
-              <h3 className="text-[12px] font-black text-[#02022C] uppercase tracking-[0.2em]">Voiceover</h3>
-              <div className="p-4 bg-white border border-[#F1F5F9] rounded-2xl shadow-sm flex flex-col gap-3">
-                {campaignData.voiceover_url ? (
-                  <>
-                    <div className="flex items-center gap-2">
-                      <audio src={campaignData.voiceover_url} controls className="flex-1 h-8" />
-                      <button
-                        onClick={() => handleCopyUrl(campaignData.voiceover_url!, "Voiceover")}
-                        className="w-8 h-8 rounded-lg bg-slate-50 text-slate-400 hover:text-[#02022C] border border-slate-100 flex items-center justify-center transition-all"
-                        title="Copy Voiceover URL"
-                      >
-                        <Icons.Copy className="w-3.5 h-3.5" />
-                      </button>
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-3">
+                  <h3 className="text-[12px] font-black text-[#02022C] uppercase tracking-[0.2em]">Visual & Video</h3>
+                  {isAwaitingApproval && (localStatus?.includes("render") || localStatus?.includes("image")) && (
+                    <div className="flex items-center gap-1.5 px-3 py-1 bg-amber-50 border border-amber-100 rounded-full animate-pulse">
+                      <Icons.Zap className="w-3 h-3 text-amber-500" />
+                      <span className="text-[10px] font-black text-amber-600 uppercase tracking-widest">Reviewing</span>
                     </div>
-                    <div className="flex items-center gap-2 mt-1">
-                      <Icons.Mic className="w-3.5 h-3.5 text-slate-400" />
-                      <span className="text-[10px] font-black text-[#64748B] uppercase tracking-widest">
-                        Profile: {selectedVoice ? selectedVoiceName : "Neural Casting"}
-                      </span>
-                    </div>
-                  </>
-                ) : (
-                  <div className="text-[11px] text-[#94A3B8] font-medium italic">Synchronizing neural voice track...</div>
+                  )}
+                </div>
+                {campaignData.video_url && (
+                  <button
+                    onClick={() => handleCopyUrl(campaignData.video_url!, "Video")}
+                    className="text-[11px] font-bold text-[#64748B] hover:text-[#02022C] transition-colors flex items-center gap-1.5 px-3 py-1 bg-slate-50 rounded-lg border border-slate-100"
+                    title="Copy Video URL"
+                  >
+                    <Icons.Copy className="w-3.5 h-3.5" />
+                    Copy Link
+                  </button>
                 )}
               </div>
-            </div>
+              <div className="relative aspect-video rounded-3xl overflow-hidden bg-slate-100 border border-[#F1F5F9] shadow-inner group">
+                {campaignData.video_url ? (
+                  <div className="relative w-full h-full">
+                    {videoError ? (
+                      <div className="absolute inset-0 flex flex-col items-center justify-center bg-slate-900/50 text-white gap-3 p-8 text-center italic">
+                        <Icons.AlertTriangle className="w-10 h-10 text-amber-500 animate-pulse" />
+                        <div className="flex flex-col gap-1 items-center">
+                          <p className="text-[11px] font-black uppercase tracking-[0.2em] not-italic">Production Stream Interrupted</p>
+                          <p className="text-[9px] font-bold text-white/40 uppercase tracking-widest max-w-xs">The generation pipeline produced a result, but the visual stream is currently inaccessible.</p>
+                        </div>
+                        <button
+                          onClick={() => { setVideoError(false); }}
+                          className="mt-2 px-6 py-2 bg-white text-[#02022C] rounded-xl text-[10px] font-black uppercase tracking-widest transition-all active:scale-95"
+                        >
+                          Attempt Reconnection
+                        </button>
+                      </div>
+                    ) : (
+                      <video
+                        src={campaignData.video_url}
+                        controls
+                        muted={isMuted}
+                        className="w-full h-full object-cover"
+                        onError={() => setVideoError(true)}
+                      />
+                    )}
 
-            <div className="space-y-4">
-              <h3 className="text-[12px] font-black text-[#02022C] uppercase tracking-[0.2em]">Background Music</h3>
-              <div className="p-4 bg-white border border-[#F1F5F9] rounded-2xl shadow-sm flex flex-col gap-3">
-                {campaignData.music_url ? (
-                  <div className="flex items-center gap-2">
-                    <audio src={campaignData.music_url} controls className="flex-1 h-8" />
-                    <button
-                      onClick={() => handleCopyUrl(campaignData.music_url!, "Music")}
-                      className="w-8 h-8 rounded-lg bg-slate-50 text-slate-400 hover:text-[#02022C] border border-slate-100 flex items-center justify-center transition-all"
-                      title="Copy Music URL"
-                    >
-                      <Icons.Copy className="w-3.5 h-3.5" />
-                    </button>
+                    {!videoError && (
+                      <>
+                        <button
+                          onClick={() => setIsMuted(!isMuted)}
+                          className="absolute bottom-6 right-6 z-30 w-12 h-12 bg-black/40 backdrop-blur-md rounded-2xl border border-white/10 flex items-center justify-center text-white hover:bg-black/60 transition-all shadow-2xl"
+                          title={isMuted ? "Unmute" : "Mute"}
+                        >
+                          {isMuted ? <Icons.Mute className="w-5 h-5" /> : <Icons.Volume className="w-5 h-5" />}
+                        </button>
+                        {isMuted && (
+                          <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+                            <div className="bg-black/40 backdrop-blur-md px-4 py-2 rounded-full border border-white/10 animate-pulse text-white text-[10px] font-black uppercase tracking-widest">
+                              Sound Muted - Click to Listen
+                            </div>
+                          </div>
+                        )}
+                      </>
+                    )}
                   </div>
                 ) : (
-                  <div className="text-[11px] text-[#94A3B8] font-medium">No music track available</div>
+                  <div className="absolute inset-0 flex flex-col items-center justify-center text-slate-300 gap-4 text-center px-8">
+                    <div className={cn("p-6 rounded-full bg-slate-50 border border-slate-100/50", isAwaitingApproval && localStatus?.includes("image") && "bg-amber-50 border-amber-100")}>
+                      {isAwaitingApproval && localStatus?.includes("image") ? (
+                        <Icons.Zap className="w-10 h-10 text-amber-500 animate-pulse" />
+                      ) : (
+                        <Icons.Image className="w-10 h-10 text-slate-200" />
+                      )}
+                    </div>
+                    <p className={cn("text-[10px] font-black uppercase tracking-[0.2em]", isAwaitingApproval && localStatus?.includes("image") ? "text-amber-600" : "text-slate-400")}>
+                      {isAwaitingApproval && localStatus?.includes("image") ? "Awaiting your image selection below" : "Video stream initializing..."}
+                    </p>
+                  </div>
                 )}
               </div>
             </div>
-          </div>
+          )}
 
-          {/* Script Content - Editable */}
-          <div className="space-y-4">
-            <div className="flex items-center justify-between">
-              <h3 className="text-[12px] font-black text-[#02022C] uppercase tracking-[0.2em]">Campaign Script</h3>
-              {!isApproved && <button
-                onClick={() => setIsEditingScript(!isEditingScript)}
-                className="text-[11px] font-bold text-[#02022C] hover:text-[#4F569B] transition-colors flex items-center gap-1"
-              >
-                <Icons.PenLine className="w-3.5 h-3.5" />
-                {isEditingScript ? "Cancel" : "Edit Script"}
-              </button>}
-            </div>
-            <div className="p-6 bg-[#02022C]/2 border border-[#F1F5F9] rounded-[24px] relative group overflow-hidden">
-              <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
-                <Icons.MagicWand className="w-12 h-12 text-[#02022C]" />
-              </div>
-              {isEditingScript ? (
-                <textarea
-                  value={editedScript}
-                  onChange={(e) => setEditedScript(e.target.value)}
-                  className="w-full min-h-[120px] text-[15px] text-[#334155] leading-[1.6] font-medium relative z-10 bg-white border border-[#E2E8F0] rounded-xl p-4 outline-none focus:border-[#02022C] resize-y"
-                  placeholder="Enter your script here..."
-                />
-              ) : (
-                <p className="text-[15px] text-[#334155] leading-[1.6] font-medium relative z-10">
-                  {editedScript || campaignData.script || "Script loading..."}
-                </p>
+          {/* Audio Tracks */}
+          {(!isAwaitingApproval || localStatus?.includes("voice") || localStatus?.includes("music")) && (
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {(!isAwaitingApproval || localStatus?.includes("voice")) && (
+                <div className="space-y-4">
+                  <div className="flex items-center gap-3">
+                    <h3 className="text-[12px] font-black text-[#02022C] uppercase tracking-[0.2em]">Voiceover</h3>
+                    {isAwaitingApproval && localStatus?.includes("voice") && (
+                      <div className="flex items-center gap-1.5 px-3 py-1 bg-amber-50 border border-amber-100 rounded-full animate-pulse">
+                        <Icons.Zap className="w-3 h-3 text-amber-500" />
+                        <span className="text-[10px] font-black text-amber-600 uppercase tracking-widest">Reviewing</span>
+                      </div>
+                    )}
+                  </div>
+                  <div className="p-4 bg-white border border-[#F1F5F9] rounded-2xl shadow-sm flex flex-col gap-3">
+                    {campaignData.voiceover_url ? (
+                      <>
+                        <div className="flex items-center gap-2">
+                          <audio src={campaignData.voiceover_url} controls className="flex-1 h-8" />
+                          <button
+                            onClick={() => handleCopyUrl(campaignData.voiceover_url!, "Voiceover")}
+                            className="w-8 h-8 rounded-lg bg-slate-50 text-slate-400 hover:text-[#02022C] border border-slate-100 flex items-center justify-center transition-all"
+                            title="Copy Voiceover URL"
+                          >
+                            <Icons.Copy className="w-3.5 h-3.5" />
+                          </button>
+                        </div>
+                        <div className="flex items-center gap-2 mt-1">
+                          <Icons.Mic className="w-3.5 h-3.5 text-slate-400" />
+                          <span className="text-[10px] font-black text-[#64748B] uppercase tracking-widest">
+                            Profile: {selectedVoice ? selectedVoiceName : "Neural Casting"}
+                          </span>
+                        </div>
+                      </>
+                    ) : (
+                      <div className="text-[11px] text-[#94A3B8] font-medium italic">Synchronizing neural voice track...</div>
+                    )}
+                  </div>
+                </div>
+              )}
+
+              {(!isAwaitingApproval || localStatus?.includes("music")) && (
+                <div className="space-y-4">
+                  <div className="flex items-center gap-3">
+                    <h3 className="text-[12px] font-black text-[#02022C] uppercase tracking-[0.2em]">Background Music</h3>
+                    {isAwaitingApproval && localStatus?.includes("music") && (
+                      <div className="flex items-center gap-1.5 px-3 py-1 bg-amber-50 border border-amber-100 rounded-full animate-pulse">
+                        <Icons.Zap className="w-3 h-3 text-amber-500" />
+                        <span className="text-[10px] font-black text-amber-600 uppercase tracking-widest">Reviewing</span>
+                      </div>
+                    )}
+                  </div>
+                  <div className="p-4 bg-white border border-[#F1F5F9] rounded-2xl shadow-sm flex flex-col gap-3">
+                    {campaignData.music_url ? (
+                      <div className="flex items-center gap-2">
+                        <audio src={campaignData.music_url} controls className="flex-1 h-8" />
+                        <button
+                          onClick={() => handleCopyUrl(campaignData.music_url!, "Music")}
+                          className="w-8 h-8 rounded-lg bg-slate-50 text-slate-400 hover:text-[#02022C] border border-slate-100 flex items-center justify-center transition-all"
+                          title="Copy Music URL"
+                        >
+                          <Icons.Copy className="w-3.5 h-3.5" />
+                        </button>
+                      </div>
+                    ) : (
+                      <div className="text-[11px] text-[#94A3B8] font-medium">No music track available</div>
+                    )}
+                  </div>
+                </div>
               )}
             </div>
-          </div>
+          )}
+
+          {/* Script Content - Editable */}
+          {(!isAwaitingApproval || localStatus?.includes("text")) && (
+            <div className="space-y-4">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-3">
+                  <h3 className="text-[12px] font-black text-[#02022C] uppercase tracking-[0.2em]">Campaign Script</h3>
+                  {isAwaitingApproval && localStatus?.includes("text") && (
+                    <div className="flex items-center gap-1.5 px-3 py-1 bg-amber-50 border border-amber-100 rounded-full animate-pulse">
+                      <Icons.Zap className="w-3 h-3 text-amber-500" />
+                      <span className="text-[10px] font-black text-amber-600 uppercase tracking-widest">Reviewing</span>
+                    </div>
+                  )}
+                </div>
+                {!isApproved && !isAwaitingApproval && <button
+                  onClick={() => setIsEditingScript(!isEditingScript)}
+                  className="text-[11px] font-bold text-[#02022C] hover:text-[#4F569B] transition-colors flex items-center gap-1"
+                >
+                  <Icons.PenLine className="w-3.5 h-3.5" />
+                  {isEditingScript ? "Cancel" : "Edit Script"}
+                </button>}
+              </div>
+              <div className="p-6 bg-[#02022C]/2 border border-[#F1F5F9] rounded-[24px] relative group overflow-hidden">
+                <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
+                  <Icons.MagicWand className="w-12 h-12 text-[#02022C]" />
+                </div>
+                {isEditingScript ? (
+                  <textarea
+                    value={editedScript}
+                    onChange={(e) => setEditedScript(e.target.value)}
+                    className="w-full min-h-[120px] text-[15px] text-[#334155] leading-[1.6] font-medium relative z-10 bg-white border border-[#E2E8F0] rounded-xl p-4 outline-none focus:border-[#02022C] resize-y"
+                    placeholder="Enter your script here..."
+                  />
+                ) : (
+                  <p className="text-[15px] text-[#334155] leading-[1.6] font-medium relative z-10">
+                    {editedScript || campaignData.script || "Script loading..."}
+                  </p>
+                )}
+              </div>
+            </div>
+          )}
 
           {/* Voice & Music Controls */}
-          {/* Voice & Music Controls */}
-          {!isApproved && <>
+          {!isApproved && !isAwaitingApproval && <>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               {/* Voice Selection */}
               <div className="space-y-4">
@@ -670,7 +726,7 @@ export default function CampaignPreviewModal({
 
           {/* HITL Approval Section */}
           {isAwaitingApproval && (
-            <div className="p-8 bg-[#F8FAFC] border border-[#E2E8F0] rounded-[32px] space-y-6 shadow-sm border-t-4 border-t-[#02022C] animate-in slide-in-from-bottom-4 duration-500">
+            <div className="p-6 bg-[#F8FAFC] border border-[#E2E8F0] rounded-[32px] space-y-6 shadow-sm border-t-4 border-t-[#02022C] animate-in slide-in-from-bottom-4 duration-500">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-3">
                   <div className="w-10 h-10 bg-[#02022C] rounded-xl flex items-center justify-center">
@@ -768,15 +824,16 @@ export default function CampaignPreviewModal({
 
               {/* Video Preview - Only show if current step is rendering */}
               {localStatus?.includes("render") && (localHitl?.video_url || localHitl?.video_urls) && (
-                <div className="space-y-4 p-6 bg-white border border-[#E2E8F0] rounded-[24px] shadow-sm">
+                <div className="space-y-4 p-4 bg-white border border-[#E2E8F0] rounded-[24px] shadow-sm">
                   <div className="flex items-center gap-3">
                     <div className="w-8 h-8 bg-[#02022C]/5 rounded-lg flex items-center justify-center">
                       <Icons.Play className="w-4 h-4 text-[#02022C]" />
                     </div>
                     <p className="text-[11px] font-black text-[#02022C] uppercase tracking-widest">Review Rendered Video</p>
                   </div>
-                  <div className="rounded-2xl overflow-hidden bg-black border border-slate-100 shadow-xl">
+                  <div className="rounded-2xl overflow-hidden bg-black border border-slate-100 shadow-xl relative aspect-video w-full flex items-center justify-center">
                     <video
+                      key={localHitl?.video_url || (Array.isArray(localHitl?.video_urls) ? localHitl.video_urls[0] : "no-video")}
                       src={normalizeAssetUrl(localHitl?.video_url || (Array.isArray(localHitl?.video_urls) ? localHitl.video_urls[0] : null))}
                       controls
                       className="w-full h-full object-contain"

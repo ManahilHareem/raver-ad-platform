@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import { Icons } from "@/components/ui/icons";
-import { useState, useCallback, useEffect } from "react";
+import { useState, useCallback, useEffect, useRef } from "react";
 import CampaignSelectionModal from "./CampaignSelectionModal";
 import AssetSelectionModal from "./AssetSelectionModal";
 import { useVoiceInput } from "@/hooks/useVoiceInput";
@@ -68,6 +68,7 @@ export default function StudioHero({
   const [selectedVoice, setSelectedVoice] = useState("");
   const [voiceError, setVoiceError] = useState(false);
   const [selectedAssets, setSelectedAssets] = useState<Asset[]>([]);
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
 
   // Real-time voice input
   const handleVoiceResult = useCallback((text: string) => {
@@ -75,6 +76,17 @@ export default function StudioHero({
   }, []);
 
   const { isListening, interimText, startListening, stopListening } = useVoiceInput(handleVoiceResult);
+
+  // Auto-resize textarea
+  useEffect(() => {
+    const textarea = textareaRef.current;
+    if (textarea) {
+      textarea.style.height = "auto";
+      textarea.style.height = `${textarea.scrollHeight}px`;
+    }
+  }, [prompt, interimText]);
+
+
 
   const handleMicClick = () => {
     if (isListening) {
@@ -170,10 +182,11 @@ export default function StudioHero({
         <div className="relative">
           <div className="flex flex-col bg-white rounded-2xl border border-[#02022C] transition-all overflow-hidden relative group/input">
             <textarea
+              ref={textareaRef}
               value={displayValue}
               onChange={(e) => setPrompt(e.target.value)}
               placeholder={selectedCampaign ? `Prompt for: ${selectedCampaign.title}` : "Create a summer balayage instagram promotion"}
-              className="w-full h-[140px] p-5 text-[15px] text-[#121212] placeholder:text-[#94A3B8] border-none transition-all resize-none outline-none"
+              className="w-full min-h-[140px] p-5 text-[15px] text-[#121212] placeholder:text-[#94A3B8] border-none transition-all resize-none outline-none overflow-hidden"
             />
             
             {/* Selected Assets Display */}

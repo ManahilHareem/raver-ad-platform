@@ -48,6 +48,14 @@ export default function ProductionPipeline({ status, message, videoUrl, complete
 
     const currentStepIndex = stepOrder.indexOf(label);
 
+    // HITL check: if status is awaiting_approval_x and x matches our current label
+    // This takes precedence over completion logic because even once a node generates, 
+    // it's not 'completed' in the UI until approved.
+    const awaitingStep = s.startsWith("awaiting_approval_") ? s.replace("awaiting_approval_", "") : null;
+    if (awaitingStep && nodeMap[label]?.some(node => awaitingStep.includes(node))) {
+      return "awaiting_approval";
+    }
+
     // Waterfall logic: If any later step is completed, this step is also completed
     const isLaterStepCompleted = stepOrder.slice(currentStepIndex + 1).some(laterLabel => {
       // Check if later step is in completedNodes
@@ -109,11 +117,8 @@ export default function ProductionPipeline({ status, message, videoUrl, complete
         break;
     }
 
-    // HITL check: if status is awaiting_approval_x and x matches our current label
-    const awaitingStep = s.startsWith("awaiting_approval_") ? s.replace("awaiting_approval_", "") : null;
-    if (awaitingStep && nodeMap[label]?.some(node => awaitingStep.includes(node))) {
-      return "awaiting_approval";
-    }
+    // ... existing logic ...
+
 
     return "pending";
   };
@@ -129,8 +134,24 @@ export default function ProductionPipeline({ status, message, videoUrl, complete
     { label: "Quality Check", status: getStepStatus("Quality Check") },
   ];
 
+  const isAwaiting = status?.toLowerCase().startsWith("awaiting_approval_");
+
   return (
-    <div className="p-8 rounded-[12px] overflow-x-auto custom-scrollbar">
+    <div className="p-4 md:p-8 rounded-[12px] overflow-hidden">
+      {isAwaiting && message && (
+        <div className="mb-8 p-5 bg-amber-50 border border-amber-100 rounded-[22px] flex items-center gap-4 animate-in fade-in slide-in-from-top-4 duration-500">
+          <div className="w-12 h-12 bg-white rounded-2xl flex items-center justify-center shadow-sm border border-amber-100">
+            <Icons.Zap className="w-6 h-6 text-amber-500 animate-pulse" />
+          </div>
+          <div className="flex flex-col gap-0.5">
+            <span className="text-[10px] font-black text-amber-600 uppercase tracking-[0.15em]">Human Intervention Required</span>
+            <p className="text-[15px] font-bold text-[#02022C] leading-tight">
+              {message}
+            </p>
+          </div>
+        </div>
+      )}
+      <div className="overflow-x-auto custom-scrollbar">
       <div className="flex items-center justify-between min-w-[800px] relative">
         {/* Connection Line */}
 
@@ -140,8 +161,8 @@ export default function ProductionPipeline({ status, message, videoUrl, complete
               {step.status === "completed" ? (
                 <CustomIcons.Success className="w-5 h-5"/> 
               ) : step.status === "awaiting_approval" ? (
-                <div className="flex items-center justify-center bg-amber-500/10 border-amber-500 animate-pulse rounded-lg p-2">
-                  <Icons.Eye className="w-5 h-5 text-amber-600" />
+                <div className="flex items-center justify-center bg-amber-500/10 border-amber-500 ring-2 ring-amber-500/20 animate-pulse rounded-lg p-2">
+                  <Icons.Zap className="w-5 h-5 text-amber-600" />
                 </div>
               ) : (
                 <div className={cn(
@@ -158,6 +179,7 @@ export default function ProductionPipeline({ status, message, videoUrl, complete
             </span>
           </div>
         ))}
+        </div>
       </div>
     </div>
   );
