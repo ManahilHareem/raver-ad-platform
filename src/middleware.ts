@@ -3,7 +3,7 @@ import type { NextRequest } from 'next/server';
 
 const PUBLIC_ROUTES = ['/', '/signup', '/landing', '/favicon.ico'];
 
-export function proxy(request: NextRequest) {
+export function middleware(request: NextRequest) {
   const token = request.cookies.get('raver_token')?.value;
   const { pathname } = request.nextUrl;
 

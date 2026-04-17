@@ -477,7 +477,7 @@ export default function CampaignPreviewModal({
             </div>
           )}
 
-          {(!isAwaitingApproval || localStatus?.includes("render") || localStatus?.includes("image")) && (
+          {(!isAwaitingApproval) && (
             <div className="space-y-4">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-3">
