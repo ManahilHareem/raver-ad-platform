@@ -289,10 +289,17 @@ export default function CampaignPreviewModal({
       // Ensure we have correct step name for the API if it's rendered slightly differently in status
       // Mapping common statuses back to API expected step names if needed
 
+      let finalNotes = stepNotes || (action === "approve" ? "Looks good" : "Requires changes");
+      
+      // Always include the current voice selection in the notes for the AI Director
+      if (selectedVoice) {
+        finalNotes = `${finalNotes} (Selected Voice: ${selectedVoiceName}${selectedVoice !== selectedVoiceName ? ` - ${selectedVoice}` : ""})`;
+      }
+
       const bodyData: any = {
         step_name: stepName,
         action: action,
-        notes: stepNotes || (action === "approve" ? "Looks good" : "Requires changes")
+        notes: finalNotes
       };
 
       if (selectedAssetId) {
@@ -842,29 +849,50 @@ export default function CampaignPreviewModal({
                 </div>
               )}
 
-              {/* Feedback Input */}
-              <div className="space-y-3">
-                <p className="text-[11px] font-black text-slate-400 uppercase tracking-widest pl-1">Feedback / Instructions (Optional):</p>
-                <textarea
-                  value={stepNotes}
-                  onChange={(e) => setStepNotes(e.target.value)}
-                  placeholder="e.g., Make it more vibrant, change the lighting, looks perfect..."
-                  className="w-full min-h-[100px] p-5 bg-white border border-[#E2E8F0] rounded-[24px] text-[14px] font-medium text-[#121212] outline-none focus:border-[#02022C] transition-all placeholder:text-slate-300 resize-none shadow-inner"
-                />
+              {/* Feedback / Input Input */}
+              <div className="space-y-4">
+                {localStatus?.includes("voice") ? (
+                  <div className="space-y-4">
+                    <p className="text-[11px] font-black text-slate-400 uppercase tracking-widest pl-1">Neural Voice Casting:</p>
+                    <VoiceSelector
+                      selectedVoice={selectedVoice}
+                      onSelect={(id) => setSelectedVoice(id)}
+                    />
+                    <div className="space-y-2">
+                      <p className="text-[11px] font-black text-slate-400 uppercase tracking-widest pl-1">Specific Voiceover Instructions (Optional):</p>
+                      <textarea
+                        value={stepNotes}
+                        onChange={(e) => setStepNotes(e.target.value)}
+                        placeholder="e.g., Speak faster, more excitement, emphasize 'innovation'..."
+                        className="w-full min-h-[80px] p-5 bg-white border border-[#E2E8F0] rounded-[24px] text-[14px] font-medium text-[#121212] outline-none focus:border-[#02022C] transition-all placeholder:text-slate-300 resize-none shadow-inner"
+                      />
+                    </div>
+                  </div>
+                ) : (
+                  <div className="space-y-3">
+                    <p className="text-[11px] font-black text-slate-400 uppercase tracking-widest pl-1">Feedback / Instructions (Optional):</p>
+                    <textarea
+                      value={stepNotes}
+                      onChange={(e) => setStepNotes(e.target.value)}
+                      placeholder={localStatus?.includes("image") ? "e.g., Make it more vibrant, change the lighting..." : "e.g., Looks perfect, or requested changes..."}
+                      className="w-full min-h-[100px] p-5 bg-white border border-[#E2E8F0] rounded-[24px] text-[14px] font-medium text-[#121212] outline-none focus:border-[#02022C] transition-all placeholder:text-slate-300 resize-none shadow-inner"
+                    />
+                  </div>
+                )}
               </div>
 
               {/* Action Buttons */}
               <div className="flex items-center gap-3 pt-2">
                 <button
                   onClick={() => handleStepAction("approve")}
-                  disabled={isProcessingStep || (localStatus?.includes("image") && !selectedAssetId)}
+                  disabled={isProcessingStep}
                   className="flex-1 h-14 bg-[#02022C] text-white rounded-2xl flex items-center justify-center gap-2 font-black text-[12px] uppercase tracking-widest transition-all hover:scale-[1.02] active:scale-95 disabled:opacity-50 shadow-lg shadow-[#02022C]/20"
                 >
                   <Icons.CheckCircle className="w-4 h-4" /> Approve Step
                 </button>
                 <button
                   onClick={() => handleStepAction("improve")}
-                  disabled={isProcessingStep}
+                  disabled={isProcessingStep || (localStatus?.includes("image") && !selectedAssetId)}
                   className="flex-1 h-14 bg-white border border-[#E2E8F0] text-[#02022C] rounded-2xl flex items-center justify-center gap-2 font-black text-[12px] uppercase tracking-widest transition-all hover:bg-slate-50 active:scale-95 disabled:opacity-50 shadow-xs"
                 >
                   <Icons.MagicWand className="w-4 h-4" /> Improve
