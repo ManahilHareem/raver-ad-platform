@@ -471,7 +471,7 @@ function StudioPageContent() {
           if (!v.sessionId) continue;
           
           if (!isFirstPoll) {
-            await new Promise(resolve => setTimeout(resolve, 2000));
+            await new Promise(resolve => setTimeout(resolve, 5000));
           }
           isFirstPoll = false;
           

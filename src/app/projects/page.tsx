@@ -138,7 +138,7 @@ function ProjectsContent() {
           if (!c.sessionId) continue;
 
           if (!isFirstPoll) {
-            await new Promise(resolve => setTimeout(resolve, 3000));
+            await new Promise(resolve => setTimeout(resolve, 5000));
           }
           isFirstPoll = false;
 

@@ -39,8 +39,8 @@ export default function Header({ onMenuClick }: HeaderProps) {
     // Initial fetch
     fetchUnreadCount();
 
-    // Set up polling every 2 seconds
-    const interval = setInterval(fetchUnreadCount, 2000);
+    // Set up polling every 10 seconds
+    const interval = setInterval(fetchUnreadCount, 10000);
 
     const handleUpdate = (e: any) => {
       setUnreadCount(e.detail?.unreadCount || 0);

@@ -79,7 +79,7 @@ function ProducerContent() {
     if (activeCampaign && (activeCampaign.status === "queued" || activeCampaign.status === "in_production")) {
       interval = setInterval(() => {
         fetchCampaignStatus(activeCampaign.campaign_id || activeCampaign.id);
-      }, 3000);
+      }, 5000);
     }
     return () => {
       if (interval) clearInterval(interval);

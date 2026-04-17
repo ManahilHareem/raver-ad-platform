@@ -67,7 +67,7 @@ export default function CampaignDetailPage() {
        } catch (err) {
          console.warn("Polling update failed:", err);
        }
-    }, 3000);
+    }, 5000);
 
     return () => clearInterval(interval);
   }, [id, campaign?.status]);
