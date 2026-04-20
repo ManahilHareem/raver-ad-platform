@@ -410,6 +410,11 @@ export default function CampaignPreviewModal({
       }
 
       // Proactively refresh latest DB state for hitl/approval info after chat
+      try {
+        await apiFetch(`${API_BASE}/ai/director/session/${campaignData.session_id}/update`);
+      } catch (e) {
+        console.warn("Status update fetch failed after chat:", e);
+      }
       fetchDbUpdate();
       if (onRefresh) onRefresh();
     } catch (err) {
