@@ -28,6 +28,7 @@ interface CampaignPreviewModalProps {
     voice_id?: string | null;          // Added: voice_id from campaign
     campaign_status?: string | null;
     hitl?: any;
+    image_urls?: string[] | null;
   } | null;
   showHistory?: boolean;
   onRefresh?: () => void;
@@ -51,6 +52,8 @@ export default function CampaignPreviewModal({
   const [isGenerating, setIsGenerating] = useState(false);
   const [localStatus, setLocalStatus] = useState<string | undefined>(campaignData?.status);
   const chatEndRef = useRef<HTMLDivElement>(null);
+  const chatContainerRef = useRef<HTMLDivElement>(null);
+  const mainContentRef = useRef<HTMLDivElement>(null);
   const [isMuted, setIsMuted] = useState(true);
   const [videoError, setVideoError] = useState(false);
   // Editing states
@@ -64,6 +67,9 @@ export default function CampaignPreviewModal({
   const [stepNotes, setStepNotes] = useState("");
   const [selectedAssetId, setSelectedAssetId] = useState<string | null>(null);
   const [localHitl, setLocalHitl] = useState<any>(campaignData?.hitl);
+  const [localVideoUrl, setLocalVideoUrl] = useState<string | null>(campaignData?.video_url || null);
+  const [localMusicUrl, setLocalMusicUrl] = useState<string | null>(campaignData?.music_url || null);
+  const [localVoiceoverUrl, setLocalVoiceoverUrl] = useState<string | null>(campaignData?.voiceover_url || null);
   const [isRefreshing, setIsRefreshing] = useState(false);
 
   // Get the name of the selected voice for display
@@ -85,6 +91,9 @@ export default function CampaignPreviewModal({
       }
 
       setLocalHitl(campaignData.hitl);
+      setLocalVideoUrl(campaignData.video_url || null);
+      setLocalMusicUrl(campaignData.music_url || null);
+      setLocalVoiceoverUrl(campaignData.voiceover_url || null);
 
       // Proactively fetch latest DB state for hitl/approval info
       if (campaignData.session_id) {
@@ -108,6 +117,9 @@ export default function CampaignPreviewModal({
           if (data.status) setLocalStatus(data.status);
           if (data.history) setLocalHistory(data.history);
           if (data.script) setEditedScript(data.script);
+          if (data.video_url) setLocalVideoUrl(data.video_url);
+          if (data.music_url) setLocalMusicUrl(data.music_url);
+          if (data.voiceover_url) setLocalVoiceoverUrl(data.voiceover_url);
         }
       }
     } catch (e) {
@@ -346,12 +358,19 @@ export default function CampaignPreviewModal({
     }
   };
 
-  // Auto-scroll chat
+  // Auto-scroll chat internally without affecting main container
   useEffect(() => {
-    if (chatEndRef.current) {
-      chatEndRef.current.scrollIntoView({ behavior: "smooth" });
+    if (chatContainerRef.current) {
+      chatContainerRef.current.scrollTop = chatContainerRef.current.scrollHeight;
     }
   }, [localHistory, isGenerating]);
+
+  // Ensure modal starts at top when opened
+  useEffect(() => {
+    if (isOpen) {
+      mainContentRef.current?.scrollTo(0, 0);
+    }
+  }, [isOpen]);
 
   const handleSendMessage = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -389,6 +408,10 @@ export default function CampaignPreviewModal({
       if (data?.data?.campaign_status === "queued" || data?.data?.campaign_status === "in_production") {
         setLocalStatus(data.data.campaign_status);
       }
+
+      // Proactively refresh latest DB state for hitl/approval info after chat
+      fetchDbUpdate();
+      if (onRefresh) onRefresh();
     } catch (err) {
       console.error("Preview Chat Error:", err);
       setLocalHistory((prev) => [
@@ -410,7 +433,9 @@ export default function CampaignPreviewModal({
   const isApproved = (localStatus?.toLowerCase() === "approved" || localStatus?.toLowerCase() === "delivered");
   const isDraft = localStatus === "ready_for_human_review";
   const isAwaitingApproval = localStatus?.toLowerCase().startsWith("awaiting_approval_");
-  const canChat = (!isLaunched || isDraft) && !isApproved; // Allow chat during review to request revisions
+  const hasLaunched = localHistory.some(m => m.content.includes("LAUNCH_CAMPAIGN")) || 
+    ["in_production", "queued", "In Production", "completed", "delivered", "approved"].includes(localStatus || "");
+  const canChat = (!hasLaunched || isDraft) && !isApproved; // Allow chat until launch or during review
 
   return (
     <div className="fixed inset-y-0 right-0 left-0 lg:left-[280px] z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-sm animate-in fade-in duration-200">
@@ -464,7 +489,7 @@ export default function CampaignPreviewModal({
         </div>
 
         {/* Content */}
-        <div className="flex-1 overflow-y-auto p-8 custom-scrollbar space-y-8">
+        <div ref={mainContentRef} className="flex-1 overflow-y-auto p-8 custom-scrollbar space-y-8">
           {/* User Vision / Prompt section */}
           {(campaignData.prompt || campaignData.message) && (
             <div className="space-y-4">
@@ -489,9 +514,9 @@ export default function CampaignPreviewModal({
                     </div>
                   )}
                 </div>
-                {campaignData.video_url && (
+                {localVideoUrl && (
                   <button
-                    onClick={() => handleCopyUrl(campaignData.video_url!, "Video")}
+                    onClick={() => handleCopyUrl(localVideoUrl!, "Video")}
                     className="text-[11px] font-bold text-[#64748B] hover:text-[#02022C] transition-colors flex items-center gap-1.5 px-3 py-1 bg-slate-50 rounded-lg border border-slate-100"
                     title="Copy Video URL"
                   >
@@ -501,7 +526,7 @@ export default function CampaignPreviewModal({
                 )}
               </div>
               <div className="relative aspect-video rounded-3xl overflow-hidden bg-slate-100 border border-[#F1F5F9] shadow-inner group">
-                {campaignData.video_url ? (
+                {localVideoUrl ? (
                   <div className="relative w-full h-full">
                     {videoError ? (
                       <div className="absolute inset-0 flex flex-col items-center justify-center bg-slate-900/50 text-white gap-3 p-8 text-center italic">
@@ -519,7 +544,7 @@ export default function CampaignPreviewModal({
                       </div>
                     ) : (
                       <video
-                        src={campaignData.video_url}
+                        src={localVideoUrl}
                         controls
                         muted={isMuted}
                         className="w-full h-full object-cover"
@@ -561,6 +586,35 @@ export default function CampaignPreviewModal({
                   </div>
                 )}
               </div>
+
+              {/* Scene Images Gallery - Added as requested */}
+              {((localHitl?.image_urls?.length ?? 0) > 0 || (campaignData?.image_urls?.length ?? 0) > 0) && (
+                <div className="space-y-3 pt-2">
+                  <div className="flex items-center gap-2">
+                    <Icons.Image className="w-3.5 h-3.5 text-slate-400" />
+                    <h4 className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Production Gallery</h4>
+                  </div>
+                  <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                    {(localHitl?.image_urls || campaignData?.image_urls || []).map((url: string, idx: number) => (
+                      <div 
+                        key={idx} 
+                        className="relative aspect-square rounded-2xl overflow-hidden border border-[#F1F5F9] bg-slate-50 group/img cursor-zoom-in shadow-sm"
+                        onClick={() => window.open(normalizeAssetUrl(url), '_blank')}
+                      >
+                        <img 
+                          src={normalizeAssetUrl(url)} 
+                          alt={`Scene ${idx + 1}`}
+                          className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" 
+                        />
+                        <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors" />
+                        <div className="absolute bottom-2 right-2 w-6 h-6 bg-white/80 backdrop-blur-md rounded-lg flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                          <Icons.Search className="w-3 h-3 text-[#02022C]" />
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
             </div>
           )}
 
@@ -579,12 +633,12 @@ export default function CampaignPreviewModal({
                     )}
                   </div>
                   <div className="p-4 bg-white border border-[#F1F5F9] rounded-2xl shadow-sm flex flex-col gap-3">
-                    {campaignData.voiceover_url ? (
+                    {localVoiceoverUrl ? (
                       <>
                         <div className="flex items-center gap-2">
-                          <audio src={campaignData.voiceover_url} controls className="flex-1 h-8" />
+                          <audio src={localVoiceoverUrl} controls className="flex-1 h-8" />
                           <button
-                            onClick={() => handleCopyUrl(campaignData.voiceover_url!, "Voiceover")}
+                            onClick={() => handleCopyUrl(localVoiceoverUrl!, "Voiceover")}
                             className="w-8 h-8 rounded-lg bg-slate-50 text-slate-400 hover:text-[#02022C] border border-slate-100 flex items-center justify-center transition-all"
                             title="Copy Voiceover URL"
                           >
@@ -617,11 +671,11 @@ export default function CampaignPreviewModal({
                     )}
                   </div>
                   <div className="p-4 bg-white border border-[#F1F5F9] rounded-2xl shadow-sm flex flex-col gap-3">
-                    {campaignData.music_url ? (
+                    {localMusicUrl ? (
                       <div className="flex items-center gap-2">
-                        <audio src={campaignData.music_url} controls className="flex-1 h-8" />
+                        <audio src={localMusicUrl} controls className="flex-1 h-8" />
                         <button
-                          onClick={() => handleCopyUrl(campaignData.music_url!, "Music")}
+                          onClick={() => handleCopyUrl(localMusicUrl!, "Music")}
                           className="w-8 h-8 rounded-lg bg-slate-50 text-slate-400 hover:text-[#02022C] border border-slate-100 flex items-center justify-center transition-all"
                           title="Copy Music URL"
                         >
@@ -910,13 +964,13 @@ export default function CampaignPreviewModal({
           )}
 
           {/* Interactive Chat & Session History */}
-          {showHistory && (
+          {(showHistory || canChat) && (
             <div className="space-y-4 pt-4 border-t border-[#F1F5F9]">
               <p className="text-[11px] font-black text-[#02022C] uppercase tracking-[0.2em] opacity-40">
                 {showHistory ? "Session Audit Log" : canChat ? "Live Collaboration" : "Session Outcome"}
               </p>
               <div className="bg-[#FDFDFF] border border-[#F1F5F9] rounded-[32px] overflow-hidden flex flex-col shadow-sm">
-                <div className="p-6 space-y-8 flex flex-col max-h-[450px] overflow-y-auto custom-scrollbar">
+                <div ref={chatContainerRef} className="p-6 space-y-8 flex flex-col max-h-[450px] overflow-y-auto custom-scrollbar">
                   {(() => {
                     const processedHistory = localHistory
                       .map((msg) => {
@@ -1005,8 +1059,8 @@ export default function CampaignPreviewModal({
                   <div ref={chatEndRef} className="h-4" />
                 </div>
 
-                {/* Chat Input Area - Only show if not in Audit view and not launched */}
-                {canChat && !showHistory && (
+                {/* Chat Input Area */}
+                {canChat && (
                   <div className="p-6 bg-slate-50 border-t border-[#F1F5F9]">
                     <form
                       onSubmit={handleSendMessage}
