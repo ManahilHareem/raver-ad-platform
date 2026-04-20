@@ -436,11 +436,13 @@ export default function CampaignPreviewModal({
     localStatus || ""
   );
   const isApproved = (localStatus?.toLowerCase() === "approved" || localStatus?.toLowerCase() === "delivered");
+  const isRejected = localStatus?.toLowerCase() === "rejected";
+  const isFailed = localStatus?.toLowerCase() === "failed";
   const isDraft = localStatus === "ready_for_human_review";
   const isAwaitingApproval = localStatus?.toLowerCase().startsWith("awaiting_approval_");
   const hasLaunched = localHistory.some(m => m.content.includes("LAUNCH_CAMPAIGN")) || 
     ["in_production", "queued", "In Production", "completed", "delivered", "approved"].includes(localStatus || "");
-  const canChat = (!hasLaunched || isDraft) && !isApproved; // Allow chat until launch or during review
+  const canChat = !hasLaunched && !isRejected && !isFailed && !isApproved; // Disallow chat after launch, rejection, failure, or approval
 
   return (
     <div className="fixed inset-y-0 right-0 left-0 lg:left-[280px] z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-sm animate-in fade-in duration-200">
@@ -469,14 +471,14 @@ export default function CampaignPreviewModal({
                     <div
                       className={cn(
                         "w-1.5 h-1.5 rounded-full",
-                        !isLaunched ? "bg-amber-500 animate-pulse" : (isApproved ? "bg-emerald-500" : "bg-green-500")
+                        (isRejected || isFailed) ? "bg-red-500 animate-pulse" : (!isLaunched ? "bg-amber-500 animate-pulse" : (isApproved ? "bg-emerald-500" : "bg-green-500"))
                       )}
                     />
                     <span className={cn(
                       "text-[9px] font-black uppercase tracking-widest",
-                      isApproved ? "text-emerald-600" : "text-[#2E3A59]"
+                      isApproved ? "text-emerald-600" : ((isRejected || isFailed) ? "text-red-600" : "text-[#2E3A59]")
                     )}>
-                      {isApproved ? "Approved" : (!isLaunched ? (isDraft ? "In Review" : "Consultation") : localStatus === "ready" ? "Ready" : "Processing")}
+                      {isApproved ? "Approved" : (isRejected ? "Rejected" : (isFailed ? "Failed" : (!isLaunched ? (isDraft ? "In Review" : "Consultation") : localStatus === "ready" ? "Ready" : "Processing")))}
                     </span>
                   </div>
                 )}
@@ -494,7 +496,27 @@ export default function CampaignPreviewModal({
         </div>
 
         {/* Content */}
-        <div ref={mainContentRef} className="flex-1 overflow-y-auto p-8 custom-scrollbar space-y-8">
+        <div ref={mainContentRef} className="flex-1 overflow-y-auto custom-scrollbar p-8 space-y-8 bg-slate-50/50">
+          {/* Rejection/Failure Banner */}
+          {(isRejected || isFailed) && (
+            <div className="p-6 bg-red-50 border border-red-100 rounded-[24px] space-y-3">
+              <div className="flex items-center gap-3">
+                <div className="w-8 h-8 bg-red-100 rounded-lg flex items-center justify-center">
+                  {isFailed ? <Icons.AlertTriangle className="w-4 h-4 text-red-600" /> : <Icons.Plus className="w-4 h-4 text-red-600 rotate-45" />}
+                </div>
+                <p className="text-[12px] font-black text-red-600 uppercase tracking-widest">
+                  {isFailed ? "Production Failed" : "Changes Required"}
+                </p>
+              </div>
+              <p className="text-[14px] text-red-800 font-medium leading-relaxed">
+                {localHitl?.error || (isFailed ? "Something went wrong during the production process." : "This campaign step requires revisions before production can continue.")}
+              </p>
+              <p className="text-[11px] text-red-600/60 font-bold uppercase tracking-wider">
+                {isFailed ? "Please check the console or logs for more details, or try restarting the process." : "Please review the feedback above. This production attempt has been finalized as rejected."}
+              </p>
+            </div>
+          )}
+
           {/* User Vision / Prompt section */}
           {(campaignData.prompt || campaignData.message) && (
             <div className="space-y-4">
@@ -507,7 +529,8 @@ export default function CampaignPreviewModal({
             </div>
           )}
 
-          {(!isAwaitingApproval) && (
+          {/* Visual & Video section */}
+          {(localVideoUrl || (localHitl?.image_urls?.length ?? 0) > 0 || (isAwaitingApproval && (localStatus?.includes("render") || localStatus?.includes("image")))) && (
             <div className="space-y-4">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-3">
@@ -624,9 +647,9 @@ export default function CampaignPreviewModal({
           )}
 
           {/* Audio Tracks */}
-          {(!isAwaitingApproval || localStatus?.includes("voice") || localStatus?.includes("music")) && (
+          {(localVoiceoverUrl || localMusicUrl || (isAwaitingApproval && (localStatus?.includes("voice") || localStatus?.includes("music")))) && (
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {(!isAwaitingApproval || localStatus?.includes("voice")) && (
+              {(localVoiceoverUrl || (isAwaitingApproval && localStatus?.includes("voice"))) && (
                 <div className="space-y-4">
                   <div className="flex items-center gap-3">
                     <h3 className="text-[12px] font-black text-[#02022C] uppercase tracking-[0.2em]">Voiceover</h3>
@@ -664,7 +687,7 @@ export default function CampaignPreviewModal({
                 </div>
               )}
 
-              {(!isAwaitingApproval || localStatus?.includes("music")) && (
+              {(localMusicUrl || (isAwaitingApproval && localStatus?.includes("music"))) && (
                 <div className="space-y-4">
                   <div className="flex items-center gap-3">
                     <h3 className="text-[12px] font-black text-[#02022C] uppercase tracking-[0.2em]">Background Music</h3>
@@ -697,7 +720,7 @@ export default function CampaignPreviewModal({
           )}
 
           {/* Script Content - Editable */}
-          {(!isAwaitingApproval || localStatus?.includes("text")) && (
+          {(editedScript || campaignData.script || (isAwaitingApproval && localStatus?.includes("text"))) && (
             <div className="space-y-4">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-3">
@@ -738,7 +761,7 @@ export default function CampaignPreviewModal({
           )}
 
           {/* Voice & Music Controls */}
-          {!isApproved && !isAwaitingApproval && <>
+          {!isApproved && !isAwaitingApproval && !hasLaunched && !isRejected && <>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               {/* Voice Selection */}
               <div className="space-y-4">
@@ -969,7 +992,7 @@ export default function CampaignPreviewModal({
           )}
 
           {/* Interactive Chat & Session History */}
-          {(showHistory || canChat) && (
+          {(showHistory || canChat || localHistory.length > 0) && (
             <div className="space-y-4 pt-4 border-t border-[#F1F5F9]">
               <p className="text-[11px] font-black text-[#02022C] uppercase tracking-[0.2em] opacity-40">
                 {showHistory ? "Session Audit Log" : canChat ? "Live Collaboration" : "Session Outcome"}
@@ -999,9 +1022,9 @@ export default function CampaignPreviewModal({
                         if (!content && !isStatus) return null;
                         return { ...msg, content: isStatus ? "LAUNCH_CAMPAIGN_PLACEHOLDER" : content };
                       })
-                      .filter((msg): msg is { role: string; content: string } => msg !== null);
+                      .filter((msg): msg is { role: string; content: string; assets?: any[] } => msg !== null);
 
-                    const finalHistory: { role: string; content: string }[] = [];
+                    const finalHistory: { role: string; content: string; assets?: any[] }[] = [];
                     processedHistory.forEach((msg) => {
                       const prev = finalHistory[finalHistory.length - 1];
                       if (prev && prev.role === msg.role && prev.content === msg.content) return;
@@ -1047,6 +1070,30 @@ export default function CampaignPreviewModal({
                               <MarkdownRenderer content={msg.content} isUser={msg.role === "user"} />
                             )}
                           </div>
+
+                          {/* Attached Assets Gallery */}
+                          {msg.assets && msg.assets.length > 0 && (
+                            <div className={cn(
+                              "flex flex-wrap gap-2 mt-2",
+                              msg.role === "user" ? "justify-end" : "justify-start"
+                            )}>
+                              {msg.assets.map((asset: any, idx: number) => (
+                                <div 
+                                  key={idx} 
+                                  className="relative w-20 h-20 rounded-xl overflow-hidden border border-slate-100 shadow-sm group/asset cursor-pointer"
+                                  onClick={() => window.open(normalizeAssetUrl(asset.url), '_blank')}
+                                >
+                                  <img 
+                                    src={normalizeAssetUrl(asset.url)} 
+                                    alt={asset.name || "Asset"} 
+                                    className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300" 
+                                  />
+                                  <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors" />
+                                </div>
+                              ))}
+                            </div>
+                          )}
+
                           <span className="text-[8px] text-slate-400 mt-1.5 font-black uppercase tracking-widest px-1 opacity-60">
                             {msg.role === "user" ? "Client Account" : "AI Director"}
                           </span>

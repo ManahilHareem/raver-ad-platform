@@ -51,6 +51,7 @@ interface Campaign {
   voice?: string | null;
   campaign_status?: string | null;
   hitl?: any;
+  step_approvals?: any;
 }
 
 function StudioLoadingState() {
@@ -223,7 +224,8 @@ function StudioPageContent() {
                 prompt: s.prompt,
                 completed_nodes: s.completed_nodes || [],
                 voice: s.voice || brief.voice,
-                campaign_status: s.campaign_status
+                campaign_status: s.campaign_status,
+                step_approvals: s.step_approvals
               };
             });
           }
@@ -632,6 +634,7 @@ function StudioPageContent() {
             videoUrl={currentPipelineCampaign?.videoUrl}
             completedNodes={currentPipelineCampaign?.completed_nodes}
             campaignStatus={currentPipelineCampaign?.campaign_status}
+            stepApprovals={currentPipelineCampaign?.step_approvals}
           />
         </div>
 

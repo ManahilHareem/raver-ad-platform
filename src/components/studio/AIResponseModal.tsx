@@ -6,7 +6,7 @@ import Image from "next/image";
 import { useState, useEffect, useRef, useCallback } from "react";
 import { getToken } from "@/lib/auth";
 import { apiFetch } from "@/lib/api";
-import { cn, enrichMessageWithCampaign } from "@/lib/utils";
+import { cn, enrichMessageWithCampaign, normalizeAssetUrl } from "@/lib/utils";
 import { MarkdownRenderer } from "@/components/ui/MarkdownRenderer";
 import { useVoiceInput } from "@/hooks/useVoiceInput";
 
@@ -15,6 +15,7 @@ interface Message {
   role: "user" | "ai";
   content: string;
   timestamp: Date;
+  assets?: any[];
 }
 
 interface AIResponseModalProps {
@@ -83,7 +84,8 @@ export default function AIResponseModal({
             id: `hist-${i}-${Date.now()}`,
             role: (m.role === "assistant" || m.role === "ai") ? "ai" : "user",
             content: content,
-            timestamp: new Date()
+            timestamp: new Date(),
+            assets: (m as any).assets
           };
         });
         setMessages(historicalMessages);
@@ -306,6 +308,29 @@ export default function AIResponseModal({
                     return <MarkdownRenderer content={content.trim()} isUser={m.role === "user"} />;
                   })()}
                 </div>
+
+                {/* Attached Assets Gallery */}
+                {m.assets && m.assets.length > 0 && (
+                  <div className={cn(
+                    "flex flex-wrap gap-2 mt-2",
+                    m.role === "user" ? "justify-end" : "justify-start"
+                  )}>
+                    {m.assets.map((asset: any, idx: number) => (
+                      <div 
+                        key={idx} 
+                        className="relative w-16 h-16 rounded-xl overflow-hidden border border-slate-100 shadow-sm group/asset cursor-pointer"
+                        onClick={() => window.open(normalizeAssetUrl(asset.url), '_blank')}
+                      >
+                        <img 
+                          src={normalizeAssetUrl(asset.url)} 
+                          alt={asset.name || "Asset"} 
+                          className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300" 
+                        />
+                        <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors" />
+                      </div>
+                    ))}
+                  </div>
+                )}
                 <span className="text-[9px] text-slate-400 mt-1.5 font-bold uppercase tracking-widest px-1">
                   {m.role === "user" ? "YOU" : "AI DIRECTOR"} • {m.timestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                 </span>

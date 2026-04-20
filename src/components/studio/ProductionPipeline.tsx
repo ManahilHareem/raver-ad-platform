@@ -11,10 +11,11 @@ interface ProductionPipelineProps {
   videoUrl?: string | null;
   completedNodes?: string[];
   campaignStatus?: string | null;
+  stepApprovals?: any;
 }
 
-export default function ProductionPipeline({ status, message, videoUrl, completedNodes = [], campaignStatus }: ProductionPipelineProps) {
-  const getStepStatus = (label: string): "completed" | "active" | "pending" | "awaiting_approval" => {
+export default function ProductionPipeline({ status, message, videoUrl, completedNodes = [], campaignStatus, stepApprovals }: ProductionPipelineProps) {
+  const getStepStatus = (label: string): "completed" | "active" | "pending" | "awaiting_approval" | "rejected" => {
     const s = status?.toLowerCase() || "";
     const msg = message?.toLowerCase() || "";
     
@@ -27,6 +28,14 @@ export default function ProductionPipeline({ status, message, videoUrl, complete
       "Rendering": ["render", "video_render", "assemble_video", "build_video"],
       "Quality Check": ["score_quality", "check_quality", "guardrails"]
     };
+
+    // Check for rejection first as it takes precedence
+    if (stepApprovals) {
+      const stepKey = nodeMap[label]?.[0];
+      if (stepKey && stepApprovals[stepKey]?.action === "reject") {
+        return "rejected";
+      }
+    }
 
     // Terminal statuses that mean everything is done
     const terminalStatuses = ["delivered", "ready", "completed", "ready_for_human_review", "ready for human review", "approved", "shipped"];
@@ -117,9 +126,6 @@ export default function ProductionPipeline({ status, message, videoUrl, complete
         break;
     }
 
-    // ... existing logic ...
-
-
     return "pending";
   };
 
@@ -164,6 +170,10 @@ export default function ProductionPipeline({ status, message, videoUrl, complete
                 <div className="flex items-center justify-center bg-amber-500/10 border-amber-500 ring-2 ring-amber-500/20 animate-pulse rounded-lg p-2">
                   <Icons.Zap className="w-5 h-5 text-amber-600" />
                 </div>
+              ) : step.status === "rejected" ? (
+                <div className="flex items-center justify-center bg-red-500/10 border border-red-500 rounded-lg p-2 ring-2 ring-red-500/20">
+                  <Icons.Plus className="w-5 h-5 text-red-600 rotate-45" />
+                </div>
               ) : (
                 <div className={cn(
                   "w-[20px] h-[20px] rounded-[8px] flex items-center justify-center border-[0.35px] border-[#0000001A] backdrop-blur-sm transition-all",
@@ -173,7 +183,8 @@ export default function ProductionPipeline({ status, message, videoUrl, complete
             </div>
             <span className={cn(
               "text-[12px] font-medium text-center whitespace-nowrap text-[#121212]",
-              (step.status === "active" || step.status === "awaiting_approval") && "text-[#02022C] font-bold"
+              (step.status === "active" || step.status === "awaiting_approval" || step.status === "rejected") && "text-[#02022C] font-bold",
+              step.status === "rejected" && "text-red-600"
             )}>
               {step.label}
             </span>
