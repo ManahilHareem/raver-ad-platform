@@ -442,7 +442,7 @@ export default function CampaignPreviewModal({
   const isApproved = (localStatus?.toLowerCase() === "approved" || localStatus?.toLowerCase() === "delivered");
   const isRejected = localStatus?.toLowerCase() === "rejected";
   const isFailed = localStatus?.toLowerCase() === "failed";
-  const isDraft = localStatus === "ready_for_human_review";
+  const isDraft = localStatus?.toLowerCase() === "ready_for_human_review";
   const isAwaitingApproval = localStatus?.toLowerCase().startsWith("awaiting_approval_");
   const hasLaunched = localHistory.some(m => m.content.includes("LAUNCH_CAMPAIGN")) || 
     ["in_production", "queued", "In Production", "completed", "delivered", "approved"].includes(localStatus || "");
@@ -765,7 +765,7 @@ export default function CampaignPreviewModal({
           )}
 
           {/* Voice & Music Controls */}
-          {!isApproved && !isAwaitingApproval && !hasLaunched && !isRejected && <>
+          {isDraft && <>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               {/* Voice Selection */}
               <div className="space-y-4">
