@@ -311,7 +311,8 @@ function AudioLeadContent() {
           setRefreshTrigger(prev => prev + 1);
           setIsLoading(false);
           toast.success("Mix completed successfully!");
-          setTimeout(() => window.location.reload(), 1000);
+          await fetchGlobalVault();
+          setTimeout(() => window.location.reload(), 2000);
           return;
         }
 
