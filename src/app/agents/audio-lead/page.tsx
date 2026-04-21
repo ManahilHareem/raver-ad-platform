@@ -303,14 +303,19 @@ function AudioLeadContent() {
       });
 
       if (response.ok) {
+        console.log("Mix initiated successfully");
         const data = await response.json();
+        
         if (data.success && data.data?.audio_files?.length > 0) {
-          if (!sessionId) await fetchGlobalVault();
-          else await fetchVault(effectiveSessionId);
+          console.log("Mix completed immediately");
+          setRefreshTrigger(prev => prev + 1);
           setIsLoading(false);
+          toast.success("Mix completed successfully!");
+          setTimeout(() => window.location.reload(), 1000);
           return;
         }
 
+        console.log("Polling for mix results...");
         const interval = setInterval(async () => {
            const vResponse = await apiFetch(`${API_BASE}/ai/audio-lead/vault/${effectiveSessionId}`);
            if (vResponse.ok) {
@@ -321,21 +326,31 @@ function AudioLeadContent() {
               );
               
               if (hasMix) {
-                 if (!sessionId) await fetchGlobalVault();
-                 else await fetchVault(effectiveSessionId);
+                 console.log("Mix found in vault");
                  clearInterval(interval);
+                 setRefreshTrigger(prev => prev + 1);
                  setIsLoading(false);
+                 toast.success("Mix ready!");
+                 setTimeout(() => window.location.reload(), 1000);
               }
            }
         }, 3000);
-        setTimeout(() => { clearInterval(interval); setIsLoading(false); }, 45000);
+        setTimeout(() => { 
+          console.log("Mix polling timeout reached");
+          clearInterval(interval); 
+          setIsLoading(false); 
+          setRefreshTrigger(prev => prev + 1);
+          window.location.reload(); 
+        }, 45000);
       } else {
+        console.error("Mixing request failed:", response.status);
         setIsLoading(false);
-        alert("Mixing failed.");
+        toast.error("Mixing failed. Please check the console.");
       }
     } catch (err) {
       console.error("Mixing error:", err);
       setIsLoading(false);
+      toast.error("An error occurred during mixing.");
     }
   };
 
