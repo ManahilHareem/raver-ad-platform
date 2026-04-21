@@ -278,7 +278,6 @@ function ProjectsContent() {
                     title={campaign.title}
                     image={campaign.image || "/assets/hashtag-campaign.jpg"}
                     time={timeStr}
-                    members={3} // Mocked members count
                     status={campaign.status}
                     message={campaign.message}
                     videoUrl={campaign.videoUrl}

@@ -8,7 +8,6 @@ import { toast } from "react-toastify";
 interface ProjectCardProps {
   title: string;
   time?: string;
-  members?: number;
   image: string;
   status?: string;
   message?: string;
@@ -24,7 +23,6 @@ interface ProjectCardProps {
 export default function ProjectCard({ 
   title, 
   time, 
-  members, 
   image,
   status,
   message,
@@ -169,10 +167,6 @@ export default function ProjectCard({
           <div className="flex items-center gap-2 text-[12px] font-regular text-[#4F4F4F]">
             <Icons.Clock className="w-4 h-4" />
             <span>{time} ago</span>
-          </div>
-          <div className="flex items-center -space-x-2">
-           <Icons.User className="w-4 h-4" />
-            {members}
           </div>
         </div>
 
