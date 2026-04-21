@@ -9,6 +9,8 @@ import { apiFetch } from "@/lib/api";
 import { RaverLoadingState } from "@/components/ui/RaverLoadingState";
 import { toast } from "react-toastify";
 import ImageViewerModal from "@/components/agents/ImageViewerModal";
+import { normalizeAssetUrl } from "@/lib/utils";
+import { VoiceSelector, VOICE_OPTIONS } from "@/components/agents/audio-lead/VoiceSelector";
 
 export default function CampaignDetailPage() {
   const params = useParams();
@@ -21,10 +23,15 @@ export default function CampaignDetailPage() {
   const [isPreviewOpen, setIsPreviewOpen] = useState(false);
   const [selectedImage, setSelectedImage] = useState<string>("");
   const [isApproving, setIsApproving] = useState(false);
+  const [isProcessingStep, setIsProcessingStep] = useState(false);
+  const [selectedAssetId, setSelectedAssetId] = useState<string | null>(null);
+  const [stepNotes, setStepNotes] = useState("");
+  const [selectedVoice, setSelectedVoice] = useState<string>("");
 
   useEffect(() => {
     const fetchCampaign = async () => {
       try {
+
         const response = await apiFetch(`${process.env.NEXT_PUBLIC_API_URL}/ai/producer/campaign/${id}`);
         if (response.ok) {
           const data = await response.json();
@@ -44,7 +51,24 @@ export default function CampaignDetailPage() {
       }
     };
 
-    if (id) fetchCampaign();
+    if (id) {
+      fetchCampaign();
+      // Proactively fetch latest DB state for hitl/approval info
+      const fetchHitlData = async () => {
+        try {
+          const res = await apiFetch(`${process.env.NEXT_PUBLIC_API_URL}/ai/director/session/${id}/db-update`);
+          if (res.ok) {
+            const resData = await res.json();
+            if (resData.data) {
+              setCampaign((prev: any) => ({ ...prev, hitl: resData.data }));
+            }
+          }
+        } catch (e) {
+          console.warn("HITL data fetch failed:", e);
+        }
+      };
+      fetchHitlData();
+    }
   }, [id]);
 
   // Use a second useEffect for polling to avoid reset issues
@@ -143,9 +167,10 @@ export default function CampaignDetailPage() {
     setIsApproving(true);
     const toastId = toast.loading("Finalizing production archives...");
     try {
-      const response = await apiFetch(`${process.env.NEXT_PUBLIC_API_URL}/ai/producer/campaign/${id}/approve`, {
-        method: "POST",
-        body: JSON.stringify({ approved: true, notes: "Approved by Human Creative Director" })
+      const sessionId = campaign.session_id ;
+      console.log("Session ID:", sessionId);
+      const response = await apiFetch(`${process.env.NEXT_PUBLIC_API_URL}/ai/director/session/${sessionId}/approve`, {
+        method: "PATCH"
       });
 
       if (response.ok) {
@@ -156,18 +181,87 @@ export default function CampaignDetailPage() {
           isLoading: false,
           autoClose: 3000
         });
+        
+        // Match the reload behavior of the modal
+        setTimeout(() => {
+          window.location.reload();
+        }, 1500);
       } else {
         throw new Error("Failed to approve production");
       }
-    } catch (err) {
+    } catch (err: any) {
       toast.update(toastId, {
-        render: "Finalization failed. Please check neural connection.",
+        render: `Finalization failed: ${err.message}`,
         type: "error",
         isLoading: false,
         autoClose: 3000
       });
     } finally {
       setIsApproving(false);
+    }
+  };
+
+  const handleStepAction = async (action: "approve" | "improve" | "reject") => {
+    const currentStatus = campaign.status?.toLowerCase() || "";
+    const stepName = currentStatus.startsWith("awaiting_approval_")
+      ? currentStatus.replace("awaiting_approval_", "")
+      : "render";
+
+    setIsProcessingStep(true);
+    const toastId = toast.loading(`${action.charAt(0).toUpperCase() + action.slice(1)}ing ${stepName.replace("_", " ")}...`);
+
+    try {
+      const bodyData: any = {
+        step_name: stepName,
+        action: action,
+        notes: stepNotes || (action === "approve" ? "Looks good" : "Requires changes")
+      };
+
+      if (selectedAssetId) {
+        bodyData.selected_asset_id = selectedAssetId;
+      }
+      
+      if (stepName === "generate_voice" && selectedVoice) {
+        bodyData.voice_id = selectedVoice;
+        const voiceOption = VOICE_OPTIONS.find(v => v.id === selectedVoice);
+        const voiceName = voiceOption ? voiceOption.name : selectedVoice;
+        bodyData.notes = `[Selected Voice: ${voiceName} - ${selectedVoice}] ${bodyData.notes}`;
+      }
+
+      const response = await apiFetch(`${process.env.NEXT_PUBLIC_API_URL}/ai/producer/campaign/${campaign.session_id}/approve-step`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(bodyData)
+      });
+
+      if (!response.ok) throw new Error(`Failed to ${action} step`);
+
+      toast.update(toastId, {
+        render: `Successfully ${action}d ${stepName.replace("_", " ")}!`,
+        type: "success",
+        isLoading: false,
+        autoClose: 3000
+      });
+
+      setStepNotes("");
+      setSelectedAssetId(null);
+      
+      // Refresh campaign data
+      const refreshRes = await apiFetch(`${process.env.NEXT_PUBLIC_API_URL}/ai/producer/campaign/${id}`);
+      if (refreshRes.ok) {
+        const refreshData = await refreshRes.json();
+        setCampaign(refreshData.data);
+      }
+    } catch (error: any) {
+      console.error(`Step ${action} error:`, error);
+      toast.update(toastId, {
+        render: `Error: ${error.message}`,
+        type: "error",
+        isLoading: false,
+        autoClose: 5000
+      });
+    } finally {
+      setIsProcessingStep(false);
     }
   };
 
@@ -216,6 +310,13 @@ export default function CampaignDetailPage() {
           </div>
 
           <div className="flex items-center gap-3 w-full sm:w-auto">
+            {(campaign.status?.toLowerCase().startsWith("awaiting_approval_") || campaign.status === "ready_for_human_review") && (
+              <div className="flex items-center gap-2 px-4 py-2 bg-amber-50 border border-amber-100 rounded-2xl animate-pulse">
+                <Icons.Zap className="w-4 h-4 text-amber-500" />
+                <span className="text-[10px] font-black text-amber-600 uppercase tracking-widest">Review Required</span>
+              </div>
+            )}
+
             {campaign.status === "ready_for_human_review" && (
               <>
                 <button 
@@ -241,6 +342,320 @@ export default function CampaignDetailPage() {
         {/* Main Body Content Scrollable */}
         <div className="flex-1 overflow-y-auto p-4 sm:p-8 md:p-12 custom-scrollbar">
           <div className="max-w-[1400px] mx-auto flex flex-col gap-8 md:gap-12 pb-32">
+            
+            {/* HITL: Action Required Section */}
+            {campaign.status?.toLowerCase().startsWith("awaiting_approval_") && (
+              <div className="bg-[#FDFDFF] border border-amber-100 rounded-[32px] p-8 md:p-12 shadow-sm relative flex flex-col gap-8 z-20">
+                <div className="absolute top-0 right-0 w-64 h-64 bg-amber-500/5 blur-[80px] -mr-32 -mt-32 overflow-hidden rounded-tr-[32px]" />
+                
+                <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 relative z-10">
+                  <div className="flex items-center gap-5">
+                    <div className="w-16 h-16 bg-amber-500 rounded-[24px] flex items-center justify-center shadow-lg shadow-amber-500/20 animate-pulse">
+                      <Icons.Zap className="w-8 h-8 text-white" />
+                    </div>
+                    <div className="flex flex-col">
+                      <h2 className="text-2xl font-black text-[#01012A] tracking-tighter lowercase">Human Intervention Required</h2>
+                      <p className="text-[11px] font-black uppercase tracking-widest text-amber-600 mt-1">Reviewing: {campaign.status.replace("awaiting_approval_", "").replace("_", " ")}</p>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Candidate Selection for Images */}
+                {campaign.status.includes("image") && (() => {
+                  const candidates = campaign.hitl?.candidates || 
+                                   campaign.hitl?.image_urls || 
+                                   campaign.nodes?.generate_image?.result?.scene_images || 
+                                   [];
+                  
+                  if (candidates.length === 0) return null;
+
+                  return (
+                    <div className="flex flex-col gap-6 relative z-10">
+                      <span className="text-[10px] font-black uppercase tracking-[0.2em] text-[#01012A]/40">Select generation candidate</span>
+                      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                        {candidates.map((candidate: any, idx: number) => {
+                          const assetUrl = candidate.url || candidate.image_url || (typeof candidate === "string" ? candidate : null);
+                          const assetId = candidate.id || idx.toString();
+                          return (
+                            <div 
+                              key={assetId}
+                              onClick={() => setSelectedAssetId(assetId)}
+                              className={cn(
+                                "relative aspect-square rounded-[24px] overflow-hidden border-4 cursor-pointer transition-all hover:scale-[1.02] group shadow-sm",
+                                selectedAssetId === assetId ? "border-[#01012A] ring-8 ring-[#01012A]/10" : "border-white opacity-60 hover:opacity-100"
+                              )}
+                            >
+                              <img src={normalizeAssetUrl(assetUrl)} alt={`Candidate ${idx + 1}`} className="w-full h-full object-cover" />
+                              {selectedAssetId === assetId && (
+                                <div className="absolute top-4 right-4 w-8 h-8 bg-[#01012A] text-white rounded-full flex items-center justify-center shadow-lg">
+                                  <Icons.CheckCircle className="w-5 h-5" />
+                                </div>
+                              )}
+                            </div>
+                          );
+                        })}
+                      </div>
+                    </div>
+                  );
+                })()}
+
+                {/* Candidate Review for Text Generation */}
+                {campaign.status.includes("text") && (() => {
+                  const result = campaign.nodes?.generate_text?.result || {};
+                  const scriptObj = result.script || {};
+                  const sceneScripts = scriptObj.scenes_scripts || [];
+                  const overlays = result.overlays || [];
+                  const platformCopy = result.platform_copy || {};
+                  const firstPlatform = Object.values(platformCopy)[0] as any || {};
+
+                  return (
+                    <div className="flex flex-col gap-8 relative z-10">
+                      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                        {/* Script & Overlays */}
+                        <div className="flex flex-col gap-4">
+                          <span className="text-[10px] font-black uppercase tracking-[0.2em] text-[#01012A]/40">Generated Script & Overlays</span>
+                          <div className="space-y-4">
+                            {sceneScripts.map((text: string, idx: number) => (
+                              <div 
+                              key={idx} 
+                              className={cn(
+                                "p-5 bg-white border rounded-[20px] shadow-sm transition-all cursor-pointer",
+                                selectedAssetId === `scene_${idx + 1}` ? "border-[#01012A] ring-4 ring-[#01012A]/5" : "border-slate-100 hover:border-slate-200"
+                              )}
+                              onClick={() => setSelectedAssetId(selectedAssetId === `scene_${idx + 1}` ? null : `scene_${idx + 1}`)}
+                            >
+                                <div className="flex items-center justify-between mb-2">
+                                  <div className="flex items-center gap-2">
+                                    <input 
+                                      type="checkbox" 
+                                      checked={selectedAssetId === `scene_${idx + 1}`}
+                                      onChange={() => setSelectedAssetId(selectedAssetId === `scene_${idx + 1}` ? null : `scene_${idx + 1}`)}
+                                      className="w-3.5 h-3.5 rounded border-slate-300 text-[#01012A] focus:ring-[#01012A]"
+                                    />
+                                    <span className="text-[9px] font-black text-[#01012A] uppercase">Scene 0{idx + 1}</span>
+                                  </div>
+                                  <Icons.AudioWave className="w-3 h-3 text-blue-400" />
+                                </div>
+                                <p className="text-[12px] font-medium text-slate-600 leading-relaxed italic mb-3">"{text}"</p>
+                                {overlays[idx] && (
+                                  <div className="p-3 bg-slate-50 rounded-xl border border-slate-100">
+                                    <span className="text-[8px] font-black text-blue-500 uppercase">Screen Overlay</span>
+                                    <p className="text-[11px] font-black text-[#01012A] mt-0.5">{overlays[idx].text}</p>
+                                  </div>
+                                )}
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+
+                        {/* Social Platform Copy */}
+                        <div className="flex flex-col gap-4">
+                          <span className="text-[10px] font-black uppercase tracking-[0.2em] text-[#01012A]/40">Social Platform Content</span>
+                          <div className="p-6 bg-slate-900 text-white rounded-[32px] border border-white/5 h-fit">
+                            <div className="flex items-center gap-2 mb-4">
+                              <Icons.MessageCircle className="w-4 h-4 text-white/50" />
+                              <span className="text-[9px] font-black uppercase tracking-widest text-white/40">Optimized Caption</span>
+                            </div>
+                            <p className="text-[13px] font-medium leading-relaxed mb-6 whitespace-pre-wrap">
+                              {firstPlatform.caption || "No caption generated."}
+                            </p>
+                            {firstPlatform.hashtags && (
+                              <div className="flex flex-wrap gap-2 pt-6 border-t border-white/10">
+                                {firstPlatform.hashtags.map((tag: string, i: number) => (
+                                  <span key={i} className="text-[10px] font-bold text-blue-400">{tag}</span>
+                                ))}
+                              </div>
+                            )}
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  );
+                })()}
+
+                {/* Candidate Review for Voice Generation */}
+                {campaign.status.includes("voice") && (() => {
+                  const result = campaign.nodes?.generate_voice?.result || {};
+                  const voiceUrl = result.voiceover_url || "";
+                  
+                  if (!voiceUrl) return null;
+
+                  return (
+                    <div className="flex flex-col gap-6 relative z-30">
+                      <div className="p-8 bg-white border border-slate-100 rounded-[32px] shadow-sm flex flex-col gap-6">
+                        <div className="flex items-center gap-4">
+                          <div className="w-12 h-12 bg-slate-50 rounded-2xl flex items-center justify-center border border-slate-100">
+                            <Icons.Mic className="w-6 h-6 text-[#01012A]" />
+                          </div>
+                          <div className="flex flex-col">
+                            <span className="text-[10px] font-black uppercase tracking-[0.2em] text-[#01012A]/40">Neural Voice Generation</span>
+                            <h4 className="text-lg font-black text-[#01012A] tracking-tighter lowercase">Review Master Voiceover</h4>
+                          </div>
+                        </div>
+                        
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-end">
+                          <div className="space-y-4">
+                            <span className="text-[10px] font-black uppercase tracking-[0.2em] text-[#01012A]/40">Neural Voice Casting</span>
+                            <VoiceSelector 
+                              className="no-label"
+                              selectedVoice={selectedVoice || campaign.brief?.voice}
+                              onSelect={(id) => setSelectedVoice(id)}
+                            />
+                          </div>
+                          
+                          <div className="space-y-4">
+                            <span className="text-[10px] font-black uppercase tracking-[0.2em] text-[#01012A]/40">Vocal Preview</span>
+                            <div className="bg-slate-50 p-3 rounded-[24px] border border-slate-100 flex items-center h-14">
+                              <audio 
+                                src={normalizeAssetUrl(voiceUrl)} 
+                                controls 
+                                className="w-full h-10 accent-[#01012A]" 
+                              />
+                            </div>
+                          </div>
+                        </div>
+
+                        <div className="flex items-center gap-2 px-4 py-3 bg-emerald-50 border border-emerald-100 rounded-xl">
+                          <Icons.Success className="w-4 h-4 text-emerald-500" />
+                          <span className="text-[10px] font-bold text-emerald-600 uppercase tracking-widest">Neural synthesis complete</span>
+                        </div>
+                      </div>
+                    </div>
+                  );
+                })()}
+
+                {/* Candidate Review for Music Generation */}
+                {campaign.status.includes("music") && (() => {
+                  const result = campaign.nodes?.generate_music?.result || {};
+                  const musicUrl = result.music_url || "";
+                  const promptUsed = result.prompt_used || "";
+                  
+                  if (!musicUrl) return null;
+
+                  return (
+                    <div className="flex flex-col gap-6 relative z-30">
+                      <div className="p-8 bg-white border border-slate-100 rounded-[32px] shadow-sm flex flex-col gap-6">
+                        <div className="flex items-center gap-4">
+                          <div className="w-12 h-12 bg-slate-50 rounded-2xl flex items-center justify-center border border-slate-100">
+                            <Icons.Music className="w-6 h-6 text-[#01012A]" />
+                          </div>
+                          <div className="flex flex-col">
+                            <span className="text-[10px] font-black uppercase tracking-[0.2em] text-[#01012A]/40">Neural Composition</span>
+                            <h4 className="text-lg font-black text-[#01012A] tracking-tighter lowercase">Review Background Score</h4>
+                          </div>
+                        </div>
+                        
+                        <div className="bg-slate-50 p-6 rounded-[24px] border border-slate-100">
+                          <audio 
+                            src={normalizeAssetUrl(musicUrl)} 
+                            controls 
+                            className="w-full h-12 accent-[#01012A]" 
+                          />
+                        </div>
+
+                        {promptUsed && (
+                          <div className="space-y-2">
+                            <span className="text-[10px] font-black uppercase tracking-[0.2em] text-[#01012A]/40 pl-1">Generation Prompt</span>
+                            <div className="p-4 bg-slate-50 rounded-2xl border border-slate-100 italic text-[11px] text-slate-500 leading-relaxed">
+                              "{promptUsed}"
+                            </div>
+                          </div>
+                        )}
+
+                        <div className="flex items-center gap-2 px-4 py-3 bg-emerald-50 border border-emerald-100 rounded-xl w-fit">
+                          <Icons.Success className="w-4 h-4 text-emerald-500" />
+                          <span className="text-[10px] font-bold text-emerald-600 uppercase tracking-widest">Neural composition complete</span>
+                        </div>
+                      </div>
+                    </div>
+                  );
+                })()}
+
+                {/* Candidate Review for Final Render */}
+                {campaign.status.includes("render") && (() => {
+                  const result = campaign.nodes?.render?.result || {};
+                  const videoUrl = result.video_url || "";
+                  
+                  if (!videoUrl) return null;
+
+                  return (
+                    <div className="flex flex-col gap-6 relative z-30">
+                      <div className="p-8 bg-white border border-slate-100 rounded-[32px] shadow-sm flex flex-col gap-6">
+                        <div className="flex items-center gap-4">
+                          <div className="w-12 h-12 bg-slate-50 rounded-2xl flex items-center justify-center border border-slate-100">
+                            <Icons.Play className="w-6 h-6 text-[#01012A]" />
+                          </div>
+                          <div className="flex flex-col">
+                            <span className="text-[10px] font-black uppercase tracking-[0.2em] text-[#01012A]/40">Production Finalization</span>
+                            <h4 className="text-lg font-black text-[#01012A] tracking-tighter lowercase">Review Master Render</h4>
+                          </div>
+                        </div>
+                        
+                        <div className="aspect-video bg-slate-900 rounded-[24px] overflow-hidden border border-slate-200/20 relative group">
+                          <video 
+                            src={normalizeAssetUrl(videoUrl)} 
+                            controls 
+                            className="w-full h-full object-contain" 
+                          />
+                        </div>
+
+                        <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
+                          <div className="p-4 bg-slate-50 rounded-2xl border border-slate-100">
+                            <span className="text-[8px] font-black text-slate-400 uppercase block mb-1">Format</span>
+                            <span className="text-[11px] font-black text-[#01012A]">{result.format || "N/A"}</span>
+                          </div>
+                          <div className="p-4 bg-slate-50 rounded-2xl border border-slate-100">
+                            <span className="text-[8px] font-black text-slate-400 uppercase block mb-1">Render Time</span>
+                            <span className="text-[11px] font-black text-[#01012A]">{result.render_seconds?.toFixed(1)}s</span>
+                          </div>
+                        </div>
+
+                        <div className="flex items-center gap-2 px-4 py-3 bg-emerald-50 border border-emerald-100 rounded-xl w-fit">
+                          <Icons.Success className="w-4 h-4 text-emerald-500" />
+                          <span className="text-[10px] font-bold text-emerald-600 uppercase tracking-widest">Neural render finalized</span>
+                        </div>
+                      </div>
+                    </div>
+                  );
+                })()}
+
+                {/* Feedback Input */}
+                <div className="flex flex-col gap-4 relative z-10">
+                   <span className="text-[10px] font-black uppercase tracking-[0.2em] text-[#01012A]/40">Feedback / Instructions (Optional)</span>
+                   <textarea 
+                     value={stepNotes}
+                     onChange={(e) => setStepNotes(e.target.value)}
+                     placeholder="Enter specific instructions for the AI Director..."
+                     className="w-full p-6 bg-white border border-slate-100 rounded-[24px] text-sm font-medium focus:outline-none focus:border-amber-500 transition-all shadow-inner min-h-[120px]"
+                   />
+                </div>
+
+                {/* Action Buttons */}
+                <div className="flex flex-wrap items-center gap-4 relative z-10">
+                  <button 
+                    onClick={() => handleStepAction("approve")}
+                    disabled={isProcessingStep}
+                    className="h-14 px-10 bg-[#01012A] text-white rounded-2xl text-[10px] font-black uppercase tracking-widest shadow-xl shadow-[#01012A]/20 hover:opacity-90 transition-all active:scale-95 disabled:opacity-50 flex items-center gap-2"
+                  >
+                    <Icons.CheckCircle className="w-4 h-4" /> Approve Step
+                  </button>
+                  <button 
+                    onClick={() => handleStepAction("improve")}
+                    disabled={isProcessingStep || (campaign.status.includes("image") && !selectedAssetId)}
+                    className="h-14 px-10 bg-white border border-slate-200 text-[#01012A] rounded-2xl text-[10px] font-black uppercase tracking-widest hover:bg-slate-50 transition-all active:scale-95 disabled:opacity-50 flex items-center gap-2"
+                  >
+                    <Icons.MagicWand className="w-4 h-4" /> Improve Asset
+                  </button>
+                  <button 
+                    onClick={() => handleStepAction("reject")}
+                    disabled={isProcessingStep}
+                    className="h-14 px-10 bg-red-50 text-red-500 rounded-2xl text-[10px] font-black uppercase tracking-widest hover:bg-red-500 hover:text-white transition-all active:scale-95 disabled:opacity-50 border border-red-100"
+                  >
+                    Reject Production
+                  </button>
+                </div>
+              </div>
+            )}
 
             {/* HERO: Cinema Mode Video Showcase */}
             {result.video_url ? (
@@ -358,13 +773,13 @@ export default function CampaignDetailPage() {
                       key={idx}
                       className="group bg-slate-50 rounded-[24px] md:rounded-[32px] overflow-hidden border border-slate-200/50 relative cursor-pointer"
                       onClick={() => {
-                        setSelectedImage(scene.image_url);
+                        setSelectedImage(normalizeAssetUrl(scene.image_url));
                         setIsPreviewOpen(true);
                       }}
                     >
                       <div className="aspect-square relative overflow-hidden">
                         <img
-                          src={scene.image_url}
+                          src={normalizeAssetUrl(scene.image_url)}
                           alt={`Scene ${scene.scene_id}`}
                           className="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-110"
                         />
@@ -729,9 +1144,10 @@ export default function CampaignDetailPage() {
 }
 
 function AssetLink({ label, url, icon: Icon }: any) {
+  const normalizedUrl = normalizeAssetUrl(url);
   return (
     <a
-      href={url}
+      href={normalizedUrl}
       target="_blank"
       rel="noopener noreferrer"
       className="p-4 bg-slate-50/50 border border-slate-100/50 rounded-[18px] md:rounded-[20px] flex items-center justify-between group hover:bg-white hover:border-[#01012A]/10 transition-all"

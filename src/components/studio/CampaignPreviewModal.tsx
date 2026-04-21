@@ -28,6 +28,7 @@ interface CampaignPreviewModalProps {
     voice_id?: string | null;          // Added: voice_id from campaign
     campaign_status?: string | null;
     hitl?: any;
+    nodes?: any;
     image_urls?: string[] | null;
   } | null;
   showHistory?: boolean;
@@ -131,7 +132,10 @@ export default function CampaignPreviewModal({
 
   // Auto-select asset if only one is available
   useEffect(() => {
-    const candidates = localHitl?.candidates || localHitl?.image_urls || [];
+    const candidates = localHitl?.candidates || 
+                        localHitl?.image_urls || 
+                        campaignData?.nodes?.generate_image?.result?.scene_images || 
+                        [];
     if (candidates.length === 1 && !selectedAssetId) {
       const firstId = candidates[0]?.id || "0";
       setSelectedAssetId(firstId);
@@ -471,14 +475,14 @@ export default function CampaignPreviewModal({
                     <div
                       className={cn(
                         "w-1.5 h-1.5 rounded-full",
-                        (isRejected || isFailed) ? "bg-red-500 animate-pulse" : (!isLaunched ? "bg-amber-500 animate-pulse" : (isApproved ? "bg-emerald-500" : "bg-green-500"))
+                        (isRejected || isFailed) ? "bg-red-500 animate-pulse" : (isAwaitingApproval ? "bg-amber-500 animate-pulse" : (!isLaunched ? "bg-amber-500 animate-pulse" : (isApproved ? "bg-emerald-500" : "bg-green-500")))
                       )}
                     />
                     <span className={cn(
                       "text-[9px] font-black uppercase tracking-widest",
-                      isApproved ? "text-emerald-600" : ((isRejected || isFailed) ? "text-red-600" : "text-[#2E3A59]")
+                      isApproved ? "text-emerald-600" : ((isRejected || isFailed) ? "text-red-600" : (isAwaitingApproval ? "text-amber-600" : "text-[#2E3A59]"))
                     )}>
-                      {isApproved ? "Approved" : (isRejected ? "Rejected" : (isFailed ? "Failed" : (!isLaunched ? (isDraft ? "In Review" : "Consultation") : localStatus === "ready" ? "Ready" : "Processing")))}
+                      {isApproved ? "Approved" : (isRejected ? "Rejected" : (isFailed ? "Failed" : (isAwaitingApproval ? "Action Required" : (!isLaunched ? (isDraft ? "In Review" : "Consultation") : localStatus === "ready" ? "Ready" : "Processing"))))}
                     </span>
                   </div>
                 )}
@@ -837,7 +841,7 @@ export default function CampaignPreviewModal({
                     {localStatus?.includes("image") ? "Select the best generation candidate:" : "Generated Assets:"}
                   </p>
                   <div className="grid grid-cols-2 gap-4">
-                    {(localHitl?.candidates || localHitl?.image_urls || []).map((candidate: any, idx: number) => {
+                    {(localHitl?.candidates || localHitl?.image_urls || campaignData?.nodes?.generate_image?.result?.scene_images || []).map((candidate: any, idx: number) => {
                       const assetUrl = normalizeAssetUrl(candidate.url || candidate.image_url || (typeof candidate === "string" ? candidate : null));
                       const assetId = candidate.id || idx.toString();
                       if (!assetUrl) return null;

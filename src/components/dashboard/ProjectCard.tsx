@@ -39,7 +39,8 @@ export default function ProjectCard({
   const videoRef = useRef<HTMLVideoElement>(null);
 
   const isReady = status === "Ready" || status === "completed" || status === "delivered" || status?.toLowerCase() === "approved";
-  const isInProduction = status === "in_production" || status === "queued" || status === "In Production";
+  const isInProduction = status === "in_production" || status === "queued" || status === "In Production" || status === "pipeline_running";
+  const isActionRequired = status?.toLowerCase().startsWith("awaiting_approval_") || status === "ready_for_human_review";
 
   const handleDownload = async (e: React.MouseEvent) => {
     e.stopPropagation();
@@ -144,10 +145,27 @@ export default function ProjectCard({
                 </p>
               )}
             </div>
-          )}          <div className="absolute top-2 right-2 z-20">
+          )}
+
+          {isActionRequired && (
+            <div className="absolute inset-0 bg-[#02022C]/60 backdrop-blur-md flex flex-col items-center justify-center p-6 text-center z-10 transition-all">
+              <div className="w-12 h-12 bg-amber-500 rounded-2xl flex items-center justify-center mb-3 animate-pulse shadow-lg shadow-amber-500/20">
+                <Icons.Zap className="w-6 h-6 text-white" />
+              </div>
+              <p className="text-white text-[11px] font-black uppercase tracking-[0.2em] mb-1">
+                Action Required
+              </p>
+              <p className="text-white/70 text-[9px] font-bold uppercase tracking-widest">
+                {status?.replace("awaiting_approval_", "").replace("_", " ")} Review
+              </p>
+            </div>
+          )}
+
+          <div className="absolute top-2 right-2 z-20">
             <span className={cn(
               "px-[6px] py-[3px] rounded-[4px] text-[9px] font-bold uppercase tracking-wider shadow-sm",
               isReady ? "bg-linear-to-r from-[#059669] to-[#10B981] text-white shadow-lg shadow-emerald-500/20" 
+              : isActionRequired ? "bg-amber-500 text-white animate-pulse"
               : isInProduction ? "bg-white text-[#02022C] animate-pulse" 
               : "bg-linear-to-r from-[#AD46FF] to-[#2B7FFF] text-white"
             )}>
@@ -173,9 +191,22 @@ export default function ProjectCard({
         <div className="flex items-center gap-2">
           <button 
             onClick={onPreview}
-            className="flex-1 h-[40px] bg-linear-to-r from-[#01012A] to-[#2E2C66] text-white rounded-xl text-[14px] font-bold shadow-lg shadow-[#01012A]/10 hover:opacity-90 transition-all active:scale-95 flex items-center justify-center gap-2"
+            className={cn(
+              "flex-1 h-[40px] rounded-xl text-[14px] font-bold transition-all active:scale-95 flex items-center justify-center gap-2",
+              isActionRequired 
+                ? "bg-amber-500 text-white shadow-lg shadow-amber-500/20 hover:bg-amber-600" 
+                : "bg-linear-to-r from-[#01012A] to-[#2E2C66] text-white shadow-lg shadow-[#01012A]/10 hover:opacity-90"
+            )}
           >
-            <Icons.Eye className="w-4 h-4" /> Preview
+            {isActionRequired ? (
+              <>
+                <Icons.Zap className="w-4 h-4" /> Review Now
+              </>
+            ) : (
+              <>
+                <Icons.Eye className="w-4 h-4" /> Preview
+              </>
+            )}
           </button>
           
           <button 
