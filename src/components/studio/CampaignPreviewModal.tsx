@@ -77,21 +77,26 @@ export default function CampaignPreviewModal({
   const selectedVoiceName =
     VOICE_OPTIONS.find((v) => v.id.toLowerCase() === selectedVoice?.toLowerCase())?.name || selectedVoice || "Neural Selection";
 
-  // Initialize and sync history & script
+  // Initialize state when the modal opens or when the session ID changes
   useEffect(() => {
     if (isOpen && campaignData) {
-      if (campaignData.history) {
-        setLocalHistory(campaignData.history);
-      }
+      // Clear interactive/cached states so we get a fresh view
+      setSelectedAssetId(null);
+      setStepNotes("");
+      setMusicPrompt("");
+      setIsEditingScript(false);
+
+      if (campaignData.history) setLocalHistory(campaignData.history);
       setLocalStatus(campaignData.status);
       setEditedScript(campaignData.script || "");
 
-      // Initialize selected voice from campaign data, if available
       if (campaignData.voice_id) {
         setSelectedVoice(campaignData.voice_id.toLowerCase());
+      } else {
+        setSelectedVoice("adam"); // Reset to default if none
       }
 
-      setLocalHitl(campaignData.hitl);
+      setLocalHitl(campaignData.hitl || null);
       setLocalVideoUrl(campaignData.video_url || null);
       setLocalMusicUrl(campaignData.music_url || null);
       setLocalVoiceoverUrl(campaignData.voiceover_url || null);
@@ -101,7 +106,26 @@ export default function CampaignPreviewModal({
         fetchDbUpdate();
       }
     }
-  }, [isOpen, campaignData]);
+  }, [isOpen, campaignData?.session_id]); // Only run when modal opens or session changes
+
+  // Keep local fields in sync with campaignData when it updates from polling
+  useEffect(() => {
+    if (isOpen && campaignData) {
+      if (campaignData.status) setLocalStatus(campaignData.status);
+      if (campaignData.video_url && !localVideoUrl) setLocalVideoUrl(campaignData.video_url);
+      if (campaignData.music_url && !localMusicUrl) setLocalMusicUrl(campaignData.music_url);
+      if (campaignData.voiceover_url && !localVoiceoverUrl) setLocalVoiceoverUrl(campaignData.voiceover_url);
+      if (campaignData.hitl) setLocalHitl(campaignData.hitl);
+      if (campaignData.history && campaignData.history.length > localHistory.length) {
+        setLocalHistory(campaignData.history);
+      }
+      
+      // Only sync script from backend if the user isn't currently editing it
+      if (!isEditingScript && campaignData.script) {
+        setEditedScript(campaignData.script);
+      }
+    }
+  }, [campaignData, isOpen, isEditingScript]); // Run whenever polling updates campaignData
 
   const fetchDbUpdate = async () => {
     if (!campaignData?.session_id) return;
@@ -307,8 +331,8 @@ export default function CampaignPreviewModal({
 
       let finalNotes = stepNotes || (action === "approve" ? "Looks good" : "Requires changes");
       
-      // Always include the current voice selection in the notes for the AI Director
-      if (selectedVoice) {
+      // Only include the current voice selection in the notes for the AI Director if we are reviewing the voice
+      if (selectedVoice && stepName.includes("voice")) {
         finalNotes = `${finalNotes} (Selected Voice: ${selectedVoiceName}${selectedVoice !== selectedVoiceName ? ` - ${selectedVoice}` : ""})`;
       }
 
@@ -319,7 +343,8 @@ export default function CampaignPreviewModal({
       };
 
       if (selectedAssetId) {
-        bodyData.selected_asset_id = selectedAssetId;
+        // Parse the string to an integer first to avoid string concatenation (e.g., "0" + 1 = "01")
+        bodyData.selected_asset_id = parseInt(selectedAssetId, 10) + 1;
       }
 
       const response = await fetch(`${API_BASE}/ai/director/session/${sId}/approve-step`, {
@@ -626,17 +651,20 @@ export default function CampaignPreviewModal({
                     <Icons.Image className="w-3.5 h-3.5 text-slate-400" />
                     <h4 className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Production Gallery</h4>
                   </div>
-                  <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-                    {(localHitl?.image_urls || campaignData?.image_urls || []).map((url: string, idx: number) => (
+                  <div className="grid grid-cols-2 sm:grid-cols-4 sm:auto-rows-max gap-3">
+                    {Array.from(new Set([
+                      ...(localHitl?.image_urls || []),
+                      ...(campaignData?.image_urls || [])
+                    ])).map((url: string, idx: number) => (
                       <div 
                         key={idx} 
-                        className="relative aspect-square rounded-2xl overflow-hidden border border-[#F1F5F9] bg-slate-50 group/img cursor-zoom-in shadow-sm"
+                        className="relative aspect-video rounded-2xl overflow-hidden border border-[#F1F5F9] bg-slate-100 group/img cursor-zoom-in shadow-sm"
                         onClick={() => window.open(normalizeAssetUrl(url), '_blank')}
                       >
                         <img 
                           src={normalizeAssetUrl(url)} 
                           alt={`Scene ${idx + 1}`}
-                          className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" 
+                          className="w-full h-full object-contain group-hover:scale-105 transition-transform duration-500" 
                         />
                         <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors" />
                         <div className="absolute bottom-2 right-2 w-6 h-6 bg-white/80 backdrop-blur-md rounded-lg flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
@@ -978,7 +1006,7 @@ export default function CampaignPreviewModal({
                 </button>
                 <button
                   onClick={() => handleStepAction("improve")}
-                  disabled={isProcessingStep || (localStatus?.includes("image") && !selectedAssetId)}
+                  disabled={isProcessingStep || (localStatus?.includes("image") && !selectedAssetId && !stepNotes.trim())}
                   className="flex-1 h-14 bg-white border border-[#E2E8F0] text-[#02022C] rounded-2xl flex items-center justify-center gap-2 font-black text-[12px] uppercase tracking-widest transition-all hover:bg-slate-50 active:scale-95 disabled:opacity-50 shadow-xs"
                 >
                   <Icons.MagicWand className="w-4 h-4" /> Improve

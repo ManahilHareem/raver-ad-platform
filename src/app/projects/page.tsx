@@ -138,7 +138,7 @@ function ProjectsContent() {
           if (!c.sessionId) continue;
 
           if (!isFirstPoll) {
-            await new Promise(resolve => setTimeout(resolve, 5000));
+            await new Promise(resolve => setTimeout(resolve, 3000));
           }
           isFirstPoll = false;
 
@@ -191,11 +191,11 @@ function ProjectsContent() {
         }
       }
       if (isActive) {
-        timeoutId = setTimeout(poll, 5000);
+        timeoutId = setTimeout(poll, 3000);
       }
     };
 
-    timeoutId = setTimeout(poll, 5000);
+    timeoutId = setTimeout(poll, 3000);
     return () => {
       isActive = false;
       abortController.abort();

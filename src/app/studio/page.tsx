@@ -473,7 +473,7 @@ function StudioPageContent() {
           if (!v.sessionId) continue;
           
           if (!isFirstPoll) {
-            await new Promise(resolve => setTimeout(resolve, 5000));
+            await new Promise(resolve => setTimeout(resolve, 3000));
           }
           isFirstPoll = false;
           
@@ -554,11 +554,11 @@ function StudioPageContent() {
         }
       }
       if (isActive) {
-        timeoutId = setTimeout(poll, 5000);
+        timeoutId = setTimeout(poll, 3000);
       }
     };
     // Initial delay before starting the loop to avoid immediate redundant calls
-    timeoutId = setTimeout(poll, 5000);
+    timeoutId = setTimeout(poll, 3000);
     return () => {
       isActive = false;
       abortController.abort();
