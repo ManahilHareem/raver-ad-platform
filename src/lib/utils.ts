@@ -42,8 +42,8 @@ export function normalizeAssetUrl(url: string | null | undefined): string {
   
   // If it starts with /api/, handle potential duplication with base URL
   if (url.startsWith("/api/")) {
-    // const base =  "https://apiplatform.raver.ai/api";
-    const base = "https://kamala-helminthologic-gladys.ngrok-free.dev/";
+    const base =  "https://apiplatform.raver.ai/api";
+    // const base = "https://kamala-helminthologic-gladys.ngrok-free.dev/";
     const normalizedBase = base.endsWith('/') ? base.slice(0, -1) : base;
     
     // If base already ends with /api, and url starts with /api/, remove the duplicate /api from url
