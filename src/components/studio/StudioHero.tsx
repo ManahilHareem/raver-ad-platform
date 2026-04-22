@@ -7,6 +7,8 @@ import CampaignSelectionModal from "./CampaignSelectionModal";
 import AssetSelectionModal from "./AssetSelectionModal";
 import { useVoiceInput } from "@/hooks/useVoiceInput";
 import { cn, normalizeAssetUrl } from "@/lib/utils";
+import { apiFetch } from "@/lib/api";
+
 
 import { VoiceSelector, VOICE_OPTIONS } from "@/components/agents/audio-lead/VoiceSelector";
 
@@ -68,7 +70,35 @@ export default function StudioHero({
   const [selectedVoice, setSelectedVoice] = useState("");
   const [voiceError, setVoiceError] = useState(false);
   const [selectedAssets, setSelectedAssets] = useState<Asset[]>([]);
+  const [dbCampaigns, setDbCampaigns] = useState<Campaign[]>([]);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
+
+  // Fetch campaigns from the database for the reference section
+  useEffect(() => {
+    const fetchCampaignsFromDB = async () => {
+      try {
+        const API_BASE = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
+        const res = await apiFetch(`${API_BASE}/campaigns`);
+        if (res.ok) {
+          const json = await res.json();
+          // Adjust based on typical API response structure { success: true, data: [...] }
+          const data = json.data || json;
+          if (Array.isArray(data)) {
+            setDbCampaigns(data.map((c: any) => ({
+              id: c.id,
+              title: c.name || "Untitled Project",
+              status: c.status || "ready",
+              image: c.image || "/assets/hashtag-campaign.jpg",
+              ...c
+            })));
+          }
+        }
+      } catch (err) {
+        console.error("Failed to fetch campaigns from /api/campaigns:", err);
+      }
+    };
+    fetchCampaignsFromDB();
+  }, []);
 
   // Real-time voice input
   const handleVoiceResult = useCallback((text: string) => {
@@ -320,7 +350,7 @@ export default function StudioHero({
               </button>
             </div>
             <div className="flex flex-wrap gap-2">
-              {campaigns.slice(0, 4).map((campaign, i) => (
+              {dbCampaigns.slice(0, 4).map((campaign, i) => (
                 <div
                   key={i}
                   onClick={() => onCampaignSelect?.(campaign)}
@@ -364,7 +394,7 @@ export default function StudioHero({
       <CampaignSelectionModal 
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
-        campaigns={campaigns}
+        campaigns={dbCampaigns}
         onSelect={(c) => onCampaignSelect?.(c)}
         onCreateNew={onCreateClick}
         onDelete={onCampaignDelete}
