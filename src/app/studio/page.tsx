@@ -1,6 +1,6 @@
 "use client";
 
-import { Suspense, useState, useEffect, useRef } from "react";
+import { Suspense, useState, useEffect, useRef, useCallback } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import DashboardLayout from "@/components/DashboardLayout";
 import StudioHero from "@/components/studio/StudioHero";
@@ -173,15 +173,16 @@ function StudioPageContent() {
   const searchParams = useSearchParams();
   const router = useRouter();
 
-  const fetchCampaigns = async () => {
+  const fetchCampaigns = useCallback(async () => {
     setIsLoading(true);
     try {
       const API_BASE = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
 
       let allSessions: Campaign[] = [];
       try {
-        const sessionRes = await apiFetch(`${API_BASE}/ai/director/sessions`, {
-          headers: { "accept": "*/*" }
+        const sessionRes = await apiFetch(`${API_BASE}/ai/director/sessions?t=${Date.now()}`, {
+          headers: { "accept": "*/*" },
+          cache: "no-store"
         });
 
         if (sessionRes.ok) {
@@ -235,7 +236,7 @@ function StudioPageContent() {
       }
 
       try {
-        const insightRes = await apiFetch(`${API_BASE}/ai/insights/director`);
+        const insightRes = await apiFetch(`${API_BASE}/ai/insights/director?t=${Date.now()}`);
         if (insightRes.ok) {
           const insightData = await insightRes.json();
           if (insightData.success && insightData.data?.metrics) {
@@ -277,7 +278,7 @@ function StudioPageContent() {
     } finally {
       setIsLoading(false);
     }
-  };
+  }, []);
 
   const handleDeleteCampaign = (campaign: Campaign) => {
     setCampaignToDelete(campaign);
@@ -478,7 +479,7 @@ function StudioPageContent() {
           isFirstPoll = false;
           
           try {
-            const res = await apiFetch(`${API_BASE}/ai/director/session/${v.sessionId}/update`, {
+            const res = await apiFetch(`${API_BASE}/ai/director/session/${v.sessionId}/update?t=${Date.now()}`, {
               headers: { "accept": "*/*" },
               signal: abortController.signal
             });
@@ -493,7 +494,7 @@ function StudioPageContent() {
               let hitlData = null;
               if (isAwaitingApproval) {
                 try {
-                  const dbUpdateRes = await apiFetch(`${API_BASE}/ai/director/session/${v.sessionId}/db-update`);
+                  const dbUpdateRes = await apiFetch(`${API_BASE}/ai/director/session/${v.sessionId}/db-update?t=${Date.now()}`);
                   if (dbUpdateRes.ok) {
                     const dbData = await dbUpdateRes.json();
                     hitlData = dbData.data;
@@ -568,7 +569,7 @@ function StudioPageContent() {
 
   useEffect(() => {
     fetchCampaigns();
-  }, []);
+  }, [fetchCampaigns]);
 
   useEffect(() => {
     if (searchParams.get("create") === "true") {

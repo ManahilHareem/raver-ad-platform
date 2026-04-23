@@ -66,7 +66,9 @@ export default function HomePage() {
         const API_BASE = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
         
         // Fetch AI Director Sessions (AI Creative)
-        const response = await apiFetch(`${API_BASE}/ai/director/sessions`);
+        const response = await apiFetch(`${API_BASE}/ai/director/sessions?t=${Date.now()}`, {
+          cache: "no-store"
+        });
         
         if (response.ok) {
           const result = await response.json();

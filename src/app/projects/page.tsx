@@ -1,6 +1,6 @@
 "use client";
 
-import { Suspense, useState, useEffect, useRef } from "react";
+import { Suspense, useState, useEffect, useRef, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import DashboardLayout from "@/components/DashboardLayout";
 import ProjectCard from "@/components/dashboard/ProjectCard";
@@ -45,7 +45,7 @@ function ProjectsContent() {
   const [selectedCampaign, setSelectedCampaign] = useState<Campaign | null>(null);
   const router = useRouter();
 
-  const fetchCampaigns = async () => {
+  const fetchCampaigns = useCallback(async () => {
     setIsLoading(true);
     try {
       const API_BASE = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
@@ -53,7 +53,9 @@ function ProjectsContent() {
       // 1. Fetch AI Director Sessions
       let allSessions: Campaign[] = [];
       try {
-        const sessionRes = await apiFetch(`${API_BASE}/ai/director/sessions`);
+        const sessionRes = await apiFetch(`${API_BASE}/ai/director/sessions?t=${Date.now()}`, {
+          cache: "no-store"
+        });
         if (sessionRes.ok) {
           const sData = await sessionRes.json();
           const sessionsArray = Array.isArray(sData.data?.sessions) ? sData.data.sessions : sData.data;
@@ -97,7 +99,7 @@ function ProjectsContent() {
     } finally {
       setIsLoading(false);
     }
-  };
+  }, []);
 
   // Sync Ref for polling
   const campaignsRef = useRef<Campaign[]>(campaigns);
@@ -143,7 +145,7 @@ function ProjectsContent() {
           isFirstPoll = false;
 
           try {
-            const res = await apiFetch(`${API_BASE}/ai/director/session/${c.sessionId}/update`, {
+            const res = await apiFetch(`${API_BASE}/ai/director/session/${c.sessionId}/update?t=${Date.now()}`, {
               signal: abortController.signal
             });
             if (res.ok) {
@@ -205,7 +207,7 @@ function ProjectsContent() {
 
   useEffect(() => {
     fetchCampaigns();
-  }, []);
+  }, [fetchCampaigns]);
 
   const handleDeleteCampaign = (campaign: Campaign) => {
     setCampaignToDelete(campaign);

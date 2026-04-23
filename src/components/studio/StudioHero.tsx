@@ -78,7 +78,7 @@ export default function StudioHero({
     const fetchCampaignsFromDB = async () => {
       try {
         const API_BASE = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
-        const res = await apiFetch(`${API_BASE}/campaigns`);
+        const res = await apiFetch(`${API_BASE}/campaigns?t=${Date.now()}`);
         if (res.ok) {
           const json = await res.json();
           // Adjust based on typical API response structure { success: true, data: [...] }
