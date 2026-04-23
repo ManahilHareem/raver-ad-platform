@@ -80,7 +80,7 @@ export function EditorResultModal({ isOpen, onClose, result }: EditorResultModal
           <div className="flex-1 flex items-center justify-center p-8">
             <div className={cn(
               "relative w-full shadow-2xl transition-all duration-500",
-              activeFormat === "9:16" ? "max-w-[280px] aspect-[9/16]" : 
+              activeFormat === "9:16" ? "max-w-[280px] aspect-9/16" : 
               activeFormat === "1:1" ? "max-w-[450px] aspect-square" : 
               "aspect-video"
             )}>
