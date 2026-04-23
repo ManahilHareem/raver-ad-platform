@@ -59,7 +59,8 @@ import {
   RefreshCcw,
   AlertTriangle,
   Filter,
-  LayoutGrid
+  LayoutGrid,
+  Upload
 } from "lucide-react";
 import { CustomIcons } from "./custom-icons";
 
@@ -138,5 +139,6 @@ export const Icons = {
   Filter: Filter,
   ShieldCheck: ShieldCheck,
   Zap: Zap,
-  Layout: LayoutGrid
+  Layout: LayoutGrid,
+  Upload: Upload
 };

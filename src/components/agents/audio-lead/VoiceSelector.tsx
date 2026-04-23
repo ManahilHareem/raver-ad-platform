@@ -59,7 +59,39 @@ interface VoiceSelectorProps {
 export function VoiceSelector({ selectedVoice, onSelect, className, isDark }: VoiceSelectorProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [playingId, setPlayingId] = useState<string | null>(null);
+  const [customVoices, setCustomVoices] = useState<any[]>([]);
   const [audioRef] = useState(typeof Audio !== "undefined" ? new Audio() : null);
+
+  const allVoices = [...VOICE_OPTIONS, ...customVoices];
+
+  React.useEffect(() => {
+    const fetchCustomVoices = async () => {
+      try {
+        const API_BASE = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000/api";
+        const response = await apiFetch(`${API_BASE}/v1/custom-voice/list?t=${Date.now()}`);
+        if (response.ok) {
+          const result = await response.json();
+          if (result.success && Array.isArray(result.data)) {
+            // Map backend voices to VoiceSelector format
+            const mapped = result.data.map((v: any) => ({
+              id: v.voice_id,
+              voiceId: v.voice_id,
+              name: v.name,
+              description: v.description || "Custom neural voice",
+              category: v.category || "Custom Clone",
+              accent: v.labels?.accent || "Custom",
+              preview_url: v.preview_url
+            }));
+            setCustomVoices(mapped);
+          }
+        }
+      } catch (error) {
+        console.error("Failed to fetch custom voices:", error);
+      }
+    };
+
+    fetchCustomVoices();
+  }, []);
 
   React.useEffect(() => {
     if (audioRef) {
@@ -78,24 +110,31 @@ export function VoiceSelector({ selectedVoice, onSelect, className, isDark }: Vo
       audioRef.pause();
       setPlayingId(null);
     } else {
-      // Use the actual long voiceId for the sample URL
-      const voice = VOICE_OPTIONS.find(v => v.id === voiceId);
+      const voice = allVoices.find(v => v.id === voiceId);
       if (voice) {
         try {
           setPlayingId(voiceId);
-          const response = await apiFetch(`${process.env.NEXT_PUBLIC_API_URL}/voice/get-voice/${voice.voiceId}`);
-          const result = await response.json();
           
-          if (result.success && result.data.preview_url) {
-            audioRef.src = result.data.preview_url;
-            audioRef.play().catch(err => {
-              console.error("Audio play failed:", err);
-              setPlayingId(null);
-            });
+          // If we already have a preview URL (dynamic voices), use it directly
+          if (voice.preview_url) {
+            audioRef.src = voice.preview_url;
           } else {
-            console.error("Failed to get preview URL");
-            setPlayingId(null);
+            // Fallback for hardcoded voices or detail fetching
+            const API_BASE = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000/api";
+            const response = await apiFetch(`${API_BASE}/v1/custom-voice/${voice.voiceId}`);
+            const result = await response.json();
+            if (result.success && result.data.preview_url) {
+              audioRef.src = result.data.preview_url;
+            } else {
+              setPlayingId(null);
+              return;
+            }
           }
+
+          audioRef.play().catch(err => {
+            console.error("Audio play failed:", err);
+            setPlayingId(null);
+          });
         } catch (error) {
           console.error("Error fetching voice preview:", error);
           setPlayingId(null);
@@ -104,7 +143,7 @@ export function VoiceSelector({ selectedVoice, onSelect, className, isDark }: Vo
     }
   };
 
-  const currentVoice = VOICE_OPTIONS.find(v => v.id === selectedVoice) || VOICE_OPTIONS[0];
+  const currentVoice = allVoices.find(v => v.id === selectedVoice) || allVoices[0];
   const isMale = currentVoice.category.startsWith("Male");
 
   return (
@@ -143,7 +182,7 @@ export function VoiceSelector({ selectedVoice, onSelect, className, isDark }: Vo
         <>
           <div className="fixed inset-0 z-40" onClick={() => setIsOpen(false)} />
           <div className="absolute top-[calc(100%+8px)] left-0 right-0 bg-white border border-slate-100 rounded-[24px] shadow-2xl p-2 z-50 flex flex-col gap-1 max-h-[400px] overflow-y-auto animate-in fade-in zoom-in-95 duration-200 custom-scrollbar">
-            {VOICE_OPTIONS.map((voice) => {
+            {allVoices.map((voice) => {
               const itemIsMale = voice.category.startsWith("Male");
               const isCurrentlyPlaying = playingId === voice.id;
               

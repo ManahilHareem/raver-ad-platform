@@ -13,6 +13,7 @@ const menuItems = [
   { label: "My Projects", icon: Icons.MyProjects, href: "/projects" },
   { label: "Templates Library", icon: Icons.TemplatesLibrary, href: "/templates" },
   { label: "Asset Library", icon: Icons.AssetLibrary, href: "/assets" },
+  { label: "Custom Voices", icon: Icons.Mic, href: "/voices" },
   { label: "Analytics", icon: Icons.Analytics, href: "/analytics" },
   { label: "Settings", icon: Icons.Settings, href: "/settings" },
 ];
