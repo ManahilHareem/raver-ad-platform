@@ -38,7 +38,7 @@ export default function VoiceStudioPage() {
     setIsLoading(true);
     try {
       const API_BASE = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000/api";
-      const response = await apiFetch(`${API_BASE}/v1/custom-voice/list?t=${Date.now()}`);
+      const response = await apiFetch(`${API_BASE}/custom-voice/list?t=${Date.now()}`);
       
       if (response.ok) {
         const result = await response.json();
@@ -143,7 +143,7 @@ export default function VoiceStudioPage() {
         formData.append("files", file);
       });
 
-      const endpoint = `${API_BASE}/v1/custom-voice/clone`;
+      const endpoint = `${API_BASE}/custom-voice/clone`;
       
       const response = await fetch(endpoint, {
         method: "POST",
@@ -182,7 +182,7 @@ export default function VoiceStudioPage() {
 
     try {
       const API_BASE = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000/api";
-      const response = await apiFetch(`${API_BASE}/v1/custom-voice/${voiceId}`, {
+      const response = await apiFetch(`${API_BASE}/custom-voice/${voiceId}`, {
         method: "DELETE",
       });
 

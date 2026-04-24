@@ -4,6 +4,7 @@ import React, { useState } from "react";
 import { Icons } from "@/components/ui/icons";
 import { cn } from "@/lib/utils";
 import { apiFetch } from "@/lib/api";
+import { toast } from "react-toastify";
 
 export const VOICE_OPTIONS = [
   // Male Voices
@@ -11,7 +12,7 @@ export const VOICE_OPTIONS = [
   { id: "antoni", voiceId: "ErXwobaYiN019PkySvjV", name: "Antoni", description: "Well-rounded, warm male", category: "Male - Professional", accent: "American" },
   { id: "arnold", voiceId: "VR6AewLTigWG4xSOukaG", name: "Arnold", description: "Crisp, calm narrator", category: "Male - Professional", accent: "American" },
   { id: "callum", voiceId: "N2lVS1w4EtoT3dr4eOWO", name: "Callum", description: "Strong, middle-aged American", category: "Male - Professional", accent: "American" },
-  { id: "charlie", voiceId: "IKne3meq5aSn9XLyUdCD", name: "Charlie - Confident & Energetic", description: "Deep, young Australian male", category: "Male - Casual", accent: "Australian" },
+  { id: "charlie", voiceId: "IKne3meq5aSn9XLyUdCD", name: "Charlie - Confident & Energetic", description: "Deep, young Australian male", category: "Male - Casual", accent: "Australian", preview_url: "https://storage.googleapis.com/eleven-public-prod/premade/voices/IKne3meq5aSn9XLyUdCD/102de6f2-22ed-43e0-a1f1-111fa75c5481.mp3" },
   { id: "clyde", voiceId: "2EiwWnXFnvU5JabPnv8n", name: "Clyde", description: "Middle-aged American narrator", category: "Male - Professional", accent: "American" },
   { id: "daniel", voiceId: "onwK4e9ZLuTAKqWW03F9", name: "Daniel", description: "Deep, authoritative British", category: "Male - Professional", accent: "British" },
   { id: "drew", voiceId: "29vD33N1CtxCmqQRPOHJ", name: "Drew", description: "Young, energetic male", category: "Male - Casual", accent: "American" },
@@ -69,7 +70,7 @@ export function VoiceSelector({ selectedVoice, onSelect, className, isDark }: Vo
     const fetchCustomVoices = async () => {
       try {
         const API_BASE = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000/api";
-        const response = await apiFetch(`${API_BASE}/v1/custom-voice/list?t=${Date.now()}`);
+        const response = await apiFetch(`${API_BASE}/custom-voice/list?t=${Date.now()}`);
         if (response.ok) {
           const result = await response.json();
           if (result.success && Array.isArray(result.data)) {
@@ -135,33 +136,51 @@ export function VoiceSelector({ selectedVoice, onSelect, className, isDark }: Vo
           } else {
             // Fallback for hardcoded voices or detail fetching
             const API_BASE = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000/api";
-            const response = await apiFetch(`${API_BASE}/v1/custom-voice/${voice.voiceId}`);
+            
+            // Try Custom Voice API first
+            let response = await apiFetch(`${API_BASE}/custom-voice/${voice.voiceId}`);
+            
+            // If custom voice API returns 404, try the Standard Voice API
+            if (response.status === 404) {
+              response = await apiFetch(`${API_BASE}/voice/get-voice/${voice.voiceId}`);
+            }
+
+            if (!response.ok) {
+              throw new Error(`Failed to fetch voice details (Status: ${response.status})`);
+            }
+
             const result = await response.json();
             
-            // Note: The backend response for /custom-voice/:id might be { success: true, data: { voice: { preview_url: ... } } }
             if (result.success) {
               const voiceData = result.data.voice || result.data;
               if (voiceData.preview_url) {
                 audioRef.src = voiceData.preview_url;
               } else {
+                toast.error("No preview audio available for this voice.");
                 setPlayingId(null);
                 setIsBuffering(false);
                 return;
               }
             } else {
+              toast.error(result.message || "Failed to retrieve voice preview.");
               setPlayingId(null);
               setIsBuffering(false);
               return;
             }
           }
 
-          audioRef.play().catch(err => {
-            console.error("Audio play failed:", err);
-            setPlayingId(null);
-            setIsBuffering(false);
-          });
-        } catch (error) {
+          const playPromise = audioRef.play();
+          if (playPromise !== undefined) {
+            playPromise.catch(err => {
+              console.error("Audio play failed:", err);
+              toast.error("Failed to play audio. The link might be expired or blocked.");
+              setPlayingId(null);
+              setIsBuffering(false);
+            });
+          }
+        } catch (error: any) {
           console.error("Error fetching voice preview:", error);
+          toast.error(error.message || "Error loading voice preview.");
           setPlayingId(null);
           setIsBuffering(false);
         }

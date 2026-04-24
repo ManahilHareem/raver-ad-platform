@@ -79,7 +79,7 @@ export default function StudioHero({
     const fetchVoices = async () => {
       try {
         const API_BASE = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000/api";
-        const response = await apiFetch(`${API_BASE}/v1/custom-voice/list?t=${Date.now()}`);
+        const response = await apiFetch(`${API_BASE}/custom-voice/list?t=${Date.now()}`);
         if (response.ok) {
           const result = await response.json();
           if (result.success && Array.isArray(result.data)) {
