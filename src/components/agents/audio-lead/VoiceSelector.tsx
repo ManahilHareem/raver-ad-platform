@@ -137,14 +137,7 @@ export function VoiceSelector({ selectedVoice, onSelect, className, isDark }: Vo
             // Fallback for hardcoded voices or detail fetching
             const API_BASE = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000/api";
             
-            // Try Custom Voice API first
-            let response = await apiFetch(`${API_BASE}/custom-voice/${voice.voiceId}`);
-            
-            // If custom voice API returns 404, try the Standard Voice API
-            if (response.status === 404) {
-              response = await apiFetch(`${API_BASE}/voice/get-voice/${voice.voiceId}`);
-            }
-
+            let response = await apiFetch(`${API_BASE}/voice/get-voice/${voice.voiceId}`);
             if (!response.ok) {
               throw new Error(`Failed to fetch voice details (Status: ${response.status})`);
             }
