@@ -11,7 +11,7 @@ export const VOICE_OPTIONS = [
   { id: "antoni", voiceId: "ErXwobaYiN019PkySvjV", name: "Antoni", description: "Well-rounded, warm male", category: "Male - Professional", accent: "American" },
   { id: "arnold", voiceId: "VR6AewLTigWG4xSOukaG", name: "Arnold", description: "Crisp, calm narrator", category: "Male - Professional", accent: "American" },
   { id: "callum", voiceId: "N2lVS1w4EtoT3dr4eOWO", name: "Callum", description: "Strong, middle-aged American", category: "Male - Professional", accent: "American" },
-  { id: "charlie", voiceId: "IKne3meq5aSn9XLyUdCD", name: "Charlie", description: "Casual, Australian male", category: "Male - Casual", accent: "Australian" },
+  { id: "charlie", voiceId: "IKne3meq5aSn9XLyUdCD", name: "Charlie - Confident & Energetic", description: "Deep, young Australian male", category: "Male - Casual", accent: "Australian" },
   { id: "clyde", voiceId: "2EiwWnXFnvU5JabPnv8n", name: "Clyde", description: "Middle-aged American narrator", category: "Male - Professional", accent: "American" },
   { id: "daniel", voiceId: "onwK4e9ZLuTAKqWW03F9", name: "Daniel", description: "Deep, authoritative British", category: "Male - Professional", accent: "British" },
   { id: "drew", voiceId: "29vD33N1CtxCmqQRPOHJ", name: "Drew", description: "Young, energetic male", category: "Male - Casual", accent: "American" },
@@ -59,6 +59,7 @@ interface VoiceSelectorProps {
 export function VoiceSelector({ selectedVoice, onSelect, className, isDark }: VoiceSelectorProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [playingId, setPlayingId] = useState<string | null>(null);
+  const [isBuffering, setIsBuffering] = useState(false);
   const [customVoices, setCustomVoices] = useState<any[]>([]);
   const [audioRef] = useState(typeof Audio !== "undefined" ? new Audio() : null);
 
@@ -95,7 +96,18 @@ export function VoiceSelector({ selectedVoice, onSelect, className, isDark }: Vo
 
   React.useEffect(() => {
     if (audioRef) {
-      audioRef.onended = () => setPlayingId(null);
+      audioRef.onended = () => {
+        setPlayingId(null);
+        setIsBuffering(false);
+      };
+      audioRef.onwaiting = () => setIsBuffering(true);
+      audioRef.onplaying = () => setIsBuffering(false);
+      audioRef.oncanplay = () => setIsBuffering(false);
+      audioRef.onloadstart = () => setIsBuffering(true);
+      audioRef.onerror = () => {
+        setPlayingId(null);
+        setIsBuffering(false);
+      };
     }
     return () => {
       audioRef?.pause();
@@ -109,11 +121,13 @@ export function VoiceSelector({ selectedVoice, onSelect, className, isDark }: Vo
     if (playingId === voiceId) {
       audioRef.pause();
       setPlayingId(null);
+      setIsBuffering(false);
     } else {
       const voice = allVoices.find(v => v.id === voiceId);
       if (voice) {
         try {
           setPlayingId(voiceId);
+          setIsBuffering(true);
           
           // If we already have a preview URL (dynamic voices), use it directly
           if (voice.preview_url) {
@@ -123,10 +137,20 @@ export function VoiceSelector({ selectedVoice, onSelect, className, isDark }: Vo
             const API_BASE = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000/api";
             const response = await apiFetch(`${API_BASE}/v1/custom-voice/${voice.voiceId}`);
             const result = await response.json();
-            if (result.success && result.data.preview_url) {
-              audioRef.src = result.data.preview_url;
+            
+            // Note: The backend response for /custom-voice/:id might be { success: true, data: { voice: { preview_url: ... } } }
+            if (result.success) {
+              const voiceData = result.data.voice || result.data;
+              if (voiceData.preview_url) {
+                audioRef.src = voiceData.preview_url;
+              } else {
+                setPlayingId(null);
+                setIsBuffering(false);
+                return;
+              }
             } else {
               setPlayingId(null);
+              setIsBuffering(false);
               return;
             }
           }
@@ -134,10 +158,12 @@ export function VoiceSelector({ selectedVoice, onSelect, className, isDark }: Vo
           audioRef.play().catch(err => {
             console.error("Audio play failed:", err);
             setPlayingId(null);
+            setIsBuffering(false);
           });
         } catch (error) {
           console.error("Error fetching voice preview:", error);
           setPlayingId(null);
+          setIsBuffering(false);
         }
       }
     }
@@ -222,11 +248,12 @@ export function VoiceSelector({ selectedVoice, onSelect, className, isDark }: Vo
 
                   <div className="flex items-center gap-2 pr-2">
                     <button
+                      type="button"
                       onClick={(e) => togglePlay(e, voice.id)}
                       className={cn(
                         "w-8 h-8 rounded-full flex items-center justify-center transition-all shadow-sm active:scale-95",
                         isCurrentlyPlaying 
-                          ? "bg-white text-[#01012A] animate-pulse" 
+                          ? "bg-white text-[#01012A]" 
                           : selectedVoice === voice.id 
                             ? "bg-white/10 text-white hover:bg-white/20" 
                             : "bg-white border border-slate-100 text-[#01012A] hover:bg-slate-100"
@@ -234,7 +261,11 @@ export function VoiceSelector({ selectedVoice, onSelect, className, isDark }: Vo
                       title="Preview Voice"
                     >
                       {isCurrentlyPlaying ? (
-                        <Icons.Pause className="w-3.5 h-3.5" />
+                        isBuffering ? (
+                          <Icons.Loader className="w-4 h-4 animate-spin" />
+                        ) : (
+                          <Icons.Pause className="w-3.5 h-3.5" />
+                        )
                       ) : (
                         <Icons.Play className="w-3.5 h-3.5 ml-0.5" />
                       )}
@@ -250,4 +281,3 @@ export function VoiceSelector({ selectedVoice, onSelect, className, isDark }: Vo
     </div>
   );
 }
-
