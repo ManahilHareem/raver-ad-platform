@@ -228,99 +228,100 @@ export default function StudioHero({
           />
         </div>
       </div>
-      <div className="relative group flex flex-col gap-5">
-        <div className="relative">
-          <div className="flex flex-col bg-white rounded-2xl border border-[#02022C] transition-all overflow-hidden relative group/input">
-            <textarea
-              ref={textareaRef}
-              value={displayValue}
-              onChange={(e) => setPrompt(e.target.value)}
-              placeholder={selectedCampaign ? `Prompt for: ${selectedCampaign.title}` : "Create a summer balayage instagram promotion"}
-              className="w-full min-h-[140px] p-5 text-[15px] text-[#121212] placeholder:text-[#94A3B8] border-none transition-all resize-none outline-none overflow-hidden"
-            />
+      <div className="relative group flex flex-col gap-6">
+        <div className="relative flex flex-col gap-3">
+        {selectedCampaign && (
+          <div className="absolute -top-3 right-4 flex items-center gap-2 px-3 py-1 bg-[#F1F5F9] border border-[#E2E8F0] rounded-full z-20 shadow-sm animate-in fade-in slide-in-from-top-1">
+            <span className="text-[10px] font-black text-[#01012A] uppercase tracking-wider">Campaign: {selectedCampaign.title}</span>
+            <button 
+              onClick={() => onCampaignSelect?.(null)}
+              className="text-[#94A3B8] hover:text-red-500 transition-colors"
+              title="Clear campaign context"
+            >
+              <Icons.Plus className="w-3 h-3 rotate-45" />
             
-            {/* Selected Assets Display */}
-            {selectedAssets.length > 0 && (
-              <div className="px-5 pb-14 flex flex-wrap gap-2 animate-in fade-in slide-in-from-bottom-2 duration-300">
-                {selectedAssets.map((asset) => (
-                  <div key={asset.id} className="relative group/asset w-14 h-14 rounded-lg overflow-hidden border border-[#E2E8F0] shadow-sm shrink-0">
-                    <img src={normalizeAssetUrl(asset.url)} alt="" className="w-full h-full object-cover transition-transform group-hover/asset:scale-110" />
-                    <div className="absolute inset-0 bg-black/40 opacity-0 group-hover/asset:opacity-100 transition-opacity flex items-center justify-center">
-                      <button 
-                        onClick={() => removeAsset(asset.id)}
-                        className="text-white hover:text-red-400 transition-colors p-1"
-                      >
-                        <Icons.Plus className="w-4 h-4 rotate-45" />
-                      </button>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            )}
+            </button>
+          </div>
+        )}
 
-            {/* Structured Action Bar */}
-            <div className="absolute bottom-0 left-0 right-0 p-3 flex items-center justify-between border-t border-[#F8FAFC] bg-white/80 backdrop-blur-md z-10 transition-colors group-hover/input:bg-white">
-              <div className="flex items-center gap-2">
-                {/* Mic Button */}
-                <div className="relative">
-                  <button
-                    onClick={handleMicClick}
-                    className={`w-9 h-9 rounded-xl flex items-center justify-center transition-all ${
-                      isListening
-                        ? "bg-red-500 text-white animate-pulse shadow-lg shadow-red-500/30 font-bold text-[10px]"
-                        : "bg-[#F8FAFC] text-[#94A3B8] hover:text-[#121212] hover:bg-[#F1F5F9]"
-                    }`}
-                    title={isListening ? "Stop listening" : "Voice input"}
+        {/* Textarea */}
+        <textarea
+          ref={textareaRef}
+          value={displayValue}
+          onChange={(e) => setPrompt(e.target.value)}
+          placeholder={selectedCampaign ? `Prompt for: ${selectedCampaign.title}` : "Create a summer balayage instagram promotion"}
+          className="w-full min-h-[140px] p-5 bg-white rounded-2xl border border-[#E2E8F0] focus:border-[#02022C] text-[15px] text-[#121212] placeholder:text-[#94A3B8] transition-all resize-none outline-none overflow-hidden shadow-sm"
+        />
+        
+        {/* Selected Assets Display */}
+        {selectedAssets.length > 0 && (
+          <div className="flex flex-wrap gap-2 animate-in fade-in slide-in-from-bottom-2 duration-300">
+            {selectedAssets.map((asset) => (
+              <div key={asset.id} className="relative group/asset w-14 h-14 rounded-lg overflow-hidden border border-[#E2E8F0] shadow-sm shrink-0">
+                <img src={normalizeAssetUrl(asset.url)} alt="" className="w-full h-full object-cover transition-transform group-hover/asset:scale-110" />
+                <div className="absolute inset-0 bg-black/40 opacity-0 group-hover/asset:opacity-100 transition-opacity flex items-center justify-center">
+                  <button 
+                    onClick={() => removeAsset(asset.id)}
+                    className="text-white hover:text-red-400 transition-colors p-1"
                   >
-                    <Icons.Mic className="w-4 h-4" />
+                    <Icons.Plus className="w-4 h-4 rotate-45" />
                   </button>
                 </div>
-
-                {/* Add Assets Button */}
-                <button
-                  onClick={() => setIsAssetModalOpen(true)}
-                  className="w-9 h-9 rounded-xl bg-[#F8FAFC] text-[#94A3B8] hover:text-[#121212] hover:bg-[#F1F5F9] flex items-center justify-center transition-all"
-                  title="Add reference images"
-                >
-                  <Icons.Image className="w-4 h-4" />
-                </button>
               </div>
+            ))}
+          </div>
+        )}
 
-              {/* Send Button */}
-              <button 
-                onClick={handleSend}
-                disabled={isSending || !prompt.trim()}
-                className={cn(
-                  "px-4 h-9 rounded-xl flex items-center gap-2 transition-all font-bold text-[12px] shadow-sm",
-                  prompt.trim() 
-                    ? "bg-[#02022C] text-white shadow-[#02022C]/10 active:scale-95" 
-                    : "bg-[#F8FAFC] text-[#CBD5E1] cursor-not-allowed"
-                )}
+        {/* Structured Action Bar */}
+        <div className="flex items-center justify-between w-full">
+          <div className="flex items-center gap-2">
+            {/* Mic Button */}
+            <div className="relative">
+              <button
+                onClick={handleMicClick}
+                className={`w-10 h-10 rounded-xl flex items-center justify-center transition-all border ${
+                  isListening
+                    ? "bg-red-50 text-red-500 border-red-200 animate-pulse shadow-lg shadow-red-500/20"
+                    : "bg-white border-[#E2E8F0] text-[#64748B] hover:text-[#121212] hover:border-[#CBD5E1]"
+                }`}
+                title={isListening ? "Stop listening" : "Voice input"}
               >
-                {isSending ? (
-                  <Icons.Loader className="w-4 h-4 animate-spin" />
-                ) : (
-                  <>
-                <Icons.Send className="w-4 h-4" />
-                  </>
-                )}
+                <Icons.Mic className="w-4 h-4" />
               </button>
             </div>
+
+            {/* Add Assets Button */}
+            <button
+              onClick={() => setIsAssetModalOpen(true)}
+              className="w-10 h-10 rounded-xl bg-white border border-[#E2E8F0] text-[#64748B] hover:text-[#121212] hover:border-[#CBD5E1] flex items-center justify-center transition-all shadow-sm"
+              title="Add reference images"
+            >
+              <Icons.Image className="w-4 h-4" />
+            </button>
           </div>
 
-          {selectedCampaign && (
-            <div className="absolute -top-3 right-4 flex items-center gap-2 px-3 py-1 bg-[#F1F5F9] border border-[#E2E8F0] rounded-full z-20 shadow-sm animate-in fade-in slide-in-from-top-1">
-              <span className="text-[10px] font-black text-[#01012A] uppercase tracking-wider">Campaign: {selectedCampaign.title}</span>
-              <button 
-                onClick={() => onCampaignSelect?.(null)}
-                className="text-[#94A3B8] hover:text-red-500 transition-colors"
-                title="Clear campaign context"
-              >
-                <Icons.Plus className="w-3 h-3 rotate-45" />
-              </button>
-            </div>
-          )}
+          {/* Send Button */}
+          <button 
+            onClick={handleSend}
+            disabled={isSending || !prompt.trim()}
+            className={cn(
+              "px-5 h-10 rounded-xl flex items-center gap-2 transition-all font-bold text-[13px] shadow-sm",
+              prompt.trim() 
+                ? "bg-[#02022C] text-white shadow-[#02022C]/20 active:scale-95 hover:bg-[#02022C]/90" 
+                : "bg-[#F1F5F9] text-[#94A3B8] cursor-not-allowed border border-[#E2E8F0]"
+            )}
+          >
+            {isSending ? (
+              <Icons.Loader className="w-4 h-4 animate-spin" />
+            ) : (
+              <>
+                <span className="hidden sm:inline">Generate</span>
+                <Icons.Send className="w-4 h-4" />
+              </>
+            )}
+          </button>
         </div>
+      </div>
 
         <div className="flex flex-col gap-2">
           <div className="flex items-center justify-between mb-1">

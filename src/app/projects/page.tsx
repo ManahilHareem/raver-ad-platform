@@ -29,6 +29,7 @@ interface Campaign {
   message?: string;
   voiceId?: string | null;
   createdAt?: string;
+  campaign_status?: string | null;
 }
 
 function ProjectsContent() {
@@ -58,7 +59,8 @@ function ProjectsContent() {
         });
         if (sessionRes.ok) {
           const sData = await sessionRes.json();
-          const sessionsArray = Array.isArray(sData.data?.sessions) ? sData.data.sessions : sData.data;
+          const rawData = sData.data?.sessions || sData.data;
+          const sessionsArray = Array.isArray(rawData) ? rawData : (rawData ? [rawData] : []);
           if (Array.isArray(sessionsArray)) {
             // STRICT FILTER: Only include sessions that have a valid session_id
             const filteredSessions = sessionsArray.filter((s: any) => s.session_id);
@@ -78,7 +80,8 @@ function ProjectsContent() {
               prompt: s.prompt,
               voiceId: s.voice || s.voice_id || s.production?.voice || s.brief_draft?.voice,
               image: s.image_urls?.length ? s.image_urls : (s.nodes?.generate_image?.result?.scene_images?.length ? s.nodes.generate_image.result.scene_images : "/assets/hashtag-campaign.jpg"),
-              createdAt: s.created_at
+              createdAt: s.created_at,
+              campaign_status: s.campaign_status
             }));
           }
         }
@@ -116,24 +119,55 @@ function ProjectsContent() {
     let isActive = true;
     const abortController = new AbortController();
     const API_BASE = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
+    console.log("campaignsRef.current", campaignsRef.current);
 
     const poll = async () => {
       if (!isActive) return;
 
       const currentCampaigns = campaignsRef.current;
+      console.log("[Polling] Running poll check, currentCampaigns count:", currentCampaigns.length);
+      
       const activeStatuses = ["queued", "in_production", "pipeline_running", "In Production", "processing", "rendering"];
       const terminalStatuses = ["completed", "Ready", "delivered", "failed", "ready_for_human_review", "approved"];
 
       const polls = currentCampaigns.filter(c => {
         if (!c.sessionId) return false;
+        
         const status = c.status?.toLowerCase() || "";
+        const cStatus = c.campaign_status?.toLowerCase() || "";
+        
+        // 1. Is the top-level status terminal?
         const isTerminal = terminalStatuses.some(s => status.includes(s.toLowerCase()));
-        const isActive = activeStatuses.some(s => status.includes(s.toLowerCase())) || (!isTerminal && status !== "");
+        
+        // 2. Are any of the statuses actively queued or rendering?
+        const hasActiveStatus = activeStatuses.some(s => status.includes(s.toLowerCase()) || cStatus.includes(s.toLowerCase()));
+        
+        // 3. Has this session failed too many times?
         const failureCount = sessionFailuresRef.current[c.sessionId] || 0;
-        return isActive && !isTerminal && failureCount < 5;
-      });
+        const hasNotFailed = failureCount < 5;
 
+        // DECISION LOGIC:
+        // Never poll if it's terminal.
+        // Otherwise, poll if it has an active status OR an unknown non-empty status.
+        let shouldPoll = false;
+        if (!isTerminal) {
+          if (hasActiveStatus || status !== "") {
+            shouldPoll = true;
+          }
+        }
+        
+        shouldPoll = shouldPoll && hasNotFailed;
+        
+        if (shouldPoll) {
+          console.log(`[Polling] Active session found: ${c.sessionId} (status: '${status}', cStatus: '${cStatus}')`);
+        }
+        
+        return shouldPoll;
+      });
+      
+      console.log("polls", polls);
       if (polls.length > 0) {
+        console.log(`[Polling] Starting poll for ${polls.length} sessions...`);
         let isFirstPoll = true;
         for (const c of polls) {
           if (!isActive) return;
@@ -153,26 +187,52 @@ function ProjectsContent() {
               const updateData = resData.data;
               sessionFailuresRef.current[c.sessionId] = 0;
 
+              // HITL: If status is awaiting approval, get the latest DB state for assets
+              const isAwaitingApproval = updateData?.status?.toLowerCase().startsWith("awaiting_approval_");
+              let hitlData = null;
+              if (isAwaitingApproval) {
+                try {
+                  const dbUpdateRes = await apiFetch(`${API_BASE}/ai/director/session/${c.sessionId}/db-update?t=${Date.now()}`);
+                  if (dbUpdateRes.ok) {
+                    const dbData = await dbUpdateRes.json();
+                    hitlData = dbData.data;
+                  }
+                } catch (e) {
+                  console.warn("db-update fetch failed in projects:", e);
+                }
+              }
+
               if (updateData) {
                 setCampaigns(prevCampaigns => {
                   const updatedCampaigns = [...prevCampaigns];
                   const index = updatedCampaigns.findIndex(vid => vid.sessionId === c.sessionId);
                   if (index !== -1) {
+                    const isInvalidStatus = !updateData.status || updateData.status.toLowerCase() === 'failed';
+                    const prevStatus = updatedCampaigns[index].status?.toLowerCase() || "";
+                    const prevCampaignStatus = updatedCampaigns[index].campaign_status?.toLowerCase() || "";
+                    const prevInProduction = prevStatus === "in_production" || prevStatus === "queued" || prevCampaignStatus === "in_production" || prevCampaignStatus === "queued";
+                    
+                    const nextStatus = (isInvalidStatus && prevInProduction) ? updatedCampaigns[index].status : (updateData.status || updatedCampaigns[index].status);
+
                     if (
-                      updatedCampaigns[index].status !== updateData.status ||
+                      updatedCampaigns[index].status !== nextStatus ||
+                      updatedCampaigns[index].campaign_status !== updateData.campaign_status ||
                       updatedCampaigns[index].message !== updateData.message ||
-                      updatedCampaigns[index].videoUrl !== updateData.video_url
+                      updatedCampaigns[index].videoUrl !== updateData.video_url ||
+                      JSON.stringify(updatedCampaigns[index].image) !== JSON.stringify(updateData.image_urls)
                     ) {
                       updatedCampaigns[index] = {
                         ...updatedCampaigns[index],
-                        status: updateData.status,
+                        status: nextStatus,
+                        campaign_status: updateData.campaign_status,
                         message: updateData.message,
                         videoUrl: updateData.video_url || updatedCampaigns[index].videoUrl,
                         voiceoverUrl: updateData.voiceover_url || updatedCampaigns[index].voiceoverUrl,
                         musicUrl: updateData.music_url || updatedCampaigns[index].musicUrl,
                         script: updateData.script || updatedCampaigns[index].script,
                         voiceId: updateData.voice || updateData.voice_id || updateData.brief_draft?.voice || updatedCampaigns[index].voiceId,
-                        image: updateData.image_urls?.length ? updateData.image_urls : updatedCampaigns[index].image
+                        image: updateData.image_urls?.length ? updateData.image_urls 
+                          : (hitlData?.image_urls?.length ? hitlData.image_urls : updatedCampaigns[index].image)
                       };
                       return updatedCampaigns;
                     }
@@ -282,6 +342,7 @@ function ProjectsContent() {
                     image={campaign.image}
                     time={timeStr}
                     status={campaign.status}
+                    campaignStatus={campaign?.campaign_status}
                     message={campaign.message}
                     videoUrl={campaign.videoUrl}
                     description={campaign.script || campaign.message || ""}

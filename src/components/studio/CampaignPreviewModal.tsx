@@ -473,7 +473,7 @@ export default function CampaignPreviewModal({
   const isRejected = localStatus?.toLowerCase() === "rejected";
   const isFailed = localStatus?.toLowerCase() === "failed";
   const isDraft = localStatus?.toLowerCase() === "ready_for_human_review";
-  const isAwaitingApproval = localStatus?.toLowerCase().startsWith("awaiting_approval_");
+  const isAwaitingApproval = localStatus?.toLowerCase().startsWith("awaiting_approval");
   const hasLaunched = localHistory.some(m => m.content.includes("LAUNCH_CAMPAIGN")) || 
     ["in_production", "queued", "In Production", "completed", "delivered", "approved"].includes(localStatus || "");
   const canChat = !hasLaunched && !isRejected && !isFailed && !isApproved; // Disallow chat after launch, rejection, failure, or approval
@@ -653,7 +653,7 @@ export default function CampaignPreviewModal({
                     ])).map((url: string, idx: number) => (
                       <div 
                         key={idx} 
-                        className="relative aspect-[16/10] rounded-2xl overflow-hidden border border-[#F1F5F9] bg-slate-100 group/img cursor-zoom-in shadow-sm"
+                        className="relative aspect-16/10 rounded-2xl overflow-hidden border border-[#F1F5F9] bg-slate-100 group/img cursor-zoom-in shadow-sm"
                         onClick={() => {
                           setSelectedImage(normalizeAssetUrl(url));
                           setIsPreviewOpen(true);
@@ -852,7 +852,7 @@ export default function CampaignPreviewModal({
                     <Icons.MagicWand className="w-5 h-5 text-white" />
                   </div>
                   <div className="flex flex-col">
-                    <h3 className="text-[14px] font-black text-[#121212] uppercase tracking-widest">AI Action Required</h3>
+                    <h3 className="text-[14px] font-black text-[#121212] uppercase tracking-widest">AI Consultation</h3>
                     <p className="text-[11px] text-[#64748B] font-bold uppercase tracking-widest">
                       Review {localStatus?.replace("awaiting_approval_", "").replace("_", " ")}
                     </p>
@@ -860,11 +860,12 @@ export default function CampaignPreviewModal({
                 </div>
               </div>
 
-              {/* Asset Candidates - Only show if current step is image generation */}
-              {(localStatus?.includes("image")) && (localHitl?.candidates || localHitl?.image_urls) && (
+              {/* Asset Candidates - Show if status includes 'image' OR if it's the default awaiting_approval state with images available */}
+              {(localStatus?.includes("image") || (isAwaitingApproval && !localStatus?.includes("voice") && !localStatus?.includes("music") && !localStatus?.includes("text") && !localStatus?.includes("render"))) && 
+               (localHitl?.candidates || localHitl?.image_urls || campaignData?.nodes?.generate_image?.result?.scene_images) && (
                 <div className="space-y-4">
                   <p className="text-[11px] font-black text-slate-400 uppercase tracking-widest pl-1">
-                    {localStatus?.includes("image") ? "Select the best generation candidate:" : "Generated Assets:"}
+                    Select the best generation candidate:
                   </p>
                   <div className="grid grid-cols-2 gap-4">
                     {(localHitl?.candidates || localHitl?.image_urls || campaignData?.nodes?.generate_image?.result?.scene_images || []).map((candidate: any, idx: number) => {

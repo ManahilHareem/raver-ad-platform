@@ -116,7 +116,8 @@ export default function CampaignCard({
             const prevInProduction = 
               prev.status?.toLowerCase() === "in_production" || 
               prev.status?.toLowerCase() === "queued" || 
-              prev.campaign_status?.toLowerCase() === "in_production";
+              prev.campaign_status?.toLowerCase() === "in_production" ||
+              prev.campaign_status?.toLowerCase() === "queued";
             
             const nextStatus = (isInvalidStatus && prevInProduction) ? prev.status : (updateData.status || prev.status);
 

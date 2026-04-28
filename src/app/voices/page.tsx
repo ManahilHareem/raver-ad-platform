@@ -353,7 +353,7 @@ export default function VoiceStudioPage() {
 
         {/* Modal for voice creation */}
         {showCreateForm && (
-          <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/60 backdrop-blur-md animate-in fade-in duration-300 overflow-y-auto">
+          <div className="fixed inset-0 z-100 flex items-center justify-center p-4 bg-black/60 backdrop-blur-md animate-in fade-in duration-300 overflow-y-auto">
             <div 
               className="fixed inset-0 bg-[#01012A]/40 backdrop-blur-sm" 
               onClick={() => setShowCreateForm(false)} 

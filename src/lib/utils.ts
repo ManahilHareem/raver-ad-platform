@@ -34,25 +34,32 @@ Tones: ${campaign.tones?.join(", ") || "N/A"}
 `;
   return context.trim();
 }
-export function normalizeAssetUrl(url: string | null | undefined): string {
+export function normalizeAssetUrl(url: any): string {
   if (!url) return "";
   
-  // If it's already a full URL, return it
-  if (url.startsWith("http")) return url;
+  // If it's an object with a url property, use that
+  let targetUrl = typeof url === 'string' ? url : url.url || url.image_url || url.uri;
   
-  // If it starts with /api/, handle potential duplication with base URL
-  if (url.startsWith("/api/")) {
-    const base =  "https://apiplatform.raver.ai/api";
-    // const base = "https://kamala-helminthologic-gladys.ngrok-free.dev/";
-    const normalizedBase = base.endsWith('/') ? base.slice(0, -1) : base;
-    
-    // If base already ends with /api, and url starts with /api/, remove the duplicate /api from url
-    if (normalizedBase.endsWith('/api')) {
-      return `${normalizedBase}${url.substring(4)}`;
-    }
-    
-    return `${normalizedBase}${url}`;
+  if (!targetUrl || typeof targetUrl !== 'string') {
+    // If we still don't have a string, and it's an object, maybe it's an array we should handle?
+    // For now, just return empty to avoid crash
+    return "";
   }
   
-  return url;
+  // If it's already a full URL, return it
+  if (targetUrl.startsWith("http")) return targetUrl;
+  
+  // If it starts with /api/, handle potential duplication with base URL
+  if (targetUrl.startsWith("/api/")) {
+    const base = "https://apiplatform.raver.ai/api";
+    const normalizedBase = base.endsWith('/') ? base.slice(0, -1) : base;
+    
+    if (normalizedBase.endsWith('/api')) {
+      return `${normalizedBase}${targetUrl.substring(4)}`;
+    }
+    
+    return `${normalizedBase}${targetUrl}`;
+  }
+  
+  return targetUrl;
 }

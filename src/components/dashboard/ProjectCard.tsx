@@ -11,6 +11,7 @@ interface ProjectCardProps {
   time?: string;
   image: string | string[];
   status?: string;
+  campaignStatus?: string | null;
   message?: string;
   videoUrl?: string | null;
   onPreview?: () => void;
@@ -26,6 +27,7 @@ export default function ProjectCard({
   time, 
   image,
   status,
+  campaignStatus,
   message,
   videoUrl,
   onPreview,
@@ -92,7 +94,7 @@ export default function ProjectCard({
   }, [currentImageIndex, showSlideshow, images.length]);
 
   const isReady = status === "Ready" || status === "completed" || status === "delivered" || status?.toLowerCase() === "approved";
-  const isInProduction = status === "in_production" || status === "queued" || status === "In Production" || status === "pipeline_running";
+  const isInProduction = !isReady && (status === "in_production" || status === "queued" || status === "In Production" || status === "pipeline_running" || campaignStatus === "in_production" || campaignStatus === "queued");
   const isActionRequired = status?.toLowerCase().startsWith("awaiting_approval_") || status === "ready_for_human_review";
 
   const handleDownload = async (e: React.MouseEvent) => {

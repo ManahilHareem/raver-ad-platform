@@ -45,7 +45,7 @@ interface Campaign {
   tones?: string[];
   visualStyles?: string[];
   createdAt?: string;
-  history?: { role: string; content: string }[] | null;
+  history?: { role: string; content: string; assets?: any[] }[] | null;
   prompt?: string | null;
   completed_nodes?: string[];
   voice?: string | null;
@@ -108,6 +108,7 @@ function ActiveCampaignsGrid({ campaigns, onDelete, onViewMore, onViewDetails, a
                 title={campaign.title}
                 image={campaign.image}
                 status={campaign.status}
+                campaignStatus={campaign.campaign_status}
                 message={campaign.message}
                 videoUrl={campaign.videoUrl}
                 time={timeStr}
@@ -164,9 +165,10 @@ function StudioPageContent() {
   const [isSending, setIsSending] = useState(false);
   const [showAIResponse, setShowAIResponse] = useState(false);
   const [isPreviewOpen, setIsPreviewOpen] = useState(false);
-  const [aiResponseContent, setAiResponseContent] = useState("");
   const [initialUserPrompt, setInitialUserPrompt] = useState("");
+  const [initialUserAssets, setInitialUserAssets] = useState<any[]>([]);
   const [currentSessionId, setCurrentSessionId] = useState("");
+  const [aiResponseContent, setAiResponseContent] = useState("");
   const [activePipelineIndex, setActivePipelineIndex] = useState(0);
   const [selectedVoice, setSelectedVoice] = useState<string>("");
   const [showVoices, setShowVoices] = useState<Array<any>>([]);
@@ -187,7 +189,8 @@ function StudioPageContent() {
 
         if (sessionRes.ok) {
           const sessionData = await sessionRes.json();
-          const sessionsArray = Array.isArray(sessionData.data?.sessions) ? sessionData.data.sessions : (Array.isArray(sessionData.data) ? sessionData.data : []);
+          const rawData = sessionData.data?.sessions || sessionData.data;
+          const sessionsArray = Array.isArray(rawData) ? rawData : (rawData ? [rawData] : []);
           
           console.log(`[STUDIO FETCH ${new Date().toLocaleTimeString()}] Raw Sessions:`, sessionsArray.length);
 
@@ -205,7 +208,7 @@ function StudioPageContent() {
                 id: s.campaign_id || s.id,
                 sessionId: sId,
                 title: s.title || (brief.business_name ? `${brief.business_name} Active Simulation` : `Studio Session ${sId}`),
-                status: s.status || "ready",
+                status: s.status || s.campaign_status || "ready",
                 message: s.message,
                 videoUrl: s.video_url,
                 voiceoverUrl: s.voiceover_url || s.audio_url,
@@ -337,7 +340,8 @@ function StudioPageContent() {
         id: Date.now().toString(),
         role: "user",
         content: enrichedMessage,
-        timestamp: new Date().toISOString()
+        timestamp: new Date().toISOString(),
+        assets: assets || []
       };
 
       const aiMessage = {
@@ -369,6 +373,7 @@ function StudioPageContent() {
       localStorage.setItem("chat_sessions", JSON.stringify([newSession, ...existingSessions]));
 
       setInitialUserPrompt(enrichedMessage);
+      setInitialUserAssets(assets || []);
       setAiResponseContent(aiResponse);
       setCurrentSessionId(sessionId);
 
@@ -462,16 +467,43 @@ function StudioPageContent() {
     const poll = async () => {
       if (!isActive) return;
       const currentVideos = videosRef.current;
+      console.log("[Polling] Running poll check, currentVideos count:", currentVideos.length);
       const activeStatuses = ["queued", "in_production", "pipeline_running", "In Production", "processing", "rendering"];
       const terminalStatuses = ["completed", "Ready", "delivered", "failed", "ready_for_human_review", "approved"];
 
       const polls = currentVideos.filter(v => {
         if (!v.sessionId) return false;
+
         const status = v.status?.toLowerCase() || "";
+        const cStatus = v.campaign_status?.toLowerCase() || "";
+        
+        // 1. Is the top-level status terminal?
         const isTerminal = terminalStatuses.some(s => status.includes(s.toLowerCase()));
-        const isActive = activeStatuses.some(s => status.includes(s.toLowerCase())) || (!isTerminal && status !== "");
+        
+        // 2. Are any of the statuses actively queued or rendering?
+        const hasActiveStatus = activeStatuses.some(s => status.includes(s.toLowerCase()) || cStatus.includes(s.toLowerCase()));
+        
+        // 3. Has this session failed too many times?
         const failureCount = sessionFailuresRef.current[v.sessionId] || 0;
-        return isActive && !isTerminal && failureCount < 5;
+        const hasNotFailed = failureCount < 5;
+
+        // DECISION LOGIC:
+        // Never poll if it's terminal.
+        // Otherwise, poll if it has an active status OR an unknown non-empty status.
+        let shouldPoll = false;
+        if (!isTerminal) {
+          if (hasActiveStatus || status !== "") {
+            shouldPoll = true;
+          }
+        }
+        
+        shouldPoll = shouldPoll && hasNotFailed;
+        
+        if (shouldPoll) {
+          console.log(`[Polling] Active session found: ${v.sessionId} (status: '${status}', cStatus: '${cStatus}')`);
+        }
+        
+        return shouldPoll;
       });
 
       if (polls.length > 0) {
@@ -518,18 +550,22 @@ function StudioPageContent() {
                   if (index !== -1) {
                     if (
                       updatedVideos[index].status !== updateData.status ||
+                      updatedVideos[index].campaign_status !== updateData.campaign_status ||
                       updatedVideos[index].message !== updateData.message ||
-                      updatedVideos[index].videoUrl !== updateData.video_url
+                      updatedVideos[index].videoUrl !== updateData.video_url ||
+                      JSON.stringify(updatedVideos[index].image) !== JSON.stringify(updateData.image_urls)
                     ) {
                       const isInvalidStatus = !updateData.status || updateData.status.toLowerCase() === 'failed';
                       const prevStatus = updatedVideos[index].status?.toLowerCase() || "";
-                      const prevInProduction = prevStatus === "in_production" || prevStatus === "queued";
+                      const prevCampaignStatus = updatedVideos[index].campaign_status?.toLowerCase() || "";
+                      const prevInProduction = prevStatus === "in_production" || prevStatus === "queued" || prevCampaignStatus === "in_production" || prevCampaignStatus === "queued";
                       
                       const nextStatus = (isInvalidStatus && prevInProduction) ? updatedVideos[index].status : (updateData.status || updatedVideos[index].status);
 
                       updatedVideos[index] = {
                         ...updatedVideos[index],
                         status: nextStatus,
+                        campaign_status: updateData.campaign_status,
                         message: updateData.message || updatedVideos[index].message,
                         videoUrl: updateData.video_url || updatedVideos[index].videoUrl,
                         voiceoverUrl: updateData.voiceover_url || updateData.audio_url || updatedVideos[index].voiceoverUrl,
@@ -734,6 +770,7 @@ function StudioPageContent() {
         sessionId={currentSessionId}
         initialHistory={campaignToView?.history || []}
         selectedCampaign={selectedCampaign}
+        initialUserAssets={initialUserAssets}
         onCampaignStart={(campaign: Campaign) => {
           setVideos(prev => [campaign, ...prev]);
         }}

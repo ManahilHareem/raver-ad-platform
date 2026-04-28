@@ -24,9 +24,10 @@ interface AIResponseModalProps {
   initialUserMessage: string;
   initialAIResponse: string;
   sessionId: string;
-  initialHistory?: { role: string; content: string }[] | null;
+  initialHistory?: { role: string; content: string; assets?: any[] }[] | null;
   selectedCampaign?: any | null;
   onCampaignStart?: (campaign: any) => void;
+  initialUserAssets?: any[];
 }
 
 import { useUser } from "@/context/UserContext";
@@ -39,7 +40,8 @@ export default function AIResponseModal({
   sessionId,
   initialHistory,
   selectedCampaign,
-  onCampaignStart
+  onCampaignStart,
+  initialUserAssets
 }: AIResponseModalProps) {
   const router = useRouter();
   const [messages, setMessages] = useState<Message[]>([]);
@@ -96,7 +98,8 @@ export default function AIResponseModal({
             id: "initial-user",
             role: "user",
             content: initialUserMessage,
-            timestamp: new Date()
+            timestamp: new Date(),
+            assets: initialUserAssets || []
           },
           {
             id: "initial-ai",
