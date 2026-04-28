@@ -27,12 +27,12 @@ export default function ImageViewerModal({
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-y-0 right-0 left-0 lg:left-[280px] z-110 flex items-center justify-center overflow-hidden bg-black animate-in fade-in duration-500">
+    <div className="fixed inset-0 z-110 flex items-center justify-center overflow-hidden bg-black/95 backdrop-blur-md animate-in fade-in duration-500">
       {/* Cinematic Backdrop */}
       <div className="absolute inset-0 cursor-zoom-out" onClick={onClose} />
       
       {/* Image Container */}
-      <div className="relative w-full h-full flex items-center justify-center p-2 sm:p-20 pointer-events-none transition-all duration-700">
+      <div className="relative w-full h-full flex items-center justify-center p-4 sm:p-8 pointer-events-none transition-all duration-700">
          <div className="relative w-full h-full max-w-screen-2xl max-h-screen pointer-events-auto">
             {imageUrl && imageUrl.startsWith("http") ? (
               <>

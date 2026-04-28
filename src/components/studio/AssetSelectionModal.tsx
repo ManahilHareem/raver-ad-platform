@@ -4,6 +4,7 @@ import { Icons } from "@/components/ui/icons";
 import { useState, useEffect } from "react";
 import { apiFetch } from "@/lib/api";
 import { cn, normalizeAssetUrl } from "@/lib/utils";
+import ImageViewerModal from "@/components/agents/ImageViewerModal";
 
 interface Asset {
   id: string;
@@ -34,6 +35,8 @@ export default function AssetSelectionModal({
   const [assets, setAssets] = useState<Asset[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [tempSelected, setTempSelected] = useState<Asset[]>([]);
+  const [isPreviewOpen, setIsPreviewOpen] = useState(false);
+  const [selectedPreviewImage, setSelectedPreviewImage] = useState<string>("");
 
   const [playingId, setPlayingId] = useState<string | null>(null);
   const [audioRef] = useState(typeof Audio !== "undefined" ? new Audio() : null);
@@ -115,6 +118,7 @@ export default function AssetSelectionModal({
   });
 
   return (
+    <>
     <div className="fixed inset-y-0 right-0 left-0 lg:left-[280px] z-100 flex items-center justify-center bg-black/40 backdrop-blur-sm p-4">
       <div className="bg-white w-full max-w-[700px] h-[80vh] rounded-[24px] shadow-2xl flex flex-col overflow-hidden animate-in zoom-in-95 duration-200">
         {/* Header */}
@@ -208,7 +212,20 @@ export default function AssetSelectionModal({
                         </div>
                       </div>
                     ) : (
-                      <img src={normalizeAssetUrl(asset.url)} alt={asset.name} className="w-full h-full object-cover" />
+                      <>
+                        <img src={normalizeAssetUrl(asset.url)} alt={asset.name} className="w-full h-full object-cover" />
+                        <button 
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            setSelectedPreviewImage(normalizeAssetUrl(asset.url));
+                            setIsPreviewOpen(true);
+                          }}
+                          className="absolute top-2 left-2 w-7 h-7 bg-white/20 backdrop-blur-md rounded-lg flex items-center justify-center border border-white/30 opacity-0 group-hover:opacity-100 transition-opacity z-30 hover:bg-white/40"
+                          title="Preview Full Screen"
+                        >
+                          <Icons.Search className="w-3.5 h-3.5 text-white" />
+                        </button>
+                      </>
                     )}
                     
                     {/* Overlay */}
@@ -266,5 +283,12 @@ export default function AssetSelectionModal({
         </div>
       </div>
     </div>
+
+    <ImageViewerModal 
+      isOpen={isPreviewOpen}
+      onClose={() => setIsPreviewOpen(false)}
+      imageUrl={selectedPreviewImage}
+    />
+    </>
   );
 }

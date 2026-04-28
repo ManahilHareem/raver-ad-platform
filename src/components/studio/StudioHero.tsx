@@ -67,7 +67,7 @@ export default function StudioHero({
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isAssetModalOpen, setIsAssetModalOpen] = useState(false);
   const [prompt, setPrompt] = useState("");
-  const [selectedVoice, setSelectedVoice] = useState("");
+  const [selectedVoice, setSelectedVoice] = useState("adam");
   const [voiceError, setVoiceError] = useState(false);
   const [selectedAssets, setSelectedAssets] = useState<Asset[]>([]);
   const [dbCampaigns, setDbCampaigns] = useState<Campaign[]>([]);
@@ -157,16 +157,12 @@ export default function StudioHero({
   const handleSend = () => {
     if (!prompt.trim()) return;
 
-    // Voice is mandatory — validate
-    if (!selectedVoice || selectedVoice === "") {
-      setVoiceError(true);
-      return;
-    }
+    const activeVoice = selectedVoice || "adam";
     setVoiceError(false);
 
     // Append voice selection to the prompt so AI Director knows
-    const voiceName = allVoices.find(v => v.id === selectedVoice)?.name || selectedVoice;
-    const enrichedPrompt = `${prompt.trim()}\n\n[Voice: ${selectedVoice} (${voiceName})]`;
+    const voiceName = allVoices.find(v => v.id === activeVoice)?.name || activeVoice;
+    const enrichedPrompt = `${prompt.trim()}\n\n[Voice: ${activeVoice} (${voiceName})]`;
 
     onSend?.(enrichedPrompt, selectedAssets);
     setPrompt("");
@@ -330,9 +326,8 @@ export default function StudioHero({
           <div className="flex items-center justify-between mb-1">
             <div className="flex items-center gap-2">
               <span className="text-[11px] font-black text-[#01012A] uppercase tracking-[0.2em]">
-                Neural Casting <span className="text-red-500">*</span>
+                Neural Casting
               </span>
-              <span className="text-[9px] font-bold text-slate-300 uppercase tracking-widest">(Mandatory)</span>
             </div>
             {selectedVoice && (
               <div className="flex items-center gap-2 px-3 py-1 bg-emerald-50 border border-emerald-100 rounded-full animate-in fade-in slide-in-from-right-2 duration-500">
@@ -353,12 +348,6 @@ export default function StudioHero({
               voiceError && "ring-4 ring-red-500/20 rounded-[22px]"
             )}
           />
-
-          {voiceError && (
-            <p className="text-[10px] text-red-500 font-bold uppercase tracking-widest mt-1 animate-in fade-in slide-in-from-top-1 duration-300 ml-1">
-              ⚠️ You must select a neural profile before initiating production
-            </p>
-          )}
         </div>
 
         <div className="flex flex-col gap-6">

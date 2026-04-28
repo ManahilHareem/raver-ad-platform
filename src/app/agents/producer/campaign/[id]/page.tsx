@@ -26,7 +26,7 @@ export default function CampaignDetailPage() {
   const [isProcessingStep, setIsProcessingStep] = useState(false);
   const [selectedAssetId, setSelectedAssetId] = useState<string | null>(null);
   const [stepNotes, setStepNotes] = useState("");
-  const [selectedVoice, setSelectedVoice] = useState<string>("");
+  const [selectedVoice, setSelectedVoice] = useState<string>("adam");
 
   useEffect(() => {
     const fetchCampaign = async () => {
@@ -221,11 +221,12 @@ export default function CampaignDetailPage() {
         bodyData.selected_asset_id = selectedAssetId;
       }
       
-      if (stepName === "generate_voice" && selectedVoice) {
-        bodyData.voice_id = selectedVoice;
-        const voiceOption = VOICE_OPTIONS.find(v => v.id === selectedVoice);
-        const voiceName = voiceOption ? voiceOption.name : selectedVoice;
-        bodyData.notes = `[Selected Voice: ${voiceName} - ${selectedVoice}] ${bodyData.notes}`;
+      if (stepName === "generate_voice") {
+        const activeVoice = selectedVoice || "adam";
+        bodyData.voice_id = activeVoice;
+        const voiceOption = VOICE_OPTIONS.find(v => v.id === activeVoice);
+        const voiceName = voiceOption ? voiceOption.name : activeVoice;
+        bodyData.notes = `[Selected Voice: ${voiceName} - ${activeVoice}] ${bodyData.notes}`;
       }
 
       const response = await apiFetch(`${process.env.NEXT_PUBLIC_API_URL}/ai/producer/campaign/${campaign.session_id}/approve-step`, {
@@ -372,7 +373,7 @@ export default function CampaignDetailPage() {
                   return (
                     <div className="flex flex-col gap-6 relative z-10">
                       <span className="text-[10px] font-black uppercase tracking-[0.2em] text-[#01012A]/40">Select generation candidate</span>
-                      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 gap-6">
                         {candidates.map((candidate: any, idx: number) => {
                           const assetUrl = candidate.url || candidate.image_url || (typeof candidate === "string" ? candidate : null);
                           const assetId = candidate.id || idx.toString();
@@ -386,6 +387,17 @@ export default function CampaignDetailPage() {
                               )}
                             >
                               <img src={normalizeAssetUrl(assetUrl)} alt={`Candidate ${idx + 1}`} className="w-full h-full object-cover" />
+                              <button 
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  setSelectedImage(normalizeAssetUrl(assetUrl));
+                                  setIsPreviewOpen(true);
+                                }}
+                                className="absolute bottom-4 left-4 w-10 h-10 bg-white/20 backdrop-blur-md rounded-xl flex items-center justify-center border border-white/30 opacity-0 group-hover:opacity-100 transition-opacity z-20 hover:bg-white/40"
+                                title="Audit Candidate"
+                              >
+                                <Icons.Search className="w-5 h-5 text-white" />
+                              </button>
                               {selectedAssetId === assetId && (
                                 <div className="absolute top-4 right-4 w-8 h-8 bg-[#01012A] text-white rounded-full flex items-center justify-center shadow-lg">
                                   <Icons.CheckCircle className="w-5 h-5" />
@@ -657,8 +669,9 @@ export default function CampaignDetailPage() {
               </div>
             )}
 
-            {/* HERO: Cinema Mode Video Showcase */}
-            {result.video_url ? (
+            {/* HERO: Cinema Mode Video Showcase - Only if video exists or render is active */}
+            {(result.video_url || getNodeStatus("render") === "running" || getNodeStatus("render") === "failed") && (
+              result.video_url ? (
               <div className="bg-linear-to-r from-[#01012A] to-[#2E2C66]  rounded-[32px] md:rounded-[40px] overflow-hidden shadow-2xl shadow-black/20 relative group h-[60vh] sm:h-[70vh] lg:h-[80vh] transition-all duration-700">
                 {/* Immersive Hover Overlays */}
                 <div className="absolute inset-x-0 top-0 h-40 bg-linear-to-b from-black/80 to-transparent z-20 opacity-0 group-hover:opacity-100 transition-opacity duration-500 flex items-start justify-between p-6 sm:p-8 md:p-12 pointer-events-none">
@@ -751,7 +764,8 @@ export default function CampaignDetailPage() {
                   </>
                 )}
               </div>
-            )}
+            )
+          )}
 
             {/* Top Row: Visual Matrix & Node Intel */}
             <div className="grid grid-cols-12 gap-6 md:gap-10">

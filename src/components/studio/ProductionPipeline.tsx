@@ -138,7 +138,16 @@ export default function ProductionPipeline({ status, message, videoUrl, complete
     { label: "Music Generation", status: getStepStatus("Music Generation") },
     { label: "Rendering", status: getStepStatus("Rendering") },
     { label: "Quality Check", status: getStepStatus("Quality Check") },
-  ];
+  ].filter(step => {
+    // Hide rendering/quality steps for image-only tasks (terminal status + no video)
+    const isTerminal = ["delivered", "ready", "completed", "ready_for_human_review", "approved", "shipped"].some(ts => 
+      status?.toLowerCase().includes(ts)
+    );
+    if ((step.label === "Rendering" || step.label === "Quality Check") && isTerminal && !videoUrl) {
+      return false;
+    }
+    return true;
+  });
 
   const isAwaiting = status?.toLowerCase().startsWith("awaiting_approval_");
 

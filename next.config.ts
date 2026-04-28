@@ -10,6 +10,8 @@ const nextConfig: NextConfig = {
       { protocol: 'https', hostname: 'api.adplatform.raver.ai' },
       { protocol: 'https', hostname: 'apiplatform.raver.ai' },
       { protocol: 'https', hostname: '**.amazonaws.com' },
+      { protocol: 'https', hostname: 'v3b.fal.media' },
+      { protocol: 'https', hostname: '**.fal.media' },
     ],
   },
 };

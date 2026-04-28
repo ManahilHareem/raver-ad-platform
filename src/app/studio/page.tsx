@@ -377,6 +377,13 @@ function StudioPageContent() {
       setShowAIResponse(true);
 
       const campaignStatus = responseData?.campaign_status;
+      const action = responseData?.action;
+
+      if (action === "generate_image") {
+        // Force refresh to get the latest session with images
+        fetchCampaigns();
+      }
+
       if (campaignStatus === "queued" || campaignStatus === "in_production") {
         const brief = responseData?.brief_draft || {};
         const title = brief.business_name ? `${brief.business_name} Campaign` : prompt.length > 30 ? prompt.substring(0, 30) + "..." : prompt;
@@ -720,6 +727,7 @@ function StudioPageContent() {
           setAiResponseContent("");
           setInitialUserPrompt("");
           setCurrentSessionId("");
+          fetchCampaigns();
         }}
         initialUserMessage={initialUserPrompt}
         initialAIResponse={aiResponseContent}

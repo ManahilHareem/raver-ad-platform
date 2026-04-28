@@ -9,6 +9,7 @@ import { getToken } from "@/lib/auth";
 import { VoiceSelector, VOICE_OPTIONS } from "@/components/agents/audio-lead/VoiceSelector";
 import { normalizeAssetUrl } from "@/lib/utils";
 import { toast } from "react-toastify";
+import ImageViewerModal from "@/components/agents/ImageViewerModal";
 
 interface CampaignPreviewModalProps {
   isOpen: boolean;
@@ -72,6 +73,8 @@ export default function CampaignPreviewModal({
   const [localMusicUrl, setLocalMusicUrl] = useState<string | null>(campaignData?.music_url || null);
   const [localVoiceoverUrl, setLocalVoiceoverUrl] = useState<string | null>(campaignData?.voiceover_url || null);
   const [isRefreshing, setIsRefreshing] = useState(false);
+  const [isPreviewOpen, setIsPreviewOpen] = useState(false);
+  const [selectedImage, setSelectedImage] = useState<string>("");
 
   // Get the name of the selected voice for display
   const selectedVoiceName =
@@ -211,7 +214,7 @@ export default function CampaignPreviewModal({
         body: JSON.stringify({
           session_id: campaignData.campaign_id,
           campaign_id: campaignData.campaign_id,
-          message: changeMessage + `voice of the script ${selectedVoice} and background music style ${musicPrompt}`,
+          message: changeMessage + `voice of the script ${selectedVoice || "adam"} and background music style ${musicPrompt || "original"}`,
           tag: "director"
         }),
       });
@@ -332,8 +335,10 @@ export default function CampaignPreviewModal({
       let finalNotes = stepNotes || (action === "approve" ? "Looks good" : "Requires changes");
       
       // Only include the current voice selection in the notes for the AI Director if we are reviewing the voice
-      if (selectedVoice && stepName.includes("voice")) {
-        finalNotes = `${finalNotes} (Selected Voice: ${selectedVoiceName}${selectedVoice !== selectedVoiceName ? ` - ${selectedVoice}` : ""})`;
+      if (stepName.includes("voice")) {
+        const finalVoice = selectedVoice || "adam";
+        const finalVoiceName = VOICE_OPTIONS.find(v => v.id.toLowerCase() === finalVoice.toLowerCase())?.name || finalVoice;
+        finalNotes = `${finalNotes} (Selected Voice: ${finalVoiceName}${finalVoice !== finalVoiceName ? ` - ${finalVoice}` : ""})`;
       }
 
       const bodyData: any = {
@@ -563,7 +568,9 @@ export default function CampaignPreviewModal({
             <div className="space-y-4">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-3">
-                  <h3 className="text-[12px] font-black text-[#02022C] uppercase tracking-[0.2em]">Visual & Video</h3>
+                  <h3 className="text-[12px] font-black text-[#02022C] uppercase tracking-[0.2em]">
+                    {localVideoUrl ? "Visual & Video" : "Generated Assets"}
+                  </h3>
                   {isAwaitingApproval && (localStatus?.includes("render") || localStatus?.includes("image")) && (
                     <div className="flex items-center gap-1.5 px-3 py-1 bg-amber-50 border border-amber-100 rounded-full animate-pulse">
                       <Icons.Zap className="w-3 h-3 text-amber-500" />
@@ -582,8 +589,9 @@ export default function CampaignPreviewModal({
                   </button>
                 )}
               </div>
-              <div className="relative aspect-video rounded-3xl overflow-hidden bg-slate-100 border border-[#F1F5F9] shadow-inner group">
-                {localVideoUrl ? (
+
+              {localVideoUrl && (
+                <div className="relative aspect-video rounded-3xl overflow-hidden bg-slate-100 border border-[#F1F5F9] shadow-inner group">
                   <div className="relative w-full h-full">
                     {videoError ? (
                       <div className="absolute inset-0 flex flex-col items-center justify-center bg-slate-900/50 text-white gap-3 p-8 text-center italic">
@@ -628,21 +636,8 @@ export default function CampaignPreviewModal({
                       </>
                     )}
                   </div>
-                ) : (
-                  <div className="absolute inset-0 flex flex-col items-center justify-center text-slate-300 gap-4 text-center px-8">
-                    <div className={cn("p-6 rounded-full bg-slate-50 border border-slate-100/50", isAwaitingApproval && localStatus?.includes("image") && "bg-amber-50 border-amber-100")}>
-                      {isAwaitingApproval && localStatus?.includes("image") ? (
-                        <Icons.Zap className="w-10 h-10 text-amber-500 animate-pulse" />
-                      ) : (
-                        <Icons.Image className="w-10 h-10 text-slate-200" />
-                      )}
-                    </div>
-                    <p className={cn("text-[10px] font-black uppercase tracking-[0.2em]", isAwaitingApproval && localStatus?.includes("image") ? "text-amber-600" : "text-slate-400")}>
-                      {isAwaitingApproval && localStatus?.includes("image") ? "Awaiting your image selection below" : "Video stream initializing..."}
-                    </p>
-                  </div>
-                )}
-              </div>
+                </div>
+              )}
 
               {/* Scene Images Gallery - Added as requested */}
               {((localHitl?.image_urls?.length ?? 0) > 0 || (campaignData?.image_urls?.length ?? 0) > 0) && (
@@ -651,20 +646,23 @@ export default function CampaignPreviewModal({
                     <Icons.Image className="w-3.5 h-3.5 text-slate-400" />
                     <h4 className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Production Gallery</h4>
                   </div>
-                  <div className="grid grid-cols-2 sm:grid-cols-4 sm:auto-rows-max gap-3">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     {Array.from(new Set([
                       ...(localHitl?.image_urls || []),
                       ...(campaignData?.image_urls || [])
                     ])).map((url: string, idx: number) => (
                       <div 
                         key={idx} 
-                        className="relative aspect-video rounded-2xl overflow-hidden border border-[#F1F5F9] bg-slate-100 group/img cursor-zoom-in shadow-sm"
-                        onClick={() => window.open(normalizeAssetUrl(url), '_blank')}
+                        className="relative aspect-[16/10] rounded-2xl overflow-hidden border border-[#F1F5F9] bg-slate-100 group/img cursor-zoom-in shadow-sm"
+                        onClick={() => {
+                          setSelectedImage(normalizeAssetUrl(url));
+                          setIsPreviewOpen(true);
+                        }}
                       >
                         <img 
                           src={normalizeAssetUrl(url)} 
                           alt={`Scene ${idx + 1}`}
-                          className="w-full h-full object-contain group-hover:scale-105 transition-transform duration-500" 
+                          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" 
                         />
                         <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors" />
                         <div className="absolute bottom-2 right-2 w-6 h-6 bg-white/80 backdrop-blur-md rounded-lg flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
@@ -820,7 +818,7 @@ export default function CampaignPreviewModal({
               </div>
             </div>
 
-            {/* Apply Changes Button — always shown since voice must be selected */}
+            {/* Apply Changes Button */}
             {(isEditingScript || selectedVoice || musicPrompt) && (
               <div className="flex justify-end">
                 <button
@@ -1204,6 +1202,12 @@ export default function CampaignPreviewModal({
           </div>
         </div>
       </div>
+
+      <ImageViewerModal 
+        isOpen={isPreviewOpen}
+        onClose={() => setIsPreviewOpen(false)}
+        imageUrl={selectedImage}
+      />
     </div>
 
   );

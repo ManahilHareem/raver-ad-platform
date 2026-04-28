@@ -9,6 +9,8 @@ import { useState, useEffect } from "react";
 import CampaignPreviewModal from "./CampaignPreviewModal";
 import AIResponseModal from "./AIResponseModal";
 import { apiFetch } from "@/lib/api";
+import ImageViewerModal from "@/components/agents/ImageViewerModal";
+import { normalizeAssetUrl } from "@/lib/utils";
 
 interface CampaignCardProps {
   id?: string;
@@ -52,6 +54,7 @@ export default function CampaignCard({
   const [isPreviewOpen, setIsPreviewOpen] = useState(false);
   const [isChatOpen, setIsChatOpen] = useState(false);
   const [isFetching, setIsFetching] = useState(false);
+  const [isFullPreviewOpen, setIsFullPreviewOpen] = useState(false);
 
   // Local state to store potentially fresher data from API
   const [localData, setLocalData] = useState({
@@ -213,7 +216,25 @@ export default function CampaignCard({
                 "object-cover transition-transform duration-500",
                 isInProduction ? "scale-105 blur-sm" : "group-hover:scale-105"
               )}
+              onClick={(e) => {
+                e.stopPropagation();
+                setIsFullPreviewOpen(true);
+              }}
             />
+          )}
+
+          {!isInProduction && (
+            <div 
+              className="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center pointer-events-none"
+              onClick={(e) => {
+                e.stopPropagation();
+                setIsFullPreviewOpen(true);
+              }}
+            >
+              <div className="w-10 h-10 bg-white/20 backdrop-blur-md rounded-full flex items-center justify-center border border-white/30 pointer-events-auto">
+                <Icons.Search className="w-5 h-5 text-white" />
+              </div>
+            </div>
           )}
 
           {isInProduction && (
@@ -293,13 +314,22 @@ export default function CampaignCard({
 
       <AIResponseModal 
         isOpen={isChatOpen}
-        onClose={() => setIsChatOpen(false)}
+        onClose={() => {
+          setIsChatOpen(false);
+          handlePreviewClick();
+        }}
         initialUserMessage={localData.script || localData.message || "Continuing consultation..."}
         initialAIResponse={localData.message || "How can I help you today?"}
         sessionId={localData.session_id}
         initialHistory={[]} // localData doesn't track history yet, but modal will fetch or handle
         selectedCampaign={localData}
         onCampaignStart={() => onRefresh?.()}
+      />
+
+      <ImageViewerModal 
+        isOpen={isFullPreviewOpen}
+        onClose={() => setIsFullPreviewOpen(false)}
+        imageUrl={normalizeAssetUrl(Array.isArray(image) ? image[0] : image)}
       />
     </>
   );

@@ -164,7 +164,9 @@ export default function AIResponseModal({
       const aiResponseContent = responseData?.response || responseData?.message || responseData?.ai_message || "I'm still processing your request. How else can I help?";
       
       const campaignStatus = responseData?.campaign_status;
-      if (campaignStatus === "queued" || campaignStatus === "in_production") {
+      const action = responseData?.action;
+
+      if (campaignStatus === "queued" || campaignStatus === "in_production" || action === "generate_image") {
         const brief = responseData?.brief_draft || {};
         const title = brief.business_name ? `${brief.business_name} Campaign` : userMsgContent.length > 30 ? userMsgContent.substring(0, 30) + "..." : userMsgContent;
         if (onCampaignStart) {
@@ -172,8 +174,8 @@ export default function AIResponseModal({
             id: responseData?.campaign_id,
             sessionId: sessionId,
             title: title,
-            status: campaignStatus,
-            image: "/assets/hashtag-campaign.jpg"
+            status: campaignStatus || "completed",
+            image: responseData?.image_urls?.length ? responseData.image_urls : "/assets/hashtag-campaign.jpg"
           });
         }
       }

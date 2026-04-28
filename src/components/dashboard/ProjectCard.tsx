@@ -2,8 +2,9 @@ import React, { useState, useRef, useEffect, useCallback, useMemo } from "react"
 import Image from "next/image";
 import { Icons } from "@/components/ui/icons";
 import Link from "next/link";
-import { cn } from "@/lib/utils";
+import { cn, normalizeAssetUrl } from "@/lib/utils";
 import { toast } from "react-toastify";
+import ImageViewerModal from "@/components/agents/ImageViewerModal";
 
 interface ProjectCardProps {
   title: string;
@@ -36,6 +37,7 @@ export default function ProjectCard({
 }: ProjectCardProps) {
   const [isMuted, setIsMuted] = useState(true);
   const [videoError, setVideoError] = useState(false);
+  const [isPreviewOpen, setIsPreviewOpen] = useState(false);
   const videoRef = useRef<HTMLVideoElement>(null);
 
   // Image slideshow state
@@ -127,6 +129,7 @@ export default function ProjectCard({
   };
 
   return (
+    <>
     <div 
       onClick={onClick}
       className={cn(
@@ -175,7 +178,25 @@ export default function ProjectCard({
                   videoError && "opacity-40 grayscale",
                   isTransitioning ? "opacity-0 scale-[1.02]" : "opacity-100 scale-100"
                 )}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setIsPreviewOpen(true);
+                }}
               />
+              {/* Slideshow search overlay */}
+              {!isInProduction && !videoUrl && (
+                <div 
+                  className="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center pointer-events-none"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setIsPreviewOpen(true);
+                  }}
+                >
+                  <div className="w-10 h-10 bg-white/20 backdrop-blur-md rounded-full flex items-center justify-center border border-white/30 pointer-events-auto">
+                    <Icons.Search className="w-5 h-5 text-white" />
+                  </div>
+                </div>
+              )}
               {/* Slideshow dot indicators */}
               {showSlideshow && (
                 <div className="absolute bottom-2 left-1/2 -translate-x-1/2 z-20 flex items-center gap-1.5">
@@ -313,5 +334,11 @@ export default function ProjectCard({
         </div>
       </div>
     </div>
+    <ImageViewerModal 
+      isOpen={isPreviewOpen}
+      onClose={() => setIsPreviewOpen(false)}
+      imageUrl={normalizeAssetUrl(images[currentImageIndex] || images[0])}
+    />
+    </>
   );
 }
