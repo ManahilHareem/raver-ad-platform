@@ -7,7 +7,7 @@ interface Campaign {
   id?: string;
   title: string;
   status: string;
-  image: string;
+  image: string | string[];
   audience?: string;
   objective?: string;
   format?: string;
@@ -237,7 +237,7 @@ export default function CampaignSelectionModal({
                     className="flex items-center gap-4 p-3 rounded-xl border border-[#F1F5F9] hover:border-[#02022C] hover:bg-[#F8FAFC] cursor-pointer transition-all group"
                   >
                     <div className="w-[60px] h-[40px] rounded-lg overflow-hidden shrink-0 border border-[#E2E8F0]">
-                      <img src={campaign.image} alt={campaign.title} className="w-full h-full object-cover" />
+                      <img src={Array.isArray(campaign.image) ? campaign.image[0] : campaign.image} alt={campaign.title} className="w-full h-full object-cover" />
                     </div>
                     <div className="flex-1 text-left">
                       <h4 className="text-[14px] font-semibold text-[#121212] group-hover:text-[#02022C] line-clamp-1">{campaign.title}</h4>

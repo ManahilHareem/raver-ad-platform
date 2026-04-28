@@ -29,7 +29,7 @@ interface Campaign {
   id?: string;
   title: string;
   status: string;
-  image: string;
+  image: string | string[];
   sessionId?: string;
   videoUrl?: string | null;
   voiceoverUrl?: string | null;
@@ -106,7 +106,7 @@ function ActiveCampaignsGrid({ campaigns, onDelete, onViewMore, onViewDetails, a
               <ProjectCard
                 key={campaign.sessionId || campaign.id || i}
                 title={campaign.title}
-                image={campaign.image || "/assets/hashtag-campaign.jpg"}
+                image={campaign.image}
                 status={campaign.status}
                 message={campaign.message}
                 videoUrl={campaign.videoUrl}
@@ -219,7 +219,7 @@ function StudioPageContent() {
                 platforms: brief.platforms || (brief.platform ? [brief.platform] : []),
                 tones: brief.tones,
                 visualStyles: brief.visual_style || brief.visualStyles,
-                image: "/assets/hashtag-campaign.jpg",
+                image: s.image_urls?.length ? s.image_urls : (s.nodes?.generate_image?.result?.scene_images?.length ? s.nodes.generate_image.result.scene_images : "/assets/hashtag-campaign.jpg"),
                 createdAt: s.created_at,
                 history: s.history,
                 prompt: s.prompt,
@@ -531,6 +531,9 @@ function StudioPageContent() {
                         history: updateData.history || updatedVideos[index].history,
                         prompt: updateData.prompt || updatedVideos[index].prompt,
                         completed_nodes: updateData.completed_nodes || [],
+                        // Sync image_urls from DB for card slideshow
+                        image: updateData.image_urls?.length ? updateData.image_urls
+                          : (hitlData?.image_urls?.length ? hitlData.image_urls : updatedVideos[index].image),
                         // Merge hitl data if available
                         ...(hitlData ? { hitl: hitlData } : {})
                       };

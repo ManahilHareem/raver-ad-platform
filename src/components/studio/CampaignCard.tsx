@@ -14,7 +14,7 @@ interface CampaignCardProps {
   id?: string;
   title: string;
   status: string;
-  image: string;
+  image: string | string[];
   videoUrl?: string | null;
   message?: string;
   onDelete?: () => void;
@@ -145,7 +145,8 @@ export default function CampaignCard({
 
   const handleDownload = async (e: React.MouseEvent) => {
     e.stopPropagation();
-    const url = localData.video_url || videoUrl || image;
+    const firstImage = Array.isArray(image) ? image[0] : image;
+    const url = localData.video_url || videoUrl || firstImage;
     if (!url) return;
 
     toast.info('Preparing secure download...');
@@ -162,10 +163,11 @@ export default function CampaignCard({
 
   const handleCopyLink = (e: React.MouseEvent) => {
     e.stopPropagation();
-    const url = localData.video_url || videoUrl || image;
+    const firstImg = Array.isArray(image) ? image[0] : image;
+    const url = localData.video_url || videoUrl || firstImg;
     if (!url) return;
     
-    navigator.clipboard.writeText(url);
+    navigator.clipboard.writeText(url as string);
     toast.success("Campaign link copied to clipboard");
   };
 
@@ -204,7 +206,7 @@ export default function CampaignCard({
             />
           ) : (
             <Image
-              src={image}
+              src={Array.isArray(image) ? image[0] : image}
               alt={title}
               fill
               className={cn(

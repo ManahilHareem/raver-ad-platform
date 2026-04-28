@@ -1,4 +1,4 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect, useCallback, useMemo } from "react";
 import Image from "next/image";
 import { Icons } from "@/components/ui/icons";
 import Link from "next/link";
@@ -8,7 +8,7 @@ import { toast } from "react-toastify";
 interface ProjectCardProps {
   title: string;
   time?: string;
-  image: string;
+  image: string | string[];
   status?: string;
   message?: string;
   videoUrl?: string | null;
@@ -38,13 +38,64 @@ export default function ProjectCard({
   const [videoError, setVideoError] = useState(false);
   const videoRef = useRef<HTMLVideoElement>(null);
 
+  // Image slideshow state
+  const images = useMemo(() => {
+    const raw = Array.isArray(image) ? image : [image];
+    return raw.filter(Boolean);
+  }, [image]);
+  const [currentImageIndex, setCurrentImageIndex] = useState(0);
+  const [isTransitioning, setIsTransitioning] = useState(false);
+  const slideshowTimerRef = useRef<NodeJS.Timeout | null>(null);
+  const hasMultipleImages = images.length > 1;
+  const showSlideshow = hasMultipleImages && (!videoUrl || videoError);
+
+  // Auto-cycle images
+  useEffect(() => {
+    if (!showSlideshow) return;
+
+    const cycle = () => {
+      setIsTransitioning(true);
+      setTimeout(() => {
+        setCurrentImageIndex(prev => (prev + 1) % images.length);
+        setIsTransitioning(false);
+      }, 400); // fade-out duration
+    };
+
+    slideshowTimerRef.current = setInterval(cycle, 3000);
+    return () => {
+      if (slideshowTimerRef.current) clearInterval(slideshowTimerRef.current);
+    };
+  }, [showSlideshow, images.length]);
+
+  // Manual dot navigation
+  const goToImage = useCallback((index: number) => {
+    if (index === currentImageIndex) return;
+    // Reset auto-cycle timer
+    if (slideshowTimerRef.current) clearInterval(slideshowTimerRef.current);
+    setIsTransitioning(true);
+    setTimeout(() => {
+      setCurrentImageIndex(index);
+      setIsTransitioning(false);
+    }, 300);
+    // Restart auto-cycle
+    if (showSlideshow) {
+      slideshowTimerRef.current = setInterval(() => {
+        setIsTransitioning(true);
+        setTimeout(() => {
+          setCurrentImageIndex(prev => (prev + 1) % images.length);
+          setIsTransitioning(false);
+        }, 400);
+      }, 3000);
+    }
+  }, [currentImageIndex, showSlideshow, images.length]);
+
   const isReady = status === "Ready" || status === "completed" || status === "delivered" || status?.toLowerCase() === "approved";
   const isInProduction = status === "in_production" || status === "queued" || status === "In Production" || status === "pipeline_running";
   const isActionRequired = status?.toLowerCase().startsWith("awaiting_approval_") || status === "ready_for_human_review";
 
   const handleDownload = async (e: React.MouseEvent) => {
     e.stopPropagation();
-    const url = videoUrl || image;
+    const url = videoUrl || images[0];
     if (!url) return;
 
     toast.info('Preparing secure download...');
@@ -66,7 +117,7 @@ export default function ProjectCard({
 
   const handleCopy = (e: React.MouseEvent) => {
     e.stopPropagation();
-    const linkToCopy = videoUrl || image;
+    const linkToCopy = videoUrl || images[0];
     if (linkToCopy) {
       navigator.clipboard.writeText(linkToCopy);
       toast.success("Video link synced to clipboard!");
@@ -115,15 +166,36 @@ export default function ProjectCard({
           ) : (
             <div className="relative w-full h-full flex items-center justify-center bg-slate-50">
               <Image 
-                src={image} 
+                src={images[currentImageIndex] || images[0]} 
                 alt={title}
                 fill
                 className={cn(
-                  "object-cover transition-transform duration-500",
+                  "object-cover transition-all duration-500",
                   isInProduction ? "scale-105 blur-sm" : "group-hover:scale-110",
-                  videoError && "opacity-40 grayscale"
+                  videoError && "opacity-40 grayscale",
+                  isTransitioning ? "opacity-0 scale-[1.02]" : "opacity-100 scale-100"
                 )}
               />
+              {/* Slideshow dot indicators */}
+              {showSlideshow && (
+                <div className="absolute bottom-2 left-1/2 -translate-x-1/2 z-20 flex items-center gap-1.5">
+                  {images.map((_, idx) => (
+                    <button
+                      key={idx}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        goToImage(idx);
+                      }}
+                      className={cn(
+                        "rounded-full transition-all duration-300 shadow-sm",
+                        idx === currentImageIndex
+                          ? "w-4 h-1.5 bg-white"
+                          : "w-1.5 h-1.5 bg-white/50 hover:bg-white/80"
+                      )}
+                    />
+                  ))}
+                </div>
+              )}
               {videoError && (
                 <div className="absolute inset-0 flex flex-col items-center justify-center bg-white/10 backdrop-blur-[2px] z-10">
                    <Icons.AlertTriangle className="w-6 h-6 text-amber-500/80 mb-2" />

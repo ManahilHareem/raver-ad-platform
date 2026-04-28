@@ -24,7 +24,7 @@ interface Campaign {
   id?: string;
   title: string;
   status: string;
-  image: string;
+  image: string | string[];
   audience?: string;
   objective?: string;
   format?: string;

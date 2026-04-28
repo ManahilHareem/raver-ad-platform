@@ -17,7 +17,7 @@ interface Campaign {
   id?: string;
   title: string;
   status: string;
-  image: string;
+  image: string | string[];
   sessionId?: string;
   videoUrl?: string | null;
   voiceoverUrl?: string | null;
@@ -77,7 +77,7 @@ function ProjectsContent() {
               briefDraft: s.brief_draft,
               prompt: s.prompt,
               voiceId: s.voice || s.voice_id || s.production?.voice || s.brief_draft?.voice,
-              image: "/assets/hashtag-campaign.jpg",
+              image: s.image_urls?.length ? s.image_urls : (s.nodes?.generate_image?.result?.scene_images?.length ? s.nodes.generate_image.result.scene_images : "/assets/hashtag-campaign.jpg"),
               createdAt: s.created_at
             }));
           }
@@ -171,7 +171,8 @@ function ProjectsContent() {
                         voiceoverUrl: updateData.voiceover_url || updatedCampaigns[index].voiceoverUrl,
                         musicUrl: updateData.music_url || updatedCampaigns[index].musicUrl,
                         script: updateData.script || updatedCampaigns[index].script,
-                        voiceId: updateData.voice || updateData.voice_id || updateData.brief_draft?.voice || updatedCampaigns[index].voiceId
+                        voiceId: updateData.voice || updateData.voice_id || updateData.brief_draft?.voice || updatedCampaigns[index].voiceId,
+                        image: updateData.image_urls?.length ? updateData.image_urls : updatedCampaigns[index].image
                       };
                       return updatedCampaigns;
                     }
@@ -278,7 +279,7 @@ function ProjectsContent() {
                   <ProjectCard
                     key={campaign.sessionId || campaign.id || i}
                     title={campaign.title}
-                    image={campaign.image || "/assets/hashtag-campaign.jpg"}
+                    image={campaign.image}
                     time={timeStr}
                     status={campaign.status}
                     message={campaign.message}

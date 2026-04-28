@@ -103,7 +103,7 @@ export default function HomePage() {
               brief_draft: s.brief_draft,
               prompt: s.prompt,
               voice_id: s.voice || s.voice_id || s.brief_draft?.voice || s.production?.voice || s.metadata?.voice || "adam",
-              image: "/assets/hashtag-campaign.jpg",
+              image: s.image_urls?.length ? s.image_urls : (s.nodes?.generate_image?.result?.scene_images?.length ? s.nodes.generate_image.result.scene_images : "/assets/hashtag-campaign.jpg"),
               created_at: s.created_at,
               time: s.created_at ? "Recently" : "Just now"
             }));
@@ -181,7 +181,7 @@ export default function HomePage() {
                 <ProjectCard 
                   key={i} 
                   {...project} 
-                  image={project.image || "/assets/hashtag-campaign.jpg"}
+                  image={project.image}
                   videoUrl={project.video_url}
                   members={1}
                   onPreview={() => {

@@ -8,7 +8,7 @@ interface Campaign {
   id?: string;
   title: string;
   status: string;
-  image: string;
+  image: string | string[];
   sessionId?: string;
   videoUrl?: string | null;
   voiceoverUrl?: string | null;
