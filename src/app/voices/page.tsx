@@ -204,7 +204,7 @@ export default function VoiceStudioPage() {
 
   return (
     <DashboardLayout>
-      <div className="flex flex-col gap-6 sm:gap-8 p-4 sm:p-8 rounded-[10px] bg-white mx-auto max-w-7xl">
+      <div className="flex flex-col gap-6 sm:gap-8 p-4 sm:p-8 rounded-[10px] bg-white mx-auto">
         {/* Header section */}
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
           <div className="flex flex-col">
