@@ -145,7 +145,7 @@ export default function AIResponseModal({
       // Enrich follow-up message with campaign context if available
       const apiMessage = enrichMessageWithCampaign(userMsg.content, selectedCampaign);
       
-      const response = await apiFetch(`${API_BASE}/ai/director/chat`, {
+      const response = await apiFetch(`${API_BASE}/ai/director/chat?t=${Date.now()}`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

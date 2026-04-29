@@ -393,13 +393,26 @@ function StudioPageContent() {
         const brief = responseData?.brief_draft || {};
         const title = brief.business_name ? `${brief.business_name} Campaign` : prompt.length > 30 ? prompt.substring(0, 30) + "..." : prompt;
 
-        setVideos(prev => [{
-          id: responseData?.campaign_id,
-          sessionId: sessionId,
-          title: title,
-          status: campaignStatus,
-          image: "/assets/hashtag-campaign.jpg"
-        }, ...prev]);
+        setVideos(prev => {
+          const exists = prev.findIndex(v => v.sessionId === sessionId);
+          if (exists !== -1) {
+            const updated = [...prev];
+            updated[exists] = {
+              ...updated[exists],
+              id: responseData?.campaign_id || updated[exists].id,
+              status: campaignStatus,
+              title: title || updated[exists].title,
+            };
+            return updated;
+          }
+          return [{
+            id: responseData?.campaign_id,
+            sessionId: sessionId,
+            title: title,
+            status: campaignStatus,
+            image: "/assets/hashtag-campaign.jpg"
+          }, ...prev];
+        });
         setActivePipelineIndex(0);
       }
 
@@ -613,6 +626,21 @@ function StudioPageContent() {
     };
   }, []);
 
+  // Sync campaignToView with the latest polling data from Videos
+  useEffect(() => {
+    if (isPreviewOpen && campaignToView?.sessionId) {
+      const latest = Videos.find(v => v.sessionId === campaignToView.sessionId);
+      if (latest && (
+        latest.status !== campaignToView.status || 
+        latest.videoUrl !== campaignToView.videoUrl || 
+        latest.image !== campaignToView.image ||
+        latest.script !== campaignToView.script
+      )) {
+        setCampaignToView(latest);
+      }
+    }
+  }, [Videos, isPreviewOpen, campaignToView?.sessionId]);
+
   useEffect(() => {
     fetchCampaigns();
   }, [fetchCampaigns]);
@@ -772,7 +800,15 @@ function StudioPageContent() {
         selectedCampaign={selectedCampaign}
         initialUserAssets={initialUserAssets}
         onCampaignStart={(campaign: Campaign) => {
-          setVideos(prev => [campaign, ...prev]);
+          setVideos(prev => {
+            const exists = prev.findIndex(v => v.sessionId === campaign.sessionId);
+            if (exists !== -1) {
+              const updated = [...prev];
+              updated[exists] = { ...updated[exists], ...campaign };
+              return updated;
+            }
+            return [campaign, ...prev];
+          });
         }}
       />
     </DashboardLayout>

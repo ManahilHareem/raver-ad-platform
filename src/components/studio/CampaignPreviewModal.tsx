@@ -135,7 +135,7 @@ export default function CampaignPreviewModal({
     setIsRefreshing(true);
     try {
       const API_BASE = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
-      const res = await apiFetch(`${API_BASE}/ai/director/session/${campaignData.session_id}/db-update`);
+      const res = await apiFetch(`${API_BASE}/ai/director/session/${campaignData.session_id}/db-update?t=${Date.now()}`);
       if (res.ok) {
         const resData = await res.json();
         const data = resData.data;
@@ -417,6 +417,7 @@ export default function CampaignPreviewModal({
 
     try {
       const API_BASE = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
+      const sId = campaignData.session_id || campaignData.campaign_id;
       const response = await apiFetch(`${API_BASE}/ai/director/chat`, {
         method: "POST",
         headers: {
@@ -424,7 +425,7 @@ export default function CampaignPreviewModal({
           ...(getToken() ? { Authorization: `Bearer ${getToken()}` } : {}),
         },
         body: JSON.stringify({
-          session_id: campaignData.session_id,
+          session_id: sId,
           message: userMsg.content,
           tag: "director",
         }),
@@ -445,7 +446,8 @@ export default function CampaignPreviewModal({
 
       // Proactively refresh latest DB state for hitl/approval info after chat
       try {
-        await apiFetch(`${API_BASE}/ai/director/session/${campaignData.session_id}/update`);
+        const sId = campaignData.session_id || campaignData.campaign_id;
+        await apiFetch(`${API_BASE}/ai/director/session/${sId}/update?t=${Date.now()}`);
       } catch (e) {
         console.warn("Status update fetch failed after chat:", e);
       }
