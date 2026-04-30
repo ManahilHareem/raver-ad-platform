@@ -33,6 +33,23 @@ interface AIResponseModalProps {
 
 import { useUser } from "@/context/UserContext";
 
+const cleanContent = (content: string) => {
+  let cleaned = content;
+  if (cleaned.includes("[USER MESSAGE]:")) {
+    cleaned = cleaned.split("[USER MESSAGE]:").pop() || cleaned;
+  }
+  if (cleaned.trim().startsWith("{") && cleaned.trim().endsWith("}")) {
+    try {
+      const parsed = JSON.parse(cleaned);
+      if (parsed.response) cleaned = parsed.response;
+      else if (parsed.message) cleaned = parsed.message;
+    } catch (e) {
+      /* keep source if parse fails */
+    }
+  }
+  return cleaned.trim();
+};
+
 export default function AIResponseModal({ 
   isOpen, 
   onClose, 
@@ -56,30 +73,56 @@ export default function AIResponseModal({
     setInputText((prev) => (prev + " " + text).trim());
   }, []);
   const { isListening, interimText, startListening, stopListening } = useVoiceInput(handleVoiceResult);
-  const { speak, stop: stopSpeaking, isSpeaking } = useTextToSpeech();
+  const { speak, stop: stopSpeaking, isSpeaking, isLoading: isSpeechLoading } = useTextToSpeech();
   const [autoSpeak, setAutoSpeak] = useState(true);
   const lastSpokenMessageId = useRef<string | null>(null);
+  const [currentlySpeakingId, setCurrentlySpeakingId] = useState<string | null>(null);
 
   // Centralized auto-speak logic
   useEffect(() => {
     if (!isOpen) {
       stopSpeaking();
       lastSpokenMessageId.current = null;
+      setCurrentlySpeakingId(null);
       return;
     }
 
-    if (autoSpeak) {
-      const lastAIMessage = [...messages].reverse().find(m => m.role === "ai");
-      if (lastAIMessage && lastAIMessage.id !== lastSpokenMessageId.current) {
-        speak(lastAIMessage.content);
-        lastSpokenMessageId.current = lastAIMessage.id;
-      }
-    } else {
+    const lastAIMessage = [...messages].reverse().find(m => m.role === "ai");
+    
+    // Initialize lastSpokenMessageId on first open so we don't speak old messages
+    if (lastSpokenMessageId.current === null && lastAIMessage) {
+      lastSpokenMessageId.current = lastAIMessage.id;
+      return;
+    }
+
+    if (autoSpeak && lastAIMessage && lastAIMessage.id !== lastSpokenMessageId.current) {
+      speak(cleanContent(lastAIMessage.content));
+      lastSpokenMessageId.current = lastAIMessage.id;
+      setCurrentlySpeakingId(lastAIMessage.id);
+    } else if (!autoSpeak) {
       stopSpeaking();
-      // Reset spoken ID when muted so it can speak again when unmuted
       lastSpokenMessageId.current = null;
+      setCurrentlySpeakingId(null);
     }
   }, [autoSpeak, isOpen, messages, speak, stopSpeaking]);
+
+  // Sync isSpeaking state back to currentlySpeakingId
+  useEffect(() => {
+    if (!isSpeaking) {
+      setCurrentlySpeakingId(null);
+    }
+  }, [isSpeaking]);
+
+  const handleToggleSpeech = (messageId: string, content: string) => {
+    const cleaned = cleanContent(content);
+    if (isSpeaking && currentlySpeakingId === messageId) {
+      stopSpeaking();
+      setCurrentlySpeakingId(null);
+    } else {
+      speak(cleaned);
+      setCurrentlySpeakingId(messageId);
+    }
+  };
 
   const handleMicClick = () => {
     if (isListening) {
@@ -349,11 +392,22 @@ export default function AIResponseModal({
                   })()}
                   {m.role === "ai" && (
                     <button 
-                      onClick={() => speak(m.content)}
-                      className="absolute -right-10 top-0 p-2 text-slate-400 hover:text-[#02022C] transition-colors"
-                      title="Speak message"
+                      onClick={() => handleToggleSpeech(m.id, m.content)}
+                      className={cn(
+                        "absolute -right-10 top-0 p-2 transition-all duration-200",
+                        isSpeaking && currentlySpeakingId === m.id 
+                          ? "text-blue-600 scale-110" 
+                          : "text-slate-400 hover:text-[#02022C] hover:scale-110"
+                      )}
+                      title={isSpeaking && currentlySpeakingId === m.id ? "Stop" : "Play"}
                     >
-                      <Icons.Volume2 className="w-4 h-4" />
+                      {isSpeechLoading && currentlySpeakingId === m.id ? (
+                        <Icons.Loader className="w-4 h-4 animate-spin text-blue-600" />
+                      ) : isSpeaking && currentlySpeakingId === m.id ? (
+                        <Icons.Pause className="w-4 h-4 fill-current" />
+                      ) : (
+                        <Icons.Play className="w-4 h-4 fill-current" />
+                      )}
                     </button>
                   )}
                 </div>
@@ -392,10 +446,13 @@ export default function AIResponseModal({
                <div className="w-8 h-8 rounded-lg overflow-hidden shrink-0 border border-slate-100 shadow-sm bg-[#02022C] flex items-center justify-center">
                  <Icons.Loader className="w-4 h-4 text-white animate-spin" />
                </div>
-               <div className="bg-white border border-slate-100 p-4 rounded-2xl rounded-tl-none shadow-sm flex items-center gap-1.5">
-                  <div className="w-1.5 h-1.5 bg-slate-400 rounded-full animate-bounce [animation-delay:-0.3s]" />
-                  <div className="w-1.5 h-1.5 bg-slate-400 rounded-full animate-bounce [animation-delay:-0.15s]" />
-                  <div className="w-1.5 h-1.5 bg-slate-400 rounded-full animate-bounce" />
+               <div className="bg-white border border-slate-100 p-4 rounded-2xl rounded-tl-none shadow-sm flex items-center gap-3">
+                  <div className="flex gap-1.5">
+                    <div className="w-1.5 h-1.5 bg-slate-400 rounded-full animate-bounce [animation-delay:-0.3s]" />
+                    <div className="w-1.5 h-1.5 bg-slate-400 rounded-full animate-bounce [animation-delay:-0.15s]" />
+                    <div className="w-1.5 h-1.5 bg-slate-400 rounded-full animate-bounce" />
+                  </div>
+                  <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest animate-pulse">Buffering...</span>
                </div>
             </div>
           )}

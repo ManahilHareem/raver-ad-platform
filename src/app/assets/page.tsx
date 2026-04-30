@@ -9,6 +9,7 @@ import { RaverLoadingState } from "@/components/ui/RaverLoadingState";
 import { cn } from "@/lib/utils";
 import { Icons } from "@/components/ui/icons";
 import { apiFetch } from "@/lib/api";
+import { toast } from "react-toastify";
 
 
 const categories = ["All Assets", "Images", "Videos", "Graphics", "Audio"];
@@ -122,11 +123,11 @@ export default function AssetsPage() {
 
       // 3. Refresh list
       await fetchAssets();
-      alert("Asset uploaded successfully!");
+      toast.success("Asset uploaded successfully!");
 
     } catch (error) {
       console.error("Upload error:", error);
-      alert("Failed to upload asset. Please try again.");
+      toast.error("Failed to upload asset. Please try again.");
     } finally {
       setIsUploading(false);
       // Reset input
@@ -155,12 +156,13 @@ export default function AssetsPage() {
         setAssetList(prev => prev.filter(a => a.id !== assetToDelete.id));
         setAssetToDelete(null);
         setSelectedAsset(null);
+        toast.success("Asset deleted successfully");
       } else {
         throw new Error("Failed to delete asset");
       }
     } catch (error) {
       console.error("Delete error:", error);
-      alert("Failed to delete asset");
+      toast.error("Failed to delete asset");
     } finally {
       setIsDeleting(false);
     }

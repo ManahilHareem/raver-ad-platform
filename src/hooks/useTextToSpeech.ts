@@ -7,6 +7,7 @@ import { useState, useCallback, useRef, useEffect } from "react";
  */
 export function useTextToSpeech() {
   const [isSpeaking, setIsSpeaking] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   const [isSupported, setIsSupported] = useState(false);
   const synthRef = useRef<SpeechSynthesis | null>(null);
   const utteranceRef = useRef<SpeechSynthesisUtterance | null>(null);
@@ -22,6 +23,7 @@ export function useTextToSpeech() {
     if (synthRef.current) {
       synthRef.current.cancel();
       setIsSpeaking(false);
+      setIsLoading(false);
     }
   }, []);
 
@@ -55,11 +57,21 @@ export function useTextToSpeech() {
       utterance.voice = preferredVoice;
     }
 
-    utterance.onstart = () => setIsSpeaking(true);
-    utterance.onend = () => setIsSpeaking(false);
-    utterance.onerror = () => setIsSpeaking(false);
+    utterance.onstart = () => {
+      setIsSpeaking(true);
+      setIsLoading(false);
+    };
+    utterance.onend = () => {
+      setIsSpeaking(false);
+      setIsLoading(false);
+    };
+    utterance.onerror = () => {
+      setIsSpeaking(false);
+      setIsLoading(false);
+    };
 
     utteranceRef.current = utterance;
+    setIsLoading(true);
     synthRef.current.speak(utterance);
   }, [isSupported]);
 
@@ -76,6 +88,7 @@ export function useTextToSpeech() {
     speak,
     stop,
     isSpeaking,
+    isLoading,
     isSupported
   };
 }

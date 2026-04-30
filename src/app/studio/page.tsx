@@ -16,6 +16,7 @@ import { Icons } from "@/components/ui/icons";
 import { getToken } from "@/lib/auth";
 import { apiFetch } from "@/lib/api";
 import { cn, enrichMessageWithCampaign } from "@/lib/utils";
+import { toast } from "react-toastify";
 
 /*
 ### Custom Icon Integration
@@ -419,7 +420,7 @@ function StudioPageContent() {
       setIsSending(false);
     } catch (err) {
       console.error("AI Director Error:", err);
-      alert("Failed to connect to AI Director. Please ensure the backend is running.");
+      toast.error("Failed to connect to AI Director. Please ensure the backend is running.");
       setIsSending(false);
     }
   };
@@ -456,9 +457,10 @@ function StudioPageContent() {
       setCampaignToView(null);
       setCampaignToDelete(null);
       setActivePipelineIndex(0);
+      toast.success("Campaign deleted successfully");
     } catch (err) {
       console.error("Delete failed:", err);
-      alert("Failed to delete campaign. Please try again.");
+      toast.error("Failed to delete campaign. Please try again.");
     } finally {
       setIsDeleting(false);
     }

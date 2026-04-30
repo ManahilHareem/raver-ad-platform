@@ -12,6 +12,7 @@ import { RaverLoadingState } from "@/components/ui/RaverLoadingState";
 import { Icons } from "@/components/ui/icons";
 import { apiFetch } from "@/lib/api";
 import { cn } from "@/lib/utils";
+import { toast } from "react-toastify";
 
 interface Campaign {
   id?: string;
@@ -287,8 +288,10 @@ function ProjectsContent() {
       setCampaigns(prev => prev.filter(c => c.id !== campaignToDelete.id && c.sessionId !== campaignToDelete.sessionId));
       setIsDeleteModalOpen(false);
       setCampaignToView(null);
+      toast.success("Project deleted successfully");
     } catch (err) {
       console.error("Delete failed:", err);
+      toast.error("Failed to delete project. Please try again.");
     } finally {
       setIsDeleting(false);
     }

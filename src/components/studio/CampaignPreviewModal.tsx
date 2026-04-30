@@ -10,6 +10,7 @@ import { VoiceSelector, VOICE_OPTIONS } from "@/components/agents/audio-lead/Voi
 import { normalizeAssetUrl } from "@/lib/utils";
 import { toast } from "react-toastify";
 import ImageViewerModal from "@/components/agents/ImageViewerModal";
+import { useTextToSpeech } from "@/hooks/useTextToSpeech";
 
 interface CampaignPreviewModalProps {
   isOpen: boolean;
@@ -38,6 +39,23 @@ interface CampaignPreviewModalProps {
   onSwitchCampaign?: () => void;
 }
 
+
+const cleanContent = (content: string) => {
+  let cleaned = content;
+  if (cleaned.includes("[USER MESSAGE]:")) {
+    cleaned = cleaned.split("[USER MESSAGE]:").pop() || cleaned;
+  }
+  if (cleaned.trim().startsWith("{") && cleaned.trim().endsWith("}")) {
+    try {
+      const parsed = JSON.parse(cleaned);
+      if (parsed.response) cleaned = parsed.response;
+      else if (parsed.message) cleaned = parsed.message;
+    } catch (e) {
+      /* keep source if parse fails */
+    }
+  }
+  return cleaned.trim();
+};
 
 export default function CampaignPreviewModal({
   isOpen,
@@ -75,6 +93,62 @@ export default function CampaignPreviewModal({
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [isPreviewOpen, setIsPreviewOpen] = useState(false);
   const [selectedImage, setSelectedImage] = useState<string>("");
+
+  const { speak, stop: stopSpeaking, isSpeaking, isLoading: isSpeechLoading } = useTextToSpeech();
+  const [autoSpeak, setAutoSpeak] = useState(true);
+  const lastSpokenMessageId = useRef<string | null>(null);
+  const [currentlySpeakingId, setCurrentlySpeakingId] = useState<string | null>(null);
+
+  // Centralized auto-speak logic
+  useEffect(() => {
+    if (!isOpen) {
+      stopSpeaking();
+      lastSpokenMessageId.current = null;
+      setCurrentlySpeakingId(null);
+      return;
+    }
+
+    const lastAIMessage = [...localHistory].reverse().find(m => m.role === "assistant" || m.role === "ai");
+    const currentId = lastAIMessage 
+      ? `${lastAIMessage.role}-${cleanContent(lastAIMessage.content).length}-${cleanContent(lastAIMessage.content).substring(0, 50)}`
+      : null;
+
+    // Initialize lastSpokenMessageId on first open so we don't speak old messages
+    // We wait until we have a lastAIMessage to set the baseline
+    if (lastSpokenMessageId.current === null && currentId) {
+      lastSpokenMessageId.current = currentId;
+      return;
+    }
+
+    if (autoSpeak && currentId && currentId !== lastSpokenMessageId.current) {
+      speak(cleanContent(lastAIMessage!.content));
+      lastSpokenMessageId.current = currentId;
+      setCurrentlySpeakingId(currentId);
+    } else if (!autoSpeak) {
+      stopSpeaking();
+      lastSpokenMessageId.current = null;
+      setCurrentlySpeakingId(null);
+    }
+  }, [autoSpeak, isOpen, localHistory, speak, stopSpeaking]);
+
+  // Sync isSpeaking state back to currentlySpeakingId
+  useEffect(() => {
+    if (!isSpeaking) {
+      setCurrentlySpeakingId(null);
+    }
+  }, [isSpeaking]);
+
+  // Handle manual play/pause
+  const handleToggleSpeech = (content: string, id: string) => {
+    const cleanedContent = cleanContent(content);
+    if (isSpeaking && currentlySpeakingId === id) {
+      stopSpeaking();
+      setCurrentlySpeakingId(null);
+    } else {
+      speak(cleanedContent);
+      setCurrentlySpeakingId(id);
+    }
+  };
 
   // Get the name of the selected voice for display
   const selectedVoiceName =
@@ -439,6 +513,15 @@ export default function CampaignPreviewModal({
 
       setLocalHistory((prev) => [...prev, aiMsg]);
 
+      // Immediate speak for new responses
+      if (autoSpeak) {
+        const cleaned = cleanContent(aiResponseContent);
+        const msgId = `${aiMsg.role}-${cleaned.length}-${cleaned.substring(0, 50)}`;
+        speak(cleaned);
+        lastSpokenMessageId.current = msgId;
+        setCurrentlySpeakingId(msgId);
+      }
+
       // Check for Launch trigger
       if (data?.data?.campaign_status === "queued" || data?.data?.campaign_status === "in_production") {
         setLocalStatus(data.data.campaign_status);
@@ -522,6 +605,16 @@ export default function CampaignPreviewModal({
             </div>
           </div>
           <div className="flex items-center gap-2">
+            <button 
+              onClick={() => setAutoSpeak(!autoSpeak)} 
+              className={cn(
+                "p-2 rounded-full transition-colors group",
+                autoSpeak ? "bg-blue-50 text-blue-600" : "hover:bg-[#F1F5F9] text-[#94A3B8]"
+              )}
+              title={autoSpeak ? "Auto-speak enabled" : "Auto-speak disabled"}
+            >
+              {autoSpeak ? <Icons.Volume className="w-5 h-5" /> : <Icons.Mute className="w-5 h-5" />}
+            </button>
             <button
               onClick={onClose}
               className="p-2 hover:bg-[#F1F5F9] rounded-full transition-colors group"
@@ -559,8 +652,24 @@ export default function CampaignPreviewModal({
               <h3 className="text-[12px] font-black text-[#02022C] uppercase tracking-[0.2em] opacity-40">
                 Initial Campaign Concept
               </h3>
-              <div className="bg-[#F8FAFC] text-[#4F4F4F] italic border border-[#F1F5F9] rounded-[32px] p-8 shadow-sm">
+              <div className="bg-[#F8FAFC] text-[#4F4F4F] italic border border-[#F1F5F9] rounded-[32px] p-8 shadow-sm relative group">
                 <MarkdownRenderer content={`"${campaignData.message || campaignData.prompt}"`} isUser={false} />
+                <button 
+                  onClick={() => handleToggleSpeech(campaignData.message || campaignData.prompt || "", `initial-${(campaignData.message || campaignData.prompt || "").length}-${(campaignData.message || campaignData.prompt || "").substring(0, 50)}`)}
+                  className={cn(
+                    "absolute right-6 top-6 p-2 transition-all duration-200",
+                    isSpeaking && currentlySpeakingId === `initial-${(campaignData.message || campaignData.prompt || "").length}-${(campaignData.message || campaignData.prompt || "").substring(0, 50)}` 
+                      ? "text-blue-600 scale-110" 
+                      : "text-slate-400 hover:text-[#02022C] hover:scale-110"
+                  )}
+                  title={isSpeaking && currentlySpeakingId === `initial-${(campaignData.message || campaignData.prompt || "").length}-${(campaignData.message || campaignData.prompt || "").substring(0, 50)}` ? "Stop" : "Play"}
+                >
+                  {isSpeaking && currentlySpeakingId === `initial-${(campaignData.message || campaignData.prompt || "").length}-${(campaignData.message || campaignData.prompt || "").substring(0, 50)}` ? (
+                    <Icons.Pause className="w-5 h-5 fill-current" />
+                  ) : (
+                    <Icons.Play className="w-5 h-5 fill-current" />
+                  )}
+                </button>
               </div>
             </div>
           )}
@@ -1035,23 +1144,9 @@ export default function CampaignPreviewModal({
                   {(() => {
                     const processedHistory = localHistory
                       .map((msg) => {
-                        let content = msg.content;
-                        if (content.includes("[USER MESSAGE]:")) {
-                          content = content.split("[USER MESSAGE]:").pop() || content;
-                        }
-                        if (content.trim().startsWith("{") && content.trim().endsWith("}")) {
-                          try {
-                            const parsed = JSON.parse(content);
-                            if (parsed.response) content = parsed.response;
-                            else if (parsed.message) content = parsed.message;
-                            else return null;
-                          } catch (e) {
-                            /* keep source if parse fails */
-                          }
-                        }
+                        const content = cleanContent(msg.content);
                         const isStatus = msg.content.includes("LAUNCH_CAMPAIGN:") || content.includes("LAUNCH_CAMPAIGN:");
-                        content = content.trim();
-
+                        
                         if (!content && !isStatus) return null;
                         return { ...msg, content: isStatus ? "LAUNCH_CAMPAIGN_PLACEHOLDER" : content };
                       })
@@ -1089,7 +1184,7 @@ export default function CampaignPreviewModal({
                         <div className={cn("flex flex-col", msg.role === "user" ? "items-end text-right" : "items-start text-left")}>
                           <div
                             className={cn(
-                              "px-5 py-3.5 rounded-[24px] text-[13.5px] leading-relaxed shadow-sm transition-all",
+                              "relative px-5 py-3.5 rounded-[24px] text-[13.5px] leading-relaxed shadow-sm transition-all",
                               msg.role === "user"
                                 ? "bg-linear-to-r from-[#01012A] to-[#2E2C66] text-white rounded-tr-none shadow-[inset_0px_-5px_5px_0px_rgba(79,86,155,0.1)]"
                                 : "bg-white text-[#121212] border border-slate-100 rounded-tl-none shadow-[0_4px_12px_-4px_rgba(0,0,0,0.04)]"
@@ -1101,6 +1196,26 @@ export default function CampaignPreviewModal({
                               </span>
                             ) : (
                               <MarkdownRenderer content={msg.content} isUser={msg.role === "user"} />
+                            )}
+                            {msg.role !== "user" && msg.content !== "LAUNCH_CAMPAIGN_PLACEHOLDER" && (
+                              <button 
+                                onClick={() => handleToggleSpeech(msg.content, `${msg.role}-${msg.content.length}-${msg.content.substring(0, 50)}`)}
+                                className={cn(
+                                  "absolute -right-10 top-0 p-2 transition-all duration-200",
+                                  isSpeaking && currentlySpeakingId === `${msg.role}-${msg.content.length}-${msg.content.substring(0, 50)}` 
+                                    ? "text-blue-600 scale-110" 
+                                    : "text-slate-400 hover:text-[#02022C] hover:scale-110"
+                                )}
+                                title={isSpeaking && currentlySpeakingId === `${msg.role}-${msg.content.length}-${msg.content.substring(0, 50)}` ? "Stop" : "Play"}
+                              >
+                                {isSpeechLoading && currentlySpeakingId === `${msg.role}-${msg.content.length}-${msg.content.substring(0, 50)}` ? (
+                                  <Icons.Loader className="w-4 h-4 animate-spin text-blue-600" />
+                                ) : isSpeaking && currentlySpeakingId === `${msg.role}-${msg.content.length}-${msg.content.substring(0, 50)}` ? (
+                                  <Icons.Pause className="w-4 h-4 fill-current" />
+                                ) : (
+                                  <Icons.Play className="w-4 h-4 fill-current" />
+                                )}
+                              </button>
                             )}
                           </div>
 
@@ -1135,10 +1250,13 @@ export default function CampaignPreviewModal({
                     ));
                   })()}
                   {isGenerating && (
-                    <div className="mr-auto flex items-center gap-1.5 bg-white border border-slate-100 p-4 rounded-2xl rounded-tl-none shadow-sm animate-in slide-in-from-left-2 duration-300">
-                      <div className="w-1.5 h-1.5 bg-[#02022C]/20 rounded-full animate-bounce [animation-delay:-0.3s]" />
-                      <div className="w-1.5 h-1.5 bg-[#02022C]/20 rounded-full animate-bounce [animation-delay:-0.15s]" />
-                      <div className="w-1.5 h-1.5 bg-[#02022C]/20 rounded-full animate-bounce" />
+                    <div className="mr-auto flex items-center gap-3 bg-white border border-slate-100 p-4 rounded-2xl rounded-tl-none shadow-sm animate-in slide-in-from-left-2 duration-300">
+                      <div className="flex gap-1.5">
+                        <div className="w-1.5 h-1.5 bg-slate-400 rounded-full animate-bounce [animation-delay:-0.3s]" />
+                        <div className="w-1.5 h-1.5 bg-slate-400 rounded-full animate-bounce [animation-delay:-0.15s]" />
+                        <div className="w-1.5 h-1.5 bg-slate-400 rounded-full animate-bounce" />
+                      </div>
+                      <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest animate-pulse">Buffering...</span>
                     </div>
                   )}
                   <div ref={chatEndRef} className="h-4" />
