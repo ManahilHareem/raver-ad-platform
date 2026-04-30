@@ -9,6 +9,7 @@ import { apiFetch } from "@/lib/api";
 import { cn, enrichMessageWithCampaign, normalizeAssetUrl } from "@/lib/utils";
 import { MarkdownRenderer } from "@/components/ui/MarkdownRenderer";
 import { useVoiceInput } from "@/hooks/useVoiceInput";
+import { useTextToSpeech } from "@/hooks/useTextToSpeech";
 
 interface Message {
   id: string;
@@ -55,6 +56,30 @@ export default function AIResponseModal({
     setInputText((prev) => (prev + " " + text).trim());
   }, []);
   const { isListening, interimText, startListening, stopListening } = useVoiceInput(handleVoiceResult);
+  const { speak, stop: stopSpeaking, isSpeaking } = useTextToSpeech();
+  const [autoSpeak, setAutoSpeak] = useState(true);
+  const lastSpokenMessageId = useRef<string | null>(null);
+
+  // Centralized auto-speak logic
+  useEffect(() => {
+    if (!isOpen) {
+      stopSpeaking();
+      lastSpokenMessageId.current = null;
+      return;
+    }
+
+    if (autoSpeak) {
+      const lastAIMessage = [...messages].reverse().find(m => m.role === "ai");
+      if (lastAIMessage && lastAIMessage.id !== lastSpokenMessageId.current) {
+        speak(lastAIMessage.content);
+        lastSpokenMessageId.current = lastAIMessage.id;
+      }
+    } else {
+      stopSpeaking();
+      // Reset spoken ID when muted so it can speak again when unmuted
+      lastSpokenMessageId.current = null;
+    }
+  }, [autoSpeak, isOpen, messages, speak, stopSpeaking]);
 
   const handleMicClick = () => {
     if (isListening) {
@@ -250,6 +275,16 @@ export default function AIResponseModal({
           </div>
           <div className="flex items-center gap-2">
             <button 
+              onClick={() => setAutoSpeak(!autoSpeak)} 
+              className={cn(
+                "p-2 rounded-full transition-colors group",
+                autoSpeak ? "bg-blue-50 text-blue-600" : "hover:bg-[#F1F5F9] text-[#94A3B8]"
+              )}
+              title={autoSpeak ? "Auto-speak enabled" : "Auto-speak disabled"}
+            >
+              {autoSpeak ? <Icons.Volume2 className="w-5 h-5" /> : <Icons.Mute className="w-5 h-5" />}
+            </button>
+            <button 
               onClick={onClose} 
               className="p-2 hover:bg-[#F1F5F9] rounded-full transition-colors group"
             >
@@ -291,7 +326,7 @@ export default function AIResponseModal({
                 m.role === "user" ? "items-end" : "items-start"
               )}>
                 <div className={cn(
-                  "px-4 py-3 rounded-2xl text-[14px] leading-relaxed shadow-sm transition-all",
+                  "relative px-4 py-3 rounded-2xl text-[14px] leading-relaxed shadow-sm transition-all",
                   m.role === "user" 
                     ? "bg-[linear-gradient(90deg,#01012A_0%,#2E2C66_100%)] text-white rounded-tr-none shadow-[inset_0px_-5px_5px_0px_#4F569B]" 
                     : "bg-white text-[#121212] border border-slate-100 rounded-tl-none shadow-[0_4px_12px_-4px_rgba(0,0,0,0.04)]"
@@ -312,6 +347,15 @@ export default function AIResponseModal({
                     }
                     return <MarkdownRenderer content={content.trim()} isUser={m.role === "user"} />;
                   })()}
+                  {m.role === "ai" && (
+                    <button 
+                      onClick={() => speak(m.content)}
+                      className="absolute -right-10 top-0 p-2 text-slate-400 hover:text-[#02022C] transition-colors"
+                      title="Speak message"
+                    >
+                      <Icons.Volume2 className="w-4 h-4" />
+                    </button>
+                  )}
                 </div>
 
                 {/* Attached Assets Gallery */}
