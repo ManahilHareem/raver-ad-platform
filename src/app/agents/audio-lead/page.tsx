@@ -303,11 +303,9 @@ function AudioLeadContent() {
       });
 
       if (response.ok) {
-        console.log("Mix initiated successfully");
         const data = await response.json();
         
         if (data.success && data.data?.audio_files?.length > 0) {
-          console.log("Mix completed immediately");
           setRefreshTrigger(prev => prev + 1);
           setIsLoading(false);
           toast.success("Mix completed successfully!");
@@ -315,8 +313,6 @@ function AudioLeadContent() {
           setTimeout(() => window.location.reload(), 2000);
           return;
         }
-
-        console.log("Polling for mix results...");
         const interval = setInterval(async () => {
            const vResponse = await apiFetch(`${API_BASE}/ai/audio-lead/vault/${effectiveSessionId}`);
            if (vResponse.ok) {
@@ -337,7 +333,6 @@ function AudioLeadContent() {
            }
         }, 3000);
         setTimeout(() => { 
-          console.log("Mix polling timeout reached");
           clearInterval(interval); 
           setIsLoading(false); 
           setRefreshTrigger(prev => prev + 1);

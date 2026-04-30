@@ -74,13 +74,9 @@ export default function HomePage() {
           const result = await response.json();
           const rawData = Array.isArray(result.data?.sessions) ? result.data.sessions : result.data;
           
-          console.log("DEBUG: Raw Dashboard Data:", result.data);
-
           if (Array.isArray(rawData)) {
             // STRICT FILTER: Only include Studio sessions with a valid session_id
             const sessionsOnly = rawData.filter((s: any) => s.session_id);
-            
-            console.log("DEBUG: Filtered Studio Sessions (Strict):", sessionsOnly);
 
             // Sort by creation date and take latest 3
             const sorted = sessionsOnly.sort((a, b) => {

@@ -109,7 +109,6 @@ export default function CampaignCard({
         const resData = await response.json();
         const updateData = resData.data;
         if (updateData) {
-          console.log("Update Data:", updateData);
           const isInvalidStatus = !updateData.status || updateData.status.toLowerCase() === 'failed';
 
           setLocalData(prev => {
@@ -139,7 +138,6 @@ export default function CampaignCard({
         }
       }
 
-      console.log("Local Data:", localData);
     } catch (e) {
       console.warn("Manual preview refresh failed:", e);
     } finally {

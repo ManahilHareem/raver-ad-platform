@@ -82,7 +82,6 @@ function StudioLoadingState() {
 }
 
 function ActiveCampaignsGrid({ campaigns, onDelete, onViewMore, onViewDetails, activeIndex, onSelect, onRefresh }: any) {
-  console.log("Campaigns:", campaigns);
   return (
     <div className="flex flex-col gap-[16px] bg-[#FFFFFF] border-[0.35px] border-[#0000001A] rounded-[12px] p-[16px]">
       <div className="flex items-center justify-between">
@@ -193,13 +192,9 @@ function StudioPageContent() {
           const rawData = sessionData.data?.sessions || sessionData.data;
           const sessionsArray = Array.isArray(rawData) ? rawData : (rawData ? [rawData] : []);
           
-          console.log(`[STUDIO FETCH ${new Date().toLocaleTimeString()}] Raw Sessions:`, sessionsArray.length);
-
           if (Array.isArray(sessionsArray)) {
             // STRICT FILTER: Only include sessions that have a valid session identifier (Studio-originated)
             const sessionsOnly = sessionsArray.filter((s: any) => s.session_id || s.sessionId);
-            
-            console.log(`[STUDIO FETCH] Filtered to ${sessionsOnly.length} Studio sessions.`);
 
             allSessions = sessionsOnly.map((s: any) => {
               const brief = s.brief_draft || {};
@@ -482,7 +477,6 @@ function StudioPageContent() {
     const poll = async () => {
       if (!isActive) return;
       const currentVideos = videosRef.current;
-      console.log("[Polling] Running poll check, currentVideos count:", currentVideos.length);
       const activeStatuses = ["queued", "in_production", "pipeline_running", "In Production", "processing", "rendering"];
       const terminalStatuses = ["completed", "Ready", "delivered", "failed", "ready_for_human_review", "approved"];
 

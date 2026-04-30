@@ -73,8 +73,7 @@ export default function AIResponseModal({
     setInputText((prev) => (prev + " " + text).trim());
   }, []);
   const { isListening, interimText, startListening, stopListening } = useVoiceInput(handleVoiceResult);
-  const { speak, stop: stopSpeaking, isSpeaking, isLoading: isSpeechLoading } = useTextToSpeech();
-  const [autoSpeak, setAutoSpeak] = useState(true);
+  const { speak, stop: stopSpeaking, isSpeaking, isLoading: isSpeechLoading, isMuted, setIsMuted } = useTextToSpeech();
   const lastSpokenMessageId = useRef<string | null>(null);
   const [currentlySpeakingId, setCurrentlySpeakingId] = useState<string | null>(null);
 
@@ -88,23 +87,22 @@ export default function AIResponseModal({
     }
 
     const lastAIMessage = [...messages].reverse().find(m => m.role === "ai");
-    
-    // Initialize lastSpokenMessageId on first open so we don't speak old messages
-    if (lastSpokenMessageId.current === null && lastAIMessage) {
-      lastSpokenMessageId.current = lastAIMessage.id;
-      return;
-    }
+    if (!lastAIMessage) return;
 
-    if (autoSpeak && lastAIMessage && lastAIMessage.id !== lastSpokenMessageId.current) {
-      speak(cleanContent(lastAIMessage.content));
+    const isNewMessage = lastSpokenMessageId.current !== lastAIMessage.id;
+
+    if (!isMuted && isNewMessage) {
+      const cleaned = cleanContent(lastAIMessage.content);
+      console.log(`[AIResponseModal] Auto-speaking message ${lastAIMessage.id}:`, cleaned);
+      speak(cleaned);
       lastSpokenMessageId.current = lastAIMessage.id;
       setCurrentlySpeakingId(lastAIMessage.id);
-    } else if (!autoSpeak) {
+    } else if (isMuted) {
       stopSpeaking();
       lastSpokenMessageId.current = null;
       setCurrentlySpeakingId(null);
     }
-  }, [autoSpeak, isOpen, messages, speak, stopSpeaking]);
+  }, [isMuted, isOpen, messages, speak, stopSpeaking]);
 
   // Sync isSpeaking state back to currentlySpeakingId
   useEffect(() => {
@@ -318,14 +316,14 @@ export default function AIResponseModal({
           </div>
           <div className="flex items-center gap-2">
             <button 
-              onClick={() => setAutoSpeak(!autoSpeak)} 
+              onClick={() => setIsMuted(!isMuted)} 
               className={cn(
                 "p-2 rounded-full transition-colors group",
-                autoSpeak ? "bg-blue-50 text-blue-600" : "hover:bg-[#F1F5F9] text-[#94A3B8]"
+                !isMuted ? "bg-blue-50 text-blue-600" : "hover:bg-[#F1F5F9] text-[#94A3B8]"
               )}
-              title={autoSpeak ? "Auto-speak enabled" : "Auto-speak disabled"}
+              title={!isMuted ? "Mute Speech" : "Unmute Speech"}
             >
-              {autoSpeak ? <Icons.Volume2 className="w-5 h-5" /> : <Icons.Mute className="w-5 h-5" />}
+              {!isMuted ? <Icons.Volume2 className="w-5 h-5" /> : <Icons.Mute className="w-5 h-5" />}
             </button>
             <button 
               onClick={onClose} 

@@ -126,7 +126,6 @@ function ProjectsContent() {
       if (!isActive) return;
 
       const currentCampaigns = campaignsRef.current;
-      console.log("[Polling] Running poll check, currentCampaigns count:", currentCampaigns.length);
       
       const activeStatuses = ["queued", "in_production", "pipeline_running", "In Production", "processing", "rendering"];
       const terminalStatuses = ["completed", "Ready", "delivered", "failed", "ready_for_human_review", "approved"];
@@ -166,9 +165,7 @@ function ProjectsContent() {
         return shouldPoll;
       });
       
-      console.log("polls", polls);
       if (polls.length > 0) {
-        console.log(`[Polling] Starting poll for ${polls.length} sessions...`);
         let isFirstPoll = true;
         for (const c of polls) {
           if (!isActive) return;

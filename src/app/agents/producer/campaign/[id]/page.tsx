@@ -168,7 +168,6 @@ export default function CampaignDetailPage() {
     const toastId = toast.loading("Finalizing production archives...");
     try {
       const sessionId = campaign.session_id ;
-      console.log("Session ID:", sessionId);
       const response = await apiFetch(`${process.env.NEXT_PUBLIC_API_URL}/ai/director/session/${sessionId}/approve`, {
         method: "PATCH"
       });

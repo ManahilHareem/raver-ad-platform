@@ -17,7 +17,7 @@ export function AudioPlayer({ url, title, className }: AudioPlayerProps) {
   const [volume, setVolume] = useState(0.8);
   const [isMuted, setIsMuted] = useState(false);
   const audioRef = useRef<HTMLAudioElement>(null);
-console.log(url)
+
   useEffect(() => {
     const audio = audioRef.current;
     if (!audio) return;

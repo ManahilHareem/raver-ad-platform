@@ -109,19 +109,15 @@ export default function CampaignPreviewModal({
     }
 
     const lastAIMessage = [...localHistory].reverse().find(m => m.role === "assistant" || m.role === "ai");
-    const currentId = lastAIMessage 
-      ? `${lastAIMessage.role}-${cleanContent(lastAIMessage.content).length}-${cleanContent(lastAIMessage.content).substring(0, 50)}`
-      : null;
+    if (!lastAIMessage) return;
 
-    // Initialize lastSpokenMessageId on first open so we don't speak old messages
-    // We wait until we have a lastAIMessage to set the baseline
-    if (lastSpokenMessageId.current === null && currentId) {
-      lastSpokenMessageId.current = currentId;
-      return;
-    }
+    const currentId = `${lastAIMessage.role}-${cleanContent(lastAIMessage.content).length}-${cleanContent(lastAIMessage.content).substring(0, 50)}`;
+    const isNewMessage = lastSpokenMessageId.current !== currentId;
 
-    if (autoSpeak && currentId && currentId !== lastSpokenMessageId.current) {
-      speak(cleanContent(lastAIMessage!.content));
+    if (autoSpeak && isNewMessage) {
+      const cleaned = cleanContent(lastAIMessage.content);
+      console.log(`[CampaignPreviewModal] Auto-speaking:`, cleaned);
+      speak(cleaned);
       lastSpokenMessageId.current = currentId;
       setCurrentlySpeakingId(currentId);
     } else if (!autoSpeak) {
@@ -141,6 +137,7 @@ export default function CampaignPreviewModal({
   // Handle manual play/pause
   const handleToggleSpeech = (content: string, id: string) => {
     const cleanedContent = cleanContent(content);
+    console.log(`[CampaignPreviewModal] Manually toggling speech:`, cleanedContent);
     if (isSpeaking && currentlySpeakingId === id) {
       stopSpeaking();
       setCurrentlySpeakingId(null);
