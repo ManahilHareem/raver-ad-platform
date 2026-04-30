@@ -279,9 +279,10 @@ function ProjectsContent() {
     if (!campaignToDelete) return;
     setIsDeleting(true);
     try {
-      if (campaignToDelete.id) {
-        const API_BASE = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
-        await apiFetch(`${API_BASE}/campaigns/${campaignToDelete.id}`, { method: "DELETE" });
+      const API_BASE = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
+      const deleteId = campaignToDelete.sessionId || campaignToDelete.id;
+      if (deleteId) {
+        await apiFetch(`${API_BASE}/ai/director/session/${deleteId}`, { method: "DELETE" });
       }
       setCampaigns(prev => prev.filter(c => c.id !== campaignToDelete.id && c.sessionId !== campaignToDelete.sessionId));
       setIsDeleteModalOpen(false);
