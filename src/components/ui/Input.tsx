@@ -31,6 +31,7 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
               "w-full h-[56px] py-[14px] px-[16px] rounded-[12px] border border-[#0000001A] ",
               "focus:outline-none transition-all",
               "placeholder:text-slate-400 text-[15px] text-[#4F4F4F]",
+              isPassword && "pr-[48px]",
               error && "border-red-500 focus:ring-red-500/20 focus:border-red-500",
               className
             )}
@@ -40,7 +41,7 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
             <button
               type="button"
               onClick={() => setShowPassword(!showPassword)}
-              className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 transition-colors"
+              className="absolute right-2 top-1/2 -translate-y-1/2 w-10 h-10 flex items-center justify-center text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 transition-colors rounded-full hover:bg-slate-50 active:bg-slate-100"
             >
               {showPassword ? (
                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
