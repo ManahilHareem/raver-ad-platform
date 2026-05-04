@@ -17,7 +17,7 @@ export default function AuthLayout({
   return (
     <div className="flex min-h-screen bg-white">
       {/* Left Side: Product Image & Branding */}
-      <div className="hidden lg:flex lg:w-1/2 relative p-[32px] h-screen sticky top-0">
+      <div className="hidden lg:flex lg:w-1/2 sticky p-[32px] h-screen top-0">
         <div className="relative w-full h-full rounded-[24px] overflow-hidden shadow-2xl">
           <Image
             src={imageSrc}

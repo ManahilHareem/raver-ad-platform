@@ -60,7 +60,8 @@ import {
   AlertTriangle,
   Filter,
   LayoutGrid,
-  Upload
+  Upload,
+  Sparkles
 } from "lucide-react";
 import { CustomIcons } from "./custom-icons";
 
@@ -140,5 +141,6 @@ export const Icons = {
   ShieldCheck: ShieldCheck,
   Zap: Zap,
   Layout: LayoutGrid,
-  Upload: Upload
+  Upload: Upload,
+  Sparkles: Sparkles
 };

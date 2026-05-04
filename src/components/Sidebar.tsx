@@ -31,14 +31,14 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
       {/* Mobile Overlay - only shown when sidebar is open on mobile */}
       <div 
         className={cn(
-          "fixed inset-0 bg-[#01012A]/60 backdrop-blur-sm z-[90] lg:hidden transition-all duration-300",
+          "fixed inset-0 bg-[#01012A]/60 backdrop-blur-sm z-90 lg:hidden transition-all duration-300",
           isOpen ? "opacity-100 pointer-events-auto" : "opacity-0 pointer-events-none"
         )}
         onClick={onClose}
       />
 
       <aside className={cn(
-        "fixed lg:relative inset-y-0 left-0 w-[280px] h-screen bg-white border-r border-slate-100 flex flex-col z-[100] transition-transform duration-500 lg:translate-x-0 ease-in-out",
+        "fixed lg:relative inset-y-0 left-0 w-[280px] h-screen bg-white border-r border-slate-100 flex flex-col z-100 transition-transform duration-500 lg:translate-x-0 ease-in-out",
         isOpen ? "translate-x-0" : "-translate-x-full"
       )}>
         {/* Header / Logo Section */}

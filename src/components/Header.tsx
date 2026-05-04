@@ -143,7 +143,7 @@ export default function Header({ onMenuClick }: HeaderProps) {
 
           {/* Dropdown Menu */}
           {isDropdownOpen && (
-            <div className="absolute top-full right-0 mt-3 w-56 bg-white rounded-2xl shadow-2xl border border-slate-100 py-2 animate-in fade-in zoom-in-95 duration-200 origin-top-right overflow-hidden z-[200]">
+            <div className="absolute top-full right-0 mt-3 w-56 bg-white rounded-2xl shadow-2xl border border-slate-100 py-2 animate-in fade-in zoom-in-95 duration-200 origin-top-right overflow-hidden z-200">
               <div className="px-4 py-3 border-b border-slate-50 mb-1">
                  <p className="text-[13px] font-black text-[#01012A] truncate">{user?.fullName || 'User'}</p>
                  <p className="text-[10px] font-bold text-slate-400 truncate uppercase mt-0.5 tracking-widest">{user?.professionalRole || 'Member'}</p>

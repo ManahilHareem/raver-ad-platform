@@ -254,7 +254,7 @@ export function QualityAuditModal({ isOpen, onClose, onRefresh, candidate }: Qua
   };
 
   return (
-    <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 sm:p-10">
+    <div className="fixed inset-0 z-100 flex items-center justify-center p-4 sm:p-10">
       {/* Backdrop */}
       <div 
         className="absolute inset-0 bg-[#01012A]/40 backdrop-blur-xl animate-in fade-in duration-500"
@@ -283,7 +283,7 @@ export function QualityAuditModal({ isOpen, onClose, onRefresh, candidate }: Qua
             onClick={onClose}
             className="w-12 h-12 rounded-2xl bg-slate-50 border border-slate-100 flex items-center justify-center text-slate-400 hover:text-[#01012A] hover:bg-slate-100 transition-all active:scale-95 group shadow-sm"
           >
-            <Icons.Plus className="w-6 h-6 rotate-45 group-hover:rotate-[135deg] transition-transform duration-500" />
+            <Icons.Plus className="w-6 h-6 rotate-45 group-hover:rotate-135 transition-transform duration-500" />
           </button>
         </div>
 
