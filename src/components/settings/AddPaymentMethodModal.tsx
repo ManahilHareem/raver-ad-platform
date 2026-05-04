@@ -143,7 +143,7 @@ export default function AddPaymentMethodModal({ isOpen, onClose, onSuccess, card
                 type="text" 
                 value={formData.cardholderName}
                 onChange={(e) => setFormData({ ...formData, cardholderName: e.target.value })}
-                placeholder="Hareem Ahsen"
+                placeholder="Cardholder Name"
                 className="w-full h-[52px] px-4 bg-[#F8F8F8] border border-[#F1F5F9] rounded-[12px] text-[15px] outline-none focus:border-[#02022C] transition-colors"
                 required
               />

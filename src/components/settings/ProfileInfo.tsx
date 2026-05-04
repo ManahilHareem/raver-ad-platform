@@ -91,12 +91,18 @@ export default function ProfileInfo({ user, onEdit, onAvatarUpdate, isLoading = 
               </div>
             ) : (
               <>
-                <Image 
-                  src={user?.avatarUrl || "/assets/Template images /5848f944078b1cf8c3d4dc417dae4c9e60024951.jpg"} 
-                  alt="Avatar"
-                  fill
-                  className="object-cover"
-                />
+                {user?.avatarUrl ? (
+                  <Image 
+                    src={user.avatarUrl} 
+                    alt="Avatar"
+                    fill
+                    className="object-cover"
+                  />
+                ) : (
+                  <div className="w-full h-full bg-slate-50 flex items-center justify-center">
+                    <Icons.User className="w-12 h-12 text-slate-300" />
+                  </div>
+                )}
                 <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity">
                   <Icons.Camera className="w-6 h-6 text-white" />
                 </div>
@@ -114,8 +120,8 @@ export default function ProfileInfo({ user, onEdit, onAvatarUpdate, isLoading = 
               </>
             ) : (
               <>
-                <h4 className="text-[24px] font-bold text-[#121212]">{user?.fullName || "Hareem Ahsen"}</h4>
-                <span className="text-[14px] text-[#4F4F4F]">{user?.email || "hareem.ahsen@example.com"}</span>
+                <h4 className="text-[24px] font-bold text-[#121212]">{user?.fullName || "User Name"}</h4>
+                <span className="text-[14px] text-[#4F4F4F]">{user?.email || "Email not provided"}</span>
               </>
             )}
           </div>
@@ -144,9 +150,9 @@ export default function ProfileInfo({ user, onEdit, onAvatarUpdate, isLoading = 
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-y-6 gap-x-12">
           {[
-            { label: "Full Name", value: user?.fullName || "Hareem Ahsen", icon: Icons.User },
-            { label: "Email", value: user?.email || "hareem.ahsen@example.com", icon: Icons.Mail },
-            { label: "Hair Style", value: user?.professionalRole || "Hair Stylish", icon: Icons.MagicWand },
+            { label: "Full Name", value: user?.fullName || "Not provided", icon: Icons.User },
+            { label: "Email", value: user?.email || "Not provided", icon: Icons.Mail },
+            { label: "Role", value: user?.professionalRole || "Member", icon: Icons.MagicWand },
             { label: "Instagram", value: user?.instagram || "Not linked", icon: Icons.Instagram },
           ].map((field, idx) => (
             <div key={idx} className="flex items-start gap-3">
