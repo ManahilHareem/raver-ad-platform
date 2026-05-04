@@ -15,8 +15,8 @@ import { apiFetch } from "@/lib/api";
 export default function EditProfileModal({ isOpen, onClose, user, onSuccess }: EditProfileModalProps) {
   const [formData, setFormData] = useState({
     fullName: "",
-    professionalRole: "Hair Stylish",
-    bio: "Tell us about your beauty expertise...",
+    professionalRole: "Member",
+    bio: "Tell us about your background...",
     instagram: "",
     facebook: ""
   });
@@ -27,8 +27,8 @@ export default function EditProfileModal({ isOpen, onClose, user, onSuccess }: E
     if (user) {
       setFormData({
         fullName: user.fullName || "",
-        professionalRole: user.professionalRole || "Hair Stylish",
-        bio: user.bio || "Tell us about your beauty expertise...",
+        professionalRole: user.professionalRole || "Member",
+        bio: user.bio || "Tell us about your background...",
         instagram: user.instagram || "",
         facebook: user.facebook || ""
       });
@@ -100,7 +100,7 @@ export default function EditProfileModal({ isOpen, onClose, user, onSuccess }: E
               value={formData.professionalRole}
               onChange={(e) => setFormData({ ...formData, professionalRole: e.target.value })}
               className="w-full px-5 py-3 bg-[#F8F8F8] border border-[#F1F5F9] rounded-[12px] text-[15px] outline-none focus:border-[#02022C] transition-all"
-              placeholder="e.g. Hair Stylish, Colorist"
+              placeholder="e.g. Marketing Lead, Content Creator"
             />
           </div>
 
