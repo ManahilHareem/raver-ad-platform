@@ -181,7 +181,7 @@ export default function ProfileInfo({ user, onEdit, onAvatarUpdate, isLoading = 
                   <div className="h-4 w-4/6 bg-gray-100 rounded animate-pulse" />
                 </div>
               ) : (
-                <p className="text-[14px] text-[#121212] font-medium">{user?.bio || "Tell us about your beauty expertise..."}</p>
+                <p className="text-[14px] text-[#121212] font-medium">{user?.bio || "Tell us about your background..."}</p>
               )}
            </div>
         </div>
