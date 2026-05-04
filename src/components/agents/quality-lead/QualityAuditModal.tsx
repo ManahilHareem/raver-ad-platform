@@ -254,7 +254,7 @@ export function QualityAuditModal({ isOpen, onClose, onRefresh, candidate }: Qua
   };
 
   return (
-    <div className="fixed inset-0 z-100 flex items-center justify-center p-4 sm:p-10">
+    <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 sm:p-10">
       {/* Backdrop */}
       <div 
         className="absolute inset-0 bg-[#01012A]/40 backdrop-blur-xl animate-in fade-in duration-500"
