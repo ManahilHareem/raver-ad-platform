@@ -1167,14 +1167,22 @@ export default function CampaignPreviewModal({
                       >
                         <div className="relative w-8 h-8 shrink-0 rounded-xl overflow-hidden shadow-sm border border-slate-200">
                           {msg.role === "user" ? (
-                            <Image
-                              src={user?.avatarUrl || "/assets/7441684aa4149b2fd6d813ffefd24cdc9a178dba.jpg"}
-                              alt="User"
-                              fill
-                              className="object-cover"
-                            />
+                            user?.avatarUrl ? (
+                              <Image 
+                                src={user.avatarUrl} 
+                                alt="User" 
+                                fill 
+                                className="object-cover"
+                              />
+                            ) : (
+                              <div className="w-full h-full bg-slate-100 flex items-center justify-center">
+                                <Icons.User className="w-4 h-4 text-slate-400" />
+                              </div>
+                            )
                           ) : (
-                            <Image src="/assets/ai-assistant-avatar.png" alt="AI" fill className="object-cover" />
+                            <div className="w-full h-full bg-slate-100 flex items-center justify-center">
+                                <Icons.Sparkles className="w-4 h-4 text-[#02022C]" />
+                            </div>
                           )}
                         </div>
 

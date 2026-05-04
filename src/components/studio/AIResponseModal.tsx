@@ -352,12 +352,18 @@ export default function AIResponseModal({
                 m.role === "ai" ? "bg-[#02022C]" : "bg-[#F1F5F9]"
               )}>
                 {m.role === "user" ? (
-                  <Image 
-                    src={user?.avatarUrl || "/assets/7441684aa4149b2fd6d813ffefd24cdc9a178dba.jpg"} 
-                    alt="User" 
-                    fill 
-                    className="object-cover"
-                  />
+                  user?.avatarUrl ? (
+                    <Image 
+                      src={user.avatarUrl} 
+                      alt="User" 
+                      fill 
+                      className="object-cover"
+                    />
+                  ) : (
+                    <div className="w-full h-full bg-slate-100 flex items-center justify-center">
+                      <Icons.User className="w-5 h-5 text-slate-400" />
+                    </div>
+                  )
                 ) : (
                   <Image alt="AI" src="/assets/ai-assistant-avatar.png" width={32} height={32} className="object-cover" />
                 )}
