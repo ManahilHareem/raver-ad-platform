@@ -15,8 +15,14 @@ export default function SignupPage() {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
 
+  const handleChange = (field: string, value: string) => {
+    setFormData(prev => ({ ...prev, [field]: value }));
+    if (error) setError("");
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    
     if (formData.password !== formData.confirm) {
       setError("Passwords do not match");
       return;
@@ -108,7 +114,7 @@ export default function SignupPage() {
             placeholder="Enter your Name" 
             type="text" 
             value={formData.name}
-            onChange={(e) => setFormData({...formData, name: e.target.value})}
+            onChange={(e) => handleChange('name', e.target.value)}
             required
           />
           <Input 
@@ -116,7 +122,7 @@ export default function SignupPage() {
             placeholder="Enter your email address" 
             type="email" 
             value={formData.email}
-            onChange={(e) => setFormData({...formData, email: e.target.value})}
+            onChange={(e) => handleChange('email', e.target.value)}
             required
           />
           <Input 
@@ -124,7 +130,7 @@ export default function SignupPage() {
             placeholder="Create a password" 
             type="password" 
             value={formData.password}
-            onChange={(e) => setFormData({...formData, password: e.target.value})}
+            onChange={(e) => handleChange('password', e.target.value)}
             required
           />
           <Input 
@@ -132,7 +138,7 @@ export default function SignupPage() {
             placeholder="Create your password" 
             type="password" 
             value={formData.confirm}
-            onChange={(e) => setFormData({...formData, confirm: e.target.value})}
+            onChange={(e) => handleChange('confirm', e.target.value)}
             required
           />
 </div>
@@ -149,8 +155,6 @@ export default function SignupPage() {
         </p>
 </div>
         </form>
-
-  
       </div>
     </AuthLayout>
   );
