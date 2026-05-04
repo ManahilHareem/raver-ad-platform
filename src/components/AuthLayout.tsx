@@ -15,9 +15,9 @@ export default function AuthLayout({
   subtitle,
 }: AuthLayoutProps) {
   return (
-    <div className="flex  h-screen bg-white overflow-hidden">
+    <div className="flex min-h-screen bg-white">
       {/* Left Side: Product Image & Branding */}
-      <div className="hidden lg:flex lg:w-1/2 relative p-[32px]">
+      <div className="hidden lg:flex lg:w-1/2 relative p-[32px] h-screen sticky top-0">
         <div className="relative w-full h-full rounded-[24px] overflow-hidden shadow-2xl">
           <Image
             src={imageSrc}
@@ -40,8 +40,8 @@ export default function AuthLayout({
       </div>
 
       {/* Right Side: Auth Forms */}
-      <div className="w-full lg:w-1/2 flex items-center justify-center p-[32px] gap-[32px] md:p-[64px] lg:p-[96px]">
-        <div className="w-full max-w-[551px] flex flex-col gap-[32px]">
+      <div className="w-full lg:w-1/2 flex items-center justify-center p-[32px] md:p-[64px] lg:p-[96px] overflow-y-auto">
+        <div className="w-full max-w-[551px] flex flex-col gap-[32px] py-8">
           {children}
         </div>
       </div>
