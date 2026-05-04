@@ -27,6 +27,12 @@ export default function SignupPage() {
       setError("Passwords do not match");
       return;
     }
+
+    const nameRegex = /^[a-zA-Z\s]+$/;
+    if (!nameRegex.test(formData.name)) {
+      setError("Full name can only contain letters and spaces");
+      return;
+    }
     
     setIsLoading(true);
     setError("");
