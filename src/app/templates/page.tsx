@@ -130,7 +130,7 @@ export default function TemplatesPage() {
 
   return (
     <DashboardLayout>
-      <div className="flex flex-col gap-[10px] p-[10px] bg-[#F8FAFC] min-h-screen">
+      <div className="flex flex-col gap-[10px] p-[10px] bg-[#F8FAFC]">
         
         {/* Header & Stats Section */}
         <div className="flex flex-col gap-[24px] p-[24px] rounded-[12px] bg-[#FFFFFF] border-[0.35px] border-[#0000001A]">
@@ -156,10 +156,10 @@ export default function TemplatesPage() {
         </div>
 
         {/* Content Section */}
-        <div className="flex flex-col gap-[24px] bg-[#FFFFFF] p-[24px] rounded-[12px] border-[0.35px] border-[#0000001A] flex-1">
+        <div className="flex flex-col gap-[24px] bg-[#FFFFFF] p-[24px] rounded-[12px] border-[0.35px] border-[#0000001A]">
           
           {/* Tabs */}
-          <div className="flex flex-wrap gap-2 h-[48px]">
+          <div className="flex flex-wrap gap-2">
             {categories.map((cat) => (
               <button
                 key={cat}
