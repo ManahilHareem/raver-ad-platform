@@ -95,7 +95,7 @@ export default function CampaignPreviewModal({
   const [selectedImage, setSelectedImage] = useState<string>("");
 
   const { speak, stop: stopSpeaking, isSpeaking, isLoading: isSpeechLoading } = useTextToSpeech();
-  const [autoSpeak, setAutoSpeak] = useState(true);
+  const [autoSpeak, setAutoSpeak] = useState(false);
   const lastSpokenMessageId = useRef<string | null>(null);
   const [currentlySpeakingId, setCurrentlySpeakingId] = useState<string | null>(null);
 
