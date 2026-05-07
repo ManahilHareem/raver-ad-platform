@@ -9,7 +9,10 @@ import { Input } from "@/components/ui/Input";
 
 import { setToken } from "@/lib/auth";
 
+import { useUser } from "@/context/UserContext";
+
 export default function IndexPage() {
+  const { refreshUser } = useUser();
   const router = useRouter();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -34,6 +37,7 @@ export default function IndexPage() {
         // Save the JWT token in a cookie so proxy can see it
         if (result.data?.token) {
           setToken(result.data.token);
+          await refreshUser();
           router.push("/home");
         } else {
           throw new Error("No token received from server");

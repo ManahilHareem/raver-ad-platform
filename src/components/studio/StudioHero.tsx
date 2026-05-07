@@ -12,6 +12,8 @@ import { apiFetch } from "@/lib/api";
 
 import { VoiceSelector, VOICE_OPTIONS } from "@/components/agents/audio-lead/VoiceSelector";
 
+import { useUser } from "@/context/UserContext";
+
 interface Asset {
   id: string;
   name: string;
@@ -72,6 +74,7 @@ export default function StudioHero({
   const [selectedAssets, setSelectedAssets] = useState<Asset[]>([]);
   const [dbCampaigns, setDbCampaigns] = useState<Campaign[]>([]);
   const [allVoices, setAllVoices] = useState<any[]>(VOICE_OPTIONS);
+  const { user } = useUser();
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
   // Fetch custom voices to ensure we can resolve names in prompts
@@ -215,7 +218,7 @@ export default function StudioHero({
         <div className="flex flex-col gap-6 max-w-[379px] flex-1">
           <div className="flex flex-col gap-2">
             <h1 className="text-[30px] font-bold text-[#4F4F4F] leading-tight mb-2">
-              Hi, Hareem <span className="text-[#121212]">Ready To Achieve Great Things?</span>
+              Hi, {user?.fullName?.split(' ')[0] || "there"} <span className="text-[#121212]">Ready To Achieve Great Things?</span>
             </h1>
           </div>
         </div>

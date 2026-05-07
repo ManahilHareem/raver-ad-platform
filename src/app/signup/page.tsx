@@ -9,7 +9,10 @@ import { Input } from "@/components/ui/Input";
 
 import { setToken } from "@/lib/auth";
 
+import { useUser } from "@/context/UserContext";
+
 export default function SignupPage() {
+  const { refreshUser } = useUser();
   const router = useRouter();
   const [formData, setFormData] = useState({ name: '', email: '', password: '', confirm: '' });
   const [isLoading, setIsLoading] = useState(false);
@@ -54,6 +57,7 @@ export default function SignupPage() {
         // Save the JWT token in a cookie so proxy can see it
         if (result.data?.token) {
           setToken(result.data.token);
+          await refreshUser();
           router.push("/home");
         } else {
           throw new Error("No token received from server");

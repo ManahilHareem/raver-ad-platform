@@ -220,7 +220,7 @@ export default function AIResponseModal({
         body: JSON.stringify({
           session_id: sessionId,
           message: apiMessage,
-          professional_name: "Hareem",
+          professional_name: user?.fullName || "Hareem",
           tag: "director"
         }),
       });

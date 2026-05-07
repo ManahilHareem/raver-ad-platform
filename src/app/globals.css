@@ -2,7 +2,7 @@
 
 @theme {
   /* Fonts */
-  --font-sans: "Neutrif Pro", "Outfit", "Inter", ui-sans-serif, system-ui, sans-serif;
+  --font-sans: var(--font-outfit), var(--font-inter), ui-sans-serif, system-ui, sans-serif;
   --font-mono: "Fira Code", ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
   
   /* Brand Palette */
@@ -42,7 +42,12 @@
 
 body {
   @apply bg-surface-base text-text-primary antialiased;
+  font-family: var(--font-sans);
   font-feature-settings: "cv02", "cv03", "cv04", "cv11";
+}
+
+button, input, select, textarea {
+  font-family: inherit;
 }
 
 @layer utilities {
@@ -79,4 +84,13 @@ body {
   .hover-gradient-border:hover::before {
     opacity: 1;
   }
+}
+
+/* Ensure Toastify popups use the same font as the rest of the application */
+.Toastify__toast {
+  font-family: var(--font-outfit), var(--font-inter), ui-sans-serif, system-ui, sans-serif !important;
+}
+
+.Toastify__toast-body {
+  font-family: inherit;
 }
