@@ -59,6 +59,7 @@ interface VoiceSelectorProps {
 
 export function VoiceSelector({ selectedVoice, onSelect, className, isDark }: VoiceSelectorProps) {
   const [isOpen, setIsOpen] = useState(false);
+  const containerRef = React.useRef<HTMLDivElement>(null);
   const [playingId, setPlayingId] = useState<string | null>(null);
   const [isBuffering, setIsBuffering] = useState(false);
   const [customVoices, setCustomVoices] = useState<any[]>([]);
@@ -114,6 +115,22 @@ export function VoiceSelector({ selectedVoice, onSelect, className, isDark }: Vo
       audioRef?.pause();
     };
   }, [audioRef]);
+
+  // Handle outside clicks to close dropdown
+  React.useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (containerRef.current && !containerRef.current.contains(event.target as Node)) {
+        setIsOpen(false);
+      }
+    };
+
+    if (isOpen) {
+      document.addEventListener("mousedown", handleClickOutside);
+    }
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [isOpen]);
 
   const togglePlay = async (e: React.MouseEvent, voiceId: string) => {
     e.stopPropagation();
@@ -185,7 +202,7 @@ export function VoiceSelector({ selectedVoice, onSelect, className, isDark }: Vo
   const isMale = currentVoice.category.startsWith("Male");
 
   return (
-    <div className={cn("relative flex flex-col gap-2", className)}>
+    <div ref={containerRef} className={cn("relative flex flex-col gap-2", className)}>
       {!className?.includes("no-label") && (
         <label className={cn(
           "text-[10px] font-black uppercase tracking-widest ml-1 transition-colors",
@@ -217,9 +234,7 @@ export function VoiceSelector({ selectedVoice, onSelect, className, isDark }: Vo
       </button>
 
       {isOpen && (
-        <>
-          <div className="fixed inset-0 z-40" onClick={() => setIsOpen(false)} />
-          <div className="absolute top-[calc(100%+8px)] left-0 right-0 bg-white border border-slate-100 rounded-[24px] shadow-2xl p-2 z-50 flex flex-col gap-1 max-h-[400px] overflow-y-auto animate-in fade-in zoom-in-95 duration-200 custom-scrollbar">
+        <div className="absolute top-[calc(100%+8px)] left-0 right-0 bg-white border border-slate-100 rounded-[24px] shadow-2xl p-2 z-50 flex flex-col gap-1 max-h-[280px] overflow-y-auto animate-in fade-in zoom-in-95 duration-200 [scrollbar-width:thin] [scrollbar-color:#E2E8F0_transparent]">
             {allVoices.map((voice) => {
               const itemIsMale = voice.category.startsWith("Male");
               const isCurrentlyPlaying = playingId === voice.id;
@@ -288,7 +303,6 @@ export function VoiceSelector({ selectedVoice, onSelect, className, isDark }: Vo
               );
             })}
           </div>
-        </>
       )}
     </div>
   );
