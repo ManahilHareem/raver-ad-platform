@@ -50,9 +50,9 @@ const cleanContent = (content: string) => {
   return cleaned.trim();
 };
 
-export default function AIResponseModal({ 
-  isOpen, 
-  onClose, 
+export default function AIResponseModal({
+  isOpen,
+  onClose,
   initialUserMessage,
   initialAIResponse,
   sessionId,
@@ -147,7 +147,7 @@ export default function AIResponseModal({
               content = parsed.response || parsed.message || parsed.ai_message || content;
             } catch (e) { /* fallback to raw content */ }
           }
-          
+
           return {
             id: `hist-${i}-${Date.now()}`,
             role: (m.role === "assistant" || m.role === "ai") ? "ai" : "user",
@@ -207,10 +207,10 @@ export default function AIResponseModal({
 
     try {
       const API_BASE = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
-      
+
       // Enrich follow-up message with campaign context if available
       const apiMessage = enrichMessageWithCampaign(userMsg.content, selectedCampaign);
-      
+
       const response = await apiFetch(`${API_BASE}/ai/director/chat?t=${Date.now()}`, {
         method: "POST",
         headers: {
@@ -220,18 +220,18 @@ export default function AIResponseModal({
         body: JSON.stringify({
           session_id: sessionId,
           message: apiMessage,
-          professional_name: user?.fullName || "Hareem",
+          professional_name: user?.fullName || "User",
           tag: "director"
         }),
       });
 
       if (!response.ok) throw new Error("AI Director Communication Failed");
       const data = await response.json();
-      
+
       // Robustly extract from potentially array-wrapped or nested data
       const responseData = Array.isArray(data?.data) ? data.data[0] : (data?.data || data);
       const aiResponseContent = responseData?.response || responseData?.message || responseData?.ai_message || "I'm still processing your request. How else can I help?";
-      
+
       const campaignStatus = responseData?.campaign_status;
       const action = responseData?.action;
 
@@ -265,12 +265,12 @@ export default function AIResponseModal({
           const sessions = JSON.parse(existingSessionsStr);
           const updatedSessions = sessions.map((s: any) => {
             if (s.id === sessionId) {
-              return { 
-                ...s, 
-                messages: [...s.messages, 
-                  { ...userMsg, timestamp: userMsg.timestamp.toISOString() },
-                  { ...aiMsg, timestamp: aiMsg.timestamp.toISOString() }
-                ] 
+              return {
+                ...s,
+                messages: [...s.messages,
+                { ...userMsg, timestamp: userMsg.timestamp.toISOString() },
+                { ...aiMsg, timestamp: aiMsg.timestamp.toISOString() }
+                ]
               };
             }
             return s;
@@ -315,8 +315,8 @@ export default function AIResponseModal({
             </div>
           </div>
           <div className="flex items-center gap-2">
-            <button 
-              onClick={() => setIsMuted(!isMuted)} 
+            <button
+              onClick={() => setIsMuted(!isMuted)}
               className={cn(
                 "p-2 rounded-full transition-colors group",
                 !isMuted ? "bg-blue-50 text-blue-600" : "hover:bg-[#F1F5F9] text-[#94A3B8]"
@@ -325,8 +325,8 @@ export default function AIResponseModal({
             >
               {!isMuted ? <Icons.Volume2 className="w-5 h-5" /> : <Icons.Mute className="w-5 h-5" />}
             </button>
-            <button 
-              onClick={onClose} 
+            <button
+              onClick={onClose}
               className="p-2 hover:bg-[#F1F5F9] rounded-full transition-colors group"
             >
               <Icons.Plus className="w-5 h-5 rotate-45 text-[#94A3B8] group-hover:text-[#121212]" />
@@ -335,13 +335,13 @@ export default function AIResponseModal({
         </div>
 
         {/* Chat History Area */}
-        <div 
+        <div
           ref={scrollRef}
           className="flex-1 overflow-y-auto p-6 flex flex-col gap-6 custom-scrollbar bg-[#FDFDFF]"
         >
           {messages.map((m) => (
-            <div 
-              key={m.id} 
+            <div
+              key={m.id}
               className={cn(
                 "flex items-start gap-4 max-w-[85%]",
                 m.role === "user" ? "flex-row-reverse ml-auto" : "mr-auto"
@@ -353,10 +353,10 @@ export default function AIResponseModal({
               )}>
                 {m.role === "user" ? (
                   user?.avatarUrl ? (
-                    <Image 
-                      src={user.avatarUrl} 
-                      alt="User" 
-                      fill 
+                    <Image
+                      src={user.avatarUrl}
+                      alt="User"
+                      fill
                       className="object-cover"
                     />
                   ) : (
@@ -374,8 +374,8 @@ export default function AIResponseModal({
               )}>
                 <div className={cn(
                   "relative px-4 py-3 rounded-2xl text-[14px] leading-relaxed shadow-sm transition-all",
-                  m.role === "user" 
-                    ? "bg-[linear-gradient(90deg,#01012A_0%,#2E2C66_100%)] text-white rounded-tr-none shadow-[inset_0px_-5px_5px_0px_#4F569B]" 
+                  m.role === "user"
+                    ? "bg-[linear-gradient(90deg,#01012A_0%,#2E2C66_100%)] text-white rounded-tr-none shadow-[inset_0px_-5px_5px_0px_#4F569B]"
                     : "bg-white text-[#121212] border border-slate-100 rounded-tl-none shadow-[0_4px_12px_-4px_rgba(0,0,0,0.04)]"
                 )}>
                   {(() => {
@@ -395,12 +395,12 @@ export default function AIResponseModal({
                     return <MarkdownRenderer content={content.trim()} isUser={m.role === "user"} />;
                   })()}
                   {m.role === "ai" && (
-                    <button 
+                    <button
                       onClick={() => handleToggleSpeech(m.id, m.content)}
                       className={cn(
                         "absolute -right-10 top-0 p-2 transition-all duration-200",
-                        isSpeaking && currentlySpeakingId === m.id 
-                          ? "text-blue-600 scale-110" 
+                        isSpeaking && currentlySpeakingId === m.id
+                          ? "text-blue-600 scale-110"
                           : "text-slate-400 hover:text-[#02022C] hover:scale-110"
                       )}
                       title={isSpeaking && currentlySpeakingId === m.id ? "Stop" : "Play"}
@@ -423,15 +423,15 @@ export default function AIResponseModal({
                     m.role === "user" ? "justify-end" : "justify-start"
                   )}>
                     {m.assets.map((asset: any, idx: number) => (
-                      <div 
-                        key={idx} 
+                      <div
+                        key={idx}
                         className="relative w-16 h-16 rounded-xl overflow-hidden border border-slate-100 shadow-sm group/asset cursor-pointer"
                         onClick={() => window.open(normalizeAssetUrl(asset.url), '_blank')}
                       >
-                        <img 
-                          src={normalizeAssetUrl(asset.url)} 
-                          alt={asset.name || "Asset"} 
-                          className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300" 
+                        <img
+                          src={normalizeAssetUrl(asset.url)}
+                          alt={asset.name || "Asset"}
+                          className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
                         />
                         <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors" />
                       </div>
@@ -444,27 +444,27 @@ export default function AIResponseModal({
               </div>
             </div>
           ))}
-          
+
           {isGenerating && (
             <div className="mr-auto max-w-[80%] flex items-start gap-4 animate-in fade-in slide-in-from-left-2 duration-300">
-               <div className="w-8 h-8 rounded-lg overflow-hidden shrink-0 border border-slate-100 shadow-sm bg-[#02022C] flex items-center justify-center">
-                 <Icons.Loader className="w-4 h-4 text-white animate-spin" />
-               </div>
-               <div className="bg-white border border-slate-100 p-4 rounded-2xl rounded-tl-none shadow-sm flex items-center gap-3">
-                  <div className="flex gap-1.5">
-                    <div className="w-1.5 h-1.5 bg-slate-400 rounded-full animate-bounce [animation-delay:-0.3s]" />
-                    <div className="w-1.5 h-1.5 bg-slate-400 rounded-full animate-bounce [animation-delay:-0.15s]" />
-                    <div className="w-1.5 h-1.5 bg-slate-400 rounded-full animate-bounce" />
-                  </div>
-                  <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest animate-pulse">Buffering...</span>
-               </div>
+              <div className="w-8 h-8 rounded-xl bg-[#02022C] border border-slate-200 overflow-hidden flex items-center justify-center relative">
+                <Icons.Loader className="w-4 h-4 text-white animate-spin" />
+              </div>
+              <div className="bg-white border border-slate-100 p-4 rounded-2xl rounded-tl-none shadow-sm flex items-center gap-3">
+                <div className="flex gap-1.5">
+                  <div className="w-1.5 h-1.5 bg-slate-400 rounded-full animate-bounce [animation-delay:-0.3s]" />
+                  <div className="w-1.5 h-1.5 bg-slate-400 rounded-full animate-bounce [animation-delay:-0.15s]" />
+                  <div className="w-1.5 h-1.5 bg-slate-400 rounded-full animate-bounce" />
+                </div>
+                <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest animate-pulse">Buffering...</span>
+              </div>
             </div>
           )}
         </div>
 
         {/* Message Input Bottom */}
         <div className="p-6 bg-white border-t border-[#F1F5F9]">
-          <form 
+          <form
             onSubmit={handleSendMessage}
             className="flex items-center gap-2 bg-slate-50 border border-slate-200 rounded-2xl p-1.5 shadow-inner transition-all focus-within:ring-2 focus-within:ring-[#02022C]/5 focus-within:border-[#02022C]/10"
           >
@@ -472,17 +472,16 @@ export default function AIResponseModal({
             <button
               type="button"
               onClick={handleMicClick}
-              className={`h-[44px] w-[44px] shrink-0 rounded-xl flex items-center justify-center transition-all ${
-                isListening
+              className={`h-[44px] w-[44px] shrink-0 rounded-xl flex items-center justify-center transition-all ${isListening
                   ? "bg-red-500 text-white animate-pulse shadow-lg shadow-red-500/30"
                   : "bg-white text-[#94A3B8] hover:text-[#121212] hover:bg-[#F1F5F9] border border-slate-200"
-              }`}
+                }`}
               title={isListening ? "Stop listening" : "Voice input"}
             >
               <Icons.Mic className="w-4 h-4" />
             </button>
             <div className="flex-1 relative">
-              <input 
+              <input
                 type="text"
                 placeholder={isListening ? "Listening... speak now" : "Ask your AI Director a follow-up question..."}
                 value={chatDisplayValue}
@@ -496,7 +495,7 @@ export default function AIResponseModal({
                 </span>
               )}
             </div>
-            <button 
+            <button
               type="submit"
               disabled={!inputText.trim() || isGenerating}
               className="h-[44px] px-6 bg-[#02022C] text-white rounded-xl flex items-center justify-center gap-2 hover:opacity-90 active:scale-95 transition-all disabled:opacity-50 disabled:active:scale-100 shadow-md shadow-[#02022C]/10 font-bold"

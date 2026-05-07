@@ -99,8 +99,8 @@ export default function ProfileInfo({ user, onEdit, onAvatarUpdate, isLoading = 
                     className="object-cover"
                   />
                 ) : (
-                  <div className="w-full h-full bg-slate-50 flex items-center justify-center">
-                    <Icons.User className="w-12 h-12 text-slate-300" />
+                  <div className="w-full h-full bg-slate-100 flex items-center justify-center">
+                    <Icons.User className="w-12 h-12 text-slate-400" />
                   </div>
                 )}
                 <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity">

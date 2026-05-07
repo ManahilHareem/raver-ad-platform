@@ -121,9 +121,9 @@ export function NotificationList() {
         <button 
           onClick={handleMarkAllRead}
           disabled={unreadCount === 0}
-          className="group flex items-center gap-2 text-[10px] font-black uppercase tracking-[0.15em] text-blue-500 disabled:opacity-20 transition-all hover:-translate-y-px"
+          className="group flex items-center gap-2 text-[13px] font-bold text-blue-500 disabled:opacity-20 transition-all hover:-translate-y-px"
         >
-          <div className="w-8 h-8 rounded-full bg-blue-50 flex items-center justify-center group-hover:bg-blue-500 group-hover:text-white transition-colors">
+          <div className="w-8 h-8 rounded-lg bg-blue-50 flex items-center justify-center group-hover:bg-blue-500 group-hover:text-white transition-colors">
             <Icons.CheckCircle className="w-4 h-4" />
           </div>
           Mark All Read
@@ -132,12 +132,12 @@ export function NotificationList() {
         <button 
           onClick={handleClearAll}
           disabled={notifications.length === 0}
-          className="group flex items-center gap-2 text-[10px] font-black uppercase tracking-[0.15em] text-rose-500 disabled:opacity-20 transition-all hover:-translate-y-px"
+          className="group flex items-center gap-2 text-[13px] font-bold text-rose-500 disabled:opacity-20 transition-all hover:-translate-y-px"
         >
-          <div className="w-8 h-8 rounded-full bg-rose-50 flex items-center justify-center group-hover:bg-rose-500 group-hover:text-white transition-colors">
+          <div className="w-8 h-8 rounded-lg bg-rose-50 flex items-center justify-center group-hover:bg-rose-500 group-hover:text-white transition-colors">
             <Icons.Trash className="w-4 h-4" />
           </div>
-          Clear Everything
+          Clear All
         </button>
       </div>
 
@@ -151,7 +151,7 @@ export function NotificationList() {
             return (
               <div key={category} className="space-y-6">
                 <div className="flex items-center gap-4 px-2">
-                  <span className="text-[11px] font-black text-slate-300 uppercase tracking-[0.3em] font-mono">{category}</span>
+                  <span className="text-[12px] font-bold text-[#64748B] uppercase tracking-wider">{category}</span>
                   <div className="h-px bg-slate-100 flex-1" />
                 </div>
                 
@@ -181,8 +181,8 @@ export function NotificationList() {
                <Icons.Bell className="w-10 h-10 text-slate-200" />
             </div>
             <div className="text-center space-y-2">
-              <h3 className="text-[20px] font-black text-[#01012A] tracking-tighter lowercase">the matrix is currently silent_</h3>
-              <p className="text-[11px] font-bold text-slate-400 uppercase tracking-widest">No alerts registered in the neural sectors.</p>
+              <h3 className="text-[20px] font-bold text-[#121212]">Your Inbox is Quiet</h3>
+              <p className="text-[14px] text-[#4F4F4F]">No alerts or production updates recorded at this time.</p>
             </div>
           </motion.div>
         )}

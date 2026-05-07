@@ -95,62 +95,62 @@ export function NotificationCard({ notification, onRead, onDelete }: Notificatio
       </div>
 
       {/* Content */}
-      <div className="flex-1 space-y-2">
+      <div className="flex-1 flex flex-col gap-2">
         <div className="flex items-center justify-between">
            <div className="flex items-center gap-2">
              <span className={cn(
-               "text-[9px] font-black uppercase tracking-widest px-2 py-0.5 rounded-full",
+               "text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-md border",
                config.bg,
                config.border,
-               "text-slate-500"
+               "text-[#4F4F4F]"
              )}>
                {notification.type}
              </span>
              <h4 className={cn(
-               "text-[15px] font-black lowercase tracking-tighter",
-               notification.isRead ? "text-slate-400" : "text-[#01012A]"
+               "text-[16px] font-bold",
+               notification.isRead ? "text-slate-400" : "text-[#121212]"
              )}>
                {notification.title}
              </h4>
            </div>
-           <span className="text-[10px] font-black text-slate-300 uppercase tracking-widest">
+           <span className="text-[12px] font-medium text-[#64748B]">
              {formatTimeAgo(notification.timestamp)}
            </span>
         </div>
         
         <p className={cn(
-          "text-[13px] font-medium leading-relaxed pr-10",
-          notification.isRead ? "text-slate-400" : "text-slate-600"
+          "text-[14px] font-regular leading-relaxed pr-10",
+          notification.isRead ? "text-slate-400" : "text-[#4F4F4F]"
         )}>
           {notification.message}
         </p>
 
-        {/* Actions - Modern Pill Style */}
-        <div className="pt-2 flex items-center gap-3 opacity-0 group-hover:opacity-100 transition-all duration-300 translate-y-1 group-hover:translate-y-0">
+        {/* Actions */}
+        <div className="pt-2 flex items-center gap-3 opacity-0 group-hover:opacity-100 transition-all duration-300">
           {!notification.isRead && (
             <button 
               onClick={() => onRead(notification.id)}
-              className="h-8 px-4 rounded-full bg-blue-50 text-[10px] font-black uppercase tracking-widest text-blue-500 hover:bg-blue-500 hover:text-white transition-all flex items-center gap-1.5"
+              className="h-8 px-4 rounded-[8px] bg-blue-50 text-[12px] font-bold text-blue-500 hover:bg-blue-500 hover:text-white transition-all flex items-center gap-1.5"
             >
-              <Icons.Check className="w-3 h-3" />
+              <Icons.Check className="w-4 h-4" />
               Mark Read
             </button>
           )}
           {notification.link && (
             <a 
               href={notification.link}
-              className="h-8 px-4 rounded-full bg-slate-50 text-[10px] font-black uppercase tracking-widest text-[#01012A] hover:bg-[#01012A] hover:text-white transition-all flex items-center gap-1.5"
+              className="h-8 px-4 rounded-[8px] bg-[#F8F8F8] text-[12px] font-bold text-[#121212] hover:bg-[#121212] hover:text-white transition-all flex items-center gap-1.5 border border-[#0000000D]"
             >
-              <Icons.ExternalLink className="w-3 h-3" />
-              Launch Detail
+              <Icons.ExternalLink className="w-4 h-4" />
+              View Details
             </a>
           )}
           <button 
             onClick={() => onDelete(notification.id)}
-            className="h-8 w-8 rounded-full bg-rose-50 text-rose-400 hover:bg-rose-500 hover:text-white transition-all flex items-center justify-center"
+            className="h-8 w-8 rounded-[8px] bg-rose-50 text-rose-500 hover:bg-rose-500 hover:text-white transition-all flex items-center justify-center border border-rose-100"
             title="Dismiss Alert"
           >
-            <Icons.Trash className="w-3.5 h-3.5" />
+            <Icons.Trash className="w-4 h-4" />
           </button>
         </div>
       </div>

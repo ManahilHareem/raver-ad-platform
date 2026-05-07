@@ -3,9 +3,10 @@
 interface CampaignStep2Props {
   data: any;
   updateData: (fields: any) => void;
+  errors: Record<string, string>;
 }
 
-export default function CampaignStep2({ data, updateData }: CampaignStep2Props) {
+export default function CampaignStep2({ data, updateData, errors }: CampaignStep2Props) {
   const toggleStyle = (style: string) => {
     const prev = data.visualStyles || [];
     const next = prev.includes(style) ? prev.filter((s: string) => s !== style) : [...prev, style];
@@ -40,7 +41,7 @@ export default function CampaignStep2({ data, updateData }: CampaignStep2Props) 
 
       <div className="flex flex-col gap-[8px]">
         {/* Visual Style */}
-        <div className="flex flex-col gap-[12px] bg-[#FFFFFF] p-[16px] rounded-[16px]">
+        <div className={`flex flex-col gap-[12px] bg-[#FFFFFF] p-[16px] rounded-[16px] border ${errors.visualStyles ? 'border-red-500' : 'border-transparent'}`}>
           <label className="text-[14px] font-bold text-[#000000]">Visual Style *</label>
           <div className="flex flex-wrap gap-[12px]">
             {["Modern & Clean", "Elegant & Luxury", "Vibrant & Bold", "Minimalist", "Natural & Organic", "Dramatic"].map((s) => {
@@ -61,10 +62,11 @@ export default function CampaignStep2({ data, updateData }: CampaignStep2Props) 
               );
             })}
           </div>
+          {errors.visualStyles && <p className="text-red-500 text-[12px] font-medium mt-1">{errors.visualStyles}</p>}
         </div>
 
         {/* Tone & Voice */}
-        <div className="flex flex-col gap-[12px] bg-[#FFFFFF] p-[16px] rounded-[16px]">
+        <div className={`flex flex-col gap-[12px] bg-[#FFFFFF] p-[16px] rounded-[16px] border ${errors.tones ? 'border-red-500' : 'border-transparent'}`}>
           <label className="text-[14px] font-bold text-[#000000]">Tone & Voice *</label>
           <div className="flex flex-wrap gap-[12px]">
             {["Professional", "Friendly", "Inspiring", "Playful", "Sophisticated", "Educational"].map((t) => {
@@ -85,10 +87,11 @@ export default function CampaignStep2({ data, updateData }: CampaignStep2Props) 
               );
             })}
           </div>
+          {errors.tones && <p className="text-red-500 text-[12px] font-medium mt-1">{errors.tones}</p>}
         </div>
 
         {/* Color Scheme */}
-        <div className="flex flex-col gap-[12px] bg-[#FFFFFF] p-[16px] rounded-[16px]">
+        <div className={`flex flex-col gap-[12px] bg-[#FFFFFF] p-[16px] rounded-[16px] border ${errors.colorScheme ? 'border-red-500' : 'border-transparent'}`}>
           <label className="text-[14px] font-bold text-[#000000]">Color Scheme *</label>
           <div className="flex flex-wrap gap-[12px]">
             {colorSchemes.map((scheme) => {
@@ -116,6 +119,7 @@ export default function CampaignStep2({ data, updateData }: CampaignStep2Props) 
               );
             })}
           </div>
+          {errors.colorScheme && <p className="text-red-500 text-[12px] font-medium mt-1">{errors.colorScheme}</p>}
         </div>
       </div>
     </div>

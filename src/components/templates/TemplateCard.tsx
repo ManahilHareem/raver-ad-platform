@@ -38,7 +38,7 @@ export default function TemplateCard({
       onClick={onClick}
       style={height ? { height } : undefined}
       className={cn(
-        "group relative rounded-[16px] overflow-hidden cursor-pointer transition-all duration-300 hover:shadow-xl",
+        "group relative rounded-[16px] overflow-hidden cursor-pointer transition-all duration-300 hover:shadow-xl bg-slate-50",
         aspectRatio !== "custom" && aspectClasses[aspectRatio],
         className
       )}

@@ -384,7 +384,7 @@ function ProjectsContent() {
       <CreateCampaignModal
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
-        onSuccess={fetchCampaigns}
+        onSuccess={() => window.location.reload()}
       />
 
       <CampaignSelectionModal

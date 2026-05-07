@@ -5,9 +5,10 @@ import { Icons } from "@/components/ui/icons";
 interface CampaignStep3Props {
   data: any;
   updateData: (fields: any) => void;
+  errors: Record<string, string>;
 }
 
-export default function CampaignStep3({ data, updateData }: CampaignStep3Props) {
+export default function CampaignStep3({ data, updateData, errors }: CampaignStep3Props) {
   const togglePlatform = (platform: string) => {
     const prev = data.platforms || [];
     const next = prev.includes(platform) ? prev.filter((p: string) => p !== platform) : [...prev, platform];
@@ -24,23 +25,23 @@ export default function CampaignStep3({ data, updateData }: CampaignStep3Props) 
   const durations = ["15 sec", "30 sec", "60 sec", "90 sec"];
 
   const formats = [
-    { 
-      label: "Square (1:1)", 
+    {
+      label: "Square (1:1)",
       desc: "Perfect for Instagram feed",
       dimensions: "1:1"
     },
-    { 
-      label: "Vertical (9:16)", 
+    {
+      label: "Vertical (9:16)",
       desc: "Instagram Stories, Tiktok",
       dimensions: "9:16"
     },
-    { 
-      label: "Landscape (16:9)", 
+    {
+      label: "Landscape (16:9)",
       desc: "YouTube, Facebook",
       dimensions: "16:9"
     },
-    { 
-      label: "Portrait (9:16)", 
+    {
+      label: "Portrait (9:16)",
       desc: "Instagram feed optimized",
       dimensions: "9:16"
     },
@@ -52,21 +53,20 @@ export default function CampaignStep3({ data, updateData }: CampaignStep3Props) 
         <h3 className="text-[18px] font-bold text-[#121212]">Platform & Format</h3>
         <p className="text-[14px] font-regular text-[#6B7280]">Where will your campaign be published?</p>
       </div>
-      
+
       <div className="flex flex-col gap-[16px]">
         {/* Social Media Platform */}
-        <div className="flex flex-col gap-[12px] bg-[#FFFFFF] p-[16px] rounded-[16px] border-[0.35px] border-[#0000001A]">
+        <div className={`flex flex-col gap-[12px] bg-[#FFFFFF] p-[16px] rounded-[16px] border ${errors.platforms ? 'border-red-500' : 'border-[#0000001A]'}`}>
           <label className="text-[14px] font-bold text-[#000000]">Social Media Platform *</label>
           <div className="flex flex-wrap gap-[12px]">
             {platforms.map((p) => {
               const isSelected = data.platforms?.includes(p.label);
               return (
-                <button 
-                  key={p.label} 
+                <button
+                  key={p.label}
                   onClick={() => togglePlatform(p.label)}
-                   className={`px-[16px] py-[8px] rounded-xl text-[16px] font-regular items-center justify-center transition-all flex flex-row gap-[10px] ${
-                    isSelected ? "text-[#02022C]" : "bg-white border text-[#475569] border-[#E2E8F0] hover:border-[#02022C] "
-                  }`}
+                  className={`px-[16px] py-[8px] rounded-xl text-[16px] font-regular items-center justify-center transition-all flex flex-row gap-[10px] ${isSelected ? "text-[#02022C]" : "bg-white border text-[#475569] border-[#E2E8F0] hover:border-[#02022C] "
+                    }`}
                   style={isSelected ? {
                     border: '1px solid transparent',
                     background: 'linear-gradient(white, white) padding-box, linear-gradient(90deg, #01012A 0%, #2E2C66 100%) border-box'
@@ -78,6 +78,7 @@ export default function CampaignStep3({ data, updateData }: CampaignStep3Props) 
               );
             })}
           </div>
+          {errors.platforms && <p className="text-red-500 text-[12px] font-medium mt-1">{errors.platforms}</p>}
         </div>
 
         {/* Video Duration */}
@@ -87,12 +88,11 @@ export default function CampaignStep3({ data, updateData }: CampaignStep3Props) 
             {durations.map((d) => {
               const isSelected = data.duration === d;
               return (
-                <button 
-                  key={d} 
+                <button
+                  key={d}
                   onClick={() => updateData({ duration: d })}
-                  className={`px-[16px] py-[8px] rounded-xl text-[16px] font-regular items-center justify-center transition-all flex flex-row gap-[10px] ${
-                    isSelected ? "text-[#02022C]" : "bg-white border text-[#475569] border-[#E2E8F0] hover:border-[#02022C] "
-                  }`}
+                  className={`px-[16px] py-[8px] rounded-xl text-[16px] font-regular items-center justify-center transition-all flex flex-row gap-[10px] ${isSelected ? "text-[#02022C]" : "bg-white border text-[#475569] border-[#E2E8F0] hover:border-[#02022C] "
+                    }`}
                   style={isSelected ? {
                     border: '1px solid transparent',
                     background: 'linear-gradient(white, white) padding-box, linear-gradient(90deg, #01012A 0%, #2E2C66 100%) border-box'
@@ -112,12 +112,11 @@ export default function CampaignStep3({ data, updateData }: CampaignStep3Props) 
             {formats.map((f) => {
               const isSelected = data.format === f.label;
               return (
-                <button 
-                  key={f.label} 
+                <button
+                  key={f.label}
                   onClick={() => updateData({ format: f.label })}
-                  className={`px-[16px] py-[8px] rounded-xl text-[16px] font-regular items-start transition-all flex flex-col gap-[5px] ${
-                    isSelected ? "text-[#02022C]" : "bg-white border text-[#475569] border-[#E2E8F0] hover:border-[#02022C] "
-                  }`}
+                  className={`px-[16px] py-[8px] rounded-xl text-[16px] font-regular items-start transition-all flex flex-col gap-[5px] ${isSelected ? "text-[#02022C]" : "bg-white border text-[#475569] border-[#E2E8F0] hover:border-[#02022C] "
+                    }`}
                   style={isSelected ? {
                     border: '1px solid transparent',
                     background: 'linear-gradient(white, white) padding-box, linear-gradient(90deg, #01012A 0%, #2E2C66 100%) border-box'

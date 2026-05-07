@@ -18,7 +18,7 @@ import { apiFetch } from "@/lib/api";
 export default function CreateCampaignModal({ isOpen, onClose, onSuccess }: CreateCampaignModalProps) {
   const [step, setStep] = useState(1);
   const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState("");
+  const [errors, setErrors] = useState<Record<string, string>>({});
   
   const [campaignData, setCampaignData] = useState({
     name: "",
@@ -36,9 +36,45 @@ export default function CreateCampaignModal({ isOpen, onClose, onSuccess }: Crea
     setCampaignData(prev => ({ ...prev, ...fields }));
   };
 
+  const validateStep = () => {
+    const newErrors: Record<string, string> = {};
+    if (step === 1) {
+      if (!campaignData.name.trim()) {
+        newErrors.name = "Campaign name is required";
+      }
+      if (!campaignData.audience.trim()) {
+        newErrors.audience = "Target audience is required";
+      }
+    } else if (step === 2) {
+      if (campaignData.visualStyles.length === 0) {
+        newErrors.visualStyles = "Please select at least one visual style";
+      }
+      if (campaignData.tones.length === 0) {
+        newErrors.tones = "Please select at least one brand tone";
+      }
+      if (!campaignData.colorScheme) {
+        newErrors.colorScheme = "Please select a color scheme";
+      }
+    } else if (step === 3) {
+      if (campaignData.platforms.length === 0) {
+        newErrors.platforms = "Please select at least one platform";
+      }
+    }
+    
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+
+  const handleNext = () => {
+    if (validateStep()) {
+      setStep(step + 1);
+    }
+  };
+
   const handleSubmit = async () => {
+    if (!validateStep()) return;
     setIsLoading(true);
-    setError("");
+    setErrors({});
     
     try {
       const response = await apiFetch(`${process.env.NEXT_PUBLIC_API_URL}/campaigns`, {
@@ -72,7 +108,7 @@ export default function CreateCampaignModal({ isOpen, onClose, onSuccess }: Crea
     } catch (err: any) {
       if (err instanceof Error && err.message === 'Unauthorized') return;
       console.error("Campaign Creation Error:", err);
-      setError(err.message || "An error occurred");
+      setErrors({ api: err.message || "An error occurred" });
     } finally {
       setIsLoading(false);
     }
@@ -106,11 +142,11 @@ export default function CreateCampaignModal({ isOpen, onClose, onSuccess }: Crea
         </div>
 
         {/* Modal Content */}
-        <div className={`px-[24px] py-[20px] flex-1 custom-scrollbar ${step === 4 ? 'overflow-hidden' : 'overflow-y-auto'}`}>
-          {error && <p className="text-red-500 text-sm mb-4 text-center">{error}</p>}
-          {step === 1 && <CampaignStep1 data={campaignData} updateData={updateData} />}
-          {step === 2 && <CampaignStep2 data={campaignData} updateData={updateData} />}
-          {step === 3 && <CampaignStep3 data={campaignData} updateData={updateData} />}
+        <div className="px-[24px] py-[20px] flex-1 custom-scrollbar overflow-y-auto">
+          {errors.api && <p className="text-red-500 text-sm mb-4 text-center">{errors.api}</p>}
+          {step === 1 && <CampaignStep1 data={campaignData} updateData={updateData} errors={errors} />}
+          {step === 2 && <CampaignStep2 data={campaignData} updateData={updateData} errors={errors} />}
+          {step === 3 && <CampaignStep3 data={campaignData} updateData={updateData} errors={errors} />}
           {step === 4 && <CampaignStep4 data={campaignData} />}
         </div>
 
@@ -126,7 +162,7 @@ export default function CreateCampaignModal({ isOpen, onClose, onSuccess }: Crea
           
           {step < 4 ? (
             <button 
-              onClick={() => setStep(step + 1)}
+              onClick={handleNext}
               className="flex items-center gap-2 px-10 py-2.5 bg-linear-to-r from-[#01012A] to-[#2E2C66] text-white rounded-[8px] text-[14px] font-bold shadow-lg shadow-[#01012A]/10 active:scale-95 transition-all"
             >
               Next <Icons.ArrowRight className="w-4 h-4" />
