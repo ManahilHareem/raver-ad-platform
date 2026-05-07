@@ -45,6 +45,7 @@ interface StudioHeroProps {
   selectedCampaign?: Campaign | null;
   onCampaignDelete?: (campaign: Campaign) => void;
   onViewDetails?: (campaign: Campaign) => void;
+  onViewDetailsforcampaigns?: (campaign: Campaign) => void;
   onSend?: (prompt: string, assets?: Asset[]) => void;
   isSending?: boolean;
 }
@@ -63,6 +64,7 @@ export default function StudioHero({
   selectedCampaign,
   onCampaignDelete,
   onViewDetails,
+  onViewDetailsforcampaigns,
   onSend,
   isSending
 }: StudioHeroProps) {
@@ -381,7 +383,7 @@ export default function StudioHero({
                   <button
                     onClick={(e) => {
                       e.stopPropagation();
-                      onViewDetails?.(campaign);
+                      onViewDetailsforcampaigns?.(campaign);
                     }}
                     className={`ml-2 transition-colors ${
                       selectedCampaign?.title === campaign.title ? "text-white/70 hover:text-white" : "text-[#64748B] hover:text-[#02022C]"

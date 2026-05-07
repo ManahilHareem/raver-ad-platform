@@ -289,8 +289,17 @@ function StudioPageContent() {
     setShowAIResponse(false);
     setCampaignToView(campaign);
 
+    setIsPreviewOpen(true);
+  };
+
+    const handleViewDetailsforcampaigns = (campaign: Campaign) => {
+    setIsModalOpen(false);
+    setShowAIResponse(false);
+    setCampaignToView(campaign);
+
     setIsSelectionModalOpen(true);
   };
+
 
   const handleSelectVoice = (voice: string) => {
     setSelectedVoice(voice);
@@ -674,6 +683,7 @@ function StudioPageContent() {
           onCampaignSelect={setSelectedCampaign}
           onCampaignDelete={handleDeleteCampaign}
           onViewDetails={handleViewDetails}
+          onViewDetailsforcampaigns={handleViewDetailsforcampaigns}
           onSend={handlePromptSend}
           isSending={isSending}
         />
