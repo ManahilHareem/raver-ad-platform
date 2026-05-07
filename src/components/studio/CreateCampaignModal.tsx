@@ -123,8 +123,8 @@ export default function CreateCampaignModal({ isOpen, onClose, onSuccess }: Crea
         <div className="bg-white px-8 pt-6 pb-2 border-b border-[#F1F5F9] shrink-0">
           <div className="flex items-center justify-between mb-4">
             <div className="flex flex-col">
-              <h2 className="text-[18px] font-medium text-[#121212]">Create New Campaign</h2>
-              <span className="text-[13px] text-[#64748B] font-regular">Step {step} of 4</span>
+              <h2 className="text-[18px] font-bold text-[#121212]">Create New Campaign</h2>
+              <span className="text-[13px] text-[#64748B] font-normal">Step {step} of 4</span>
             </div>
             <button onClick={onClose} className="p-2 hover:bg-[#F1F5F9] rounded-full transition-colors">
               <Icons.Plus className="w-5 h-5 rotate-45 text-[#64748B]" />

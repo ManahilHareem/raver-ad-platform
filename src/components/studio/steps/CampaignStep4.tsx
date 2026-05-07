@@ -29,7 +29,7 @@ export default function CampaignStep4({ data }: CampaignStep4Props) {
     <div className="flex flex-col gap-[24px] animate-in slide-in-from-right-4 duration-300">
       <div className="flex flex-col gap-1">
         <h3 className="text-[18px] font-bold text-[#121212]">Review Your Campaign</h3>
-        <p className="text-[14px] font-regular text-[#6B7280]">Check all the details before generating</p>
+        <p className="text-[14px] font-normal text-[#6B7280]">Check all the details before generating</p>
       </div>
 
       <div className="bg-white p-[20px] rounded-[16px] border-[0.35px] border-[#0000001A] flex flex-col gap-[12px]">

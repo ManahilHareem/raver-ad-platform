@@ -277,7 +277,7 @@ export default function ProjectCard({
         </div>
 
         <div className="flex items-center gap-[16px] mt-auto">
-          <div className="flex items-center gap-2 text-[12px] font-regular text-[#4F4F4F]">
+          <div className="flex items-center gap-2 text-[12px] font-normal text-[#4F4F4F]">
             <Icons.Clock className="w-4 h-4" />
             <span>{time} ago</span>
           </div>

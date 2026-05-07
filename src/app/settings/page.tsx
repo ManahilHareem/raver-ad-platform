@@ -11,6 +11,7 @@ import AddPaymentMethodModal from "@/components/settings/AddPaymentMethodModal";
 import ChangePasswordModal from "@/components/settings/ChangePasswordModal";
 import EditProfileModal from "@/components/settings/EditProfileModal";
 import { cn } from "@/lib/utils";
+import { toast } from "react-toastify";
 
 const tabs = [
   { id: "profile", label: "Profile Information" },
@@ -37,7 +38,7 @@ export default function SettingsPage() {
       setIsEditProfileOpen(true);
     } else {
       // For other tabs, we can show a toast or implement specific save logic if needed
-      alert("Settings saved successfully!");
+      toast.success("Settings saved successfully!");
     }
   };
 
@@ -79,7 +80,7 @@ export default function SettingsPage() {
           {/* Header */}
           <div className="flex flex-col gap-1 mb-2">
             <h1 className="text-[30px] font-bold text-[#121212]">Settings</h1>
-            <p className="text-[16px] font-regular text-[#4F4F4F]">
+            <p className="text-[16px] font-normal text-[#4F4F4F]">
               Manage your account preferences and security settings
             </p>
           </div>
@@ -91,7 +92,7 @@ export default function SettingsPage() {
                 key={tab.id}
                 onClick={() => setActiveTab(tab.id)}
                 className={cn(
-                  "px-[16px] py-[10px] h-[42px] rounded-[8px] text-[14px] font-regular transition-all duration-200",
+                  "px-[16px] py-[10px] h-[42px] rounded-[8px] text-[14px] font-normal transition-all duration-200",
                   activeTab === tab.id
                     ? "text-white bg-[linear-gradient(90deg,#01012A_0%,#2E2C66_100%)] shadow-[inset_0px_-5px_5px_0px_#4F569B]"
                     : "bg-[#F8F8F8] text-[#121212] hover:bg-[#E2E8F0]"

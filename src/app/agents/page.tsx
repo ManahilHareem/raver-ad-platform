@@ -11,6 +11,7 @@ import { apiFetch } from "@/lib/api";
 import { CampaignHistoryList } from "@/components/producer/CampaignHistoryList";
 import ConfirmationModal from "@/components/ui/ConfirmationModal";
 import { RaverLoadingState } from "@/components/ui/RaverLoadingState";
+import { toast } from "react-toastify";
 
 const agents = [
   {
@@ -149,11 +150,11 @@ export default function AgentsPage() {
         setHistory(prev => prev.filter(c => (c.id || c.campaign_id) !== id));
         setIsDeleteModalOpen(false);
       } else {
-        alert("Failed to delete campaign.");
+        toast.error("Failed to delete campaign.");
       }
     } catch (err) {
       console.error("Delete error:", err);
-      alert("Error deleting campaign.");
+      toast.error("Error deleting campaign.");
     } finally {
       setIsDeleting(false);
     }
@@ -168,7 +169,7 @@ export default function AgentsPage() {
       {/* Header */}
       <div className="flex flex-col gap-1 sm:gap-2">
         <h1 className="text-2xl sm:text-3xl font-bold text-[#121212]">Ai Agents</h1>
-        <p className="text-[14px] sm:text-[16px] text-[#4F4F4F] font-regular">
+        <p className="text-[14px] sm:text-[16px] text-[#4F4F4F] font-normal">
           10 specialized AI agents working together to create professional beauty marketing campaigns
         </p>
       </div>
@@ -193,7 +194,7 @@ export default function AgentsPage() {
 
       {/* Team Grid */}
       <div className="flex flex-col gap-4 sm:gap-6 bg-[#FFFFFF] p-4 sm:p-6 md:p-8 rounded-[12px] border-[0.35px] border-[#0000001A]">
-        <h2 className="text-base sm:text-lg font-medium text-[#121212]">Your AI Team</h2>
+        <h2 className="text-base sm:text-lg font-bold text-[#121212]">Your AI Team</h2>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4 md:gap-6 w-full">
           {agents.slice(0, 10).map((agent, i) => (
             <AgentCard 
@@ -236,7 +237,7 @@ export default function AgentsPage() {
 
       {/* Workflow Section */}
       <div className="flex flex-col gap-4 sm:gap-6 bg-[#FFFFFF] p-4 sm:p-6 md:p-8 rounded-[12px] border-[0.35px] border-[#0000001A]">
-        <h2 className="text-base sm:text-lg font-medium text-[#121212]">How Your AI Team Works Together</h2>
+        <h2 className="text-base sm:text-lg font-bold text-[#121212]">How Your AI Team Works Together</h2>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-6">
           {[
             { 
@@ -260,8 +261,8 @@ export default function AgentsPage() {
                 {item.step}
               </div>
               <div className="flex flex-col gap-1 sm:gap-2">
-                <h4 className="text-[13px] sm:text-[14px] font-medium text-[#121212]">{item.title}</h4>
-                <p className="text-[11px] sm:text-[12px] text-[#4F4F4F] leading-relaxed font-regular">{item.desc}</p>
+                <h4 className="text-[13px] sm:text-[14px] font-bold text-[#121212]">{item.title}</h4>
+                <p className="text-[11px] sm:text-[12px] text-[#4F4F4F] leading-relaxed font-normal">{item.desc}</p>
               </div>
             </div>
           ))}

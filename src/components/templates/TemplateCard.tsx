@@ -63,11 +63,11 @@ export default function TemplateCard({
             <div className="flex items-center gap-4 text-white/90">
               <div className="flex items-center gap-1.5">
                 <Icons.Clock className="w-4 h-4" />
-                <span className="text-[12px] font-regular">{time || "2 hours ago"}</span>
+                <span className="text-[12px] font-normal">{time || "2 hours ago"}</span>
               </div>
               <div className="flex items-center gap-1.5">
                 <Icons.User className="w-4 h-4" />
-                <span className="text-[12px] font-regular">{members || 3}</span>
+                <span className="text-[12px] font-normal">{members || 3}</span>
               </div>
             </div>
           </div>

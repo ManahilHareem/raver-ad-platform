@@ -66,7 +66,7 @@ export default function TemplateModal({ template, isOpen, onClose }: TemplateMod
                     "AI-powered content generation",
                     "Multiple export formats"
                   ].map((item, i) => (
-                    <div key={i} className="flex items-center gap-[12px] text-[14px] text-[#4F4F4F] font-regular">
+                    <div key={i} className="flex items-center gap-[12px] text-[14px] text-[#4F4F4F] font-normal">
                       <Icons.Success className="w-4 h-4 text-[#22C55E]" />
                       {item}
                     </div>

@@ -31,7 +31,7 @@ export default function QuickCreateCard({ title, icon: Icon, href, gradient }: Q
           "text-[#02022C] group-hover:text-white"
         )} />
         <span className={cn(
-          "text-[14px] font-medium text-[#02022C] group-hover:text-white transition-colors duration-300"
+          "text-[14px] font-bold text-[#121212] group-hover:text-white transition-colors duration-300"
         )}>
           {title}
         </span>

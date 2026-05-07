@@ -94,7 +94,7 @@ export default function AnalyticsPage() {
         <div className="flex items-center justify-between">
           <div className="flex flex-col gap-1">
             <h1 className="text-[30px] font-bold text-[#121212]">Analytics</h1>
-            <p className="text-[16px] font-regular text-[#4F4F4F]">
+            <p className="text-[16px] font-normal text-[#4F4F4F]">
               Comprehensive platform metrics across AI generation, campaigns, and quality governance
             </p>
           </div>
@@ -147,7 +147,7 @@ export default function AnalyticsPage() {
               <div className="bg-[#F8F8F8] p-6 rounded-[16px] border border-[#0000000D] shadow-sm">
                 <div className="flex flex-col gap-1 mb-8">
                   <h3 className="text-[18px] font-bold text-[#121212]">Agent Utilization</h3>
-                  <p className="text-[13px] font-regular text-[#4F4F4F]">Frequency of discrete AI service calls</p>
+                  <p className="text-[13px] font-normal text-[#4F4F4F]">Frequency of discrete AI service calls</p>
                 </div>
                 <AgentUtilizationChart data={agentUtilizationData} />
               </div>
@@ -155,7 +155,7 @@ export default function AnalyticsPage() {
               <div className="bg-[#F8F8F8] p-6 rounded-[16px] border border-[#0000000D] shadow-sm">
                 <div className="flex flex-col gap-1 mb-6">
                   <h3 className="text-[18px] font-bold text-[#121212]">Quality Audit Scores</h3>
-                  <p className="text-[13px] font-regular text-[#4F4F4F]">Average governance grades mapped across dimensions</p>
+                  <p className="text-[13px] font-normal text-[#4F4F4F]">Average governance grades mapped across dimensions</p>
                 </div>
                 <QualityAuditChart data={qualityScoresData} />
               </div>

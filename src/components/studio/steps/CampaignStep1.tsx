@@ -13,13 +13,13 @@ export default function CampaignStep1({ data, updateData, errors }: CampaignStep
     <div className="flex flex-col gap-[24px] animate-in slide-in-from-right-4 duration-300">
       <div className="flex flex-col gap-1">
         <h3 className="text-[18px] font-bold text-[#121212]">Campaign Details</h3>
-        <p className="text-[14px] text-[#6B7280] font-regular">Let's start with the basics of your campaign</p>
+        <p className="text-[14px] text-[#6B7280] font-normal">Let's start with the basics of your campaign</p>
       </div>
 
       <div className="flex flex-col gap-[8px]">
         {/* Campaign Name Card */}
         <div className="bg-white p-[16px] rounded-[16px] border-[0.35px] border-[#0000001A] flex flex-col gap-[12px]">
-          <label className="text-[13px] font-bold text-[#121212]">Campaign Name *</label>
+          <label className="text-[14px] font-bold text-[#121212]">Campaign Name *</label>
           <input
             type="text"
             placeholder="Instagram promotion for summer balayage special"

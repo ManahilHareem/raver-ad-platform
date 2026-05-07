@@ -119,7 +119,7 @@ export function NotificationCard({ notification, onRead, onDelete }: Notificatio
         </div>
         
         <p className={cn(
-          "text-[14px] font-regular leading-relaxed pr-10",
+          "text-[14px] font-normal leading-relaxed pr-10",
           notification.isRead ? "text-slate-400" : "text-[#4F4F4F]"
         )}>
           {notification.message}

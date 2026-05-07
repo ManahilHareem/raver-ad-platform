@@ -307,7 +307,7 @@ function ProjectsContent() {
         <div className="flex items-center justify-between rounded-[12px]">
           <div className="flex flex-col gap-[2px]">
             <h1 className="text-[30px] font-bold text-[#121212]">My Projects</h1>
-            <p className="text-[16px] text-[#4F4F4F] font-regular">
+            <p className="text-[16px] text-[#4F4F4F] font-normal">
               Manage and organize your creative projects and AI campaigns
             </p>
           </div>

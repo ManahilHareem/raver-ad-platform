@@ -136,7 +136,7 @@ export default function TemplatesPage() {
         <div className="flex flex-col gap-[24px] p-[24px] rounded-[12px] bg-[#FFFFFF] border-[0.35px] border-[#0000001A]">
           <div className="flex flex-col gap-2">
             <h1 className="text-[30px] font-bold text-[#121212]">Templates Library</h1>
-            <p className="text-[16px] text-[#4F4F4F] font-regular">
+            <p className="text-[16px] text-[#4F4F4F] font-normal">
               Professional beauty marketing templates ready to customize for your brand
             </p>
           </div>

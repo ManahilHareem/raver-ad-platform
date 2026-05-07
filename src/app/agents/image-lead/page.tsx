@@ -253,7 +253,7 @@ function ImageLeadContent() {
 
   const handleGenerate = async () => {
     if (!productName.trim() || !businessName.trim()) {
-      alert("Please enter both Brand Name and Product Name!");
+      toast.warn("Please enter both Brand Name and Product Name!");
       return;
     }
     
@@ -365,9 +365,9 @@ function ImageLeadContent() {
         setIsModalOpen(false);
         await fetchVault();
         await fetchSessions(); // Ensure session list has the latest metadata after enhancement
-        alert("Image enhanced successfully!");
+        toast.success("Image enhanced successfully!");
       } else {
-        alert("Failed to enhance image.");
+        toast.error("Failed to enhance image.");
       }
     } catch (err) {
       console.error("Enhancement error:", err);

@@ -3,6 +3,7 @@ import Image from "next/image";
 import { Icons } from "@/components/ui/icons";
 import { cn } from "@/lib/utils";
 import { apiFetch } from "@/lib/api";
+import { toast } from "react-toastify";
 
 interface ProfileInfoProps {
   user: any;
@@ -57,7 +58,7 @@ export default function ProfileInfo({ user, onEdit, onAvatarUpdate, isLoading = 
       onAvatarUpdate();
     } catch (err) {
       console.error("Profile Picture Upload Error:", err);
-      alert(err instanceof Error ? err.message : "Failed to upload profile picture");
+      toast.error(err instanceof Error ? err.message : "Failed to upload profile picture");
     } finally {
       setIsUploading(false);
       // Reset input so the same file can be selected again
@@ -68,7 +69,7 @@ export default function ProfileInfo({ user, onEdit, onAvatarUpdate, isLoading = 
   return (
     <div className="flex flex-col gap-8">
       <div className="flex flex-col gap-4">
-        <h3 className="text-[18px] font-medium text-[#121212]">Profile Information</h3>
+        <h3 className="text-[18px] font-bold text-[#121212]">Profile Information</h3>
         
         {/* Banner and Avatar section with dynamic upload */}
         <input 
@@ -160,7 +161,7 @@ export default function ProfileInfo({ user, onEdit, onAvatarUpdate, isLoading = 
                   <field.icon className="w-5 h-5 text-[#64748B]" />
                </div>
                <div className="flex flex-col gap-1">
-                  <span className="text-[12px] text-[#4F4F4F] font-regular uppercase tracking-wider">{field.label}</span>
+                  <span className="text-[12px] text-[#4F4F4F] font-normal uppercase tracking-wider">{field.label}</span>
                   {isLoading ? (
                     <div className="h-5 w-32 bg-gray-200 rounded animate-pulse" />
                   ) : (
@@ -173,7 +174,7 @@ export default function ProfileInfo({ user, onEdit, onAvatarUpdate, isLoading = 
 
         <div className="flex flex-col gap-2 mt-2">
            <div className="p-[20px] bg-white rounded-[16px] border border-[#F1F5F9]  gap-[12px] min-h-[120px]">
-              <span className="text-[12px] text-[#4F4F4F] font-regular uppercase tracking-wider block mb-2">Bio</span>
+              <span className="text-[12px] text-[#4F4F4F] font-normal uppercase tracking-wider block mb-2">Bio</span>
               {isLoading ? (
                 <div className="flex flex-col gap-2">
                   <div className="h-4 w-full bg-gray-100 rounded animate-pulse" />

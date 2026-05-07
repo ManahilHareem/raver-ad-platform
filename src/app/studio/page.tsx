@@ -85,7 +85,7 @@ function ActiveCampaignsGrid({ campaigns, onDelete, onViewMore, onViewDetails, a
   return (
     <div className="flex flex-col gap-[16px] bg-[#FFFFFF] border-[0.35px] border-[#0000001A] rounded-[12px] p-[16px]">
       <div className="flex items-center justify-between">
-        <h2 className="text-[18px] font-semibold text-[#121212]">Active Campaigns</h2>
+        <h2 className="text-[18px] font-bold text-[#121212]">Active Campaigns</h2>
         <button
           onClick={onViewMore}
           className="px-3 py-1.5 rounded-lg text-[13px] font-bold text-[#121212] transition-all flex items-center gap-1.5 group hover:bg-linear-to-r hover:from-[#01012A] hover:to-[#2E2C66] hover:text-white active:scale-95"
@@ -134,11 +134,11 @@ function ActiveCampaignsGrid({ campaigns, onDelete, onViewMore, onViewDetails, a
 function CampaignInsights({ insights }: any) {
   return (
     <div className="flex flex-col gap-4 bg-[#FFFFFF] border-[0.35px] border-[#0000001A] rounded-[12px] p-[16px]">
-      <h2 className="text-[18px] font-medium text-[#121212]">Insights</h2>
+      <h2 className="text-[18px] font-bold text-[#121212]">Insights</h2>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
         {insights.map((insight: any, i: number) => (
           <div key={i} className="bg-[#F8F8F8] p-5 rounded-[8px] border-[0.35px] border-[#0000001A] shadow-sm flex flex-col gap-2">
-            <span className="text-[12px] text-[#4F4F4F] font-medium">{insight.label}</span>
+            <span className="text-[12px] text-[#4F4F4F] font-normal">{insight.label}</span>
             <div className="flex items-end justify-between">
               <span className="text-[24px] font-bold text-[#02022C] leading-none">{insight.value}</span>
               {insight.change && <span className="text-[12px] font-semibold mb-1 text-[#02022C]">{insight.change}</span>}
@@ -690,7 +690,7 @@ function StudioPageContent() {
 
         <div className="flex flex-col gap-4 bg-[#FFFFFF] border-[0.35px] border-[#0000001A] rounded-[12px] p-[16px]">
           <div className="flex items-center justify-between">
-            <h2 className="text-[18px] font-medium text-[#121212]">
+            <h2 className="text-[18px] font-bold text-[#121212]">
               AI Production Pipeline
             </h2>
             {currentPipelineCampaign && (

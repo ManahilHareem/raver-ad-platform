@@ -181,7 +181,7 @@ function AudioLeadContent() {
         setTimeout(() => { clearInterval(interval); setIsLoading(false); }, 45000);
       } else {
         setIsLoading(false);
-        alert("Music synthesis failed.");
+        toast.error("Music synthesis failed.");
       }
     } catch (err) {
       console.error("Music generation error:", err);
@@ -223,7 +223,7 @@ function AudioLeadContent() {
         setTimeout(() => { clearInterval(interval); setIsLoading(false); }, 45000);
       } else {
         setIsLoading(false);
-        alert("Voiceover synthesis failed.");
+        toast.error("Voiceover synthesis failed.");
       }
     } catch (err) {
       console.error("Voiceover error:", err);
@@ -265,7 +265,7 @@ function AudioLeadContent() {
         setTimeout(() => { clearInterval(interval); setIsLoading(false); }, 60000); // 60s for full production
       } else {
         setIsLoading(false);
-        alert("Full production synthesis failed.");
+        toast.error("Full production synthesis failed.");
       }
     } catch (err) {
       console.error("Production error:", err);
@@ -282,7 +282,7 @@ function AudioLeadContent() {
     const finalVoiceoverUrl = selectedVoiceoverUrl || voiceover?.url;
 
     if (!finalMusicUrl || !finalVoiceoverUrl) {
-      alert("Please select both a Music track and a Voiceover track to mix.");
+      toast.warn("Please select both a Music track and a Voiceover track to mix.");
       return;
     }
 

@@ -55,10 +55,10 @@ export default function BillingSettings({
             <>
               <div className="absolute top-0 right-0 w-[300px] h-[300px] bg-blue-400 opacity-5 blur-[100px] -mr-32 -mt-32 transition-opacity group-hover:opacity-10 duration-500" />
               <div className="flex flex-col relative z-10">
-                <span className="text-[13px] text-[#4F4F4F] font-regular  tracking-wider">Current Balance</span>
+                <span className="text-[13px] text-[#4F4F4F] font-normal  tracking-wider">Current Balance</span>
                 <div className="flex flex-col">
                   <span className="text-[32px] font-bold text-[#121212]">250 Credits</span>
-                  <span className="text-[12px] font-regular text-[#64748B]">Renews on April 15, 2026</span>
+                  <span className="text-[12px] font-normal text-[#64748B]">Renews on April 15, 2026</span>
                 </div>
               </div>
               <button 

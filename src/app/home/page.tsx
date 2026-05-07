@@ -155,7 +155,7 @@ export default function HomePage() {
         {/* Active Campaigns Section */}
         <div className="flex flex-col gap-[12px]">
           <div className="items-center justify-between flex">
-            <h2 className="text-[18px] font-medium text-[#02022C]">Active Campaigns</h2>
+            <h2 className="text-[18px] font-bold text-[#121212]">Active Campaigns</h2>
             <Link href="/projects" className="text-[14px] font-semibold text-[#02022C] hover:underline flex items-center gap-2">
               View All <Icons.ExternalLink className="w-4 h-4" />
             </Link>

@@ -13,7 +13,7 @@ export default function StatsCard({ label, value, change, icon: Icon, trend = "u
   return (
     <div className="bg-[#F8F8F8] px-[21px] pt-[21px] rounded-[8px]  min-w-[230px] h-[98px] border-[0.35px] border-[#0000000D] flex flex-col gap-[8px] shadow-sm hover:shadow-md transition-shadow">
       <div className="flex items-center justify-between">
-        <span className="text-[12px] font-medium text-[#4F4F4F]">{label}</span>
+        <span className="text-[12px] font-normal text-[#4F4F4F]">{label}</span>
       </div>
       <div className="flex items-baseline gap-1 mt-1 justify-between pb-px">
         <span className="text-[24px] font-bold text-[#02022C]">{value}</span>
