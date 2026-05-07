@@ -14,27 +14,49 @@ RAVER AI follows a **Decoupled Client-Server Architecture**. The system is desig
 
 ---
 
-## 2. Frontend Architecture (Next.js)
+## 2. Major Libraries & Dependencies
 
-### 2.1 Technology Stack
-- **Framework**: Next.js 14 (App Router)
+The RAVER AI Frontend leverages a modern ecosystem of libraries to provide a premium and highly interactive experience:
+
+### Core Framework
+- **Next.js 16**: Utilizing the latest App Router patterns for optimized performance and routing.
+- **React 19**: Leveraging concurrent rendering and state-of-the-art hook patterns.
+
+### UI & UX
+- **Framer Motion**: Powering smooth, production-grade animations and transitions (Modals, Pipelines, Hover states).
+- **Lucide React**: Providing a consistent and accessible SVG icon library.
+- **React-Toastify**: Standardized notification system for professional user feedback.
+- **Recharts**: For high-performance, responsive data visualizations in the Campaign Insights dashboard.
+- **React-Markdown**: Safely rendering structured AI-generated responses with proper formatting.
+
+### Styling & Utilities
+- **Tailwind CSS 4**: A utility-first CSS framework for rapid and consistent UI development.
+- **clsx & tailwind-merge**: Utilities for constructing and merging Tailwind classes efficiently.
+- **TypeScript**: Ensuring type safety and robust development across the entire codebase.
+
+---
+
+## 3. Frontend Architecture (Next.js)
+
+### 3.1 Technology Stack
+- **Framework**: Next.js 16 (App Router)
 - **Language**: TypeScript
 - **State Management**: 
     - **Global**: React Context API (`UserContext`, `NotificationContext`)
     - **Local**: React Hooks (`useState`, `useReducer`) for complex form states in the Studio.
-- **Styling**: Tailwind CSS with a strict custom design system for typography and brand colors.
+- **Styling**: Tailwind CSS 4 with a strict custom design system for typography and brand colors.
 - **Feedback**: React-Toastify for non-blocking notifications.
 
-### 2.2 Core Modules
+### 3.2 Core Modules
 - **AI Creative Studio**: A multi-step state machine (`CreateCampaignModal`) that tracks campaign strategy across 4 stages.
 - **Production Pipeline**: A real-time monitoring system that polls for status updates during the AI generation lifecycle.
 - **Asset Library**: A centralized viewer with asset normalization logic to handle diverse media types and sources.
 
 ---
 
-## 3. Backend Architecture (Node.js)
+## 4. Backend Architecture (Node.js)
 
-### 3.1 Modular Structure
+### 4.1 Modular Structure
 The backend is organized into domain-driven modules, each encapsulated with its own controllers and services.
 
 #### Key Modules:
@@ -44,7 +66,7 @@ The backend is organized into domain-driven modules, each encapsulated with its 
 - **`ai-producer`**: The "Operational AI" that executes asset generation and assembly.
 - **`project`**: Logical grouping of related campaigns and assets.
 
-### 3.2 Data Layer
+### 4.2 Data Layer
 - **ORM**: Prisma
 - **Database**: PostgreSQL
 - **Key Models**:
@@ -54,7 +76,7 @@ The backend is organized into domain-driven modules, each encapsulated with its 
 
 ---
 
-## 4. AI Orchestration Flow
+## 5. AI Orchestration Flow
 
 RAVER AI uses a unique **Multi-Agent Orchestration** model:
 
@@ -68,21 +90,21 @@ RAVER AI uses a unique **Multi-Agent Orchestration** model:
 
 ---
 
-## 5. Design & UI Standards
+## 6. Design & UI Standards
 
-### 5.1 Typography
+### 6.1 Typography
 - **Headings**: `font-bold` using the **Outfit** font family.
 - **Body**: `font-normal` using the **Inter** font family.
 - **Consistency**: All typography is standardized to eliminate legacy overrides and ensure brand alignment.
 
-### 5.2 Interactive Patterns
+### 6.2 Interactive Patterns
 - **Modals**: Sidebar-style slide-ins for creation; centered overlays for confirmations.
 - **Input Fields**: Standardized `Input` component with integrated password visibility toggles and validation error "divs".
 - **Scrolling**: Viewport-aware containers with thin custom scrollbars to prevent UI congestion.
 
 ---
 
-## 6. Infrastructure & DevOps
+## 7. Infrastructure & DevOps
 
 - **Containerization**: Fully Dockerized environment (`Dockerfile`, `docker-compose.yml`).
 - **API Proxy**: Next.js custom rewrites handle secure communication with the `apiplatform.raver.ai` gateway.
@@ -90,7 +112,7 @@ RAVER AI uses a unique **Multi-Agent Orchestration** model:
 
 ---
 
-## 7. Security
+## 8. Security
 
 - **JWT Authentication**: All API requests are secured via JSON Web Tokens.
 - **Role-Based Access**: Permission checks at the controller level to ensure data privacy between users.
