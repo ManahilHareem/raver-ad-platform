@@ -112,6 +112,13 @@ export default function CampaignPreviewModal({
     if (!lastAIMessage) return;
 
     const currentId = `${lastAIMessage.role}-${cleanContent(lastAIMessage.content).length}-${cleanContent(lastAIMessage.content).substring(0, 50)}`;
+    
+    // Initialize lastSpokenMessageId when modal opens to avoid auto-speaking history
+    if (lastSpokenMessageId.current === null) {
+      lastSpokenMessageId.current = currentId;
+      return;
+    }
+
     const isNewMessage = lastSpokenMessageId.current !== currentId;
 
     if (autoSpeak && isNewMessage) {
@@ -120,10 +127,6 @@ export default function CampaignPreviewModal({
       speak(cleaned);
       lastSpokenMessageId.current = currentId;
       setCurrentlySpeakingId(currentId);
-    } else if (!autoSpeak) {
-      stopSpeaking();
-      lastSpokenMessageId.current = null;
-      setCurrentlySpeakingId(null);
     }
   }, [autoSpeak, isOpen, localHistory, speak, stopSpeaking]);
 
@@ -505,7 +508,7 @@ export default function CampaignPreviewModal({
       if (!response.ok) throw new Error("AI Director Communication Failed");
       const data = await response.json();
 
-      const aiResponseContent = data?.data?.response || data?.response || data?.message || "I've updated the campaign details.";
+      const aiResponseContent = data?.data?.message || data?.message || data?.data?.response || data?.response || "I've updated the campaign details.";
       const aiMsg = { role: "assistant", content: aiResponseContent };
 
       setLocalHistory((prev) => [...prev, aiMsg]);
@@ -603,7 +606,10 @@ export default function CampaignPreviewModal({
           </div>
           <div className="flex items-center gap-2">
             <button 
-              onClick={() => setAutoSpeak(!autoSpeak)} 
+              onClick={() => {
+                if (autoSpeak) stopSpeaking();
+                setAutoSpeak(!autoSpeak);
+              }} 
               className={cn(
                 "p-2 rounded-full transition-colors group",
                 autoSpeak ? "bg-blue-50 text-blue-600" : "hover:bg-[#F1F5F9] text-[#94A3B8]"
