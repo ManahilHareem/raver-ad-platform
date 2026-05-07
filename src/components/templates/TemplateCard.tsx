@@ -47,7 +47,7 @@ export default function TemplateCard({
         src={imagePath} 
         alt={title}
         fill
-        className="object-cover transition-transform duration-700 group-hover:scale-110"
+        className="object-contain transition-transform duration-700 group-hover:scale-110"
         onError={(e) => {
           const target = e.target as HTMLImageElement;
           target.src = "https://placehold.co/600x800?text=Template";

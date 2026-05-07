@@ -37,7 +37,7 @@ export default function TemplateModal({ template, isOpen, onClose }: TemplateMod
               src={template.imagePath} 
               alt={template.title}
               fill
-              className="object-cover"
+              className="object-contain"
               onError={(e) => {
                 const target = e.target as HTMLImageElement;
                 target.src = "https://placehold.co/600x400?text=Template";
