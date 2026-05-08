@@ -19,11 +19,17 @@ export default function CampaignStep1({ data, updateData, errors }: CampaignStep
       <div className="flex flex-col gap-[8px]">
         {/* Campaign Name Card */}
         <div className="bg-white p-[16px] rounded-[16px] border-[0.35px] border-[#0000001A] flex flex-col gap-[12px]">
-          <label className="text-[14px] font-bold text-[#121212]">Campaign Name *</label>
+          <div className="flex justify-between items-center">
+            <label className="text-[14px] font-bold text-[#121212]">Campaign Name *</label>
+            <span className="text-[11px] font-medium text-slate-400">
+              {data.name?.length || 0}/100
+            </span>
+          </div>
           <input
             type="text"
             placeholder="Instagram promotion for summer balayage special"
             value={data.name}
+            maxLength={100}
             onChange={(e) => updateData({ name: e.target.value })}
             className={`w-full px-5 py-3.5 bg-white border ${errors.name ? 'border-red-500' : 'border-[#F1F5F9]'} rounded-[8px] text-[14px] text-[#121212] outline-none focus:border-[#02022C] placeholder:text-[#94A3B8] transition-colors`}
           />
@@ -50,10 +56,16 @@ export default function CampaignStep1({ data, updateData, errors }: CampaignStep
 
         {/* Target Audience Card */}
         <div className="bg-white p-[16px] rounded-[16px] border-[0.35px] border-[#0000001A] flex flex-col gap-3">
-          <label className="text-[14px] font-bold text-[#121212]">Target Audience *</label>
+          <div className="flex justify-between items-center">
+            <label className="text-[14px] font-bold text-[#121212]">Target Audience *</label>
+            <span className="text-[11px] font-medium text-slate-400">
+              {data.audience?.length || 0}/500
+            </span>
+          </div>
           <textarea
             placeholder="Describe your target audience (e.g., Women aged 25-45 interested in premium hair care)"
             value={data.audience}
+            maxLength={500}
             onChange={(e) => updateData({ audience: e.target.value })}
             className={`w-full p-[16px] bg-white border ${errors.audience ? 'border-red-500' : 'border-[#F1F5F9]'} rounded-[8px] text-[15px] text-[#121212] outline-none focus:border-[#02022C] h-[160px] resize-none placeholder:text-[#94A3B8] transition-colors`}
           />
