@@ -19,12 +19,7 @@ export default function CampaignStep1({ data, updateData, errors }: CampaignStep
       <div className="flex flex-col gap-[8px]">
         {/* Campaign Name Card */}
         <div className="bg-white p-[16px] rounded-[16px] border-[0.35px] border-[#0000001A] flex flex-col gap-[12px]">
-          <div className="flex justify-between items-center">
-            <label className="text-[14px] font-bold text-[#121212]">Campaign Name *</label>
-            <span className="text-[11px] font-medium text-slate-400">
-              {data.name?.length || 0}/100
-            </span>
-          </div>
+          <label className="text-[14px] font-bold text-[#121212]">Campaign Name *</label>
           <input
             type="text"
             placeholder="Instagram promotion for summer balayage special"
@@ -56,12 +51,7 @@ export default function CampaignStep1({ data, updateData, errors }: CampaignStep
 
         {/* Target Audience Card */}
         <div className="bg-white p-[16px] rounded-[16px] border-[0.35px] border-[#0000001A] flex flex-col gap-3">
-          <div className="flex justify-between items-center">
-            <label className="text-[14px] font-bold text-[#121212]">Target Audience *</label>
-            <span className="text-[11px] font-medium text-slate-400">
-              {data.audience?.length || 0}/500
-            </span>
-          </div>
+          <label className="text-[14px] font-bold text-[#121212]">Target Audience *</label>
           <textarea
             placeholder="Describe your target audience (e.g., Women aged 25-45 interested in premium hair care)"
             value={data.audience}
