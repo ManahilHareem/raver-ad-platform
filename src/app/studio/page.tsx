@@ -394,9 +394,10 @@ function StudioPageContent() {
         fetchCampaigns();
       }
 
-      if (campaignStatus === "queued" || campaignStatus === "in_production") {
+      if (campaignStatus === "queued" || campaignStatus === "in_production" || action === "generate_image") {
         const brief = responseData?.brief_draft || {};
         const title = brief.business_name ? `${brief.business_name} Campaign` : prompt.length > 30 ? prompt.substring(0, 30) + "..." : prompt;
+        const finalStatus = (action === "generate_image" && responseData?.image_urls?.length) ? "completed" : campaignStatus;
 
         setVideos(prev => {
           const exists = prev.findIndex(v => v.sessionId === sessionId);
@@ -405,7 +406,7 @@ function StudioPageContent() {
             updated[exists] = {
               ...updated[exists],
               id: responseData?.campaign_id || updated[exists].id,
-              status: campaignStatus,
+              status: finalStatus,
               title: title || updated[exists].title,
             };
             return updated;
@@ -414,8 +415,8 @@ function StudioPageContent() {
             id: responseData?.campaign_id,
             sessionId: sessionId,
             title: title,
-            status: campaignStatus,
-            image: "/assets/hashtag-campaign.jpg"
+            status: finalStatus,
+            image: responseData?.image_urls?.length ? responseData.image_urls[0] : "/assets/hashtag-campaign.jpg"
           }, ...prev];
         });
         setActivePipelineIndex(0);

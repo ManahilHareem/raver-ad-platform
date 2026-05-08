@@ -244,7 +244,7 @@ export default function AIResponseModal({
             id: responseData?.campaign_id,
             sessionId: sessionId,
             title: title,
-            status: campaignStatus || "completed",
+            status: (action === "generate_image" && responseData?.image_urls?.length) ? "completed" : (campaignStatus || "completed"),
             image: responseData?.image_urls?.length ? responseData.image_urls : "/assets/hashtag-campaign.jpg"
           });
         }
