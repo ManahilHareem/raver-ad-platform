@@ -44,6 +44,7 @@ export default function RootLayout({
             draggable
             pauseOnHover
             theme="colored"
+            toastClassName="font-sans antialiased"
           />
         </UserProvider>
       </body>
