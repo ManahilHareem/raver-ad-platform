@@ -61,6 +61,7 @@ export default function AIResponseModal({
   onCampaignStart,
   initialUserAssets
 }: AIResponseModalProps) {
+  console.log(`[AIResponseModal] Rendered. isOpen:`, isOpen);
   const router = useRouter();
   const [messages, setMessages] = useState<Message[]>([]);
   const [inputText, setInputText] = useState("");

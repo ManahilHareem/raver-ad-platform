@@ -66,6 +66,7 @@ export default function CampaignPreviewModal({
   onSelectVoice,
   onSwitchCampaign,
 }: CampaignPreviewModalProps) {
+  console.log(`[CampaignPreviewModal] Rendered. isOpen:`, isOpen, `campaignData:`, !!campaignData);
   const { user } = useUser();
   const [localHistory, setLocalHistory] = useState<{ role: string; content: string }[]>([]);
   const [inputText, setInputText] = useState("");
