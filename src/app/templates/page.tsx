@@ -177,9 +177,9 @@ export default function TemplatesPage() {
           </div>
 
           {/* Masonry Grid Implementation */}
-          <div className="columns-1 md:columns-2 lg:columns-3 gap-[16px] space-y-[16px]">
+          <div className="columns-1 md:columns-2 lg:columns-3 gap-[16px]">
             {displayTemplates.map((template, i) => (
-              <div key={i} className="break-inside-avoid">
+              <div key={i} className="break-inside-avoid mb-[16px]">
                 <TemplateCard 
                   {...template} 
                   aspectRatio={template.aspectRatio as any}
