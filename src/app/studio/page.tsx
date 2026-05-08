@@ -15,7 +15,7 @@ import { RaverLoadingState } from "@/components/ui/RaverLoadingState";
 import { Icons } from "@/components/ui/icons";
 import { getToken } from "@/lib/auth";
 import { apiFetch } from "@/lib/api";
-import { cn, enrichMessageWithCampaign } from "@/lib/utils";
+import { cn, enrichMessageWithCampaign, formatFileSize } from "@/lib/utils";
 import { toast } from "react-toastify";
 
 /*
@@ -191,7 +191,7 @@ function StudioPageContent() {
           const sessionData = await sessionRes.json();
           const rawData = sessionData.data?.sessions || sessionData.data;
           const sessionsArray = Array.isArray(rawData) ? rawData : (rawData ? [rawData] : []);
-          
+
           if (Array.isArray(sessionsArray)) {
             // STRICT FILTER: Only include sessions that have a valid session identifier (Studio-originated)
             const sessionsOnly = sessionsArray.filter((s: any) => s.session_id || s.sessionId);
@@ -199,7 +199,7 @@ function StudioPageContent() {
             allSessions = sessionsOnly.map((s: any) => {
               const brief = s.brief_draft || {};
               const sId = s.session_id || s.sessionId || s.id;
-              
+
               return {
                 id: s.campaign_id || s.id,
                 sessionId: sId,
@@ -292,7 +292,7 @@ function StudioPageContent() {
     setIsPreviewOpen(true);
   };
 
-    const handleViewDetailsforcampaigns = (campaign: Campaign) => {
+  const handleViewDetailsforcampaigns = (campaign: Campaign) => {
     setIsModalOpen(false);
     setShowAIResponse(false);
     setCampaignToView(campaign);
@@ -315,8 +315,13 @@ function StudioPageContent() {
     // Combine assets into the prompt text for AI visibility if provided
     let enrichedMessage = enrichMessageWithCampaign(prompt, selectedCampaign);
     if (assets && assets.length > 0) {
-      const assetListStr = assets.map(a => `${a.name} (${a.type})`).join(", ");
-      enrichedMessage = `${enrichedMessage}\n\n[Attached Media: ${assetListStr}]`;
+      const assetListStr = assets.map(a => {
+        const metadataStr = a.rawMetadata ? ` (Original Prompt: ${a.rawMetadata.title || "N/A"})` : "";
+        const sizeStr = typeof a.fileSize === 'number' ? formatFileSize(a.fileSize) : (a.fileSize || "Unknown");
+        return `[URL: ${a.url}${metadataStr}]`;
+      }).join("\n");
+      
+      enrichedMessage = `${enrichedMessage}\n\n### ATTACHED MEDIA CONTEXT ###\nThe user has attached the following assets from their library:\n${assetListStr}\n---`;
     }
 
     try {
@@ -495,13 +500,13 @@ function StudioPageContent() {
 
         const status = v.status?.toLowerCase() || "";
         const cStatus = v.campaign_status?.toLowerCase() || "";
-        
+
         // 1. Is the top-level status terminal?
         const isTerminal = terminalStatuses.some(s => status.includes(s.toLowerCase()));
-        
+
         // 2. Are any of the statuses actively queued or rendering?
         const hasActiveStatus = activeStatuses.some(s => status.includes(s.toLowerCase()) || cStatus.includes(s.toLowerCase()));
-        
+
         // 3. Has this session failed too many times?
         const failureCount = sessionFailuresRef.current[v.sessionId] || 0;
         const hasNotFailed = failureCount < 5;
@@ -515,13 +520,13 @@ function StudioPageContent() {
             shouldPoll = true;
           }
         }
-        
+
         shouldPoll = shouldPoll && hasNotFailed;
-        
+
         if (shouldPoll) {
           console.log(`[Polling] Active session found: ${v.sessionId} (status: '${status}', cStatus: '${cStatus}')`);
         }
-        
+
         return shouldPoll;
       });
 
@@ -530,12 +535,12 @@ function StudioPageContent() {
         for (const v of polls) {
           if (!isActive) return;
           if (!v.sessionId) continue;
-          
+
           if (!isFirstPoll) {
             await new Promise(resolve => setTimeout(resolve, 3000));
           }
           isFirstPoll = false;
-          
+
           try {
             const res = await apiFetch(`${API_BASE}/ai/director/session/${v.sessionId}/update?t=${Date.now()}`, {
               headers: { "accept": "*/*" },
@@ -578,7 +583,7 @@ function StudioPageContent() {
                       const prevStatus = updatedVideos[index].status?.toLowerCase() || "";
                       const prevCampaignStatus = updatedVideos[index].campaign_status?.toLowerCase() || "";
                       const prevInProduction = prevStatus === "in_production" || prevStatus === "queued" || prevCampaignStatus === "in_production" || prevCampaignStatus === "queued";
-                      
+
                       const nextStatus = (isInvalidStatus && prevInProduction) ? updatedVideos[index].status : (updateData.status || updatedVideos[index].status);
 
                       updatedVideos[index] = {
@@ -637,8 +642,8 @@ function StudioPageContent() {
     if (isPreviewOpen && campaignToView?.sessionId) {
       const latest = Videos.find(v => v.sessionId === campaignToView.sessionId);
       if (latest && (
-        latest.status !== campaignToView.status || 
-        latest.videoUrl !== campaignToView.videoUrl || 
+        latest.status !== campaignToView.status ||
+        latest.videoUrl !== campaignToView.videoUrl ||
         latest.image !== campaignToView.image ||
         latest.script !== campaignToView.script
       )) {

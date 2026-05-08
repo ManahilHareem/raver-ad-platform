@@ -6,7 +6,7 @@ import Image from "next/image";
 import { useState, useEffect, useRef, useCallback } from "react";
 import { getToken } from "@/lib/auth";
 import { apiFetch } from "@/lib/api";
-import { cn, enrichMessageWithCampaign, normalizeAssetUrl } from "@/lib/utils";
+import { cn, enrichMessageWithCampaign, normalizeAssetUrl, formatFileSize } from "@/lib/utils";
 import { MarkdownRenderer } from "@/components/ui/MarkdownRenderer";
 import { useVoiceInput } from "@/hooks/useVoiceInput";
 import { useTextToSpeech } from "@/hooks/useTextToSpeech";
@@ -216,8 +216,18 @@ export default function AIResponseModal({
     try {
       const API_BASE = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
 
-      // Enrich follow-up message with campaign context if available
-      const apiMessage = enrichMessageWithCampaign(userMsg.content, selectedCampaign);
+      // Enrich follow-up message with campaign context and assets if available
+      let apiMessage = enrichMessageWithCampaign(userMsg.content, selectedCampaign);
+      
+      const currentAssets = initialUserAssets || [];
+      if (currentAssets.length > 0) {
+        const assetListStr = currentAssets.map(a => {
+          const metadataStr = a.rawMetadata ? ` (Original Prompt: ${a.rawMetadata.title || "N/A"})` : "";
+          const sizeStr = typeof a.fileSize === 'number' ? formatFileSize(a.fileSize) : (a.fileSize || "Unknown");
+          return `[Asset ID: ${a.id}, Name: ${a.name}, Type: ${a.type}, Origin: ${a.origin || "Library"}, Size: ${sizeStr}, URL: ${a.url}${metadataStr}]`;
+        }).join("\n");
+        apiMessage = `${apiMessage}\n\n### ATTACHED MEDIA CONTEXT ###\n${assetListStr}\n---`;
+      }
 
       const response = await apiFetch(`${API_BASE}/ai/director/chat?t=${Date.now()}`, {
         method: "POST",
@@ -228,6 +238,7 @@ export default function AIResponseModal({
         body: JSON.stringify({
           session_id: sessionId,
           message: apiMessage,
+          assets: currentAssets,
           professional_name: user?.fullName || "User",
           tag: "director"
         }),

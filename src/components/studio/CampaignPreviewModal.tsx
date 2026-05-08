@@ -494,6 +494,17 @@ export default function CampaignPreviewModal({
     try {
       const API_BASE = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
       const sId = campaignData.session_id || campaignData.campaign_id;
+      // Collect current assets to provide context to the AI Director
+      const currentAssets = Array.from(new Set([
+        ...(localHitl?.image_urls || []),
+        ...(campaignData?.image_urls || [])
+      ])).map((url, idx) => ({
+        id: `preview-asset-${idx}`,
+        url: url,
+        type: "image",
+        name: `Campaign Asset ${idx + 1}`
+      }));
+
       const response = await apiFetch(`${API_BASE}/ai/director/chat`, {
         method: "POST",
         headers: {
@@ -503,6 +514,7 @@ export default function CampaignPreviewModal({
         body: JSON.stringify({
           session_id: sId,
           message: userMsg.content,
+          assets: currentAssets,
           tag: "director",
         }),
       });
@@ -552,7 +564,7 @@ export default function CampaignPreviewModal({
     }
   };
 
-  if (!isOpen || !campaignData) return null;
+  if (!isOpen || !campaignData || !campaignData.session_id) return null;
   const isLaunched = ["in_production", "queued", "In Production", "Ready", "completed", "delivered", "ready", "approved"].includes(
     localStatus || ""
   );
@@ -728,7 +740,7 @@ export default function CampaignPreviewModal({
                         src={normalizeAssetUrl(localVideoUrl!)}
                         controls
                         muted={isMuted}
-                        className="w-full h-full object-cover"
+                        className="w-full h-full object-contain"
                         onError={() => setVideoError(true)}
                       />
                     )}
@@ -778,7 +790,7 @@ export default function CampaignPreviewModal({
                         <img 
                           src={normalizeAssetUrl(url)} 
                           alt={`Scene ${idx + 1}`}
-                          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" 
+                          className="w-full h-full object-contain group-hover:scale-105 transition-transform duration-500" 
                         />
                         <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors" />
                         <div className="absolute bottom-2 right-2 w-6 h-6 bg-white/80 backdrop-blur-md rounded-lg flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
@@ -976,8 +988,9 @@ export default function CampaignPreviewModal({
                 </div>
               </div>
 
-              {/* Asset Candidates - Show if status includes 'image' OR if it's the default awaiting_approval state with images available */}
-              {(localStatus?.includes("image") || (isAwaitingApproval && !localStatus?.includes("voice") && !localStatus?.includes("music") && !localStatus?.includes("text") && !localStatus?.includes("render"))) && 
+              {/* Asset Candidates - Only show if it's an image step and we have images */}
+              {((localStatus?.includes("image") || (isAwaitingApproval && !localStatus?.includes("voice") && !localStatus?.includes("music") && !localStatus?.includes("text") && !localStatus?.includes("render"))) && 
+                !localHitl?.music_url && !localStatus?.includes("music")) && 
                (localHitl?.candidates || localHitl?.image_urls || campaignData?.nodes?.generate_image?.result?.scene_images) && (
                 <div className="space-y-4">
                   <p className="text-[11px] font-black text-slate-400 uppercase tracking-widest pl-1">
@@ -1000,7 +1013,7 @@ export default function CampaignPreviewModal({
                               : "border-white opacity-60 hover:opacity-90 grayscale hover:grayscale-0"
                           )}
                         >
-                          <img src={assetUrl} alt={`Option ${idx + 1}`} className="w-full h-full object-cover" />
+                          <img src={assetUrl} alt={`Option ${idx + 1}`} className="w-full h-full object-contain" />
                           <div className={cn(
                             "absolute top-3 right-3 w-6 h-6 rounded-full flex items-center justify-center transition-all",
                             selectedAssetId === assetId ? "bg-[#02022C] text-white shadow-md" : "bg-white/40 backdrop-blur-md"
@@ -1031,7 +1044,7 @@ export default function CampaignPreviewModal({
               )}
 
               {/* Music Generation Preview - Only show if current step is music generation */}
-              {(localStatus?.includes("music")) && localHitl?.music_url && (
+              {(localStatus?.includes("music") || localHitl?.action === "generate_music" || localHitl?.music_url ) && localHitl?.music_url && !localStatus?.includes("render") &&(
                 <div className="space-y-4 p-6 bg-white border border-[#E2E8F0] rounded-[24px] shadow-sm">
                   <div className="flex items-center gap-3">
                     <div className="w-8 h-8 bg-[#02022C]/5 rounded-lg flex items-center justify-center">
@@ -1247,7 +1260,7 @@ export default function CampaignPreviewModal({
                                   <img 
                                     src={normalizeAssetUrl(asset.url)} 
                                     alt={asset.name || "Asset"} 
-                                    className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300" 
+                                    className="w-full h-full object-contain group-hover:scale-110 transition-transform duration-300" 
                                   />
                                   <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors" />
                                 </div>

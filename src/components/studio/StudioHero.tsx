@@ -20,6 +20,12 @@ interface Asset {
   url: string;
   type: "image" | "video" | "audio" | "graphic";
   createdAt?: string;
+  fileSize?: string | number;
+  dbId?: string;
+  origin?: string;
+  userId?: string;
+  campaignId?: string;
+  rawMetadata?: any;
 }
 
 interface Campaign {
