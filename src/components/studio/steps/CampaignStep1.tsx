@@ -32,7 +32,7 @@ export default function CampaignStep1({ data, updateData, errors }: CampaignStep
 
         {/* Campaign Objective Card */}
         <div className="bg-white p-[16px] rounded-[16px] border-[0.35px] border-[#0000001A] flex flex-col gap-[12px]">
-          <label className="text-[14px] font-bold text-[#000000]">Campaign Objective *</label>
+          <label className="text-[14px] font-bold text-[#121212]">Campaign Objective *</label>
           <div className="flex flex-wrap gap-[10px]">
             {["Brand Awareness", "Lead Generation", "Engagement", "Sales Conversion"].map((obj) => (
               <button
@@ -50,7 +50,7 @@ export default function CampaignStep1({ data, updateData, errors }: CampaignStep
 
         {/* Target Audience Card */}
         <div className="bg-white p-[16px] rounded-[16px] border-[0.35px] border-[#0000001A] flex flex-col gap-3">
-          <label className="text-[14px] font-bold text-[#000000]">Target Audience *</label>
+          <label className="text-[14px] font-bold text-[#121212]">Target Audience *</label>
           <textarea
             placeholder="Describe your target audience (e.g., Women aged 25-45 interested in premium hair care)"
             value={data.audience}
