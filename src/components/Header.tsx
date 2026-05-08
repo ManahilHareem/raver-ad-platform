@@ -79,6 +79,13 @@ export default function Header({ onMenuClick }: HeaderProps) {
           <Icons.Menu className="w-6 h-6 text-[#01012A]" />
         </button>
 
+        <Link href="/home" className="lg:hidden flex items-center gap-[10px] mr-2">
+          <div className="w-[23px] h-[23px] flex items-center justify-center">
+            <Icons.Logo className="text-[#02022C] w-full h-full" />
+          </div>
+          <span className="text-xl font-bold text-[#02022C] tracking-tight">raver</span>
+        </Link>
+
         <div className="relative w-full max-w-[341px] hidden sm:block">
           <Icons.Search className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 w-4 h-4" />
           <input
