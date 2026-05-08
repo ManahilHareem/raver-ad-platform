@@ -224,8 +224,8 @@ export default function AIResponseModal({
         const assetListStr = currentAssets.map(a => {
           const metadataStr = a.rawMetadata ? ` (Original Prompt: ${a.rawMetadata.title || "N/A"})` : "";
           const sizeStr = typeof a.fileSize === 'number' ? formatFileSize(a.fileSize) : (a.fileSize || "Unknown");
-          return `[Asset ID: ${a.id}, Name: ${a.name}, Type: ${a.type}, Origin: ${a.origin || "Library"}, Size: ${sizeStr}, URL: ${a.url}${metadataStr}]`;
-        }).join("\n");
+          return `- **${a.name}** (${a.type})\n  URL: ${a.url}\n  Size: ${sizeStr}${metadataStr}`;
+        }).join("\n\n");
         apiMessage = `${apiMessage}\n\n### ATTACHED MEDIA CONTEXT ###\n${assetListStr}\n---`;
       }
 

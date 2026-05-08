@@ -318,8 +318,8 @@ function StudioPageContent() {
       const assetListStr = assets.map(a => {
         const metadataStr = a.rawMetadata ? ` (Original Prompt: ${a.rawMetadata.title || "N/A"})` : "";
         const sizeStr = typeof a.fileSize === 'number' ? formatFileSize(a.fileSize) : (a.fileSize || "Unknown");
-        return `[URL: ${a.url}${metadataStr}]`;
-      }).join("\n");
+        return `- **${a.name}** (${a.type})\n  URL: ${a.url}\n  Size: ${sizeStr}${metadataStr}`;
+      }).join("\n\n");
       
       enrichedMessage = `${enrichedMessage}\n\n### ATTACHED MEDIA CONTEXT ###\nThe user has attached the following assets from their library:\n${assetListStr}\n---`;
     }
@@ -349,7 +349,7 @@ function StudioPageContent() {
       const userMessage = {
         id: Date.now().toString(),
         role: "user",
-        content: enrichedMessage,
+        content: prompt, // Store the raw prompt for the user UI
         timestamp: new Date().toISOString(),
         assets: assets || []
       };

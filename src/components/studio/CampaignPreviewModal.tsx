@@ -505,6 +505,15 @@ export default function CampaignPreviewModal({
         name: `Campaign Asset ${idx + 1}`
       }));
 
+      // Enrich message with asset context for the AI Director
+      let enrichedMessage = userMsg.content;
+      if (currentAssets.length > 0) {
+        const assetListStr = currentAssets.map((a, idx) => {
+          return `- **${a.name}**\n  URL: ${a.url}`;
+        }).join("\n\n");
+        enrichedMessage = `${enrichedMessage}\n\n### ATTACHED MEDIA CONTEXT ###\nThe following assets are currently in the production gallery:\n${assetListStr}\n---`;
+      }
+
       const response = await apiFetch(`${API_BASE}/ai/director/chat`, {
         method: "POST",
         headers: {
@@ -513,7 +522,7 @@ export default function CampaignPreviewModal({
         },
         body: JSON.stringify({
           session_id: sId,
-          message: userMsg.content,
+          message: enrichedMessage,
           assets: currentAssets,
           tag: "director",
         }),
