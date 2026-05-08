@@ -25,7 +25,7 @@ export default function LandingPage() {
               with Ravi AI
             </span>
           </h1>
-          <p className="max-w-2xl mx-auto text-xl md:text-2xl text-text-secondary font-inter leading-relaxed">
+          <p className="max-w-2xl mx-auto text-xl md:text-2xl text-text-secondary leading-relaxed">
             RAVI is an AI-powered creative studio that helps teams generate 
             images, videos, campaigns, and marketing content using intelligent AI agents.
           </p>
@@ -49,7 +49,7 @@ export default function LandingPage() {
         <div className="pt-20 w-full relative">
           <div className="relative glass rounded-3xl p-4 shadow-2xl border-border-subtle overflow-hidden group">
             <div className="aspect-video bg-linear-to-br from-brand-primary/5 to-brand-secondary/5 rounded-2xl flex items-center justify-center transition-all group-hover:bg-brand-primary/10">
-              <span className="text-text-secondary font-inter italic">
+              <span className="text-text-secondary italic">
                  Dashboard Preview - Intelligence at your fingertips
               </span>
             </div>

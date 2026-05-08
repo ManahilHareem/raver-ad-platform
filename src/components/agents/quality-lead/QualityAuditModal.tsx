@@ -237,7 +237,7 @@ export function QualityAuditModal({ isOpen, onClose, onRefresh, candidate }: Qua
                   </div>
                 </div>
                 <div className="h-px bg-slate-50 w-full" />
-                <p className="text-[18px] font-medium text-slate-600 leading-relaxed font-serif italic text-center p-8 bg-slate-50/50 rounded-[32px] border border-slate-100">
+                <p className="text-[18px] font-medium text-slate-600 leading-relaxed italic text-center p-8 bg-slate-50/50 rounded-[32px] border border-slate-100">
                   {scriptText}
                 </p>
              </div>

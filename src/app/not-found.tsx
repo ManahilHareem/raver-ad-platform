@@ -26,7 +26,7 @@ export default function NotFound() {
           <h1 className="text-2xl md:text-3xl font-semibold text-text-primary">
             The page you're looking for doesn't exist.
           </h1>
-          <p className="text-lg text-text-secondary font-inter">
+          <p className="text-lg text-text-secondary">
             It seems like our AI agents couldn't find the coordinates for this specific page. 
             Don't worry, you can always head back to safe grounds.
           </p>
