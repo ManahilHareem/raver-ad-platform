@@ -24,7 +24,7 @@ export default function CampaignStep1({ data, updateData, errors }: CampaignStep
             type="text"
             placeholder="Instagram promotion for summer balayage special"
             value={data.name}
-            maxLength={100}
+            maxLength={50}
             onChange={(e) => updateData({ name: e.target.value })}
             className={`w-full px-5 py-3.5 bg-white border ${errors.name ? 'border-red-500' : 'border-[#F1F5F9]'} rounded-[8px] text-[14px] text-[#121212] outline-none focus:border-[#02022C] placeholder:text-[#94A3B8] transition-colors`}
           />
