@@ -328,7 +328,8 @@ export default function CampaignPreviewModal({
 
   const handleCopyUrl = (url: string, label: string) => {
     if (!url) return;
-    navigator.clipboard.writeText(url);
+    const normalizedUrl = normalizeAssetUrl(url);
+    navigator.clipboard.writeText(normalizedUrl);
     toast.success(`${label} link copied to clipboard`);
   };
 
@@ -724,7 +725,7 @@ export default function CampaignPreviewModal({
                       </div>
                     ) : (
                       <video
-                        src={localVideoUrl}
+                        src={normalizeAssetUrl(localVideoUrl!)}
                         controls
                         muted={isMuted}
                         className="w-full h-full object-cover"
@@ -809,7 +810,7 @@ export default function CampaignPreviewModal({
                     {localVoiceoverUrl ? (
                       <>
                         <div className="flex items-center gap-2">
-                          <audio src={localVoiceoverUrl} controls className="flex-1 h-8" />
+                          <audio src={normalizeAssetUrl(localVoiceoverUrl!)} controls className="flex-1 h-8" />
                           <button
                             onClick={() => handleCopyUrl(localVoiceoverUrl!, "Voiceover")}
                             className="w-8 h-8 rounded-lg bg-slate-50 text-slate-400 hover:text-[#02022C] border border-slate-100 flex items-center justify-center transition-all"
@@ -846,7 +847,7 @@ export default function CampaignPreviewModal({
                   <div className="p-4 bg-white border border-[#F1F5F9] rounded-2xl shadow-sm flex flex-col gap-3">
                     {localMusicUrl ? (
                       <div className="flex items-center gap-2">
-                        <audio src={localMusicUrl} controls className="flex-1 h-8" />
+                        <audio src={normalizeAssetUrl(localMusicUrl!)} controls className="flex-1 h-8" />
                         <button
                           onClick={() => handleCopyUrl(localMusicUrl!, "Music")}
                           className="w-8 h-8 rounded-lg bg-slate-50 text-slate-400 hover:text-[#02022C] border border-slate-100 flex items-center justify-center transition-all"

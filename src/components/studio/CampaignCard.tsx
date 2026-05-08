@@ -169,7 +169,8 @@ export default function CampaignCard({
     const url = localData.video_url || videoUrl || firstImg;
     if (!url) return;
     
-    navigator.clipboard.writeText(url as string);
+    const normalizedUrl = normalizeAssetUrl(url as string);
+    navigator.clipboard.writeText(normalizedUrl);
     toast.success("Campaign link copied to clipboard");
   };
 
@@ -199,7 +200,7 @@ export default function CampaignCard({
         <div className="relative aspect-video w-full overflow-hidden rounded-md bg-slate-100">
           {videoUrl ? (
             <video
-              src={videoUrl}
+              src={normalizeAssetUrl(videoUrl)}
               autoPlay
               loop
               muted

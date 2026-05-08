@@ -134,6 +134,13 @@ export default function AIResponseModal({
   // Display value includes interim (not-yet-committed) speech
   const chatDisplayValue = inputText + (interimText ? " " + interimText : "");
 
+  const lastAIMessage = [...messages].reverse().find(m => m.role === "ai");
+  const isTerminalMessage = lastAIMessage?.content?.includes("Your image is queued — generation has started!") || 
+                           lastAIMessage?.content?.includes("Launching your campaign now") ||
+                           lastAIMessage?.content?.includes("Campaign started! I'll update you");
+  
+  const isInputDisabled = isGenerating || isTerminalMessage;
+
   // Initialize messages when modal opens
   useEffect(() => {
     if (isOpen && messages.length === 0) {
@@ -473,9 +480,12 @@ export default function AIResponseModal({
             <button
               type="button"
               onClick={handleMicClick}
+              disabled={isInputDisabled}
               className={`h-[44px] w-[44px] shrink-0 rounded-xl flex items-center justify-center transition-all ${isListening
                   ? "bg-red-500 text-white animate-pulse shadow-lg shadow-red-500/30"
-                  : "bg-white text-[#94A3B8] hover:text-[#121212] hover:bg-[#F1F5F9] border border-slate-200"
+                  : isInputDisabled
+                    ? "bg-slate-50 text-slate-200 border border-slate-100 cursor-not-allowed"
+                    : "bg-white text-[#94A3B8] hover:text-[#121212] hover:bg-[#F1F5F9] border border-slate-200"
                 }`}
               title={isListening ? "Stop listening" : "Voice input"}
             >
@@ -484,11 +494,17 @@ export default function AIResponseModal({
             <div className="flex-1 relative">
               <input
                 type="text"
-                placeholder={isListening ? "Listening... speak now" : "Ask your AI Director a follow-up question..."}
+                placeholder={
+                  isTerminalMessage 
+                    ? "Production started. Tracking progress..." 
+                    : isListening 
+                      ? "Listening... speak now" 
+                      : "Ask your AI Director a follow-up question..."
+                }
                 value={chatDisplayValue}
                 onChange={(e) => setInputText(e.target.value)}
-                disabled={isGenerating}
-                className="w-full bg-transparent px-3 py-2 text-[14px] text-[#121212] outline-none placeholder:text-slate-400 font-medium"
+                disabled={isInputDisabled}
+                className="w-full bg-transparent px-3 py-2 text-[14px] text-[#121212] outline-none placeholder:text-slate-400 font-medium disabled:cursor-not-allowed"
               />
               {isListening && (
                 <span className="absolute right-2 top-1/2 -translate-y-1/2 text-[10px] text-red-500 font-bold animate-pulse">
@@ -498,7 +514,7 @@ export default function AIResponseModal({
             </div>
             <button
               type="submit"
-              disabled={!inputText.trim() || isGenerating}
+              disabled={!inputText.trim() || isInputDisabled}
               className="h-[44px] px-6 bg-[#02022C] text-white rounded-xl flex items-center justify-center gap-2 hover:opacity-90 active:scale-95 transition-all disabled:opacity-50 disabled:active:scale-100 shadow-md shadow-[#02022C]/10 font-bold"
             >
               Ask <Icons.Send className="w-4 h-4 ml-1 text-white" />
