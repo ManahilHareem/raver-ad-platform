@@ -8,7 +8,7 @@ import { toast } from "react-toastify";
 
 export const VOICE_OPTIONS = [
   // Male Voices
-  { id: "adam", voiceId: "pNInz6obpgDQGcFmaJgB", name: "Adam", description: "Deep, causal American male", category: "Male - Casual", accent: "American" },
+  { id: "adam", voiceId: "pNInz6obpgDQGcFmaJgB", name: "Adam", description: "Deep, casual American male", category: "Male - Casual", accent: "American" },
   { id: "antoni", voiceId: "Bj9UqZbhQsanLzgalpEG", name: "Antoni", description: "Warm, friendly and professional, with a clear, even tone. Perfect for podcasts, corporate narration, and engaging content.", category: "Male - Professional", accent: "American" },
   { id: "arnold", voiceId: "llNlEi50DSCIEuoOIaH7", name: "Arnold", description: "A warm, clear, and friendly voice with an American accent. Perfect for narration and storytelling.", category: "Male - Professional", accent: "American" },
   { id: "callum", voiceId: "N2lVS1w4EtoT3dr4eOWO", name: "Callum", description: "Strong, middle-aged American", category: "Male - Professional", accent: "American" },

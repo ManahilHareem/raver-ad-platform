@@ -86,11 +86,26 @@ button, input, select, textarea {
   }
 }
 
-/* Ensure Toastify popups use the same font as the rest of the application */
+/* Ensure Toastify popups use the same premium typography as the rest of the application */
 .Toastify__toast {
-  font-family: var(--font-outfit), var(--font-inter), ui-sans-serif, system-ui, sans-serif !important;
+  font-family: var(--font-sans) !important;
+  font-feature-settings: "cv02", "cv03", "cv04", "cv11" !important;
+  @apply antialiased font-medium;
 }
 
 .Toastify__toast-body {
   font-family: inherit;
+  @apply text-[14px] tracking-tight;
+}
+
+.Toastify__toast--success {
+  @apply border-l-4 border-emerald-500;
+}
+
+.Toastify__toast--error {
+  @apply border-l-4 border-red-500;
+}
+
+.Toastify__toast--info {
+  @apply border-l-4 border-blue-500;
 }
