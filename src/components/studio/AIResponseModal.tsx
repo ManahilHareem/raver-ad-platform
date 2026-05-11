@@ -6,7 +6,7 @@ import Image from "next/image";
 import { useState, useEffect, useRef, useCallback } from "react";
 import { getToken } from "@/lib/auth";
 import { apiFetch } from "@/lib/api";
-import { cn, enrichMessageWithCampaign, normalizeAssetUrl } from "@/lib/utils";
+import { cn, enrichMessageWithCampaign, normalizeAssetUrl, formatFileSize } from "@/lib/utils";
 import { MarkdownRenderer } from "@/components/ui/MarkdownRenderer";
 import { useVoiceInput } from "@/hooks/useVoiceInput";
 import { useTextToSpeech } from "@/hooks/useTextToSpeech";
@@ -135,10 +135,10 @@ export default function AIResponseModal({
   const chatDisplayValue = inputText + (interimText ? " " + interimText : "");
 
   const lastAIMessage = [...messages].reverse().find(m => m.role === "ai");
-  const isTerminalMessage = lastAIMessage?.content?.includes("Your image is queued — generation has started!") || 
-                           lastAIMessage?.content?.includes("Launching your campaign now") ||
-                           lastAIMessage?.content?.includes("Campaign started! I'll update you");
-  
+  const isTerminalMessage = lastAIMessage?.content?.includes("Your image is queued — generation has started!") ||
+    lastAIMessage?.content?.includes("Launching your campaign now") ||
+    lastAIMessage?.content?.includes("Campaign started! I'll update you");
+
   const isInputDisabled = isGenerating || isTerminalMessage;
 
   // Initialize messages when modal opens
@@ -216,8 +216,18 @@ export default function AIResponseModal({
     try {
       const API_BASE = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
 
-      // Enrich follow-up message with campaign context only (no assets — assets are first-message only)
-      const apiMessage = enrichMessageWithCampaign(userMsg.content, selectedCampaign);
+      // Enrich follow-up message with campaign context and assets if available
+      let apiMessage = enrichMessageWithCampaign(userMsg.content, selectedCampaign);
+
+      const currentAssets = initialUserAssets || [];
+      if (currentAssets.length > 0) {
+        const assetListStr = currentAssets.map(a => {
+          const metadataStr = a.rawMetadata ? ` (Original Prompt: ${a.rawMetadata.title || "N/A"})` : "";
+          const sizeStr = typeof a.fileSize === 'number' ? formatFileSize(a.fileSize) : (a.fileSize || "Unknown");
+          return `- **${a.name}** (${a.type})\n  URL: ${a.url}\n  Size: ${sizeStr}${metadataStr}`;
+        }).join("\n\n");
+        apiMessage = `${apiMessage}\n\n### ATTACHED MEDIA CONTEXT ###\n${assetListStr}\n---`;
+      }
 
       const response = await apiFetch(`${API_BASE}/ai/director/chat?t=${Date.now()}`, {
         method: "POST",
@@ -228,7 +238,7 @@ export default function AIResponseModal({
         body: JSON.stringify({
           session_id: sessionId,
           message: apiMessage,
-          assets: [],
+          assets: currentAssets,
           professional_name: user?.fullName || "User",
           tag: "director"
         }),
@@ -348,7 +358,7 @@ export default function AIResponseModal({
           ref={scrollRef}
           className="flex-1 overflow-y-auto p-6 flex flex-col gap-6 custom-scrollbar bg-[#FDFDFF]"
         >
-          {messages.map((m, msgIndex) => (
+          {messages.map((m) => (
             <div
               key={m.id}
               className={cn(
@@ -425,9 +435,12 @@ export default function AIResponseModal({
                   )}
                 </div>
 
-                {/* Attached Assets Gallery — only on the first user message */}
-                {msgIndex === 0 && m.role === "user" && m.assets && m.assets.length > 0 && (
-                  <div className="flex flex-wrap gap-2 mt-2 justify-end">
+                {/* Attached Assets Gallery */}
+                {m.assets && m.assets.length > 0 && (
+                  <div className={cn(
+                    "flex flex-wrap gap-2 mt-2",
+                    m.role === "user" ? "justify-end" : "justify-start"
+                  )}>
                     {m.assets.map((asset: any, idx: number) => (
                       <div
                         key={idx}
@@ -480,10 +493,10 @@ export default function AIResponseModal({
               onClick={handleMicClick}
               disabled={isInputDisabled}
               className={`h-[44px] w-[44px] shrink-0 rounded-xl flex items-center justify-center transition-all ${isListening
-                  ? "bg-red-500 text-white animate-pulse shadow-lg shadow-red-500/30"
-                  : isInputDisabled
-                    ? "bg-slate-50 text-slate-200 border border-slate-100 cursor-not-allowed"
-                    : "bg-white text-[#94A3B8] hover:text-[#121212] hover:bg-[#F1F5F9] border border-slate-200"
+                ? "bg-red-500 text-white animate-pulse shadow-lg shadow-red-500/30"
+                : isInputDisabled
+                  ? "bg-slate-50 text-slate-200 border border-slate-100 cursor-not-allowed"
+                  : "bg-white text-[#94A3B8] hover:text-[#121212] hover:bg-[#F1F5F9] border border-slate-200"
                 }`}
               title={isListening ? "Stop listening" : "Voice input"}
             >
@@ -493,10 +506,10 @@ export default function AIResponseModal({
               <input
                 type="text"
                 placeholder={
-                  isTerminalMessage 
-                    ? "Production started. Tracking progress..." 
-                    : isListening 
-                      ? "Listening... speak now" 
+                  isTerminalMessage
+                    ? "Production started. Tracking progress..."
+                    : isListening
+                      ? "Listening... speak now"
                       : "Ask your AI Director a follow-up question..."
                 }
                 value={chatDisplayValue}
