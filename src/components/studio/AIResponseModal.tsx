@@ -6,7 +6,7 @@ import Image from "next/image";
 import { useState, useEffect, useRef, useCallback } from "react";
 import { getToken } from "@/lib/auth";
 import { apiFetch } from "@/lib/api";
-import { cn, enrichMessageWithCampaign, normalizeAssetUrl, formatFileSize } from "@/lib/utils";
+import { cn, enrichMessageWithCampaign, normalizeAssetUrl } from "@/lib/utils";
 import { MarkdownRenderer } from "@/components/ui/MarkdownRenderer";
 import { useVoiceInput } from "@/hooks/useVoiceInput";
 import { useTextToSpeech } from "@/hooks/useTextToSpeech";
@@ -216,18 +216,8 @@ export default function AIResponseModal({
     try {
       const API_BASE = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
 
-      // Enrich follow-up message with campaign context and assets if available
-      let apiMessage = enrichMessageWithCampaign(userMsg.content, selectedCampaign);
-      
-      const currentAssets = initialUserAssets || [];
-      if (currentAssets.length > 0) {
-        const assetListStr = currentAssets.map(a => {
-          const metadataStr = a.rawMetadata ? ` (Original Prompt: ${a.rawMetadata.title || "N/A"})` : "";
-          const sizeStr = typeof a.fileSize === 'number' ? formatFileSize(a.fileSize) : (a.fileSize || "Unknown");
-          return `- **${a.name}** (${a.type})\n  URL: ${a.url}\n  Size: ${sizeStr}${metadataStr}`;
-        }).join("\n\n");
-        apiMessage = `${apiMessage}\n\n### ATTACHED MEDIA CONTEXT ###\n${assetListStr}\n---`;
-      }
+      // Enrich follow-up message with campaign context only (no assets — assets are first-message only)
+      const apiMessage = enrichMessageWithCampaign(userMsg.content, selectedCampaign);
 
       const response = await apiFetch(`${API_BASE}/ai/director/chat?t=${Date.now()}`, {
         method: "POST",
@@ -238,7 +228,7 @@ export default function AIResponseModal({
         body: JSON.stringify({
           session_id: sessionId,
           message: apiMessage,
-          assets: currentAssets,
+          assets: [],
           professional_name: user?.fullName || "User",
           tag: "director"
         }),
@@ -358,7 +348,7 @@ export default function AIResponseModal({
           ref={scrollRef}
           className="flex-1 overflow-y-auto p-6 flex flex-col gap-6 custom-scrollbar bg-[#FDFDFF]"
         >
-          {messages.map((m) => (
+          {messages.map((m, msgIndex) => (
             <div
               key={m.id}
               className={cn(
@@ -435,12 +425,9 @@ export default function AIResponseModal({
                   )}
                 </div>
 
-                {/* Attached Assets Gallery */}
-                {m.assets && m.assets.length > 0 && (
-                  <div className={cn(
-                    "flex flex-wrap gap-2 mt-2",
-                    m.role === "user" ? "justify-end" : "justify-start"
-                  )}>
+                {/* Attached Assets Gallery — only on the first user message */}
+                {msgIndex === 0 && m.role === "user" && m.assets && m.assets.length > 0 && (
+                  <div className="flex flex-wrap gap-2 mt-2 justify-end">
                     {m.assets.map((asset: any, idx: number) => (
                       <div
                         key={idx}
