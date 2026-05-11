@@ -494,26 +494,6 @@ export default function CampaignPreviewModal({
     try {
       const API_BASE = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
       const sId = campaignData.session_id || campaignData.campaign_id;
-      // Collect current assets to provide context to the AI Director
-      const currentAssets = Array.from(new Set([
-        ...(localHitl?.image_urls || []),
-        ...(campaignData?.image_urls || [])
-      ])).map((url, idx) => ({
-        id: `preview-asset-${idx}`,
-        url: url,
-        type: "image",
-        name: `Campaign Asset ${idx + 1}`
-      }));
-
-      // Enrich message with asset context for the AI Director
-      let enrichedMessage = userMsg.content;
-      if (currentAssets.length > 0) {
-        const assetListStr = currentAssets.map((a, idx) => {
-          return `- **${a.name}**\n  URL: ${a.url}`;
-        }).join("\n\n");
-        enrichedMessage = `${enrichedMessage}\n\n### ATTACHED MEDIA CONTEXT ###\nThe following assets are currently in the production gallery:\n${assetListStr}\n---`;
-      }
-
       const response = await apiFetch(`${API_BASE}/ai/director/chat`, {
         method: "POST",
         headers: {
@@ -522,8 +502,8 @@ export default function CampaignPreviewModal({
         },
         body: JSON.stringify({
           session_id: sId,
-          message: enrichedMessage,
-          assets: currentAssets,
+          message: userMsg.content,
+          assets: [],
           tag: "director",
         }),
       });
@@ -1254,12 +1234,9 @@ export default function CampaignPreviewModal({
                             )}
                           </div>
 
-                          {/* Attached Assets Gallery */}
-                          {msg.assets && msg.assets.length > 0 && (
-                            <div className={cn(
-                              "flex flex-wrap gap-2 mt-2",
-                              msg.role === "user" ? "justify-end" : "justify-start"
-                            )}>
+                          {/* Attached Assets Gallery — only on the first user message */}
+                          {i === 0 && msg.role === "user" && msg.assets && msg.assets.length > 0 && (
+                            <div className="flex flex-wrap gap-2 mt-2 justify-end">
                               {msg.assets.map((asset: any, idx: number) => (
                                 <div 
                                   key={idx} 
