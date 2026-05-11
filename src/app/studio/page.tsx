@@ -334,7 +334,18 @@ function StudioPageContent() {
         body: JSON.stringify({
           session_id: sessionId,
           message: enrichedMessage,
-          assets: assets || [],
+          assets: (assets || []).map((a: any) => ({
+            id: a.id,
+            dbId: a.dbId,
+            name: a.name,
+            url: a.url,
+            type: a.type,
+            fileSize: a.fileSize,
+            origin: a.origin,
+            campaignId: a.campaignId,
+            userId: a.userId,
+            createdAt: a.createdAt,
+          })),
           professional_name: "",
           tag: "director"
         }),
