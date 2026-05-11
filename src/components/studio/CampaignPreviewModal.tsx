@@ -605,7 +605,7 @@ export default function CampaignPreviewModal({
                       "text-[9px] font-black uppercase tracking-widest",
                       isApproved ? "text-emerald-600" : ((isRejected || isFailed) ? "text-red-600" : (isAwaitingApproval ? "text-amber-600" : "text-[#2E3A59]"))
                     )}>
-                      {isApproved ? "Approved" : (isRejected ? "Rejected" : (isFailed ? "Failed" : (isAwaitingApproval ? "Action Required" : (!isLaunched ? (isDraft ? "In Review" : "Consultation") : localStatus === "ready" ? "Ready" : "Processing"))))}
+                      {isApproved ? "Approved" : (isRejected ? "Rejected" : (isFailed ? "Failed" : (isAwaitingApproval ? "Action Required" : (!isLaunched ? (isDraft ? "In Review" : "Consultation") : (localStatus === "ready" || localStatus === "Ready") ? "Ready" : (localStatus === "completed" || localStatus === "Completed") ? "Completed" : "Processing"))))}
                     </span>
                   </div>
                 )}
@@ -1317,7 +1317,7 @@ export default function CampaignPreviewModal({
         <div className="p-6 border-t border-[#F1F5F9] bg-[#FDFDFF] flex items-center justify-between sticky bottom-0">
           <div className="flex flex-col gap-1"></div>
           <div className="flex items-center gap-3">
-            {!isApproved && !isAwaitingApproval && (
+            {lastAIMsg?.content?.includes("Launching your campaign now") && isDraft && (
               <button
                 onClick={handleApprove}
                 disabled={isApproving}
