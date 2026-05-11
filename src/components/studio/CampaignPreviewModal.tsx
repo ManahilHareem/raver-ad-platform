@@ -110,6 +110,7 @@ export default function CampaignPreviewModal({
     }
 
     const lastAIMessage = [...localHistory].reverse().find(m => m.role === "assistant" || m.role === "ai");
+
     if (!lastAIMessage) return;
 
     const currentId = `${lastAIMessage.role}-${cleanContent(lastAIMessage.content).length}-${cleanContent(lastAIMessage.content).substring(0, 50)}`;
@@ -565,6 +566,10 @@ export default function CampaignPreviewModal({
   const hasLaunched = localHistory.some(m => m.content.includes("LAUNCH_CAMPAIGN")) || 
     ["in_production", "queued", "In Production", "completed", "delivered", "approved"].includes(localStatus || "");
   const canChat = !hasLaunched && !isRejected && !isFailed && !isApproved; // Disallow chat after launch, rejection, failure, or approval
+  const lastAIMsg = [...localHistory].reverse().find(m => m.role === "assistant" || m.role === "ai");
+  const isTerminalMessage = lastAIMsg?.content?.includes("Your image is queued — generation has started!") ||
+    lastAIMsg?.content?.includes("Launching your campaign now") ||
+    lastAIMsg?.content?.includes("Campaign started! I'll update you");
 
   return (
     <div className="fixed inset-y-0 right-0 left-0 lg:left-[280px] z-150 flex items-center justify-center p-4 bg-black/40 backdrop-blur-sm animate-in fade-in duration-200 font-sans">
@@ -1275,7 +1280,7 @@ export default function CampaignPreviewModal({
                 </div>
 
                 {/* Chat Input Area */}
-                {canChat && (
+                {canChat && !isTerminalMessage && (
                   <div className="p-6 bg-slate-50 border-t border-[#F1F5F9]">
                     <form
                       onSubmit={handleSendMessage}
