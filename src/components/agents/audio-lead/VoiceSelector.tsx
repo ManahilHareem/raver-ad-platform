@@ -9,8 +9,8 @@ import { toast } from "react-toastify";
 export const VOICE_OPTIONS = [
   // Male Voices
   { id: "adam", voiceId: "pNInz6obpgDQGcFmaJgB", name: "Adam", description: "Deep, causal American male", category: "Male - Casual", accent: "American" },
-  { id: "antoni", voiceId: "ErXwobaYiN019PkySvjV", name: "Antoni", description: "Well-rounded, warm male", category: "Male - Professional", accent: "American" },
-  { id: "arnold", voiceId: "VR6AewLTigWG4xSOukaG", name: "Arnold", description: "Crisp, calm narrator", category: "Male - Professional", accent: "American" },
+  { id: "antoni", voiceId: "Bj9UqZbhQsanLzgalpEG", name: "Antoni", description: "Warm, friendly and professional, with a clear, even tone. Perfect for podcasts, corporate narration, and engaging content.", category: "Male - Professional", accent: "American" },
+  { id: "arnold", voiceId: "llNlEi50DSCIEuoOIaH7", name: "Arnold", description: "A warm, clear, and friendly voice with an American accent. Perfect for narration and storytelling.", category: "Male - Professional", accent: "American" },
   { id: "callum", voiceId: "N2lVS1w4EtoT3dr4eOWO", name: "Callum", description: "Strong, middle-aged American", category: "Male - Professional", accent: "American" },
   { id: "charlie", voiceId: "IKne3meq5aSn9XLyUdCD", name: "Charlie - Confident & Energetic", description: "Deep, young Australian male", category: "Male - Casual", accent: "Australian", preview_url: "https://storage.googleapis.com/eleven-public-prod/premade/voices/IKne3meq5aSn9XLyUdCD/102de6f2-22ed-43e0-a1f1-111fa75c5481.mp3" },
   { id: "clyde", voiceId: "2EiwWnXFnvU5JabPnv8n", name: "Clyde", description: "Middle-aged American narrator", category: "Male - Professional", accent: "American" },
