@@ -38,7 +38,7 @@ export default function ProductionPipeline({ status, message, videoUrl, complete
     }
 
     // Terminal statuses that mean everything is done
-    const terminalStatuses = ["delivered", "ready", "completed", "ready_for_human_review", "ready for human review", "approved", "shipped"];
+    const terminalStatuses = ["delivered", "ready", "completed", "ready_for_human_review", "ready for human review", "approved", "shipped", "failed"];
     const isTerminal = 
       terminalStatuses.some(ts => s === ts || s.includes(ts) || s.replace(/_/g, ' ') === ts) && 
       campaignStatus !== "in_production";

@@ -94,7 +94,8 @@ export default function ProjectCard({
   }, [currentImageIndex, showSlideshow, images.length]);
 
   const isReady = status === "Ready" || status === "completed" || status === "delivered" || status?.toLowerCase() === "approved";
-  const isInProduction = !isReady && (status === "in_production" || status === "queued" || status === "In Production" || status === "pipeline_running" || campaignStatus === "in_production" || campaignStatus === "queued");
+  const isFailed = status?.toLowerCase() === "failed";
+  const isInProduction = !isReady && !isFailed && (status === "in_production" || status === "queued" || status === "In Production" || status === "pipeline_running" || campaignStatus === "in_production" || campaignStatus === "queued");
   const isActionRequired = status?.toLowerCase().startsWith("awaiting_approval_") || status === "ready_for_human_review";
 
   const handleDownload = async (e: React.MouseEvent) => {
@@ -260,6 +261,7 @@ export default function ProjectCard({
             <span className={cn(
               "px-[6px] py-[3px] rounded-[4px] text-[9px] font-bold uppercase tracking-wider shadow-sm",
               isReady ? "bg-linear-to-r from-[#059669] to-[#10B981] text-white shadow-lg shadow-emerald-500/20" 
+              : isFailed ? "bg-rose-500 text-white"
               : isActionRequired ? "bg-amber-500 text-white animate-pulse"
               : isInProduction ? "bg-white text-[#02022C] animate-pulse" 
               : "bg-linear-to-r from-[#AD46FF] to-[#2B7FFF] text-white"

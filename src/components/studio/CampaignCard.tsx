@@ -177,10 +177,11 @@ export default function CampaignCard({
   const currentStatus = localData.status;
   const currentCampaignStatus = localData.campaign_status;
 
-  const terminalStatuses = ["completed", "delivered", "ready_for_human_review", "approved", "ready"];
+  const terminalStatuses = ["completed", "delivered", "ready_for_human_review", "approved", "ready", "failed"];
   const isTerminal = currentStatus && terminalStatuses.some(ts => currentStatus.toLowerCase() === ts || currentStatus.toLowerCase().includes(ts));
+  const isFailed = currentStatus?.toLowerCase() === "failed";
 
-  const isReady = isTerminal || currentStatus === "Ready" || currentStatus === "ready";
+  const isReady = isTerminal && !isFailed;
   const isInProduction = !isTerminal && (
     currentStatus === "in_production" ||
     currentStatus === "queued" ||
@@ -255,6 +256,7 @@ export default function CampaignCard({
             <span className={cn(
               "px-[8px] py-[4px] rounded-[4px] text-[11px] font-bold uppercase tracking-wider shadow-sm",
               isReady ? "bg-[linear-gradient(90deg,#01012A_0%,#2E2C66_100%)] text-white shadow-lg shadow-[#01012A]/10"
+                : isFailed ? "bg-rose-500 text-white"
                 : isInProduction ? "bg-white text-[#02022C] animate-pulse"
                   : "bg-[linear-gradient(135deg,#AD46FF_0%,#2B7FFF_100%)] text-white"
             )}>
