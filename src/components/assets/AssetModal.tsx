@@ -72,7 +72,7 @@ export default function AssetModal({ asset, isOpen, onClose, onDelete }: AssetMo
                 
                 <div className="flex flex-col gap-2">
                    <h3 className="text-white text-xl font-black tracking-tight">{asset.name || asset.title}</h3>
-                   <span className="text-[10px] font-black text-white/40 uppercase tracking-[0.3em]">Audio Synthesis Master</span>
+                   <span className="text-xs font-black text-white/40 uppercase tracking-[0.3em]">Audio Synthesis Master</span>
                 </div>
 
                 <audio 
@@ -88,12 +88,12 @@ export default function AssetModal({ asset, isOpen, onClose, onDelete }: AssetMo
                 <div className="absolute inset-0 flex flex-col items-center justify-center bg-slate-900/50 text-white gap-3 p-8">
                    <Icons.AlertTriangle className="w-10 h-10 text-amber-500 animate-pulse" />
                    <div className="flex flex-col gap-1 items-center">
-                      <p className="text-[11px] font-black uppercase tracking-[0.2em]">Neural Stream Error</p>
-                      <p className="text-[9px] font-bold text-white/40 uppercase tracking-widest text-center">The asset signature could not be verified or the source is unavailable.</p>
+                      <p className="text-xs font-black uppercase tracking-[0.2em]">Neural Stream Error</p>
+                      <p className="text-xs font-bold text-white/40 uppercase tracking-widest text-center">The asset signature could not be verified or the source is unavailable.</p>
                    </div>
                    <button 
                      onClick={() => { setVideoError(false); }}
-                     className="mt-2 px-4 py-2 bg-white/10 hover:bg-white/20 border border-white/20 rounded-xl text-[9px] font-black uppercase tracking-widest transition-all"
+                     className="mt-2 px-4 py-2 bg-white/10 hover:bg-white/20 border border-white/20 rounded-xl text-xs font-black uppercase tracking-widest transition-all"
                    >
                      Retry Connection
                    </button>
@@ -138,7 +138,7 @@ export default function AssetModal({ asset, isOpen, onClose, onDelete }: AssetMo
             <div className="flex items-center gap-3">
               <h2 className="text-2xl font-black text-[#01012A] leading-tight tracking-tight">{asset.name || asset.title}</h2>
               <div className={cn(
-                "px-2.5 py-1 rounded-lg text-[9px] font-black uppercase tracking-widest border",
+                "px-2.5 py-1 rounded-lg text-xs font-black uppercase tracking-widest border",
                 asset.type === "video" ? "bg-emerald-50 text-emerald-600 border-emerald-100" :
                 asset.type === "audio" ? "bg-blue-50 text-blue-600 border-blue-100" :
                 "bg-slate-50 text-slate-600 border-slate-100"
@@ -161,7 +161,7 @@ export default function AssetModal({ asset, isOpen, onClose, onDelete }: AssetMo
                  <Icons.Maximize className="w-4 h-4 text-slate-400" />
               </div>
               <div className="flex flex-col">
-                <span className="text-[9px] text-slate-400 font-black uppercase tracking-widest leading-none mb-1">Asset Class</span>
+                <span className="text-xs text-slate-400 font-black uppercase tracking-widest leading-none mb-1">Asset Class</span>
                 <span className="text-sm font-black text-[#01012A] capitalize">{asset.type}</span>
               </div>
             </div>
@@ -170,7 +170,7 @@ export default function AssetModal({ asset, isOpen, onClose, onDelete }: AssetMo
                  <Icons.Layers className="w-4 h-4 text-slate-400" />
               </div>
               <div className="flex flex-col">
-                <span className="text-[9px] text-slate-400 font-black uppercase tracking-widest leading-none mb-1">Production Use</span>
+                <span className="text-xs text-slate-400 font-black uppercase tracking-widest leading-none mb-1">Production Use</span>
                 <span className="text-sm font-black text-[#01012A]">{asset.members} Projects</span>
               </div>
             </div>

@@ -76,7 +76,7 @@ export function RaverEditor({ onGenerate, isLoading }: VideoGeneratorProps) {
           onClick={() => setActiveTab("render")}
           type="button"
           className={cn(
-            "px-6 py-2.5 rounded-[14px] text-xs font-black uppercase tracking-widest transition-all",
+            "px-6 py-2.5 rounded-[14px] text-sm font-black uppercase tracking-widest transition-all",
             activeTab === "render" 
               ? "bg-linear-to-r from-[#01012A] to-[#2E2C66] text-white shadow-lg shadow-[#01012A]/10" 
               : "text-[#64748B] hover:text-[#01012A]"
@@ -88,7 +88,7 @@ export function RaverEditor({ onGenerate, isLoading }: VideoGeneratorProps) {
           onClick={() => setActiveTab("export")}
           type="button"
           className={cn(
-            "px-6 py-2.5 rounded-[14px] text-xs font-black uppercase tracking-widest transition-all",
+            "px-6 py-2.5 rounded-[14px] text-sm font-black uppercase tracking-widest transition-all",
             activeTab === "export" 
               ? "bg-linear-to-r from-[#01012A] to-[#2E2C66]  text-white shadow-lg shadow-[#01012A]/10" 
               : "text-[#64748B] hover:text-[#01012A]"
@@ -128,7 +128,7 @@ export function RaverEditor({ onGenerate, isLoading }: VideoGeneratorProps) {
                       )}
                     >
                       <div className="text-xl font-black">{f.label}</div>
-                      <div className={cn("text-[10px] font-bold uppercase tracking-widest mt-1", format === f.id ? "text-white/60" : "text-slate-400")}>
+                      <div className={cn("text-xs font-bold uppercase tracking-widest mt-1", format === f.id ? "text-white/60" : "text-slate-400")}>
                         {f.sub}
                       </div>
                     </button>
@@ -154,7 +154,7 @@ export function RaverEditor({ onGenerate, isLoading }: VideoGeneratorProps) {
                   <h3 className="text-sm font-black text-[#01012A] uppercase tracking-widest">Raver Scene Matrix</h3>
                 </div>
                 <div className="flex items-center gap-4 bg-white px-4 py-2 rounded-2xl border border-slate-100 shadow-sm">
-                  <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Scenes</span>
+                  <span className="text-xs font-black text-slate-400 uppercase tracking-widest">Scenes</span>
                   <input 
                     type="range" 
                     min="1" 
@@ -171,24 +171,24 @@ export function RaverEditor({ onGenerate, isLoading }: VideoGeneratorProps) {
                 {currentScenes.map((scene, idx) => (
                   <div key={idx} className="bg-white rounded-[28px] p-6 border border-slate-100 shadow-sm space-y-6 animate-in slide-in-from-bottom-2 duration-300" style={{ animationDelay: `${idx * 50}ms` }}>
                     <div className="flex items-center justify-between">
-                       <span className="px-3 py-1 bg-slate-50 rounded-lg text-[10px] font-black text-slate-400 border border-slate-100 uppercase tracking-widest">
+                       <span className="px-3 py-1 bg-slate-50 rounded-lg text-xs font-black text-slate-400 border border-slate-100 uppercase tracking-widest">
                          Scene {idx + 1}
                        </span>
                        <div className="flex items-center gap-2">
-                          <span className="text-[10px] font-bold text-slate-300 uppercase tracking-widest">Duration</span>
+                          <span className="text-xs font-bold text-slate-300 uppercase tracking-widest">Duration</span>
                           <input 
                             type="number" 
                             value={scene.duration}
                             onChange={(e) => handleSceneChange(idx, "duration", parseInt(e.target.value))}
-                            className="w-12 h-8 bg-slate-50 border border-slate-100 rounded-lg text-center text-xs font-black outline-none focus:border-slate-300"
+                            className="w-12 h-8 bg-slate-50 border border-slate-100 rounded-lg text-center text-sm font-black outline-none focus:border-slate-300"
                           />
-                          <span className="text-[10px] font-bold text-slate-300 uppercase tracking-widest">Sec</span>
+                          <span className="text-xs font-bold text-slate-300 uppercase tracking-widest">Sec</span>
                        </div>
                     </div>
 
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                       <div className="space-y-2">
-                         <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Composition Source (Image URL)</label>
+                         <label className="text-xs font-black text-slate-400 uppercase tracking-widest ml-1">Composition Source (Image URL)</label>
                          <input 
                            type="text"
                            placeholder="Paste URL from Image Lead..."
@@ -198,7 +198,7 @@ export function RaverEditor({ onGenerate, isLoading }: VideoGeneratorProps) {
                          />
                       </div>
                       <div className="space-y-2">
-                         <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Overlay Text (Optional)</label>
+                         <label className="text-xs font-black text-slate-400 uppercase tracking-widest ml-1">Overlay Text (Optional)</label>
                          <input 
                            type="text"
                            placeholder="e.g. Your glow starts here..."
@@ -210,7 +210,7 @@ export function RaverEditor({ onGenerate, isLoading }: VideoGeneratorProps) {
                     </div>
                     
                     <div className="space-y-2">
-                       <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Visual Direction / Prompt</label>
+                       <label className="text-xs font-black text-slate-400 uppercase tracking-widest ml-1">Visual Direction / Prompt</label>
                        <textarea 
                          placeholder="Describe the cinematic motion or specific visual details for this scene..."
                          value={scene.visual_prompt}
@@ -235,53 +235,53 @@ export function RaverEditor({ onGenerate, isLoading }: VideoGeneratorProps) {
               <div className="space-y-6">
                 {/* Audio Sync */}
                 <div className="space-y-4">
-                  <div className="text-[10px] font-black uppercase tracking-widest text-blue-400/80">Audio Synchronization</div>
+                  <div className="text-xs font-black uppercase tracking-widest text-blue-400/80">Audio Synchronization</div>
                   <div className="space-y-2">
                     <input 
                       type="text" 
                       placeholder="Voiceover URL (.mp3)"
                       value={voiceoverUrl}
                       onChange={(e) => setVoiceoverUrl(e.target.value)}
-                      className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-xs outline-none focus:border-white/20 transition-all font-medium"
+                      className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-sm outline-none focus:border-white/20 transition-all font-medium"
                     />
                     <input 
                       type="text" 
                       placeholder="Background Music URL (.mp3)"
                       value={musicUrl}
                       onChange={(e) => setMusicUrl(e.target.value)}
-                      className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-xs outline-none focus:border-white/20 transition-all font-medium"
+                      className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-sm outline-none focus:border-white/20 transition-all font-medium"
                     />
                   </div>
                 </div>
 
                 {/* Branding Controls */}
                 <div className="space-y-4 pt-4 border-t border-white/5">
-                   <div className="text-[10px] font-black uppercase tracking-widest text-pink-400/80">Brand Identity</div>
+                   <div className="text-xs font-black uppercase tracking-widest text-pink-400/80">Brand Identity</div>
                    <div className="space-y-2">
                      <input 
                        type="text" 
                        placeholder="Business Name"
                        value={business_name}
                        onChange={(e) => setBusinessName(e.target.value)}
-                       className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-xs outline-none focus:border-white/20 transition-all font-medium"
+                       className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-sm outline-none focus:border-white/20 transition-all font-medium"
                      />
                      <input 
                        type="text" 
                        placeholder="Logo URL (.png)"
                        value={logo_url}
                        onChange={(e) => setLogoUrl(e.target.value)}
-                       className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-xs outline-none focus:border-white/20 transition-all font-medium"
+                       className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-sm outline-none focus:border-white/20 transition-all font-medium"
                      />
                    </div>
                 </div>
 
                  {/* Cinematic Style Controls */}
                  <div className="space-y-4 pt-4 border-t border-white/5">
-                   <div className="text-[10px] font-black uppercase tracking-widest text-emerald-400/80">Cinematic Style</div>
+                   <div className="text-xs font-black uppercase tracking-widest text-emerald-400/80">Cinematic Style</div>
                    <div className="flex items-center justify-between p-4 bg-white/5 rounded-xl border border-white/5">
                       <div className="flex flex-col">
-                        <span className="text-[11px] font-bold">Animate Scenes</span>
-                        <span className="text-[8px] text-white/40">Apply dynamic camera motion</span>
+                        <span className="text-xs font-bold">Animate Scenes</span>
+                        <span className="text-xs text-white/40">Apply dynamic camera motion</span>
                       </div>
                       <button
                         type="button"
@@ -301,12 +301,12 @@ export function RaverEditor({ onGenerate, isLoading }: VideoGeneratorProps) {
 
                  {/* Transitions */}
                  <div className="space-y-4 pt-4 border-t border-white/5">
-                   <div className="text-[10px] font-black uppercase tracking-widest text-purple-400/80">Cinematic Transitions</div>
+                   <div className="text-xs font-black uppercase tracking-widest text-purple-400/80">Cinematic Transitions</div>
                    <div className="grid grid-cols-2 gap-2">
                      <select 
                        value={transition}
                        onChange={(e) => setTransition(e.target.value)}
-                       className="bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-xs outline-none focus:border-white/20 transition-all font-medium appearance-none"
+                       className="bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-sm outline-none focus:border-white/20 transition-all font-medium appearance-none"
                      >
                        <option value="fade">Cross Fade</option>
                        <option value="dissolve">Film Dissolve</option>
@@ -317,7 +317,7 @@ export function RaverEditor({ onGenerate, isLoading }: VideoGeneratorProps) {
                         step="0.1"
                         value={transition_duration}
                         onChange={(e) => setTransitionDuration(parseFloat(e.target.value))}
-                        className="bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-xs outline-none focus:border-white/20 transition-all font-medium"
+                        className="bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-sm outline-none focus:border-white/20 transition-all font-medium"
                         placeholder="Duration"
                      />
                    </div>
@@ -325,11 +325,11 @@ export function RaverEditor({ onGenerate, isLoading }: VideoGeneratorProps) {
 
                 {/* Engine Settings */}
                  <div className="space-y-4 pt-4 border-t border-white/5">
-                   <div className="text-[10px] font-black uppercase tracking-widest text-amber-400/80">Animation Engine</div>
+                   <div className="text-xs font-black uppercase tracking-widest text-amber-400/80">Animation Engine</div>
                    <select 
                      value={video_model}
                      onChange={(e) => setVideoModel(e.target.value)}
-                     className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-xs outline-none focus:border-white/20 transition-all font-medium appearance-none"
+                     className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-sm outline-none focus:border-white/20 transition-all font-medium appearance-none"
                    >
                      <option value="kling-video">Kling Video (Recommended)</option>
                      <option value="luma-dream">Luma Dream Machine</option>
@@ -340,7 +340,7 @@ export function RaverEditor({ onGenerate, isLoading }: VideoGeneratorProps) {
                 <button
                   type="submit"
                   disabled={isLoading}
-                  className="w-full py-5 bg-linear-to-r from-[#01012A] to-[#2E2C66] rounded-[24px] text-xs font-black uppercase tracking-[0.2em] shadow-2xl hover:bg-blue-500 active:scale-[0.98] transition-all flex items-center justify-center gap-3 disabled:opacity-50"
+                  className="w-full py-5 bg-linear-to-r from-[#01012A] to-[#2E2C66] rounded-[24px] text-sm font-black uppercase tracking-[0.2em] shadow-2xl hover:bg-blue-500 active:scale-[0.98] transition-all flex items-center justify-center gap-3 disabled:opacity-50"
                 >
                   {isLoading ? (
                     <>

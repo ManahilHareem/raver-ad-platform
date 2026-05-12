@@ -72,46 +72,46 @@ export function LaunchBriefForm({ onLaunch, isLoading }: LaunchBriefFormProps) {
            </div>
            
            <div className="flex flex-col gap-2">
-              <label className="text-[10px] font-black uppercase tracking-widest text-slate-400 px-1">Business Identity</label>
+              <label className="text-xs font-black uppercase tracking-widest text-slate-400 px-1">Business Identity</label>
               <div className="relative group">
                 <input 
                   value={businessName}
                   onChange={(e) => setBusinessName(e.target.value)}
                   placeholder="e.g. Aura Fragrance"
-                  className="w-full bg-white border border-[#E2E8F0] rounded-xl px-4 py-2.5 text-xs focus:border-[#01012A] outline-none transition-all font-medium pr-12"
+                  className="w-full bg-white border border-[#E2E8F0] rounded-xl px-4 py-2.5 text-sm focus:border-[#01012A] outline-none transition-all font-medium pr-12"
                 />
                 <Icons.Success className="absolute right-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-200 group-focus-within:text-[#01012A] transition-colors" />
               </div>
            </div>
 
            <div className="flex flex-col gap-2">
-              <label className="text-[10px] font-black uppercase tracking-widest text-slate-400 px-1">Product Description</label>
+              <label className="text-xs font-black uppercase tracking-widest text-slate-400 px-1">Product Description</label>
               <textarea 
                 value={productDescription}
                 onChange={(e) => setProductDescription(e.target.value)}
                 placeholder="Describe the product essence..."
-                className="w-full bg-white border border-[#E2E8F0] rounded-xl px-4 py-2.5 text-xs focus:border-[#01012A] outline-none transition-all font-medium min-h-[100px] resize-none"
+                className="w-full bg-white border border-[#E2E8F0] rounded-xl px-4 py-2.5 text-sm focus:border-[#01012A] outline-none transition-all font-medium min-h-[100px] resize-none"
               />
            </div>
 
            <div className="flex flex-col gap-2">
-              <label className="text-[10px] font-black uppercase tracking-widest text-slate-400 px-1">Target Audience</label>
+              <label className="text-xs font-black uppercase tracking-widest text-slate-400 px-1">Target Audience</label>
               <input 
                 value={targetAudience}
                 onChange={(e) => setTargetAudience(e.target.value)}
                 placeholder="e.g. Gen-Z Lifestyle Enthusiasts"
-                className="w-full bg-white border border-[#E2E8F0] rounded-xl px-4 py-2.5 text-xs focus:border-[#01012A] outline-none transition-all font-medium"
+                className="w-full bg-white border border-[#E2E8F0] rounded-xl px-4 py-2.5 text-sm focus:border-[#01012A] outline-none transition-all font-medium"
               />
            </div>
 
            <div className="flex flex-col gap-2">
-              <label className="text-[10px] font-black uppercase tracking-widest text-slate-400 px-1">Logo URL (Optional)</label>
+              <label className="text-xs font-black uppercase tracking-widest text-slate-400 px-1">Logo URL (Optional)</label>
               <div className="relative group">
                 <input 
                   value={logoUrl}
                   onChange={(e) => setLogoUrl(e.target.value)}
                   placeholder="https://your-brand-asset.png"
-                  className="w-full bg-white border border-[#E2E8F0] rounded-xl px-4 py-2.5 text-xs focus:border-[#01012A] outline-none transition-all font-medium"
+                  className="w-full bg-white border border-[#E2E8F0] rounded-xl px-4 py-2.5 text-sm focus:border-[#01012A] outline-none transition-all font-medium"
                 />
               </div>
            </div>
@@ -126,11 +126,11 @@ export function LaunchBriefForm({ onLaunch, isLoading }: LaunchBriefFormProps) {
 
            <div className="grid grid-cols-2 gap-4">
               <div className="flex flex-col gap-2">
-                <label className="text-[10px] font-black uppercase tracking-widest text-slate-400 px-1">Universal Mood</label>
+                <label className="text-xs font-black uppercase tracking-widest text-slate-400 px-1">Universal Mood</label>
                 <select 
                   value={mood}
                   onChange={(e) => setMood(e.target.value)}
-                  className="w-full bg-white border border-[#E2E8F0] rounded-xl px-4 py-2.5 text-xs focus:border-[#01012A] outline-none font-medium appearance-none cursor-pointer"
+                  className="w-full bg-white border border-[#E2E8F0] rounded-xl px-4 py-2.5 text-sm focus:border-[#01012A] outline-none font-medium appearance-none cursor-pointer"
                 >
                   <option value="cinematic">Cinematic</option>
                   <option value="minimalist">Minimalist</option>
@@ -139,11 +139,11 @@ export function LaunchBriefForm({ onLaunch, isLoading }: LaunchBriefFormProps) {
                 </select>
               </div>
               <div className="flex flex-col gap-2">
-                <label className="text-[10px] font-black uppercase tracking-widest text-slate-400 px-1">Brand Tone</label>
+                <label className="text-xs font-black uppercase tracking-widest text-slate-400 px-1">Brand Tone</label>
                 <select 
                   value={brandTone}
                   onChange={(e) => setBrandTone(e.target.value)}
-                  className="w-full bg-white border border-[#E2E8F0] rounded-xl px-4 py-2.5 text-xs focus:border-[#01012A] outline-none font-medium appearance-none cursor-pointer"
+                  className="w-full bg-white border border-[#E2E8F0] rounded-xl px-4 py-2.5 text-sm focus:border-[#01012A] outline-none font-medium appearance-none cursor-pointer"
                 >
                   <option value="bold">Bold & High Energy</option>
                   <option value="minimal">Quiet Luxury</option>
@@ -153,7 +153,7 @@ export function LaunchBriefForm({ onLaunch, isLoading }: LaunchBriefFormProps) {
            </div>
 
            <div className="flex flex-col gap-2">
-              <label className="text-[10px] font-black uppercase tracking-widest text-slate-400 px-1">Deployment Format</label>
+              <label className="text-xs font-black uppercase tracking-widest text-slate-400 px-1">Deployment Format</label>
               <div className="grid grid-cols-3 gap-3">
                  {["16:9", "9:16", "1:1"].map((format) => (
                    <button
@@ -161,7 +161,7 @@ export function LaunchBriefForm({ onLaunch, isLoading }: LaunchBriefFormProps) {
                      type="button"
                      onClick={() => setAspectRatio(format)}
                      className={cn(
-                       "py-2 rounded-lg text-[10px] font-black transition-all border",
+                       "py-2 rounded-lg text-xs font-black transition-all border",
                        aspectRatio === format 
                         ? "bg-linear-to-r from-[#01012A] to-[#2E2C66] text-white border-[#01012A]" 
                         : "bg-white text-slate-400 border-slate-100 hover:border-slate-200"
@@ -174,7 +174,7 @@ export function LaunchBriefForm({ onLaunch, isLoading }: LaunchBriefFormProps) {
            </div>
 
            <div className="flex flex-col gap-2">
-              <label className="text-[10px] font-black uppercase tracking-widest text-slate-400 px-1">Social Platform Logic</label>
+              <label className="text-xs font-black uppercase tracking-widest text-slate-400 px-1">Social Platform Logic</label>
               <div className="flex gap-2">
                 {[
                   { id: "instagram", icon: Icons.Instagram },
@@ -212,13 +212,13 @@ export function LaunchBriefForm({ onLaunch, isLoading }: LaunchBriefFormProps) {
             </div>
             <div className="flex items-center gap-2 px-4 py-1.5 bg-white/5 rounded-full border border-white/10">
                <span className="w-1.5 h-1.5 bg-white rounded-full animate-pulse" />
-               <span className="text-[9px] font-black uppercase tracking-widest text-white/60">Kling AI Engine</span>
+               <span className="text-xs font-black uppercase tracking-widest text-white/60">Kling AI Engine</span>
             </div>
          </div>
 
          <div className="grid grid-cols-1 md:grid-cols-3 gap-x-12 gap-y-10 relative z-20">
             <div className="flex flex-col gap-3">
-               <label className="text-[10px] font-black uppercase tracking-widest text-white/40">Scene Matrix Length</label>
+               <label className="text-xs font-black uppercase tracking-widest text-white/40">Scene Matrix Length</label>
                <input 
                  type="range"
                  min="1"
@@ -228,32 +228,32 @@ export function LaunchBriefForm({ onLaunch, isLoading }: LaunchBriefFormProps) {
                  onChange={(e) => setNumScenes(parseInt(e.target.value))}
                  className="w-full h-1.5 bg-white/10 rounded-full appearance-none cursor-pointer accent-white"
                />
-               <div className="flex justify-between text-[10px] font-black text-white/60 uppercase">
+               <div className="flex justify-between text-xs font-black text-white/60 uppercase">
                  <span>1 Scene</span>
                  <span className="text-white">{numScenes} Scenes Matrix</span>
                </div>
             </div>
 
             <div className="flex flex-col gap-3 min-h-[100px]">
-               <label className="text-[10px] font-black uppercase tracking-widest text-white/40 px-1">Neural Voice Library Selection</label>
+               <label className="text-xs font-black uppercase tracking-widest text-white/40 px-1">Neural Voice Library Selection</label>
                <VoiceSelector 
                  selectedVoice={voice}
                  onSelect={(v) => setVoice(v)}
                  className="no-label"
                  isDark
                />
-               <p className="text-[9px] font-black text-white/30 uppercase tracking-[0.2em] mt-2 ml-1 flex items-center gap-2">
+               <p className="text-xs font-black text-white/30 uppercase tracking-[0.2em] mt-2 ml-1 flex items-center gap-2">
                  <span className="w-1.5 h-1.5 rounded-full bg-blue-400 shadow-[0_0_8px_rgba(96,165,250,0.5)]" />
                  Active: <span className="text-white/80">{VOICE_OPTIONS.find(v => v.id === voice)?.name || "Neural Selection"}</span>
                </p>
             </div>
 
             <div className="flex flex-col gap-3">
-               <label className="text-[10px] font-black uppercase tracking-widest text-white/40">Synthesis Engine Selection</label>
+               <label className="text-xs font-black uppercase tracking-widest text-white/40">Synthesis Engine Selection</label>
                <select
                  value={videoModel}
                  onChange={(e) => setVideoModel(e.target.value)}
-                 className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-xs text-white font-black uppercase tracking-widest outline-none cursor-pointer hover:bg-white/10 transition-colors"
+                 className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-sm text-white font-black uppercase tracking-widest outline-none cursor-pointer hover:bg-white/10 transition-colors"
                >
                  <option value="kling-video" className="bg-linear-to-r from-[#01012A] to-[#2E2C66]">Kling-Video-Neo</option>
                  <option value="seedance" className="bg-linear-to-r from-[#01012A] to-[#2E2C66]">Seedance Synthesis</option>
@@ -265,7 +265,7 @@ export function LaunchBriefForm({ onLaunch, isLoading }: LaunchBriefFormProps) {
          {/* 🎚️ Audio & Cinematic Matrix */}
          <div className="grid grid-cols-1 md:grid-cols-3 gap-x-12 gap-y-10 relative z-10 pt-10 border-t border-white/10 mt-6">
             <div className="flex flex-col gap-3">
-               <label className="text-[10px] font-black uppercase tracking-widest text-white/40">Voice Speed Dynamics</label>
+               <label className="text-xs font-black uppercase tracking-widest text-white/40">Voice Speed Dynamics</label>
                <input 
                  type="range"
                  min="0.80"
@@ -275,7 +275,7 @@ export function LaunchBriefForm({ onLaunch, isLoading }: LaunchBriefFormProps) {
                  onChange={(e) => setVoiceSpeed(parseFloat(e.target.value))}
                  className="w-full h-1.5 bg-white/10 rounded-full appearance-none cursor-pointer accent-white"
                />
-               <div className="flex justify-between text-[10px] font-black text-white/60 uppercase">
+               <div className="flex justify-between text-xs font-black text-white/60 uppercase">
                  <span>0.80x</span>
                  <span className="text-white">{voiceSpeed.toFixed(2)}x Dynamic</span>
                  <span>2.00x</span>
@@ -283,7 +283,7 @@ export function LaunchBriefForm({ onLaunch, isLoading }: LaunchBriefFormProps) {
             </div>
 
             <div className="flex flex-col gap-3">
-               <label className="text-[10px] font-black uppercase tracking-widest text-white/40">Cinematic Transitions</label>
+               <label className="text-xs font-black uppercase tracking-widest text-white/40">Cinematic Transitions</label>
                <div className="grid grid-cols-5 gap-2">
                  {["fade", "dissolve", "slideright", "slideleft", "none"].map((t) => (
                    <button
@@ -291,7 +291,7 @@ export function LaunchBriefForm({ onLaunch, isLoading }: LaunchBriefFormProps) {
                      type="button"
                      onClick={() => setTransition(t)}
                      className={cn(
-                       "py-2 rounded-lg text-[8px] font-black uppercase tracking-tight transition-all border",
+                       "py-2 rounded-lg text-xs font-black uppercase tracking-tight transition-all border",
                        transition === t 
                          ? "bg-white text-[#01012A] border-white shadow-lg" 
                          : "bg-white/5 text-white/40 border-white/10 hover:bg-white/10"
@@ -304,7 +304,7 @@ export function LaunchBriefForm({ onLaunch, isLoading }: LaunchBriefFormProps) {
             </div>
 
             <div className="flex flex-col gap-3">
-               <label className="text-[10px] font-black uppercase tracking-widest text-white/40">Neural Audio Levels</label>
+               <label className="text-xs font-black uppercase tracking-widest text-white/40">Neural Audio Levels</label>
                <input 
                  type="range"
                  min="0.05"
@@ -314,7 +314,7 @@ export function LaunchBriefForm({ onLaunch, isLoading }: LaunchBriefFormProps) {
                  onChange={(e) => setMusicVolume(parseFloat(e.target.value))}
                  className="w-full h-1.5 bg-white/10 rounded-full appearance-none cursor-pointer accent-white"
                />
-               <div className="flex justify-between text-[10px] font-black text-white/60 uppercase">
+               <div className="flex justify-between text-xs font-black text-white/60 uppercase">
                  <span>Min</span>
                  <span className="text-white">Music: {(musicVolume * 100).toFixed(0)}%</span>
                  <span>Max</span>

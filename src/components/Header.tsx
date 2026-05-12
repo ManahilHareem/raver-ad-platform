@@ -91,7 +91,7 @@ export default function Header({ onMenuClick }: HeaderProps) {
           <input
             type="text"
             placeholder="Search platform..."
-            className="w-full h-[42px] bg-slate-50 border border-slate-100 rounded-xl pt-[11px] pr-[16px] pb-[10px] pl-[44px] text-[13px] font-medium text-[#121212] focus:outline-none focus:ring-2 focus:ring-[#01012A]/5 transition-all placeholder:text-slate-400"
+            className="w-full h-[42px] bg-slate-50 border border-slate-100 rounded-xl pt-[11px] pr-[16px] pb-[10px] pl-[44px] text-sm font-medium text-[#121212] focus:outline-none focus:ring-2 focus:ring-[#01012A]/5 transition-all placeholder:text-slate-400"
           />
         </div>
       </div>
@@ -105,12 +105,9 @@ export default function Header({ onMenuClick }: HeaderProps) {
           <Link href="/notifications" className="p-2.5 hover:bg-slate-50 rounded-xl transition-colors relative group">
             <Icons.Bell className="w-5 h-5 text-slate-400 group-hover:text-[#01012A] transition-colors" />
             {unreadCount > 0 && (
-              <>
-                <span className="absolute top-2.5 right-2.5 w-2 h-2 bg-rose-500 rounded-full border-2 border-white animate-pulse shadow-[0_0_10px_rgba(244,63,94,0.5)]" />
-                <span className="absolute top-2 right-2 px-1.5 py-0.5 min-w-[18px] h-[18px] bg-linear-to-r from-[#01012A] to-[#2E2C66] text-white text-[9px] font-black rounded-full border-2 border-white flex items-center justify-center shadow-lg transition-transform group-hover:scale-110 z-10">
-                  {unreadCount}
-                </span>
-              </>
+              <span className="absolute top-0 right-0 min-w-[17px] h-[17px] bg-linear-to-r from-[#01012A] to-[#2E2C66] text-white text-[10px] font-black rounded-full border-2 border-white flex items-center justify-center shadow-lg transition-transform group-hover:scale-110 z-10">
+                {unreadCount}
+              </span>
             )}
           </Link>
         </div>
@@ -152,13 +149,13 @@ export default function Header({ onMenuClick }: HeaderProps) {
           {isDropdownOpen && (
             <div className="absolute top-full right-0 mt-3 w-56 bg-white rounded-2xl shadow-2xl border border-slate-100 py-2 animate-in fade-in zoom-in-95 duration-200 origin-top-right overflow-hidden z-200">
               <div className="px-4 py-3 border-b border-slate-50 mb-1">
-                 <p className="text-[13px] font-black text-[#01012A] truncate">{user?.fullName || 'User'}</p>
-                 <p className="text-[10px] font-bold text-slate-400 truncate uppercase mt-0.5 tracking-widest">{user?.professionalRole || 'Member'}</p>
+                 <p className="text-sm font-black text-[#01012A] truncate">{user?.fullName || 'User'}</p>
+                 <p className="text-xs font-bold text-slate-400 truncate uppercase mt-0.5 tracking-widest">{user?.professionalRole || 'Member'}</p>
               </div>
               <Link 
                 href="/settings" 
                 onClick={() => setIsDropdownOpen(false)}
-                className="flex items-center gap-3 px-4 py-3 text-[13px] font-bold text-[#4F4F4F] hover:bg-slate-50 transition-colors group"
+                className="flex items-center gap-3 px-4 py-3 text-sm font-bold text-[#4F4F4F] hover:bg-slate-50 transition-colors group"
               >
                 <Icons.User className="w-4 h-4 text-slate-400 group-hover:text-[#01012A]" />
                 <span>My Profile</span>
@@ -166,7 +163,7 @@ export default function Header({ onMenuClick }: HeaderProps) {
               <Link 
                 href="/settings?tab=security" 
                 onClick={() => setIsDropdownOpen(false)}
-                className="flex items-center gap-3 px-4 py-3 text-[13px] font-bold text-[#4F4F4F] hover:bg-slate-50 transition-colors group"
+                className="flex items-center gap-3 px-4 py-3 text-sm font-bold text-[#4F4F4F] hover:bg-slate-50 transition-colors group"
               >
                 <Icons.Lock className="w-4 h-4 text-slate-400 group-hover:text-[#01012A]" />
                 <span>Security</span>
@@ -174,7 +171,7 @@ export default function Header({ onMenuClick }: HeaderProps) {
               <div className="h-px bg-slate-100 my-1 mx-2" />
               <button 
                 onClick={handleLogout}
-                className="w-full flex items-center gap-3 px-4 py-3 text-[13px] font-black text-red-500 hover:bg-red-50 transition-colors group"
+                className="w-full flex items-center gap-3 px-4 py-3 text-sm font-black text-red-500 hover:bg-red-50 transition-colors group"
               >
                 <Icons.Trash className="w-4 h-4 text-red-400 group-hover:text-red-600" />
                 <span>Logout</span>

@@ -139,72 +139,72 @@ export default function ImageLeadModal({
                 <div className="lg:col-span-4 flex flex-col gap-6">
                   {/* Brand Metrics Section */}
                   <div className="p-6 bg-slate-50/50 rounded-3xl border border-slate-100 flex flex-col gap-5">
-                    <h4 className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] border-b border-slate-200 pb-3">Core Brand Metrics</h4>
+                    <h4 className="text-xs font-black text-slate-400 uppercase tracking-[0.2em] border-b border-slate-200 pb-3">Core Brand Metrics</h4>
                     
                     <div className="flex flex-col gap-1.5">
-                       <label className="text-[10px] font-black text-[#02022C] uppercase tracking-wider">Business Identity</label>
+                       <label className="text-xs font-black text-[#02022C] uppercase tracking-wider">Business Identity</label>
                        <input 
                          value={businessName}
                          onChange={(e) => setBusinessName(e.target.value)}
                          placeholder="e.g. Glow Studio"
-                         className="bg-white border border-[#E2E8F0] rounded-xl px-4 py-2.5 text-xs focus:border-[#02022C] outline-none font-medium"
+                         className="bg-white border border-[#E2E8F0] rounded-xl px-4 py-2.5 text-sm focus:border-[#02022C] outline-none font-medium"
                        />
                     </div>
 
                     <div className="flex flex-col gap-1.5">
-                       <label className="text-[10px] font-black text-[#02022C] uppercase tracking-wider">Core Product</label>
+                       <label className="text-xs font-black text-[#02022C] uppercase tracking-wider">Core Product</label>
                        <input 
                          value={productName}
                          onChange={(e) => setProductName(e.target.value)}
                          placeholder="e.g. Luxury Serum"
-                         className="bg-white border border-[#E2E8F0] rounded-xl px-4 py-2.5 text-xs focus:border-[#02022C] outline-none font-medium"
+                         className="bg-white border border-[#E2E8F0] rounded-xl px-4 py-2.5 text-sm focus:border-[#02022C] outline-none font-medium"
                        />
                     </div>
 
                     <div className="flex flex-col gap-1.5">
-                       <label className="text-[10px] font-black text-[#02022C] uppercase tracking-wider">Target Audience</label>
+                       <label className="text-xs font-black text-[#02022C] uppercase tracking-wider">Target Audience</label>
                        <input 
                          value={targetAudience}
                          onChange={(e) => setTargetAudience(e.target.value)}
                          placeholder="e.g. Women 25-40"
-                         className="bg-white border border-[#E2E8F0] rounded-xl px-4 py-2.5 text-xs focus:border-[#02022C] outline-none font-medium mb-2"
+                         className="bg-white border border-[#E2E8F0] rounded-xl px-4 py-2.5 text-sm focus:border-[#02022C] outline-none font-medium mb-2"
                        />
                        
                     </div>
                         <div className="flex flex-col gap-1.5">
-                       <label className="text-[10px] font-black text-[#02022C] uppercase tracking-wider">Tone</label>
+                       <label className="text-xs font-black text-[#02022C] uppercase tracking-wider">Tone</label>
                       <input 
                          value={brandTone}
                          onChange={(e) => setBrandTone(e.target.value)}
                          placeholder="e.g. Professional, Bold"
-                         className="bg-white border border-[#E2E8F0] rounded-xl px-4 py-2.5 text-xs focus:border-[#02022C] outline-none font-medium"
+                         className="bg-white border border-[#E2E8F0] rounded-xl px-4 py-2.5 text-sm focus:border-[#02022C] outline-none font-medium"
                        />
                     </div>
                   </div>
 
                   {/* Aesthetics Section */}
                   <div className="p-6 bg-slate-50/50 rounded-3xl border border-slate-100 flex flex-col gap-5">
-                    <h4 className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] border-b border-slate-200 pb-3">Global Aesthetics</h4>
+                    <h4 className="text-xs font-black text-slate-400 uppercase tracking-[0.2em] border-b border-slate-200 pb-3">Global Aesthetics</h4>
                     
                     <div className="flex flex-col gap-2">
-                      <label className="text-[10px] font-black text-[#02022C] uppercase tracking-wider">Universal Mood</label>
+                      <label className="text-xs font-black text-[#02022C] uppercase tracking-wider">Universal Mood</label>
                       <input 
                         value={mood}
                         onChange={(e) => setMood(e.target.value)}
                         placeholder="e.g. Cinematic, High Contrast"
-                        className="bg-white border border-[#E2E8F0] rounded-xl px-4 py-2.5 text-xs focus:border-[#02022C] outline-none font-medium"
+                        className="bg-white border border-[#E2E8F0] rounded-xl px-4 py-2.5 text-sm focus:border-[#02022C] outline-none font-medium"
                       />
                     </div>
 
                     <div className="flex flex-col gap-2">
-                       <label className="text-[10px] font-black text-[#02022C] uppercase tracking-wider">Format & Deployment</label>
+                       <label className="text-xs font-black text-[#02022C] uppercase tracking-wider">Format & Deployment</label>
                        <div className="grid grid-cols-3 gap-2">
                           {["16:9", "9:16", "1:1"].map((ratio) => (
                             <button
                               key={ratio}
                               onClick={() => setAspectRatio(ratio)}
                               className={cn(
-                                "py-2 rounded-lg text-[10px] font-black transition-all border",
+                                "py-2 rounded-lg text-xs font-black transition-all border",
                                 aspectRatio === ratio ? "bg-[#02022C] text-white border-[#02022C]" : "bg-white text-slate-400 border-slate-100 hover:border-slate-200"
                               )}
                             >
@@ -235,22 +235,22 @@ export default function ImageLeadModal({
                 </div>
 
                 <div className="lg:col-span-8 flex flex-col gap-6">
-                  <h4 className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] px-2 flex items-center justify-between">
+                  <h4 className="text-xs font-black text-slate-400 uppercase tracking-[0.2em] px-2 flex items-center justify-between">
                     Storyboard Direction (7-Scene Matrix)
-                    <span className="text-[8px] font-bold text-slate-300">Kinetic Sequences</span>
+                    <span className="text-xs font-bold text-slate-300">Kinetic Sequences</span>
                   </h4>
                   <div className="grid grid-cols-1 gap-4 max-h-[550px] overflow-y-auto pr-2 custom-scrollbar p-1">
                     {scenes.map((scene, idx) => (
                       <div key={scene.id} className="p-4 bg-slate-50/30 rounded-2xl border border-slate-100 flex flex-col gap-2">
-                        <label className="text-[10px] font-black text-[#02022C] uppercase tracking-widest flex items-center gap-2">
-                          <span className="w-5 h-5 bg-[#02022C] text-white rounded-lg flex items-center justify-center text-[10px]">{idx + 1}</span>
+                        <label className="text-xs font-black text-[#02022C] uppercase tracking-widest flex items-center gap-2">
+                          <span className="w-5 h-5 bg-[#02022C] text-white rounded-lg flex items-center justify-center text-xs">{idx + 1}</span>
                           Cinematic Direction
                         </label>
                         <textarea 
                           value={scene.visual_prompt} 
                           onChange={(e) => handleUpdateScene(scene.id, e.target.value)} 
                           placeholder="Describe the cinematic action..."
-                          className="bg-white border border-[#E2E8F0] rounded-xl px-4 py-3 text-[11px] focus:border-[#02022C] outline-none resize-none h-20 transition-all font-medium" 
+                          className="bg-white border border-[#E2E8F0] rounded-xl px-4 py-3 text-sm focus:border-[#02022C] outline-none resize-none h-20 transition-all font-medium" 
                         />
                       </div>
                     ))}
@@ -286,7 +286,7 @@ export default function ImageLeadModal({
                         
                         return (
                           <div key={key} className="flex flex-col gap-4">
-                            <div className="flex justify-between items-center text-[11px] font-black uppercase tracking-wider text-[#02022C]">
+                            <div className="flex justify-between items-center text-xs font-black uppercase tracking-wider text-[#02022C]">
                               <span>{key} Intensity</span>
                               <span className="text-[#02022C] bg-slate-50 px-3 py-1 rounded-full">{Number(value).toFixed(2)}x</span>
                             </div>
@@ -307,7 +307,7 @@ export default function ImageLeadModal({
               </div>
 
               <div className="w-full lg:w-[400px] flex flex-col gap-4">
-                 <h4 className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] px-2">Visual Style Preview</h4>
+                 <h4 className="text-xs font-black text-slate-400 uppercase tracking-[0.2em] px-2">Visual Style Preview</h4>
                  <div className="relative aspect-square bg-[#F8FAFC] rounded-[40px] overflow-hidden border border-slate-100 shadow-inner group">
                     {selectedImage ? (
                       <Image src={normalizeAssetUrl(selectedImage)} alt="Enhance preview" fill className="object-cover" />
@@ -330,7 +330,7 @@ export default function ImageLeadModal({
               {isLoading && (
                 <div className="flex items-center gap-2 px-6">
                    <div className="w-1.5 h-1.5 bg-green-500 rounded-full animate-pulse" />
-                   <span className="text-[10px] font-black text-[#02022C] uppercase tracking-widest">{statusMessage}</span>
+                   <span className="text-xs font-black text-[#02022C] uppercase tracking-widest">{statusMessage}</span>
                 </div>
               )}
            </div>

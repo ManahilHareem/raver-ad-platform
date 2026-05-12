@@ -89,13 +89,13 @@ function VaultImage({
           {isError ? (
             <div className="flex flex-col items-center gap-2">
               <Icons.Plus className="w-6 h-6 text-red-500/50 rotate-45" />
-              <span className="text-[8px] font-black text-red-500/50 uppercase tracking-widest">Load Failed</span>
+              <span className="text-xs font-black text-red-500/50 uppercase tracking-widest">Load Failed</span>
             </div>
           ) : (
              <div className="flex flex-col items-center gap-2">
                 <Icons.Loader className="w-6 h-6 animate-spin text-white/20" />
                 {retryCount > 0 && (
-                  <span className="text-[8px] font-black text-white/20 uppercase tracking-widest">
+                  <span className="text-xs font-black text-white/20 uppercase tracking-widest">
                     Retry {retryCount}/3
                   </span>
                 )}
@@ -124,7 +124,7 @@ function VaultImage({
       
       {/* Tag Overlay */}
       <div className="absolute top-4 left-4 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none z-10">
-         <span className="px-3 py-1 bg-black/60 border border-white/10 rounded-lg text-[8px] font-black text-white/60 uppercase tracking-[0.2em]">
+         <span className="px-3 py-1 bg-black/60 border border-white/10 rounded-lg text-xs font-black text-white/60 uppercase tracking-[0.2em]">
            {String(asset.label || "Scene").split(" ")[0].substring(0, 8)} ai-lead
          </span>
       </div>
@@ -187,7 +187,7 @@ export function MediaVault({
             {hasSessions ? "No assets in this session" : "No sessions found. Start a new generation."}
           </h4>
           {!hasSessions && (
-            <p className="text-slate-400 text-[10px] sm:text-xs mt-1">
+            <p className="text-slate-400 text-xs mt-1">
               Your creative generations will appear here.
             </p>
           )}

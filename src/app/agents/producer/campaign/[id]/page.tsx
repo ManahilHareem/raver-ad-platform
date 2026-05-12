@@ -797,8 +797,8 @@ export default function CampaignDetailPage() {
                           className="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-110"
                         />
                         <div className="absolute inset-0 bg-linear-to-t from-black/90 to-transparent opacity-0 group-hover:opacity-100 transition-opacity p-6 md:p-8 flex flex-col justify-end">
-                          <span className="text-[9px] font-black text-emerald-400 uppercase tracking-widest mb-1 italic">Prompt_ID: {idx + 1}</span>
-                          <p className="text-[10px] md:text-xs font-medium text-white/90 leading-relaxed italic line-clamp-4">
+                          <span className="text-xs font-black text-emerald-400 uppercase tracking-widest mb-1 italic">Prompt_ID: {idx + 1}</span>
+                          <p className="text-xs md:text-sm font-medium text-white/90 leading-relaxed italic line-clamp-4">
                             "{scene.prompt_used}"
                           </p>
                           <div className="flex justify-center mt-4">
@@ -809,8 +809,8 @@ export default function CampaignDetailPage() {
                         </div>
                       </div>
                       <div className="p-4 md:p-6 bg-white border-t border-slate-50 flex items-center justify-between">
-                        <span className="text-[10px] font-black text-[#01012A] uppercase tracking-[0.2em]">Scene_0{scene.scene_id}</span>
-                        <span className="px-2.5 py-1 bg-emerald-50 text-emerald-600 text-[9px] font-black uppercase rounded-lg border border-emerald-100">completed</span>
+                        <span className="text-xs font-black text-[#01012A] uppercase tracking-[0.2em]">Scene_0{scene.scene_id}</span>
+                        <span className="px-2.5 py-1 bg-emerald-50 text-emerald-600 text-xs font-black uppercase rounded-lg border border-emerald-100">completed</span>
                       </div>
                     </div>
                   ))}
@@ -859,7 +859,7 @@ export default function CampaignDetailPage() {
                               {step.label}
                             </span>
                             {status === "failed" && (
-                              <span className="text-[9px] font-bold text-red-400 mt-0.5 truncate">
+                              <span className="text-xs font-bold text-red-400 mt-0.5 truncate">
                                 Error: {nodeData.result?.error || "Node synthesis failed"}
                               </span>
                             )}
@@ -891,9 +891,9 @@ export default function CampaignDetailPage() {
                       { label: "Atmospheric Mix", value: `${Math.round((brief.music_volume || 0.1) * 100)}%` },
                     ].map((p, idx) => (
                       <div key={idx} className="flex flex-col gap-2">
-                        <span className="text-[8px] md:text-[9px] font-black uppercase tracking-widest text-slate-300 pl-1">{p.label}</span>
+                        <span className="text-xs md:text-xs font-black uppercase tracking-widest text-slate-300 pl-1">{p.label}</span>
                         <div className="p-4 md:p-5 bg-slate-50/50 rounded-2xl md:rounded-[24px] border border-slate-100/50">
-                          <p className="text-[11px] md:text-[12px] font-bold text-[#121212] leading-tight line-clamp-2">{p.value || "Config Ready"}</p>
+                          <p className="text-xs md:text-sm font-bold text-[#121212] leading-tight line-clamp-2">{p.value || "Config Ready"}</p>
                         </div>
                       </div>
                     ))}
@@ -910,7 +910,7 @@ export default function CampaignDetailPage() {
                       <h4 className="text-lg md:text-xl font-black text-[#01012A] tracking-tighter lowercase leading-none">style_directive</h4>
                     </div>
                     <div className="p-6 bg-slate-50/50 rounded-[24px] border border-slate-100/50">
-                       <p className="text-[11px] md:text-xs font-medium text-[#121212] leading-relaxed italic">
+                       <p className="text-xs md:text-sm font-medium text-[#121212] leading-relaxed italic">
                          "{result.style_prompt || brief.style_prompt}"
                        </p>
                     </div>
@@ -930,18 +930,18 @@ export default function CampaignDetailPage() {
                       </div>
                       <div className="flex flex-col">
                         <h4 className="text-lg md:text-xl font-black text-[#01012A] tracking-tighter lowercase leading-none">narrative_synthesis</h4>
-                        <span className="text-[10px] md:text-[11px] font-black uppercase tracking-widest text-slate-300 mt-2">Script & Overlay Coordination</span>
+                         <span className="text-xs font-black uppercase tracking-widest text-slate-300 mt-2">Script & Overlay Coordination</span>
                       </div>
                     </div>
                     {scriptObj.word_count && (
                       <div className="flex items-center gap-4">
                          <div className="flex flex-col items-end">
-                            <span className="text-[9px] font-black uppercase text-slate-300">Word Count</span>
+                            <span className="text-xs font-black uppercase text-slate-300">Word Count</span>
                             <span className="text-sm font-black text-[#01012A]">{scriptObj.word_count} wds</span>
                          </div>
                          <div className="w-px h-8 bg-slate-100" />
                          <div className="flex flex-col items-end">
-                            <span className="text-[9px] font-black uppercase text-slate-300">Duration</span>
+                            <span className="text-xs font-black uppercase text-slate-300">Duration</span>
                             <span className="text-sm font-black text-[#01012A]">{scriptObj.estimated_duration_seconds}s</span>
                          </div>
                       </div>
@@ -951,7 +951,7 @@ export default function CampaignDetailPage() {
                   <div className="grid grid-cols-1 lg:grid-cols-3 gap-10">
                     {/* Full Script Text */}
                     <div className="lg:col-span-1 flex flex-col gap-4">
-                       <span className="text-[10px] font-black uppercase tracking-[0.2em] text-[#01012A] pl-1">Master Script</span>
+                       <span className="text-xs font-black uppercase tracking-[0.2em] text-[#01012A] pl-1">Master Script</span>
                        <div className="p-8 bg-slate-50/50 rounded-[32px] border border-slate-100/50 h-full">
                           <p className="text-sm md:text-base font-medium text-[#121212] leading-relaxed italic">
                             "{fullScript}"
@@ -961,25 +961,25 @@ export default function CampaignDetailPage() {
 
                     {/* Scene Breakdowns */}
                     <div className="lg:col-span-2 flex flex-col gap-4">
-                       <span className="text-[10px] font-black uppercase tracking-[0.2em] text-[#01012A] pl-1">Scene Synchronization</span>
+                       <span className="text-xs font-black uppercase tracking-[0.2em] text-[#01012A] pl-1">Scene Synchronization</span>
                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                           {sceneScripts.map((text: string, idx: number) => {
                              const overlay = overlays.find((o: any) => o.scene_id === idx + 1);
                              return (
                                 <div key={idx} className="p-6 bg-white border border-slate-100 rounded-[24px] flex flex-col gap-4 hover:border-slate-200 transition-all shadow-sm">
                                    <div className="flex items-center justify-between border-b border-slate-50 pb-3">
-                                      <span className="text-[10px] font-black text-[#01012A] uppercase">Scene_0{idx + 1}</span>
+                                      <span className="text-xs font-black text-[#01012A] uppercase">Scene_0{idx + 1}</span>
                                       <Icons.AudioWave className="w-3 h-3 text-blue-400 opacity-50" />
                                    </div>
                                    <div className="flex flex-col gap-3">
                                       <div>
-                                         <span className="text-[8px] font-black uppercase text-slate-300 tracking-tighter">Audio Stream</span>
-                                         <p className="text-[11px] font-medium text-[#4F4F4F] leading-relaxed mt-1 italic">"{text}"</p>
+                                         <span className="text-xs font-black uppercase text-slate-300 tracking-tighter">Audio Stream</span>
+                                         <p className="text-sm font-medium text-[#4F4F4F] leading-relaxed mt-1 italic">"{text}"</p>
                                       </div>
                                       {overlay && (
                                          <div className="p-3 bg-slate-50 rounded-xl border border-slate-100/50">
-                                            <span className="text-[8px] font-black uppercase text-blue-500 tracking-tighter">Video Overlay</span>
-                                            <p className="text-[11px] font-black text-[#01012A] mt-1">{overlay.text}</p>
+                                            <span className="text-xs font-black uppercase text-blue-500 tracking-tighter">Video Overlay</span>
+                                            <p className="text-sm font-black text-[#01012A] mt-1">{overlay.text}</p>
                                          </div>
                                       )}
                                    </div>
@@ -1003,13 +1003,13 @@ export default function CampaignDetailPage() {
                     </div>
                     <div className="flex flex-col">
                       <h4 className="text-lg md:text-xl font-black text-[#01012A] tracking-tighter lowercase leading-none">social_architecture</h4>
-                      <span className="text-[10px] md:text-[11px] font-black uppercase tracking-widest text-[#01012A]/40 mt-1">{platform} | Platform Fit Optimized</span>
+                       <span className="text-xs font-black uppercase tracking-widest text-[#01012A]/40 mt-1">{platform} | Platform Fit Optimized</span>
                     </div>
                   </div>
 
                   <div className="grid grid-cols-1 lg:grid-cols-2 gap-10">
                     <div className="flex flex-col gap-4">
-                       <span className="text-[10px] font-black uppercase tracking-[0.2em] text-[#01012A] pl-1">Primary Platform Copy</span>
+                       <span className="text-xs font-black uppercase tracking-[0.2em] text-[#01012A] pl-1">Primary Platform Copy</span>
                        <div className="p-8 bg-slate-900 text-white rounded-[32px] border border-white/5 relative group">
                           <button 
                             onClick={() => {
@@ -1025,7 +1025,7 @@ export default function CampaignDetailPage() {
                           </p>
                           {platformContent.cta && (
                              <div className="mt-8 pt-8 border-t border-white/10 flex flex-col gap-2">
-                                <span className="text-[9px] font-black uppercase text-blue-400 tracking-widest">Call to Action</span>
+                                <span className="text-xs font-black uppercase text-blue-400 tracking-widest">Call to Action</span>
                                 <p className="text-sm font-black text-white">{platformContent.cta}</p>
                              </div>
                           )}
@@ -1034,10 +1034,10 @@ export default function CampaignDetailPage() {
 
                     <div className="flex flex-col gap-6">
                        <div className="flex flex-col gap-4">
-                          <span className="text-[10px] font-black uppercase tracking-[0.2em] text-[#01012A] pl-1">Neural Hashtag Clusters</span>
+                          <span className="text-xs font-black uppercase tracking-[0.2em] text-[#01012A] pl-1">Neural Hashtag Clusters</span>
                           <div className="p-8 bg-slate-50/50 rounded-[32px] border border-slate-100/50 flex flex-wrap gap-2">
                              {platformContent.hashtags?.map((tag: string, idx: number) => (
-                                <span key={idx} className="px-3 py-1.5 bg-white border border-slate-100 rounded-lg text-[11px] font-bold text-[#4F4F4F] transition-all hover:border-blue-400/30 hover:text-blue-500">
+                                <span key={idx} className="px-3 py-1.5 bg-white border border-slate-100 rounded-lg text-xs font-bold text-[#4F4F4F] transition-all hover:border-blue-400/30 hover:text-blue-500">
                                    {tag}
                                 </span>
                              ))}
@@ -1049,7 +1049,7 @@ export default function CampaignDetailPage() {
                              <Icons.CheckCircle className="w-7 h-7 text-emerald-500" />
                           </div>
                           <div className="flex flex-col">
-                             <span className="text-[10px] font-black uppercase text-emerald-600 tracking-widest">Platform Validation</span>
+                             <span className="text-xs font-black uppercase text-emerald-600 tracking-widest">Platform Validation</span>
                              <p className="text-sm font-bold text-[#01012A] mt-1">This dossier is fully compliant with the {platform} advertising matrix.</p>
                           </div>
                        </div>
@@ -1070,7 +1070,7 @@ export default function CampaignDetailPage() {
                     </div>
                     <div className="flex flex-col">
                       <h4 className="text-base sm:text-lg md:text-xl font-black text-[#01012A] tracking-tighter lowercase leading-none">dimension_breakdown</h4>
-                      <span className="text-[9px] sm:text-[10px] md:text-[11px] font-black uppercase tracking-widest text-slate-400 mt-1 sm:mt-2">Weighted Audit Results</span>
+                       <span className="text-xs font-black uppercase tracking-widest text-slate-400 mt-1 sm:mt-2">Weighted Audit Results</span>
                     </div>
                   </div>
                   <div className="flex items-center sm:items-end flex-row sm:flex-col justify-between sm:justify-start">
@@ -1082,7 +1082,7 @@ export default function CampaignDetailPage() {
                    {quality.dimension_details && Object.entries(quality.dimension_details).map(([key, dim]: any) => (
                      <div key={key} className="p-6 md:p-8 bg-slate-50/50 rounded-[24px] md:rounded-[32px] border border-slate-100/50 flex flex-col gap-5 hover:bg-white hover:border-slate-200 transition-all">
                        <div className="flex items-center justify-between border-b border-slate-100 pb-4">
-                         <span className="text-[10px] md:text-[11px] font-black uppercase tracking-widest text-[#01012A]">{key.replace('_', ' ')}</span>
+                         <span className="text-xs font-black uppercase tracking-widest text-[#01012A]">{key.replace('_', ' ')}</span>
                          <span className="text-xl md:text-2xl font-black text-[#01012A]/40 tabular-nums">{Math.round((dim.score || 0) * 100)}%</span>
                        </div>
 
@@ -1169,7 +1169,7 @@ function AssetLink({ label, url, icon: Icon }: any) {
         <div className="w-8 h-8 bg-white rounded-xl flex items-center justify-center border border-slate-100 shrink-0 group-hover:scale-110 transition-transform">
           <Icon className="w-4 h-4 text-[#01012A]" />
         </div>
-        <span className="text-[11px] font-bold text-[#01012A] lowercase truncate">{label}</span>
+        <span className="text-xs font-bold text-[#01012A] lowercase truncate">{label}</span>
       </div>
       <Icons.ExternalLink className="w-3.5 h-3.5 text-slate-300 group-hover:text-[#01012A] transition-colors shrink-0" />
     </a>

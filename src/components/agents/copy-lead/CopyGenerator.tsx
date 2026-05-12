@@ -74,7 +74,7 @@ export function CopyGenerator({ onGenerate, isLoading }: CopyGeneratorProps) {
                 )}>
                   <Icon className={cn("w-4 h-4 sm:w-5 sm:h-5", activeTab === tab.id ? tab.color : "text-slate-300")} />
                 </div>
-                <span className="text-[8px] sm:text-[10px] font-black uppercase tracking-widest">{tab.label}</span>
+                <span className="text-xs font-black uppercase tracking-widest">{tab.label}</span>
               </button>
             );
           })}
@@ -85,7 +85,7 @@ export function CopyGenerator({ onGenerate, isLoading }: CopyGeneratorProps) {
         <form onSubmit={handleSubmit} className="space-y-6 sm:space-y-10">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 sm:gap-8">
             <div className="space-y-2 sm:space-y-3">
-              <label className="text-[9px] sm:text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 ml-1">Brand / Business Name</label>
+              <label className="text-xs font-black uppercase tracking-[0.2em] text-slate-400 ml-1">Brand / Business Name</label>
               <div className="relative group/input">
                 <input
                   type="text"
@@ -97,7 +97,7 @@ export function CopyGenerator({ onGenerate, isLoading }: CopyGeneratorProps) {
               </div>
             </div>
             <div className="space-y-2 sm:space-y-3">
-              <label className="text-[9px] sm:text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 ml-1">Product / Service</label>
+              <label className="text-xs font-black uppercase tracking-[0.2em] text-slate-400 ml-1">Product / Service</label>
               <div className="relative group/input">
                 <input
                   type="text"
@@ -111,7 +111,7 @@ export function CopyGenerator({ onGenerate, isLoading }: CopyGeneratorProps) {
           </div>
 
           <div className="space-y-2 sm:space-y-3">
-            <label className="text-[9px] sm:text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 ml-1">Target Audience</label>
+            <label className="text-xs font-black uppercase tracking-[0.2em] text-slate-400 ml-1">Target Audience</label>
             <input
               type="text"
               placeholder="e.g. women 25–40 into skincare"
@@ -123,7 +123,7 @@ export function CopyGenerator({ onGenerate, isLoading }: CopyGeneratorProps) {
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 sm:gap-8">
             <div className="space-y-2 sm:space-y-3">
-              <label className="text-[9px] sm:text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 ml-1">Brand Voice / Tone</label>
+              <label className="text-xs font-black uppercase tracking-[0.2em] text-slate-400 ml-1">Brand Voice / Tone</label>
               <div className="relative">
                 <select
                   className="w-full h-14 sm:h-16 bg-slate-50/50 border border-slate-100 rounded-xl sm:rounded-[24px] px-5 sm:px-6 text-[12px] sm:text-[13px] font-bold focus:bg-white focus:border-[#01012A] transition-all outline-none appearance-none cursor-pointer"
@@ -141,7 +141,7 @@ export function CopyGenerator({ onGenerate, isLoading }: CopyGeneratorProps) {
             {(activeTab === "package" || activeTab === "script") && (
               <div className="space-y-2 sm:space-y-3 bg-slate-50/50 p-5 sm:p-6 rounded-2xl sm:rounded-[28px] border border-slate-100">
                 <div className="flex items-center justify-between">
-                  <label className="text-[9px] sm:text-[10px] font-black uppercase tracking-[0.2em] text-slate-400">Duration per scene (sec)</label>
+                  <label className="text-xs font-black uppercase tracking-[0.2em] text-slate-400">Duration per scene (sec)</label>
                   <span className="font-black text-[#01012A] text-[10px] sm:text-xs px-2 py-0.5 bg-white rounded-lg border border-slate-100">{formData.duration}s</span>
                 </div>
                 <input
@@ -158,7 +158,7 @@ export function CopyGenerator({ onGenerate, isLoading }: CopyGeneratorProps) {
 
             {(activeTab === "package" || activeTab === "caption" || activeTab === "cta" || activeTab === "hashtags") && (
               <div className="space-y-2 sm:space-y-3">
-                <label className="text-[9px] sm:text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 ml-1">Platform</label>
+                <label className="text-xs font-black uppercase tracking-[0.2em] text-slate-400 ml-1">Platform</label>
                 <div className="relative">
                   <select
                     className="w-full h-14 sm:h-16 bg-slate-50/50 border border-slate-100 rounded-xl sm:rounded-[24px] px-5 sm:px-6 text-[12px] sm:text-[13px] font-bold focus:bg-white focus:border-[#01012A] transition-all outline-none appearance-none cursor-pointer"
@@ -178,7 +178,7 @@ export function CopyGenerator({ onGenerate, isLoading }: CopyGeneratorProps) {
           {activeTab === "hashtags" && (
              <div className="space-y-3 bg-linear-to-r from-[#01012A] to-[#2E2C66]  p-6 sm:p-8 rounded-2xl sm:rounded-[32px] shadow-xl shadow-[#01012A]/20">
                 <div className="flex items-center justify-between">
-                  <label className="text-[9px] sm:text-[10px] font-black uppercase tracking-[0.2em] text-white/50">Number of hashtags</label>
+                  <label className="text-xs font-black uppercase tracking-[0.2em] text-white/50">Number of hashtags</label>
                   <span className="font-black text-white text-[10px] sm:text-xs px-3 py-1 bg-white/10 rounded-xl border border-white/5">#{formData.hashtagCount}</span>
                 </div>
                 <input
@@ -195,7 +195,7 @@ export function CopyGenerator({ onGenerate, isLoading }: CopyGeneratorProps) {
 
           {activeTab === "caption" && (
             <div className="space-y-2 sm:space-y-3">
-              <label className="text-[9px] sm:text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 ml-1">Campaign context (optional)</label>
+              <label className="text-xs font-black uppercase tracking-[0.2em] text-slate-400 ml-1">Campaign context (optional)</label>
               <textarea
                 placeholder="e.g. Summer glow launch, limited time offer"
                 className="w-full h-24 sm:h-32 bg-slate-50/50 border border-slate-100 rounded-2xl sm:rounded-[28px] p-5 sm:p-6 text-[12px] sm:text-[13px] font-bold focus:bg-white focus:border-[#01012A] transition-all outline-none resize-none"
@@ -209,15 +209,15 @@ export function CopyGenerator({ onGenerate, isLoading }: CopyGeneratorProps) {
             <div className="space-y-6 sm:space-y-8 pt-2 sm:pt-4">
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 px-1">
                 <div className="flex flex-col gap-1">
-                  <label className="text-[9px] sm:text-[10px] font-black uppercase tracking-[0.2em] text-[#01012A]">Scene Orchestration</label>
-                  <p className="text-[8px] sm:text-[9px] font-bold text-slate-400 uppercase tracking-widest leading-relaxed">Tailor your scene-by-scene creative brief</p>
+                  <label className="text-xs font-black uppercase tracking-[0.2em] text-[#01012A]">Scene Orchestration</label>
+                  <p className="text-xs font-bold text-slate-400 uppercase tracking-widest leading-relaxed">Tailor your scene-by-scene creative brief</p>
                 </div>
-                <span className="text-[8px] sm:text-[9px] font-black text-blue-600 px-3 py-1 bg-blue-50 border border-blue-100 rounded-full uppercase italic self-start sm:self-auto">7 Active Scenes</span>
+                <span className="text-xs font-black text-blue-600 px-3 py-1 bg-blue-50 border border-blue-100 rounded-full uppercase italic self-start sm:self-auto">7 Active Scenes</span>
               </div>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
                 {formData.scenes.map((scene, idx) => (
                   <div key={idx} className="relative group">
-                    <div className="absolute left-4 sm:left-6 top-1/2 -translate-y-1/2 w-7 h-7 sm:w-8 sm:h-8 rounded-xl sm:rounded-2xl bg-slate-50 flex items-center justify-center text-[9px] sm:text-[10px] font-black text-slate-400 border border-slate-100 group-focus-within:bg-linear-to-r from-[#01012A] to-[#2E2C66]  group-focus-within:text-white group-focus-within:border-[#01012A] transition-all duration-500 shadow-sm">
+                    <div className="absolute left-4 sm:left-6 top-1/2 -translate-y-1/2 w-7 h-7 sm:w-8 sm:h-8 rounded-xl sm:rounded-2xl bg-slate-50 flex items-center justify-center text-xs font-black text-slate-400 border border-slate-100 group-focus-within:bg-linear-to-r from-[#01012A] to-[#2E2C66]  group-focus-within:text-white group-focus-within:border-[#01012A] transition-all duration-500 shadow-sm">
                       {idx + 1}
                     </div>
                     <input
@@ -248,17 +248,17 @@ export function CopyGenerator({ onGenerate, isLoading }: CopyGeneratorProps) {
               {isLoading ? (
                 <>
                   <Icons.Loader className="w-5 h-5 sm:w-6 sm:h-6 animate-spin" />
-                  <span className="text-[10px] sm:text-[12px] font-black uppercase tracking-[0.2em] sm:tracking-[0.3em] ml-1 sm:ml-2">Engine Initializing...</span>
+                  <span className="text-xs sm:text-sm font-black uppercase tracking-[0.2em] sm:tracking-[0.3em] ml-1 sm:ml-2">Engine Initializing...</span>
                 </>
               ) : (
                 <>
                     <Icons.whiteMagicWand className="w-4 h-4 sm:w-5 sm:h-5" />
-                  <span className="text-[10px] sm:text-[12px] font-black uppercase tracking-[0.2em] sm:tracking-[0.3em]">Synthesize Neural Copy</span>
+                  <span className="text-xs sm:text-sm font-black uppercase tracking-[0.2em] sm:tracking-[0.3em]">Synthesize Neural Copy</span>
                 </>
               )}
             </button>
             <div className="flex flex-col items-center gap-2 mt-4 sm:mt-6">
-              <p className="text-[8px] sm:text-[9px] font-black text-slate-300 uppercase tracking-[0.2em] sm:tracking-[0.3em]">Autonomous Creative Asset Generation</p>
+              <p className="text-xs font-black text-slate-300 uppercase tracking-[0.2em] sm:tracking-[0.3em]">Autonomous Creative Asset Generation</p>
               <div className="h-0.5 w-10 sm:w-12 bg-slate-100 rounded-full" />
             </div>
           </div>

@@ -106,7 +106,7 @@ export default function AssetCard({
 
                <div className="flex flex-col gap-1">
                  <h3 className="text-white text-sm font-black tracking-tight leading-tight">{title}</h3>
-                 <span className="text-[9px] font-black text-white/40 uppercase tracking-[0.3em]">
+                 <span className="text-xs font-black text-white/40 uppercase tracking-[0.3em]">
                    {isPlaying ? "Synchronizing Production" : "Neural Audio Asset"}
                  </span>
                </div>
@@ -115,7 +115,7 @@ export default function AssetCard({
             <div className="absolute top-4 left-4">
                <div className="flex items-center gap-2 px-3 py-1.5 bg-white/10 backdrop-blur-md rounded-xl border border-white/10 shadow-lg">
                   <Icons.Mic className="w-3.5 h-3.5 text-blue-400" />
-                  <span className="text-[10px] font-black text-white uppercase tracking-widest leading-none">Voice & Audio</span>
+                  <span className="text-xs font-black text-white uppercase tracking-widest leading-none">Voice & Audio</span>
                </div>
             </div>
          </div>
@@ -124,7 +124,7 @@ export default function AssetCard({
            {videoError ? (
              <div className="absolute inset-0 flex flex-col items-center justify-center bg-slate-100 text-slate-300 gap-2 p-4">
                 <Icons.AlertTriangle className="w-8 h-8 opacity-20" />
-                <span className="text-[8px] font-black uppercase tracking-widest text-center">Video Unavailable</span>
+                <span className="text-xs font-black uppercase tracking-widest text-center">Video Unavailable</span>
              </div>
            ) : (
              <video 
@@ -141,7 +141,7 @@ export default function AssetCard({
           <div className="absolute top-4 left-4 z-10">
              <div className="flex items-center gap-2 px-3 py-1.5 bg-black/60 backdrop-blur-md rounded-xl border border-white/10 shadow-lg">
                 <Icons.Video className="w-3.5 h-3.5 text-emerald-400" />
-                <span className="text-[10px] font-black text-white uppercase tracking-widest leading-none">Video Production</span>
+                <span className="text-xs font-black text-white uppercase tracking-widest leading-none">Video Production</span>
              </div>
           </div>
           
@@ -170,7 +170,7 @@ export default function AssetCard({
           <div className="absolute top-4 left-4 z-10">
              <div className="flex items-center gap-2 px-3 py-1.5 bg-white/10 backdrop-blur-md rounded-xl border border-white/10 shadow-lg">
                 <Icons.Image className="w-3.5 h-3.5 text-blue-400" />
-                <span className="text-[10px] font-black text-[#01012A] uppercase tracking-widest leading-none">Still Asset</span>
+                <span className="text-xs font-black text-[#01012A] uppercase tracking-widest leading-none">Still Asset</span>
              </div>
           </div>
         </>
@@ -185,12 +185,12 @@ export default function AssetCard({
             <div className="flex items-center gap-4 text-white/60">
               <div className="flex items-center gap-1.5">
                 <Icons.Clock className="w-3.5 h-3.5" />
-                <span className="text-[10px] font-bold uppercase tracking-widest">{time}</span>
+                <span className="text-xs font-bold uppercase tracking-widest">{time}</span>
               </div>
               {fileSize && (
                 <div className="flex items-center gap-1.5 border-l border-white/10 pl-4">
                   <Icons.Database className="w-3.5 h-3.5" />
-                  <span className="text-[10px] font-bold uppercase tracking-widest">{formatFileSize(fileSize)}</span>
+                  <span className="text-xs font-bold uppercase tracking-widest">{formatFileSize(fileSize)}</span>
                 </div>
               )}
             </div>
@@ -206,7 +206,7 @@ export default function AssetCard({
                   onClick?.();
                 }
               }}
-              className="flex-1 h-11 bg-white text-[#01012A] rounded-xl text-xs font-black uppercase tracking-widest hover:bg-slate-100 transition-all shadow-xl active:scale-95 flex items-center justify-center gap-2"
+              className="flex-1 h-11 bg-white text-[#01012A] rounded-xl text-sm font-black uppercase tracking-widest hover:bg-slate-100 transition-all shadow-xl active:scale-95 flex items-center justify-center gap-2"
             >
               {type === "audio" ? (
                 <>
