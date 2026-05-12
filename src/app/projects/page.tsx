@@ -74,7 +74,7 @@ function ProjectsContent() {
               message: s.message,
               videoUrl: s.video_url,
               voiceoverUrl: s.voiceover_url,
-              musicUrl: s.music_url,
+              musicUrl: s.music_url || s.production?.music_url,
               script: s.script,
               history: s.history,
               briefDraft: s.brief_draft,
@@ -346,6 +346,7 @@ function ProjectsContent() {
                     campaignStatus={campaign?.campaign_status}
                     message={campaign.message}
                     videoUrl={campaign.videoUrl}
+                    musicUrl={campaign.musicUrl}
                     description={campaign.script || campaign.message || ""}
                     onPreview={() => {
                       setCampaignToView(campaign);

@@ -20,6 +20,7 @@ interface ProjectCardProps {
   description?: string;
   isSelected?: boolean;
   onClick?: () => void;
+  musicUrl?: string | null;
 }
 
 export default function ProjectCard({ 
@@ -35,12 +36,15 @@ export default function ProjectCard({
   onDelete,
   description,
   isSelected,
-  onClick
+  onClick,
+  musicUrl
 }: ProjectCardProps) {
   const [isMuted, setIsMuted] = useState(true);
   const [videoError, setVideoError] = useState(false);
   const [isPreviewOpen, setIsPreviewOpen] = useState(false);
   const videoRef = useRef<HTMLVideoElement>(null);
+  const audioRef = useRef<HTMLAudioElement>(null);
+  const [isAudioPlaying, setIsAudioPlaying] = useState(false);
 
   // Image slideshow state
   const images = useMemo(() => {
@@ -135,6 +139,18 @@ export default function ProjectCard({
     <>
     <div 
       onClick={onClick}
+      onMouseEnter={() => {
+        if (musicUrl && audioRef.current) {
+          audioRef.current.play().catch(() => {});
+          setIsAudioPlaying(true);
+        }
+      }}
+      onMouseLeave={() => {
+        if (musicUrl && audioRef.current) {
+          audioRef.current.pause();
+          setIsAudioPlaying(false);
+        }
+      }}
       className={cn(
         "group p-[8px] bg-white rounded-[12px] border overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 flex flex-col h-full cursor-pointer",
         isSelected ? "border-[#01012A] border-2 shadow-lg scale-[1.01]" : "border-slate-100"
@@ -171,23 +187,90 @@ export default function ProjectCard({
             </div>
           ) : (
             <div className="relative w-full h-full flex items-center justify-center bg-slate-50">
-              <Image 
-                src={images[currentImageIndex] || images[0]} 
-                alt={title}
-                fill
-                className={cn(
-                  "object-cover transition-all duration-500",
-                  isInProduction ? "scale-105 blur-sm" : "group-hover:scale-110",
-                  videoError && "opacity-40 grayscale",
-                  isTransitioning ? "opacity-0 scale-[1.02]" : "opacity-100 scale-100"
-                )}
-                onClick={(e) => {
-                  e.stopPropagation();
-                  setIsPreviewOpen(true);
-                }}
-              />
+              {musicUrl && !videoUrl ? (
+                <div className="absolute inset-0 flex items-center justify-center bg-linear-to-br from-[#01012A] via-[#1A1A3F] to-[#2E2C66]">
+                  {/* Ambient Background Glow */}
+                  <div className="absolute inset-0 opacity-40">
+                    <div className="absolute top-1/4 left-1/4 w-32 h-32 bg-blue-500 rounded-full blur-[60px] animate-pulse" />
+                    <div className="absolute bottom-1/4 right-1/4 w-32 h-32 bg-purple-500 rounded-full blur-[60px] animate-pulse delay-700" />
+                  </div>
+
+                  <div className="w-full h-full relative flex flex-col items-center justify-center gap-4 z-10 px-6 text-center">
+                    <div className="relative group/play">
+                      <div className={cn(
+                        "w-[80px] h-[80px] rounded-[24px] flex items-center justify-center transition-all duration-500",
+                        isAudioPlaying ? "bg-white/10 backdrop-blur-xl border border-white/20 scale-105" : "bg-white/5 border border-white/10"
+                      )}>
+                        <Icons.AudioWave className={cn(
+                          "w-10 h-10 transition-all duration-500", 
+                          isAudioPlaying ? "text-white animate-pulse" : "text-white/20"
+                        )} />
+                      </div>
+
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          if (audioRef.current) {
+                            if (isAudioPlaying) {
+                              audioRef.current.pause();
+                              setIsAudioPlaying(false);
+                            } else {
+                              audioRef.current.play().catch(() => {});
+                              setIsAudioPlaying(true);
+                            }
+                          }
+                        }}
+                        className="absolute inset-0 flex items-center justify-center opacity-0 group-hover/play:opacity-100 transition-opacity"
+                      >
+                        <div className={cn(
+                          "w-10 h-10 rounded-full flex items-center justify-center shadow-2xl transition-all duration-300",
+                          isAudioPlaying ? "bg-white text-[#01012A] scale-110" : "bg-white/10 backdrop-blur-md text-white border border-white/20 scale-0 group-hover/play:scale-100"
+                        )}>
+                          {isAudioPlaying ? <Icons.Pause className="w-4 h-4 fill-current" /> : <Icons.Play className="w-4 h-4 ml-0.5 fill-current" />}
+                        </div>
+                      </button>
+                    </div>
+                    <div className="flex flex-col gap-1">
+                      <span className="text-[10px] font-black text-white/40 uppercase tracking-[0.3em]">
+                        {isAudioPlaying ? "Synchronizing Production" : "Neural Audio Asset"}
+                      </span>
+                    </div>
+                    {musicUrl && (
+                      <audio 
+                        ref={audioRef}
+                        src={musicUrl}
+                        loop
+                        className="hidden"
+                      />
+                    )}
+                  </div>
+                  
+                  <div className="absolute top-3 left-3">
+                    <div className="flex items-center gap-1.5 px-2.5 py-1 bg-white/10 backdrop-blur-md rounded-lg border border-white/10 shadow-lg">
+                      <Icons.Mic className="w-3 h-3 text-blue-400" />
+                      <span className="text-[9px] font-black text-white uppercase tracking-widest leading-none">Voice & Audio</span>
+                    </div>
+                  </div>
+                </div>
+              ) : (
+                <Image 
+                  src={images[currentImageIndex] || images[0]} 
+                  alt={title}
+                  fill
+                  className={cn(
+                    "object-cover transition-all duration-500",
+                    isInProduction ? "scale-105 blur-sm" : "group-hover:scale-110",
+                    videoError && "opacity-40 grayscale",
+                    isTransitioning ? "opacity-0 scale-[1.02]" : "opacity-100 scale-100"
+                  )}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setIsPreviewOpen(true);
+                  }}
+                />
+              )}
               {/* Slideshow search overlay */}
-              {!isInProduction && !videoUrl && (
+              {!isInProduction && !videoUrl && !musicUrl && (
                 <div 
                   className="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center pointer-events-none"
                   onClick={(e) => {

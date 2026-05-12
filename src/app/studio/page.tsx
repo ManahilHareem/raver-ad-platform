@@ -111,6 +111,7 @@ function ActiveCampaignsGrid({ campaigns, onDelete, onViewMore, onViewDetails, a
                 campaignStatus={campaign.campaign_status}
                 message={campaign.message}
                 videoUrl={campaign.videoUrl}
+                musicUrl={campaign.musicUrl}
                 time={timeStr}
                 description={campaign.script || campaign.message || ""}
                 isSelected={i === activeIndex}
@@ -208,7 +209,7 @@ function StudioPageContent() {
                 message: s.message,
                 videoUrl: s.video_url,
                 voiceoverUrl: s.voiceover_url || s.audio_url,
-                musicUrl: s.music_url,
+                musicUrl: s.music_url || s.production?.music_url,
                 script: s.script,
                 audience: brief.audience,
                 objective: brief.objective,
