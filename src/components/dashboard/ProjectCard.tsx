@@ -222,12 +222,7 @@ export default function ProjectCard({
                         }}
                         className="absolute inset-0 flex items-center justify-center opacity-0 group-hover/play:opacity-100 transition-opacity"
                       >
-                        <div className={cn(
-                          "w-10 h-10 rounded-full flex items-center justify-center shadow-2xl transition-all duration-300",
-                          isAudioPlaying ? "bg-white text-brand-primary scale-110" : "bg-white/10 backdrop-blur-md text-white border border-white/20 scale-0 group-hover/play:scale-100"
-                        )}>
-                          {isAudioPlaying ? <Icons.Pause className="w-4 h-4 fill-current" /> : <Icons.Play className="w-4 h-4 ml-0.5 fill-current" />}
-                        </div>
+                      
                       </button>
                     </div>
                     <div className="flex flex-col gap-1">
