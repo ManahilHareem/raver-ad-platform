@@ -60,16 +60,16 @@ function StudioLoadingState() {
     <DashboardLayout>
       <div className="flex flex-col items-center justify-center min-h-[70vh] gap-8 px-4">
         <div className="relative flex items-center justify-center">
-          <div className="w-24 h-24 border-[2.5px] border-slate-100 border-t-[#01012A] rounded-full animate-spin duration-[1.5s]"></div>
+          <div className="w-24 h-24 border-[2.5px] border-slate-100 border-t-brand-primary rounded-full animate-spin duration-[1.5s]"></div>
           <div className="absolute inset-0 flex items-center justify-center">
-            <div className="w-12 h-12 bg-linear-to-br from-[#01012A] to-[#2E2C66] rounded-full flex items-center justify-center shadow-lg shadow-[#01012A]/20">
+            <div className="w-12 h-12 bg-linear-to-br from-brand-primary to-brand-secondary rounded-full flex items-center justify-center shadow-lg shadow-brand-primary/20">
               <Icons.Loader className="w-6 h-6 text-white animate-spin duration-[2s]" />
             </div>
           </div>
-          <div className="absolute w-32 h-32 border border-[#01012A]/10 rounded-full animate-ping opacity-30"></div>
+          <div className="absolute w-32 h-32 border border-brand-primary/10 rounded-full animate-ping opacity-30"></div>
         </div>
         <div className="flex flex-col items-center gap-3 text-center max-w-sm">
-          <h3 className="text-[22px] font-bold tracking-tight bg-linear-to-r from-[#01012A] to-[#2E2C66] bg-clip-text text-transparent">
+          <h3 className="text-[22px] font-bold tracking-tight bg-linear-to-r from-brand-primary to-brand-secondary bg-clip-text text-transparent">
             Initializing Studio
           </h3>
           <p className="text-slate-500 text-[15px] leading-relaxed font-medium">
@@ -88,7 +88,7 @@ function ActiveCampaignsGrid({ campaigns, onDelete, onViewMore, onViewDetails, a
         <h2 className="text-[18px] font-bold text-[#121212]">Active Campaigns</h2>
         <button
           onClick={onViewMore}
-          className="px-3 py-1.5 rounded-lg text-[13px] font-bold text-[#121212] transition-all flex items-center gap-1.5 group hover:bg-linear-to-r hover:from-[#01012A] hover:to-[#2E2C66] hover:text-white active:scale-95"
+          className="px-3 py-1.5 rounded-lg text-[13px] font-bold text-[#121212] transition-all flex items-center gap-1.5 group hover:bg-linear-to-r hover:from-brand-primary hover:to-brand-secondary hover:text-white active:scale-95"
         >
           View More
           <Icons.ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-0.5" />
@@ -740,7 +740,7 @@ function StudioPageContent() {
         <CampaignInsights insights={insights} />
       </div>
 
-      <button className="fixed bottom-6 right-8 w-[60px] h-[60px] bg-linear-to-r from-[#01012A] to-[#2E2C66] text-white rounded-full flex items-center justify-center shadow-2xl hover:scale-110 active:scale-95 transition-all z-40 shadow-[#01012A]/20">
+      <button className="fixed bottom-6 right-8 w-[60px] h-[60px] bg-linear-to-r from-brand-primary to-brand-secondary text-white rounded-full flex items-center justify-center shadow-2xl hover:scale-110 active:scale-95 transition-all z-40 shadow-brand-primary/20">
         <Icons.MessageCircle className="w-6 h-6" />
       </button>
 

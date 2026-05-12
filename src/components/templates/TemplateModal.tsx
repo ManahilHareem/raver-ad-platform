@@ -126,7 +126,7 @@ export default function TemplateModal({ template, isOpen, onClose }: TemplateMod
               >
                 Back
               </button>
-              <button className="flex-[2.5] h-[48px] bg-[linear-gradient(90deg,#01012A_0%,#2E2C66_100%)] text-white rounded-[12px] text-[16px] font-bold hover:opacity-90 transition-all flex items-center justify-center gap-[10px] shadow-[inset_0px_-5px_5px_0px_#4F569B]">
+              <button className="flex-[2.5] h-[48px] bg-[linear-gradient(90deg,var(--color-brand-primary)_0%,var(--color-brand-secondary)_100%)] text-white rounded-[12px] text-[16px] font-bold hover:opacity-90 transition-all flex items-center justify-center gap-[10px] shadow-[inset_0px_-5px_5px_0px_#4F569B]">
                 <Icons.whiteMagicWand className="w-5 h-5 text-white" /> Use This Template
               </button>
             </div>

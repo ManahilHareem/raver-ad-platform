@@ -52,12 +52,12 @@ export function ProducerModal({
            <div className="flex items-center gap-5">
               <div className={cn(
                 "w-14 h-14 rounded-[22px] flex items-center justify-center shadow-xl transition-all duration-700",
-                hasLaunched ? "bg-white shadow-white/20" : "bg-linear-to-r from-[#01012A] to-[#2E2C66] shadow-[#01012A]/20"
+                hasLaunched ? "bg-white shadow-white/20" : "bg-linear-to-r from-brand-primary to-brand-secondary shadow-brand-primary/20"
               )}>
-                 {hasLaunched ? <Icons.Activity className="w-7 h-7 text-[#01012A]" /> : <Icons.Rocket className="w-7 h-7 text-white" />}
+                 {hasLaunched ? <Icons.Activity className="w-7 h-7 text-brand-primary" /> : <Icons.Rocket className="w-7 h-7 text-white" />}
               </div>
               <div className="flex flex-col">
-                 <h3 className="text-3xl font-black text-[#01012A] tracking-tighter lowercase leading-none">
+                 <h3 className="text-3xl font-black text-brand-primary tracking-tighter lowercase leading-none">
                    {hasLaunched ? "Live Orchestration" : "Orchestration Suite"}
                  </h3>
                  <p className="text-[10px] font-black uppercase tracking-[0.3em] text-slate-400 mt-2 flex items-center gap-2">
@@ -74,7 +74,7 @@ export function ProducerModal({
              onClick={onClose}
              className="w-12 h-12 flex items-center justify-center bg-slate-50 hover:bg-slate-100 rounded-2xl transition-all group"
            >
-              <Icons.Plus className="w-6 h-6 text-slate-400 group-hover:text-[#01012A] rotate-45 transition-transform" />
+              <Icons.Plus className="w-6 h-6 text-slate-400 group-hover:text-brand-primary rotate-45 transition-transform" />
            </button>
         </div>
 
@@ -90,14 +90,14 @@ export function ProducerModal({
            ) : (
              <div className="max-w-4xl mx-auto py-12 px-6 h-full">
                 <div className="flex flex-col gap-8">
-                  <div className="p-8 bg-linear-to-r from-[#01012A] to-[#2E2C66] rounded-[32px] border border-white/10 flex items-center justify-between">
+                  <div className="p-8 bg-linear-to-r from-brand-primary to-brand-secondary rounded-[32px] border border-white/10 flex items-center justify-between">
                      <div className="flex flex-col gap-1">
                         <span className="text-[10px] font-black uppercase text-white/40 tracking-widest">Active Thread ID</span>
                         <span className="text-xl font-black text-white tracking-tighter">{activeCampaign?.id || "Initializing Matrix..."}</span>
                      </div>
                      <button 
                        onClick={onClose}
-                       className="h-12 px-8 bg-white text-[#01012A] rounded-2xl text-[10px] font-black uppercase tracking-widest shadow-xl shadow-black/20 active:scale-95 transition-all"
+                       className="h-12 px-8 bg-white text-brand-primary rounded-2xl text-[10px] font-black uppercase tracking-widest shadow-xl shadow-black/20 active:scale-95 transition-all"
                      >
                        Continue to Dashboard
                      </button>

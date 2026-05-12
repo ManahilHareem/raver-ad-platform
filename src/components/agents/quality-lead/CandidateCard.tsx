@@ -59,15 +59,15 @@ export function CandidateCard({
             className="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-700"
           />
         ) : (
-          <div className="w-full h-full bg-[#01012A]/5 flex items-center justify-center">
-            <Icons.Video className="w-8 h-8 text-[#01012A]/20" />
+          <div className="w-full h-full bg-brand-primary/5 flex items-center justify-center">
+            <Icons.Video className="w-8 h-8 text-brand-primary/20" />
           </div>
         );
       
       case "Audio":
       case "audio_mix":
         return (
-          <div className="w-full h-full bg-linear-to-br from-[#01012A] to-[#2E2C66] flex flex-col items-center justify-center p-6 gap-4">
+          <div className="w-full h-full bg-linear-to-br from-brand-primary to-brand-secondary flex flex-col items-center justify-center p-6 gap-4">
             <div className="w-12 h-12 rounded-full border border-white/20 flex items-center justify-center animate-pulse">
               <Icons.Mic className="w-6 h-6 text-white/40" />
             </div>
@@ -92,8 +92,8 @@ export function CandidateCard({
             className="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-700" 
           />
         ) : (
-          <div className="w-full h-full bg-[#01012A]/5 flex items-center justify-center">
-            <Icons.Image className="w-8 h-8 text-[#01012A]/20" />
+          <div className="w-full h-full bg-brand-primary/5 flex items-center justify-center">
+            <Icons.Image className="w-8 h-8 text-brand-primary/20" />
           </div>
         );
 
@@ -103,7 +103,7 @@ export function CandidateCard({
           <div className="w-full h-full bg-[#F8FAFC] p-6 flex flex-col gap-3">
              <div className="flex items-center gap-2">
                <Icons.Files className="w-4 h-4 text-blue-500" />
-               <span className="text-[10px] font-black uppercase tracking-widest text-[#01012A]/40">Brand Script</span>
+               <span className="text-[10px] font-black uppercase tracking-widest text-brand-primary/40">Brand Script</span>
              </div>
              <p className="text-[12px] font-medium text-slate-500 line-clamp-4 leading-relaxed italic">
                "{
@@ -158,10 +158,10 @@ export function CandidateCard({
         </div>
 
         {/* Action Overlay */}
-        <div className="absolute inset-0 bg-[#01012A]/60 opacity-0 group-hover:opacity-100 transition-all duration-500 flex items-center justify-center backdrop-blur-[2px]">
+        <div className="absolute inset-0 bg-brand-primary/60 opacity-0 group-hover:opacity-100 transition-all duration-500 flex items-center justify-center backdrop-blur-[2px]">
           <button 
             onClick={() => onAudit({ id, sessionId, campaignId, type, label, url, createdAt, raw })}
-            className="px-6 py-2.5 bg-white text-[#01012A] rounded-xl font-black text-[10px] uppercase tracking-widest transform translate-y-4 group-hover:translate-y-0 transition-all duration-500 hover:scale-105 active:scale-95 shadow-2xl"
+            className="px-6 py-2.5 bg-white text-brand-primary rounded-xl font-black text-[10px] uppercase tracking-widest transform translate-y-4 group-hover:translate-y-0 transition-all duration-500 hover:scale-105 active:scale-95 shadow-2xl"
           >
             Initiate Audit
           </button>
@@ -171,7 +171,7 @@ export function CandidateCard({
       {/* Candidate Metadata */}
       <div className="p-5 space-y-4">
         <div className="flex items-center justify-between">
-           <h4 className="text-[13px] font-black text-[#01012A] tracking-tighter uppercase truncate pr-4">
+           <h4 className="text-[13px] font-black text-brand-primary tracking-tighter uppercase truncate pr-4">
              {label}
            </h4>
            <div className="p-2 rounded-lg bg-slate-50 border border-slate-100 group-hover:bg-blue-50 group-hover:border-blue-100 transition-colors">
@@ -182,11 +182,11 @@ export function CandidateCard({
         <div className="flex flex-col gap-2 pt-2 border-t border-slate-50">
            <div className="flex items-center justify-between">
              <span className="text-[9px] font-bold text-slate-400 uppercase tracking-widest">Orchestration ID</span>
-             <span className="text-[9px] font-black text-[#01012A] font-mono">{id.slice(0, 12)}...</span>
+             <span className="text-[9px] font-black text-brand-primary font-mono">{id.slice(0, 12)}...</span>
            </div>
            <div className="flex items-center justify-between">
              <span className="text-[9px] font-bold text-slate-400 uppercase tracking-widest">Synthesis Date</span>
-             <span className="text-[9px] font-black text-[#01012A]">
+             <span className="text-[9px] font-black text-brand-primary">
                {new Date(createdAt).toLocaleDateString([], { month: 'short', day: 'numeric', year: 'numeric' })}
              </span>
            </div>
@@ -197,7 +197,7 @@ export function CandidateCard({
             e.stopPropagation();
             onAudit({ id, sessionId, campaignId, type, label, url, createdAt, raw });
           }}
-          className="w-full py-3 bg-slate-50 border border-slate-100 rounded-xl text-[10px] font-black uppercase tracking-widest text-[#01012A] hover:bg-[#01012A] hover:text-white transition-all duration-300 active:scale-95 flex items-center justify-center gap-2 group/btn"
+          className="w-full py-3 bg-slate-50 border border-slate-100 rounded-xl text-[10px] font-black uppercase tracking-widest text-brand-primary hover:bg-brand-primary hover:text-white transition-all duration-300 active:scale-95 flex items-center justify-center gap-2 group/btn"
         >
           <Icons.Eye className="w-3.5 h-3.5 text-slate-400 group-hover/btn:text-white transition-colors" />
           View Audit Details

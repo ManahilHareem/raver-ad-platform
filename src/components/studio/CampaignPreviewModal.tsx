@@ -946,7 +946,7 @@ export default function CampaignPreviewModal({
                 <button
                   onClick={handleApplyChanges}
                   disabled={isApplyingChanges}
-                  className="px-8 py-4 bg-linear-to-r from-[#01012A] to-[#2E2C66] text-white rounded-xl font-bold text-[13px] uppercase tracking-wider hover:shadow-xl hover:-translate-y-px transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+                  className="px-8 py-4 bg-linear-to-r from-brand-primary to-brand-secondary text-white rounded-xl font-bold text-[13px] uppercase tracking-wider hover:shadow-xl hover:-translate-y-px transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
                 >
                   {isApplyingChanges ? (
                     <>
@@ -1206,7 +1206,7 @@ export default function CampaignPreviewModal({
                             className={cn(
                               "relative px-5 py-3.5 rounded-[24px] text-[13.5px] leading-relaxed shadow-sm transition-all",
                               msg.role === "user"
-                                ? "bg-linear-to-r from-[#01012A] to-[#2E2C66] text-white rounded-tr-none shadow-[inset_0px_-5px_5px_0px_rgba(79,86,155,0.1)]"
+                                ? "bg-linear-to-r from-brand-primary to-brand-secondary text-white rounded-tr-none shadow-[inset_0px_-5px_5px_0px_rgba(79,86,155,0.1)]"
                                 : "bg-white text-[#121212] border border-slate-100 rounded-tl-none shadow-[0_4px_12px_-4px_rgba(0,0,0,0.04)]"
                             )}
                           >

@@ -31,7 +31,7 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
       {/* Mobile Overlay - only shown when sidebar is open on mobile */}
       {isOpen && (
         <div 
-          className="fixed inset-0 bg-[#01012A]/60 backdrop-blur-sm z-90 lg:hidden animate-in fade-in duration-300"
+          className="fixed inset-0 bg-brand-primary/60 backdrop-blur-sm z-90 lg:hidden animate-in fade-in duration-300"
           onClick={onClose}
         />
       )}

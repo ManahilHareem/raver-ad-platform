@@ -18,7 +18,7 @@ export function CampaignHistoryList({ history, onDelete }: CampaignHistoryListPr
             <Icons.Files className="w-5 h-5 text-slate-400" />
           </div>
           <div className="flex flex-col">
-            <h2 className="text-xl font-black text-[#01012A] tracking-tighter lowercase leading-none">Production Audits</h2>
+            <h2 className="text-xl font-black text-brand-primary tracking-tighter lowercase leading-none">Production Audits</h2>
           </div>
         </div>
         <div className="flex items-center gap-2 px-4 py-2 bg-slate-50 rounded-full border border-slate-100">
@@ -39,14 +39,14 @@ export function CampaignHistoryList({ history, onDelete }: CampaignHistoryListPr
             {/* Header Section */}
             <div className="flex items-center justify-between relative z-10 mb-6">
               <div className="flex flex-col gap-1">
-                <h4 className="text-xl font-black text-[#01012A] tracking-tighter lowercase">{campaign.name || "unnamed_brief"}</h4>
+                <h4 className="text-xl font-black text-brand-primary tracking-tighter lowercase">{campaign.name || "unnamed_brief"}</h4>
               </div>
               <div className="flex items-center gap-3">
                 <div className={cn(
                   "px-3 py-1 rounded-lg text-[9px] font-black uppercase tracking-widest border",
                   campaign.status === "delivered" || campaign.status === "completed" || campaign.status === "ready_for_human_review"
                     ? "bg-emerald-50 text-emerald-600 border-emerald-100"
-                    : "bg-slate-50 text-[#01012A] border-slate-100"
+                    : "bg-slate-50 text-brand-primary border-slate-100"
                 )}>
                   {campaign.status}
                 </div>
@@ -76,7 +76,7 @@ export function CampaignHistoryList({ history, onDelete }: CampaignHistoryListPr
               </div>
               <div className="p-4 bg-slate-50/50 rounded-2xl border border-slate-100/50 flex flex-col gap-1">
                 <span className="text-[8px] font-black uppercase text-slate-400 tracking-tighter">ID Matrix</span>
-                <span className="text-[10px] font-black text-[#01012A] truncate">{campaign.id.split('-')[0]}</span>
+                <span className="text-[10px] font-black text-brand-primary truncate">{campaign.id.split('-')[0]}</span>
               </div>
             </div>
 
@@ -84,7 +84,7 @@ export function CampaignHistoryList({ history, onDelete }: CampaignHistoryListPr
             <div className="relative z-10 pt-2">
               <Link
                 href={`/agents/producer/campaign/${campaign.id}`}
-                className="w-full h-12 bg-linear-to-r from-[#01012A] to-[#2E2C66] text-white rounded-2xl flex items-center justify-between px-6 transition-all hover:bg-[#2E2C66] active:scale-95 group/btn"
+                className="w-full h-12 bg-linear-to-r from-brand-primary to-brand-secondary text-white rounded-2xl flex items-center justify-between px-6 transition-all hover:bg-brand-secondary active:scale-95 group/btn"
               >
                 <span className="text-[10px] font-black uppercase tracking-widest">Review Full Audit</span>
                 <Icons.ArrowRight className="w-4 h-4 text-white/50 group-hover/btn:translate-x-1 transition-transform" />

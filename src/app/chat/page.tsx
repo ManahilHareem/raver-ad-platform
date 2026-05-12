@@ -475,7 +475,7 @@ export default function ChatPage() {
                       <div className={cn(
                         "px-4 py-3 rounded-2xl text-[14px] leading-relaxed shadow-sm transition-all",
                         m.role === "user" 
-                          ? "bg-[linear-gradient(90deg,#01012A_0%,#2E2C66_100%)] text-white rounded-tr-none shadow-[inset_0px_-5px_5px_0px_#4F569B]" 
+                          ? "bg-[linear-gradient(90deg,var(--color-brand-primary)_0%,var(--color-brand-secondary)_100%)] text-white rounded-tr-none shadow-[inset_0px_-5px_5px_0px_#4F569B]" 
                           : "bg-white text-[#121212] border border-slate-200 rounded-tl-none"
                       )}>
                         <MarkdownRenderer content={m.content} isUser={m.role === "user"} />

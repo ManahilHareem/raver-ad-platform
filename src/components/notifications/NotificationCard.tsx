@@ -83,13 +83,13 @@ export function NotificationCard({ notification, onRead, onDelete }: Notificatio
       {/* Glow Effect for Unread */}
       {!notification.isRead && (
         <div className={cn(
-          "absolute -inset-0.5 rounded-[36px] bg-linear-to-r from-[#01012A] to-[#2E2C66] opacity-5 blur-xl transition-opacity group-hover:opacity-10"
+          "absolute -inset-0.5 rounded-[36px] bg-linear-to-r from-brand-primary to-brand-secondary opacity-5 blur-xl transition-opacity group-hover:opacity-10"
         )} />
       )}
 
       {/* Specialist Icon with Brand Gradient */}
       <div className={cn(
-        "w-12 h-12 rounded-2xl flex items-center justify-center shrink-0 shadow-lg bg-linear-to-r from-[#01012A] to-[#2E2C66] transition-transform duration-500 group-hover:rotate-6 shadow-[#01012A]/10"
+        "w-12 h-12 rounded-2xl flex items-center justify-center shrink-0 shadow-lg bg-linear-to-r from-brand-primary to-brand-secondary transition-transform duration-500 group-hover:rotate-6 shadow-brand-primary/10"
       )}>
         {config.icon}
       </div>

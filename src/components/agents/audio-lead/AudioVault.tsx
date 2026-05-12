@@ -48,7 +48,7 @@ export function AudioVault({
             <Icons.Loader className="w-8 h-8 text-slate-300 animate-spin" />
          </div>
          <div className="flex flex-col gap-2">
-            <h3 className="text-xl font-black text-[#01012A] tracking-tighter lowercase">
+            <h3 className="text-xl font-black text-brand-primary tracking-tighter lowercase">
               {isGlobalArchive ? "Neural Archives Syncing..." : "Session Vault Syncing..."}
             </h3>
             <p className="text-sm text-slate-400 font-bold max-w-xs">Accessing the synthesis archives to retrieve your audio assets.</p>
@@ -64,7 +64,7 @@ export function AudioVault({
             <Icons.Mic className="w-8 h-8 text-slate-200" />
          </div>
          <div className="flex flex-col gap-2">
-            <h3 className="text-xl font-black text-[#01012A] tracking-tighter lowercase">
+            <h3 className="text-xl font-black text-brand-primary tracking-tighter lowercase">
               {isGlobalArchive ? "zero synthesis results found_" : "no session assets synthesized_"}
             </h3>
             <p className="text-sm text-slate-400 font-bold max-w-xs text-balance">
@@ -79,13 +79,13 @@ export function AudioVault({
     <div className={cn("flex flex-col gap-8", className)}>
       <div className="flex items-center justify-between border-b border-slate-50 pb-6">
         <div className="flex items-center gap-3">
-          <Icons.Files className="w-5 h-5 text-[#01012A]" />
-          <h3 className="text-xl font-black text-[#01012A] tracking-tighter lowercase">
+          <Icons.Files className="w-5 h-5 text-brand-primary" />
+          <h3 className="text-xl font-black text-brand-primary tracking-tighter lowercase">
             {isGlobalArchive ? "Global Synthesis Archives" : "Session Audit Vault"}
           </h3>
         </div>
         <div className="flex items-center gap-2 px-3 py-1 bg-slate-50 rounded-lg border border-slate-100">
-           <span className="text-[10px] font-black uppercase tracking-widest text-[#01012A]">{assets.length} Assets Found</span>
+           <span className="text-[10px] font-black uppercase tracking-widest text-brand-primary">{assets.length} Assets Found</span>
         </div>
       </div>
 
@@ -179,7 +179,7 @@ export function AudioVault({
                  )}
                  <button 
                   onClick={() => onDownload(asset.url)}
-                  className="w-10 h-10 rounded-2xl flex items-center justify-center bg-slate-50 text-slate-400 hover:bg-linear-to-r hover:from-[#01012A] hover:to-[#2E2C66]  hover:text-white transition-all active:scale-90 shadow-sm"
+                  className="w-10 h-10 rounded-2xl flex items-center justify-center bg-slate-50 text-slate-400 hover:bg-linear-to-r hover:from-brand-primary hover:to-brand-secondary  hover:text-white transition-all active:scale-90 shadow-sm"
                   title="Download Neural Asset"
                  >
                    <Icons.Download className="w-4 h-4" />

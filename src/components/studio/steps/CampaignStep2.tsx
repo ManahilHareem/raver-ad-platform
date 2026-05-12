@@ -54,7 +54,7 @@ export default function CampaignStep2({ data, updateData, errors }: CampaignStep
                     }`}
                   style={isSelected ? {
                     border: '1px solid transparent',
-                    background: 'linear-gradient(white, white) padding-box, linear-gradient(90deg, #01012A 0%, #2E2C66 100%) border-box'
+                    background: 'linear-gradient(white, white) padding-box, linear-gradient(90deg, var(--color-brand-primary) 0%, var(--color-brand-secondary) 100%) border-box'
                   } : {}}
                 >
                   {s}
@@ -79,7 +79,7 @@ export default function CampaignStep2({ data, updateData, errors }: CampaignStep
                     }`}
                   style={isSelected ? {
                     border: '1px solid transparent',
-                    background: 'linear-gradient(white, white) padding-box, linear-gradient(90deg, #01012A 0%, #2E2C66 100%) border-box'
+                    background: 'linear-gradient(white, white) padding-box, linear-gradient(90deg, var(--color-brand-primary) 0%, var(--color-brand-secondary) 100%) border-box'
                   } : {}}
                 >
                   {t}
@@ -104,7 +104,7 @@ export default function CampaignStep2({ data, updateData, errors }: CampaignStep
                     }`}
                   style={isSelected ? {
                     border: '1px solid transparent',
-                    background: 'linear-gradient(white, white) padding-box, linear-gradient(90deg, #01012A 0%, #2E2C66 100%) border-box'
+                    background: 'linear-gradient(white, white) padding-box, linear-gradient(90deg, var(--color-brand-primary) 0%, var(--color-brand-secondary) 100%) border-box'
                   } : {}}
                 >
                   <div className="flex gap-1.5 mb-2">

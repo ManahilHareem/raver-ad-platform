@@ -178,7 +178,7 @@ function ProducerContent() {
                     href="/agents"
                     className="w-12 h-12 bg-white rounded-2xl flex items-center justify-center border border-slate-100 hover:border-slate-300 shadow-sm transition-all"
                   >
-                    <Icons.ArrowLeft className="w-5 h-5 text-[#01012A]" />
+                    <Icons.ArrowLeft className="w-5 h-5 text-brand-primary" />
                   </Link>
                 </div>
                 <div className="flex flex-col">
@@ -189,7 +189,7 @@ function ProducerContent() {
               <div className="hidden sm:flex items-center gap-4">
                 <button
                   onClick={() => setIsModalOpen(true)}
-                  className="h-14 px-10 border border-slate-100 rounded-[24px] font-black text-xs flex items-center gap-3 transition-all bg-linear-to-r from-[#01012A] to-[#2E2C66] text-white hover:border-transparent active:scale-95 group shadow-xl shadow-black/5"
+                  className="h-14 px-10 border border-slate-100 rounded-[24px] font-black text-xs flex items-center gap-3 transition-all bg-linear-to-r from-brand-primary to-brand-secondary text-white hover:border-transparent active:scale-95 group shadow-xl shadow-black/5"
                 >
                   <Icons.Plus className="w-5 h-5 transition-transform group-hover:rotate-180 duration-500" />
                   <span className="uppercase tracking-widest text-[11px]">Initiate Master Production</span>

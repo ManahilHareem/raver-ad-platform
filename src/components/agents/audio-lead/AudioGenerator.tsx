@@ -85,10 +85,10 @@ export function AudioGenerator({
       <div className="flex flex-col sm:flex-row items-center justify-between gap-6 border-b border-slate-50 pb-8">
         <div className="flex items-center gap-4">
            <div className="w-12 h-12 bg-slate-50 rounded-[20px] flex items-center justify-center border border-slate-100 shadow-sm">
-              <Icons.Activity className="w-6 h-6 text-[#01012A]" />
+              <Icons.Activity className="w-6 h-6 text-brand-primary" />
            </div>
            <div className="flex flex-col">
-              <h2 className="text-xl font-black text-[#01012A] tracking-tighter lowercase leading-none">Neural Orchestration</h2>
+              <h2 className="text-xl font-black text-brand-primary tracking-tighter lowercase leading-none">Neural Orchestration</h2>
               <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mt-2 shrink-0">Creative Parameters Input</span>
            </div>
         </div>
@@ -102,7 +102,7 @@ export function AudioGenerator({
                 onClick={() => setActiveTab(tab.id as any)}
                 className={cn(
                   "flex items-center gap-2.5 px-5 py-2.5 rounded-[18px] text-[11px] font-black uppercase tracking-widest transition-all active:scale-95",
-                  activeTab === tab.id ? "bg-white text-[#01012A] shadow-sm border border-slate-100/50" : "text-slate-400 hover:text-slate-600"
+                  activeTab === tab.id ? "bg-white text-brand-primary shadow-sm border border-slate-100/50" : "text-slate-400 hover:text-slate-600"
                 )}
               >
                 <Icon className={cn("w-4 h-4", activeTab === tab.id ? "text-blue-500" : "text-slate-300")} />
@@ -119,23 +119,23 @@ export function AudioGenerator({
           {(activeTab === "music" || activeTab === "full") && (
             <>
               <div className="flex flex-col gap-2">
-                <label className="text-[10px] font-black uppercase tracking-widest text-[#01012A] ml-1">Brand Identity</label>
+                <label className="text-[10px] font-black uppercase tracking-widest text-brand-primary ml-1">Brand Identity</label>
                 <input 
                   type="text"
                   placeholder="e.g. Glow Studio"
                   value={formData.businessName}
                   onChange={(e) => updateField("businessName", e.target.value)}
-                  className="w-full h-14 bg-slate-50 border border-transparent rounded-[20px] px-6 text-sm font-bold text-[#01012A] placeholder:text-slate-300 focus:bg-white focus:border-slate-100 transition-all outline-none"
+                  className="w-full h-14 bg-slate-50 border border-transparent rounded-[20px] px-6 text-sm font-bold text-brand-primary placeholder:text-slate-300 focus:bg-white focus:border-slate-100 transition-all outline-none"
                 />
               </div>
               <div className="flex flex-col gap-2">
-                <label className="text-[10px] font-black uppercase tracking-widest text-[#01012A] ml-1">Product Archetype</label>
+                <label className="text-[10px] font-black uppercase tracking-widest text-brand-primary ml-1">Product Archetype</label>
                 <input 
                   type="text"
                   placeholder="e.g. matte lipstick"
                   value={formData.productName}
                   onChange={(e) => updateField("productName", e.target.value)}
-                  className="w-full h-14 bg-slate-50 border border-transparent rounded-[20px] px-6 text-sm font-bold text-[#01012A] placeholder:text-slate-300 focus:bg-white focus:border-slate-100 transition-all outline-none"
+                  className="w-full h-14 bg-slate-50 border border-transparent rounded-[20px] px-6 text-sm font-bold text-brand-primary placeholder:text-slate-300 focus:bg-white focus:border-slate-100 transition-all outline-none"
                 />
               </div>
             </>
@@ -143,12 +143,12 @@ export function AudioGenerator({
 
           {(activeTab === "voiceover" || activeTab === "full") && (
             <div className="flex flex-col gap-2">
-              <label className="text-[10px] font-black uppercase tracking-widest text-[#01012A] ml-1">Voiceover Script</label>
+              <label className="text-[10px] font-black uppercase tracking-widest text-brand-primary ml-1">Voiceover Script</label>
               <textarea 
                 placeholder="Enter the spoken script... Use | to separate scenes."
                 value={formData.script}
                 onChange={(e) => updateField("script", e.target.value)}
-                className="w-full min-h-[140px] bg-slate-50 border border-transparent rounded-[24px] p-6 text-sm font-medium text-[#01012A] placeholder:text-slate-300 focus:bg-white focus:border-slate-100 transition-all outline-none resize-none leading-relaxed"
+                className="w-full min-h-[140px] bg-slate-50 border border-transparent rounded-[24px] p-6 text-sm font-medium text-brand-primary placeholder:text-slate-300 focus:bg-white focus:border-slate-100 transition-all outline-none resize-none leading-relaxed"
               />
               <div className="flex items-center gap-2 mt-1">
                  <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
@@ -164,11 +164,11 @@ export function AudioGenerator({
             {(activeTab === "music" || activeTab === "full") && (
               <div className="flex flex-col gap-6">
                 <div className="flex flex-col gap-2">
-                  <label className="text-[10px] font-black uppercase tracking-widest text-[#01012A] ml-1">Music Archetone</label>
+                  <label className="text-[10px] font-black uppercase tracking-widest text-brand-primary ml-1">Music Archetone</label>
                   <select 
                     value={formData.tone}
                     onChange={(e) => updateField("tone", e.target.value)}
-                    className="w-full h-14 bg-white border border-slate-100 rounded-[20px] px-6 text-sm font-bold text-[#01012A] transition-all outline-none active:scale-[0.98]"
+                    className="w-full h-14 bg-white border border-slate-100 rounded-[20px] px-6 text-sm font-bold text-brand-primary transition-all outline-none active:scale-[0.98]"
                   >
                     <option value="elegant">Elegant & Sophisticated</option>
                     <option value="luxury">Luxury & Premium</option>
@@ -179,7 +179,7 @@ export function AudioGenerator({
                 </div>
                 <div className="flex flex-col gap-4">
                   <div className="flex items-center justify-between px-1">
-                    <label className="text-[10px] font-black uppercase tracking-widest text-[#01012A]">Atmospheric Duration</label>
+                    <label className="text-[10px] font-black uppercase tracking-widest text-brand-primary">Atmospheric Duration</label>
                     <span className="text-[11px] font-black text-blue-600 px-2 py-0.5 bg-blue-50 rounded-lg">{formData.duration}s</span>
                   </div>
                   <input 
@@ -189,7 +189,7 @@ export function AudioGenerator({
                     step="5"
                     value={formData.duration}
                     onChange={(e) => updateField("duration", parseInt(e.target.value))}
-                    className="w-full h-1.5 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-[#01012A]"
+                    className="w-full h-1.5 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-brand-primary"
                   />
                 </div>
               </div>
@@ -203,7 +203,7 @@ export function AudioGenerator({
                 />
                 <div className="flex flex-col gap-4">
                   <div className="flex items-center justify-between px-1">
-                    <label className="text-[10px] font-black uppercase tracking-widest text-[#01012A]">Synthetics Speed</label>
+                    <label className="text-[10px] font-black uppercase tracking-widest text-brand-primary">Synthetics Speed</label>
                     <span className="text-[11px] font-black text-emerald-600 px-2 py-0.5 bg-emerald-50 rounded-lg">{formData.voiceSpeed.toFixed(2)}x</span>
                   </div>
                   <input 
@@ -213,7 +213,7 @@ export function AudioGenerator({
                     step="0.05"
                     value={formData.voiceSpeed}
                     onChange={(e) => updateField("voiceSpeed", parseFloat(e.target.value))}
-                    className="w-full h-1.5 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-[#01012A]"
+                    className="w-full h-1.5 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-brand-primary"
                   />
                 </div>
               </div>
@@ -222,7 +222,7 @@ export function AudioGenerator({
             {activeTab === "full" && (
               <div className="flex flex-col gap-4 pt-2 border-t border-slate-100">
                 <div className="flex items-center justify-between px-1">
-                   <label className="text-[10px] font-black uppercase tracking-widest text-[#01012A]">Atmospheric Mix Volume</label>
+                   <label className="text-[10px] font-black uppercase tracking-widest text-brand-primary">Atmospheric Mix Volume</label>
                    <span className="text-[11px] font-black text-purple-600 px-2 py-0.5 bg-purple-50 rounded-lg">{Math.round(formData.musicVolume * 100)}%</span>
                 </div>
                 <input 
@@ -232,7 +232,7 @@ export function AudioGenerator({
                   step="0.05"
                   value={formData.musicVolume}
                   onChange={(e) => updateField("musicVolume", parseFloat(e.target.value))}
-                  className="w-full h-1.5 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-[#01012A]"
+                  className="w-full h-1.5 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-brand-primary"
                 />
               </div>
             )}
@@ -241,7 +241,7 @@ export function AudioGenerator({
           <button 
             onClick={handleAction}
             disabled={isLoading}
-            className="w-full h-16 bg-linear-to-br from-[#01012A] via-[#01012A] to-[#2E2C66] text-white rounded-[24px] text-sm font-black uppercase tracking-[0.25em] transition-all hover:scale-[1.02] active:scale-95 shadow-xl shadow-[#01012A]/10 flex items-center justify-center gap-4 disabled:opacity-70 group"
+            className="w-full h-16 bg-linear-to-br from-brand-primary via-brand-primary to-brand-secondary text-white rounded-[24px] text-sm font-black uppercase tracking-[0.25em] transition-all hover:scale-[1.02] active:scale-95 shadow-xl shadow-brand-primary/10 flex items-center justify-center gap-4 disabled:opacity-70 group"
           >
             {isLoading ? (
               <>

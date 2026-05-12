@@ -247,7 +247,7 @@ export default function AssetsPage() {
                 {/* Realtime Bar */}
                 <div className="absolute bottom-0 left-0 w-full h-[3px] bg-slate-200">
                   <div 
-                    className="h-full bg-linear-to-r from-indigo-500 to-[#01012A] transition-all duration-700"
+                    className="h-full bg-linear-to-r from-indigo-500 to-brand-primary transition-all duration-700"
                     style={{ width: `${Math.min((assetList.reduce((acc, curr) => acc + (curr.fileSize || 0), 0) / (1024 * 1024 * 1024)) * 100, 100)}%` }}
                   />
                 </div>
@@ -280,7 +280,7 @@ export default function AssetsPage() {
                   "px-[16px] py-[12px] rounded-full text-[14px] font-bold transition-all duration-200",
                   activeCategory === cat 
                     ? "bg-[#02022C] text-white shadow-[inset_0px_-5px_5px_0px_#4F569B]" 
-                    : "bg-[#F1F5F9] text-[#121212] hover:bg-[linear-gradient(90deg,#01012A_0%,#2E2C66_100%)] hover:text-white hover:shadow-[inset_0px_-5px_5px_0px_#4F569B]"
+                    : "bg-[#F1F5F9] text-[#121212] hover:bg-[linear-gradient(90deg,var(--color-brand-primary)_0%,var(--color-brand-secondary)_100%)] hover:text-white hover:shadow-[inset_0px_-5px_5px_0px_#4F569B]"
                 )}
               >
                 {cat}

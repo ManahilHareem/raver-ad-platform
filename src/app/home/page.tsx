@@ -23,11 +23,11 @@ const stats = [
 ];
 
 const quickActions = [
-  { title: "Create Image", icon: Icons.Image, href: "/agents/image-lead", gradient: "bg-[linear-gradient(90deg,_#01012A_0%,_#2E2C66_100%)]" },
+  { title: "Create Image", icon: Icons.Image, href: "/agents/image-lead", gradient: "bg-[linear-gradient(90deg,_var(--color-brand-primary)_0%,_var(--color-brand-secondary)_100%)]" },
   { title: "Create Video", icon: Icons.Video, href: "/studio", gradient: "bg-[linear-gradient(135deg,_#F6339A_0%,_#FB2C36_100%)]" },
   { title: "Generate Text", icon: Icons.Text, href: "/chat", gradient: "bg-[linear-gradient(135deg,_#00C950_0%,_#00BC7D_100%)]" },
   { title: "Start AI Project", icon: Icons.MagicWand, href: "/agents", gradient: "bg-[linear-gradient(135deg,_#FF6900_0%,_#F0B100_100%)]" },
-  { title: "Open Template", icon: CustomIcons.Templates, href: "/templates", gradient: "bg-[linear-gradient(90deg,_#01012A_0%,_#2E2C66_100%)]" },
+  { title: "Open Template", icon: CustomIcons.Templates, href: "/templates", gradient: "bg-[linear-gradient(90deg,_var(--color-brand-primary)_0%,_var(--color-brand-secondary)_100%)]" },
 ];
 
 const recentProjects = [

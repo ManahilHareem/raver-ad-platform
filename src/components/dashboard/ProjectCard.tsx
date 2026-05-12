@@ -153,7 +153,7 @@ export default function ProjectCard({
       }}
       className={cn(
         "group p-[8px] bg-white rounded-[12px] border overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 flex flex-col h-full cursor-pointer",
-        isSelected ? "border-[#01012A] border-2 shadow-lg scale-[1.01]" : "border-slate-100"
+        isSelected ? "border-brand-primary border-2 shadow-lg scale-[1.01]" : "border-slate-100"
       )}
     >
         {/* We remove gap-[8px] here because it interferes with the Thumbnail/Content relationship; padding should handle it */}
@@ -188,7 +188,7 @@ export default function ProjectCard({
           ) : (
             <div className="relative w-full h-full flex items-center justify-center bg-slate-50">
               {musicUrl && !videoUrl ? (
-                <div className="absolute inset-0 flex items-center justify-center bg-linear-to-br from-[#01012A] via-[#1A1A3F] to-[#2E2C66]">
+                <div className="absolute inset-0 flex items-center justify-center bg-linear-to-br from-brand-primary via-[#1A1A3F] to-brand-secondary">
                   {/* Ambient Background Glow */}
                   <div className="absolute inset-0 opacity-40">
                     <div className="absolute top-1/4 left-1/4 w-32 h-32 bg-blue-500 rounded-full blur-[60px] animate-pulse" />
@@ -224,7 +224,7 @@ export default function ProjectCard({
                       >
                         <div className={cn(
                           "w-10 h-10 rounded-full flex items-center justify-center shadow-2xl transition-all duration-300",
-                          isAudioPlaying ? "bg-white text-[#01012A] scale-110" : "bg-white/10 backdrop-blur-md text-white border border-white/20 scale-0 group-hover/play:scale-100"
+                          isAudioPlaying ? "bg-white text-brand-primary scale-110" : "bg-white/10 backdrop-blur-md text-white border border-white/20 scale-0 group-hover/play:scale-100"
                         )}>
                           {isAudioPlaying ? <Icons.Pause className="w-4 h-4 fill-current" /> : <Icons.Play className="w-4 h-4 ml-0.5 fill-current" />}
                         </div>
@@ -306,7 +306,7 @@ export default function ProjectCard({
               {videoError && (
                 <div className="absolute inset-0 flex flex-col items-center justify-center bg-white/10 backdrop-blur-[2px] z-10">
                    <Icons.AlertTriangle className="w-6 h-6 text-amber-500/80 mb-2" />
-                   <span className="text-[8px] font-black uppercase tracking-widest text-[#01012A]/60">Source Offline</span>
+                   <span className="text-[8px] font-black uppercase tracking-widest text-brand-primary/60">Source Offline</span>
                 </div>
               )}
             </div>
@@ -375,7 +375,7 @@ export default function ProjectCard({
               "flex-1 h-[40px] rounded-xl text-[14px] font-bold transition-all active:scale-95 flex items-center justify-center gap-2",
               isActionRequired 
                 ? "bg-amber-500 text-white shadow-lg shadow-amber-500/20 hover:bg-amber-600" 
-                : "bg-linear-to-r from-[#01012A] to-[#2E2C66] text-white shadow-lg shadow-[#01012A]/10 hover:opacity-90"
+                : "bg-linear-to-r from-brand-primary to-brand-secondary text-white shadow-lg shadow-brand-primary/10 hover:opacity-90"
             )}
           >
             {isActionRequired ? (

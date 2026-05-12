@@ -112,10 +112,10 @@ export default function CampaignDetailPage() {
           <div className="w-20 h-20 bg-slate-50 rounded-[32px] flex items-center justify-center border border-slate-100 mb-4">
             <Icons.Activity className="w-10 h-10 text-slate-300" />
           </div>
-          <h2 className="text-2xl font-black text-[#01012A] tracking-tighter lowercase">{error || "Production Not Sourced"}</h2>
+          <h2 className="text-2xl font-black text-brand-primary tracking-tighter lowercase">{error || "Production Not Sourced"}</h2>
           <button
             onClick={() => router.push("/agents/producer")}
-            className="h-12 px-8 bg-linear-to-r from-[#01012A] to-[#2E2C66]  text-white rounded-2xl text-[10px] font-black uppercase tracking-widest shadow-xl shadow-[#01012A]/10 active:scale-95 transition-all"
+            className="h-12 px-8 bg-linear-to-r from-brand-primary to-brand-secondary  text-white rounded-2xl text-[10px] font-black uppercase tracking-widest shadow-xl shadow-brand-primary/10 active:scale-95 transition-all"
           >
             Return to Orchestration Hub
           </button>
@@ -285,7 +285,7 @@ export default function CampaignDetailPage() {
               onClick={() => router.push("/agents/producer")}
               className="w-11 h-11 sm:w-12 sm:h-12 bg-slate-50 hover:bg-slate-100 rounded-2xl flex items-center justify-center border border-slate-100 transition-all active:scale-90 shrink-0"
             >
-              <Icons.ArrowLeft className="w-4 h-4 sm:w-5 sm:h-5 text-[#01012A]" />
+              <Icons.ArrowLeft className="w-4 h-4 sm:w-5 sm:h-5 text-brand-primary" />
             </button>
             <div className="flex flex-col gap-1 overflow-hidden">
               <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4 overflow-hidden">
@@ -322,7 +322,7 @@ export default function CampaignDetailPage() {
                 <button 
                   onClick={handleApprove}
                   disabled={isApproving}
-                  className="flex-1 sm:flex-none h-11 sm:h-14 px-6 sm:px-10 bg-linear-to-r from-[#01012A] to-[#2E2C66] text-white rounded-xl sm:rounded-[22px] text-[10px] font-black uppercase tracking-widest shadow-xl shadow-[#01012A]/10 transition-all hover:scale-[1.02] active:scale-95 disabled:opacity-50 flex items-center justify-center gap-2"
+                  className="flex-1 sm:flex-none h-11 sm:h-14 px-6 sm:px-10 bg-linear-to-r from-brand-primary to-brand-secondary text-white rounded-xl sm:rounded-[22px] text-[10px] font-black uppercase tracking-widest shadow-xl shadow-brand-primary/10 transition-all hover:scale-[1.02] active:scale-95 disabled:opacity-50 flex items-center justify-center gap-2"
                 >
                   {isApproving ? <Icons.Loader className="w-3 h-3 animate-spin"/> : <Icons.CheckCircle className="w-3.5 h-3.5"/>}
                   Approve Production
@@ -354,7 +354,7 @@ export default function CampaignDetailPage() {
                       <Icons.Zap className="w-8 h-8 text-white" />
                     </div>
                     <div className="flex flex-col">
-                      <h2 className="text-2xl font-black text-[#01012A] tracking-tighter lowercase">Human Intervention Required</h2>
+                      <h2 className="text-2xl font-black text-brand-primary tracking-tighter lowercase">Human Intervention Required</h2>
                       <p className="text-[11px] font-black uppercase tracking-widest text-amber-600 mt-1">Reviewing: {campaign.status.replace("awaiting_approval_", "").replace("_", " ")}</p>
                     </div>
                   </div>
@@ -371,7 +371,7 @@ export default function CampaignDetailPage() {
 
                   return (
                     <div className="flex flex-col gap-6 relative z-10">
-                      <span className="text-[10px] font-black uppercase tracking-[0.2em] text-[#01012A]/40">Select generation candidate</span>
+                      <span className="text-[10px] font-black uppercase tracking-[0.2em] text-brand-primary/40">Select generation candidate</span>
                       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 gap-6">
                         {candidates.map((candidate: any, idx: number) => {
                           const assetUrl = candidate.url || candidate.image_url || (typeof candidate === "string" ? candidate : null);
@@ -382,7 +382,7 @@ export default function CampaignDetailPage() {
                               onClick={() => setSelectedAssetId(assetId)}
                               className={cn(
                                 "relative aspect-square rounded-[24px] overflow-hidden border-4 cursor-pointer transition-all hover:scale-[1.02] group shadow-sm",
-                                selectedAssetId === assetId ? "border-[#01012A] ring-8 ring-[#01012A]/10" : "border-white opacity-60 hover:opacity-100"
+                                selectedAssetId === assetId ? "border-brand-primary ring-8 ring-brand-primary/10" : "border-white opacity-60 hover:opacity-100"
                               )}
                             >
                               <img src={normalizeAssetUrl(assetUrl)} alt={`Candidate ${idx + 1}`} className="w-full h-full object-cover" />
@@ -398,7 +398,7 @@ export default function CampaignDetailPage() {
                                 <Icons.Search className="w-5 h-5 text-white" />
                               </button>
                               {selectedAssetId === assetId && (
-                                <div className="absolute top-4 right-4 w-8 h-8 bg-[#01012A] text-white rounded-full flex items-center justify-center shadow-lg">
+                                <div className="absolute top-4 right-4 w-8 h-8 bg-brand-primary text-white rounded-full flex items-center justify-center shadow-lg">
                                   <Icons.CheckCircle className="w-5 h-5" />
                                 </div>
                               )}
@@ -424,14 +424,14 @@ export default function CampaignDetailPage() {
                       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
                         {/* Script & Overlays */}
                         <div className="flex flex-col gap-4">
-                          <span className="text-[10px] font-black uppercase tracking-[0.2em] text-[#01012A]/40">Generated Script & Overlays</span>
+                          <span className="text-[10px] font-black uppercase tracking-[0.2em] text-brand-primary/40">Generated Script & Overlays</span>
                           <div className="space-y-4">
                             {sceneScripts.map((text: string, idx: number) => (
                               <div 
                               key={idx} 
                               className={cn(
                                 "p-5 bg-white border rounded-[20px] shadow-sm transition-all cursor-pointer",
-                                selectedAssetId === `scene_${idx + 1}` ? "border-[#01012A] ring-4 ring-[#01012A]/5" : "border-slate-100 hover:border-slate-200"
+                                selectedAssetId === `scene_${idx + 1}` ? "border-brand-primary ring-4 ring-brand-primary/5" : "border-slate-100 hover:border-slate-200"
                               )}
                               onClick={() => setSelectedAssetId(selectedAssetId === `scene_${idx + 1}` ? null : `scene_${idx + 1}`)}
                             >
@@ -441,9 +441,9 @@ export default function CampaignDetailPage() {
                                       type="checkbox" 
                                       checked={selectedAssetId === `scene_${idx + 1}`}
                                       onChange={() => setSelectedAssetId(selectedAssetId === `scene_${idx + 1}` ? null : `scene_${idx + 1}`)}
-                                      className="w-3.5 h-3.5 rounded border-slate-300 text-[#01012A] focus:ring-[#01012A]"
+                                      className="w-3.5 h-3.5 rounded border-slate-300 text-brand-primary focus:ring-brand-primary"
                                     />
-                                    <span className="text-[9px] font-black text-[#01012A] uppercase">Scene 0{idx + 1}</span>
+                                    <span className="text-[9px] font-black text-brand-primary uppercase">Scene 0{idx + 1}</span>
                                   </div>
                                   <Icons.AudioWave className="w-3 h-3 text-blue-400" />
                                 </div>
@@ -451,7 +451,7 @@ export default function CampaignDetailPage() {
                                 {overlays[idx] && (
                                   <div className="p-3 bg-slate-50 rounded-xl border border-slate-100">
                                     <span className="text-[8px] font-black text-blue-500 uppercase">Screen Overlay</span>
-                                    <p className="text-[11px] font-black text-[#01012A] mt-0.5">{overlays[idx].text}</p>
+                                    <p className="text-[11px] font-black text-brand-primary mt-0.5">{overlays[idx].text}</p>
                                   </div>
                                 )}
                               </div>
@@ -461,7 +461,7 @@ export default function CampaignDetailPage() {
 
                         {/* Social Platform Copy */}
                         <div className="flex flex-col gap-4">
-                          <span className="text-[10px] font-black uppercase tracking-[0.2em] text-[#01012A]/40">Social Platform Content</span>
+                          <span className="text-[10px] font-black uppercase tracking-[0.2em] text-brand-primary/40">Social Platform Content</span>
                           <div className="p-6 bg-slate-900 text-white rounded-[32px] border border-white/5 h-fit">
                             <div className="flex items-center gap-2 mb-4">
                               <Icons.MessageCircle className="w-4 h-4 text-white/50" />
@@ -496,17 +496,17 @@ export default function CampaignDetailPage() {
                       <div className="p-8 bg-white border border-slate-100 rounded-[32px] shadow-sm flex flex-col gap-6">
                         <div className="flex items-center gap-4">
                           <div className="w-12 h-12 bg-slate-50 rounded-2xl flex items-center justify-center border border-slate-100">
-                            <Icons.Mic className="w-6 h-6 text-[#01012A]" />
+                            <Icons.Mic className="w-6 h-6 text-brand-primary" />
                           </div>
                           <div className="flex flex-col">
-                            <span className="text-[10px] font-black uppercase tracking-[0.2em] text-[#01012A]/40">Neural Voice Generation</span>
-                            <h4 className="text-lg font-black text-[#01012A] tracking-tighter lowercase">Review Master Voiceover</h4>
+                            <span className="text-[10px] font-black uppercase tracking-[0.2em] text-brand-primary/40">Neural Voice Generation</span>
+                            <h4 className="text-lg font-black text-brand-primary tracking-tighter lowercase">Review Master Voiceover</h4>
                           </div>
                         </div>
                         
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-end">
                           <div className="space-y-4">
-                            <span className="text-[10px] font-black uppercase tracking-[0.2em] text-[#01012A]/40">Neural Voice Casting</span>
+                            <span className="text-[10px] font-black uppercase tracking-[0.2em] text-brand-primary/40">Neural Voice Casting</span>
                             <VoiceSelector 
                               className="no-label"
                               selectedVoice={selectedVoice || campaign.brief?.voice}
@@ -515,12 +515,12 @@ export default function CampaignDetailPage() {
                           </div>
                           
                           <div className="space-y-4">
-                            <span className="text-[10px] font-black uppercase tracking-[0.2em] text-[#01012A]/40">Vocal Preview</span>
+                            <span className="text-[10px] font-black uppercase tracking-[0.2em] text-brand-primary/40">Vocal Preview</span>
                             <div className="bg-slate-50 p-3 rounded-[24px] border border-slate-100 flex items-center h-14">
                               <audio 
                                 src={normalizeAssetUrl(voiceUrl)} 
                                 controls 
-                                className="w-full h-10 accent-[#01012A]" 
+                                className="w-full h-10 accent-brand-primary" 
                               />
                             </div>
                           </div>
@@ -548,11 +548,11 @@ export default function CampaignDetailPage() {
                       <div className="p-8 bg-white border border-slate-100 rounded-[32px] shadow-sm flex flex-col gap-6">
                         <div className="flex items-center gap-4">
                           <div className="w-12 h-12 bg-slate-50 rounded-2xl flex items-center justify-center border border-slate-100">
-                            <Icons.Music className="w-6 h-6 text-[#01012A]" />
+                            <Icons.Music className="w-6 h-6 text-brand-primary" />
                           </div>
                           <div className="flex flex-col">
-                            <span className="text-[10px] font-black uppercase tracking-[0.2em] text-[#01012A]/40">Neural Composition</span>
-                            <h4 className="text-lg font-black text-[#01012A] tracking-tighter lowercase">Review Background Score</h4>
+                            <span className="text-[10px] font-black uppercase tracking-[0.2em] text-brand-primary/40">Neural Composition</span>
+                            <h4 className="text-lg font-black text-brand-primary tracking-tighter lowercase">Review Background Score</h4>
                           </div>
                         </div>
                         
@@ -560,13 +560,13 @@ export default function CampaignDetailPage() {
                           <audio 
                             src={normalizeAssetUrl(musicUrl)} 
                             controls 
-                            className="w-full h-12 accent-[#01012A]" 
+                            className="w-full h-12 accent-brand-primary" 
                           />
                         </div>
 
                         {promptUsed && (
                           <div className="space-y-2">
-                            <span className="text-[10px] font-black uppercase tracking-[0.2em] text-[#01012A]/40 pl-1">Generation Prompt</span>
+                            <span className="text-[10px] font-black uppercase tracking-[0.2em] text-brand-primary/40 pl-1">Generation Prompt</span>
                             <div className="p-4 bg-slate-50 rounded-2xl border border-slate-100 italic text-[11px] text-slate-500 leading-relaxed">
                               "{promptUsed}"
                             </div>
@@ -594,11 +594,11 @@ export default function CampaignDetailPage() {
                       <div className="p-8 bg-white border border-slate-100 rounded-[32px] shadow-sm flex flex-col gap-6">
                         <div className="flex items-center gap-4">
                           <div className="w-12 h-12 bg-slate-50 rounded-2xl flex items-center justify-center border border-slate-100">
-                            <Icons.Play className="w-6 h-6 text-[#01012A]" />
+                            <Icons.Play className="w-6 h-6 text-brand-primary" />
                           </div>
                           <div className="flex flex-col">
-                            <span className="text-[10px] font-black uppercase tracking-[0.2em] text-[#01012A]/40">Production Finalization</span>
-                            <h4 className="text-lg font-black text-[#01012A] tracking-tighter lowercase">Review Master Render</h4>
+                            <span className="text-[10px] font-black uppercase tracking-[0.2em] text-brand-primary/40">Production Finalization</span>
+                            <h4 className="text-lg font-black text-brand-primary tracking-tighter lowercase">Review Master Render</h4>
                           </div>
                         </div>
                         
@@ -613,11 +613,11 @@ export default function CampaignDetailPage() {
                         <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
                           <div className="p-4 bg-slate-50 rounded-2xl border border-slate-100">
                             <span className="text-[8px] font-black text-slate-400 uppercase block mb-1">Format</span>
-                            <span className="text-[11px] font-black text-[#01012A]">{result.format || "N/A"}</span>
+                            <span className="text-[11px] font-black text-brand-primary">{result.format || "N/A"}</span>
                           </div>
                           <div className="p-4 bg-slate-50 rounded-2xl border border-slate-100">
                             <span className="text-[8px] font-black text-slate-400 uppercase block mb-1">Render Time</span>
-                            <span className="text-[11px] font-black text-[#01012A]">{result.render_seconds?.toFixed(1)}s</span>
+                            <span className="text-[11px] font-black text-brand-primary">{result.render_seconds?.toFixed(1)}s</span>
                           </div>
                         </div>
 
@@ -632,7 +632,7 @@ export default function CampaignDetailPage() {
 
                 {/* Feedback Input */}
                 <div className="flex flex-col gap-4 relative z-10">
-                   <span className="text-[10px] font-black uppercase tracking-[0.2em] text-[#01012A]/40">Feedback / Instructions (Optional)</span>
+                   <span className="text-[10px] font-black uppercase tracking-[0.2em] text-brand-primary/40">Feedback / Instructions (Optional)</span>
                    <textarea 
                      value={stepNotes}
                      onChange={(e) => setStepNotes(e.target.value)}
@@ -646,14 +646,14 @@ export default function CampaignDetailPage() {
                   <button 
                     onClick={() => handleStepAction("approve")}
                     disabled={isProcessingStep}
-                    className="h-14 px-10 bg-[#01012A] text-white rounded-2xl text-[10px] font-black uppercase tracking-widest shadow-xl shadow-[#01012A]/20 hover:opacity-90 transition-all active:scale-95 disabled:opacity-50 flex items-center gap-2"
+                    className="h-14 px-10 bg-brand-primary text-white rounded-2xl text-[10px] font-black uppercase tracking-widest shadow-xl shadow-brand-primary/20 hover:opacity-90 transition-all active:scale-95 disabled:opacity-50 flex items-center gap-2"
                   >
                     <Icons.CheckCircle className="w-4 h-4" /> Approve Step
                   </button>
                   <button 
                     onClick={() => handleStepAction("improve")}
                     disabled={isProcessingStep || (campaign.status.includes("image") && !selectedAssetId)}
-                    className="h-14 px-10 bg-white border border-slate-200 text-[#01012A] rounded-2xl text-[10px] font-black uppercase tracking-widest hover:bg-slate-50 transition-all active:scale-95 disabled:opacity-50 flex items-center gap-2"
+                    className="h-14 px-10 bg-white border border-slate-200 text-brand-primary rounded-2xl text-[10px] font-black uppercase tracking-widest hover:bg-slate-50 transition-all active:scale-95 disabled:opacity-50 flex items-center gap-2"
                   >
                     <Icons.MagicWand className="w-4 h-4" /> Improve Asset
                   </button>
@@ -671,7 +671,7 @@ export default function CampaignDetailPage() {
             {/* HERO: Cinema Mode Video Showcase - Only if video exists or render is active */}
             {(result.video_url || getNodeStatus("render") === "running" || getNodeStatus("render") === "failed") && (
               result.video_url ? (
-              <div className="bg-linear-to-r from-[#01012A] to-[#2E2C66]  rounded-[32px] md:rounded-[40px] overflow-hidden shadow-2xl shadow-black/20 relative group h-[60vh] sm:h-[70vh] lg:h-[80vh] transition-all duration-700">
+              <div className="bg-linear-to-r from-brand-primary to-brand-secondary  rounded-[32px] md:rounded-[40px] overflow-hidden shadow-2xl shadow-black/20 relative group h-[60vh] sm:h-[70vh] lg:h-[80vh] transition-all duration-700">
                 {/* Immersive Hover Overlays */}
                 <div className="absolute inset-x-0 top-0 h-40 bg-linear-to-b from-black/80 to-transparent z-20 opacity-0 group-hover:opacity-100 transition-opacity duration-500 flex items-start justify-between p-6 sm:p-8 md:p-12 pointer-events-none">
                   <div className="flex flex-col gap-1 sm:gap-2 pointer-events-auto">
@@ -772,10 +772,10 @@ export default function CampaignDetailPage() {
               <div className="col-span-12 lg:col-span-8 bg-white rounded-[32px] md:rounded-[40px] p-6 md:p-10 border border-slate-100 shadow-sm flex flex-col gap-8 md:gap-10 overflow-hidden">
                 <div className="flex items-center gap-4">
                   <div className="w-10 h-10 md:w-12 md:h-12 bg-slate-50 rounded-[18px] md:rounded-[20px] flex items-center justify-center border border-slate-100">
-                    <Icons.Image className="w-5 h-5 md:w-6 md:h-6 text-[#01012A]" />
+                    <Icons.Image className="w-5 h-5 md:w-6 md:h-6 text-brand-primary" />
                   </div>
                   <div className="flex flex-col overflow-hidden">
-                    <h4 className="text-lg md:text-xl font-black text-[#01012A] tracking-tighter lowercase leading-none truncate">visual assets_matrix</h4>
+                    <h4 className="text-lg md:text-xl font-black text-brand-primary tracking-tighter lowercase leading-none truncate">visual assets_matrix</h4>
                     <span className="text-[10px] md:text-[11px] font-black uppercase tracking-widest text-slate-300 mt-2 truncate">Neural Sequence</span>
                   </div>
                 </div>
@@ -809,7 +809,7 @@ export default function CampaignDetailPage() {
                         </div>
                       </div>
                       <div className="p-4 md:p-6 bg-white border-t border-slate-50 flex items-center justify-between">
-                        <span className="text-xs font-black text-[#01012A] uppercase tracking-[0.2em]">Scene_0{scene.scene_id}</span>
+                        <span className="text-xs font-black text-brand-primary uppercase tracking-[0.2em]">Scene_0{scene.scene_id}</span>
                         <span className="px-2.5 py-1 bg-emerald-50 text-emerald-600 text-xs font-black uppercase rounded-lg border border-emerald-100">completed</span>
                       </div>
                     </div>
@@ -820,7 +820,7 @@ export default function CampaignDetailPage() {
               {/* Orchestration & Tracking Intel */}
               <div className="col-span-12 lg:col-span-4 flex flex-col gap-6 md:gap-10">
                 {/* Neural Thread */}
-                <div className="bg-linear-to-br from-[#01012A] to-[#2E2C66] rounded-[32px] md:rounded-[40px] p-8 md:p-10 text-white shadow-2xl shadow-[#01012A]/10 relative overflow-hidden group">
+                <div className="bg-linear-to-br from-brand-primary to-brand-secondary rounded-[32px] md:rounded-[40px] p-8 md:p-10 text-white shadow-2xl shadow-brand-primary/10 relative overflow-hidden group">
                   <h4 className="text-lg md:text-xl font-black tracking-tighter lowercase leading-none mb-8 md:mb-10 relative z-10 flex items-center gap-3">
                     <div className="w-2 h-2 rounded-full bg-blue-400 animate-pulse" />
                     orchestration_thread
@@ -874,9 +874,9 @@ export default function CampaignDetailPage() {
                 <div className="bg-white rounded-[32px] md:rounded-[40px] p-6 md:p-10 border border-slate-100 shadow-sm flex flex-col gap-8 md:gap-10">
                   <div className="flex items-center gap-4">
                     <div className="w-10 h-10 bg-slate-50 rounded-[18px] flex items-center justify-center border border-slate-100">
-                      <Icons.PenLine className="w-5 h-5 text-[#01012A]" />
+                      <Icons.PenLine className="w-5 h-5 text-brand-primary" />
                     </div>
-                    <h4 className="text-lg md:text-xl font-black text-[#01012A] tracking-tighter lowercase leading-none truncate">intel_matrix</h4>
+                    <h4 className="text-lg md:text-xl font-black text-brand-primary tracking-tighter lowercase leading-none truncate">intel_matrix</h4>
                   </div>
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-4 gap-y-5 md:gap-y-6">
                     {[
@@ -905,9 +905,9 @@ export default function CampaignDetailPage() {
                   <div className="bg-white rounded-[32px] md:rounded-[40px] p-6 md:p-10 border border-slate-100 shadow-sm flex flex-col gap-6">
                     <div className="flex items-center gap-4">
                       <div className="w-10 h-10 bg-slate-50 rounded-[18px] flex items-center justify-center border border-slate-100">
-                        <Icons.MagicWand className="w-5 h-5 text-[#01012A]" />
+                        <Icons.MagicWand className="w-5 h-5 text-brand-primary" />
                       </div>
-                      <h4 className="text-lg md:text-xl font-black text-[#01012A] tracking-tighter lowercase leading-none">style_directive</h4>
+                      <h4 className="text-lg md:text-xl font-black text-brand-primary tracking-tighter lowercase leading-none">style_directive</h4>
                     </div>
                     <div className="p-6 bg-slate-50/50 rounded-[24px] border border-slate-100/50">
                        <p className="text-xs md:text-sm font-medium text-[#121212] leading-relaxed italic">
@@ -926,10 +926,10 @@ export default function CampaignDetailPage() {
                   <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 border-b border-slate-50 pb-8">
                     <div className="flex items-center gap-4">
                       <div className="w-10 h-10 md:w-12 md:h-12 bg-slate-50 rounded-[18px] md:rounded-[20px] flex items-center justify-center border border-slate-100">
-                        <Icons.Mic className="w-5 h-5 md:w-6 md:h-6 text-[#01012A]" />
+                        <Icons.Mic className="w-5 h-5 md:w-6 md:h-6 text-brand-primary" />
                       </div>
                       <div className="flex flex-col">
-                        <h4 className="text-lg md:text-xl font-black text-[#01012A] tracking-tighter lowercase leading-none">narrative_synthesis</h4>
+                        <h4 className="text-lg md:text-xl font-black text-brand-primary tracking-tighter lowercase leading-none">narrative_synthesis</h4>
                          <span className="text-xs font-black uppercase tracking-widest text-slate-300 mt-2">Script & Overlay Coordination</span>
                       </div>
                     </div>
@@ -937,12 +937,12 @@ export default function CampaignDetailPage() {
                       <div className="flex items-center gap-4">
                          <div className="flex flex-col items-end">
                             <span className="text-xs font-black uppercase text-slate-300">Word Count</span>
-                            <span className="text-sm font-black text-[#01012A]">{scriptObj.word_count} wds</span>
+                            <span className="text-sm font-black text-brand-primary">{scriptObj.word_count} wds</span>
                          </div>
                          <div className="w-px h-8 bg-slate-100" />
                          <div className="flex flex-col items-end">
                             <span className="text-xs font-black uppercase text-slate-300">Duration</span>
-                            <span className="text-sm font-black text-[#01012A]">{scriptObj.estimated_duration_seconds}s</span>
+                            <span className="text-sm font-black text-brand-primary">{scriptObj.estimated_duration_seconds}s</span>
                          </div>
                       </div>
                     )}
@@ -951,7 +951,7 @@ export default function CampaignDetailPage() {
                   <div className="grid grid-cols-1 lg:grid-cols-3 gap-10">
                     {/* Full Script Text */}
                     <div className="lg:col-span-1 flex flex-col gap-4">
-                       <span className="text-xs font-black uppercase tracking-[0.2em] text-[#01012A] pl-1">Master Script</span>
+                       <span className="text-xs font-black uppercase tracking-[0.2em] text-brand-primary pl-1">Master Script</span>
                        <div className="p-8 bg-slate-50/50 rounded-[32px] border border-slate-100/50 h-full">
                           <p className="text-sm md:text-base font-medium text-[#121212] leading-relaxed italic">
                             "{fullScript}"
@@ -961,14 +961,14 @@ export default function CampaignDetailPage() {
 
                     {/* Scene Breakdowns */}
                     <div className="lg:col-span-2 flex flex-col gap-4">
-                       <span className="text-xs font-black uppercase tracking-[0.2em] text-[#01012A] pl-1">Scene Synchronization</span>
+                       <span className="text-xs font-black uppercase tracking-[0.2em] text-brand-primary pl-1">Scene Synchronization</span>
                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                           {sceneScripts.map((text: string, idx: number) => {
                              const overlay = overlays.find((o: any) => o.scene_id === idx + 1);
                              return (
                                 <div key={idx} className="p-6 bg-white border border-slate-100 rounded-[24px] flex flex-col gap-4 hover:border-slate-200 transition-all shadow-sm">
                                    <div className="flex items-center justify-between border-b border-slate-50 pb-3">
-                                      <span className="text-xs font-black text-[#01012A] uppercase">Scene_0{idx + 1}</span>
+                                      <span className="text-xs font-black text-brand-primary uppercase">Scene_0{idx + 1}</span>
                                       <Icons.AudioWave className="w-3 h-3 text-blue-400 opacity-50" />
                                    </div>
                                    <div className="flex flex-col gap-3">
@@ -979,7 +979,7 @@ export default function CampaignDetailPage() {
                                       {overlay && (
                                          <div className="p-3 bg-slate-50 rounded-xl border border-slate-100/50">
                                             <span className="text-xs font-black uppercase text-blue-500 tracking-tighter">Video Overlay</span>
-                                            <p className="text-sm font-black text-[#01012A] mt-1">{overlay.text}</p>
+                                            <p className="text-sm font-black text-brand-primary mt-1">{overlay.text}</p>
                                          </div>
                                       )}
                                    </div>
@@ -999,17 +999,17 @@ export default function CampaignDetailPage() {
                 <div className="col-span-12 bg-white rounded-[32px] md:rounded-[40px] p-6 md:p-10 border border-slate-100 shadow-sm flex flex-col gap-8">
                   <div className="flex items-center gap-4 border-b border-slate-50 pb-8">
                     <div className="w-10 h-10 md:w-12 md:h-12 bg-slate-50 rounded-[18px] md:rounded-[20px] flex items-center justify-center border border-slate-100">
-                      <Icons.MessageCircle className="w-5 h-5 md:w-6 md:h-6 text-[#01012A]" />
+                      <Icons.MessageCircle className="w-5 h-5 md:w-6 md:h-6 text-brand-primary" />
                     </div>
                     <div className="flex flex-col">
-                      <h4 className="text-lg md:text-xl font-black text-[#01012A] tracking-tighter lowercase leading-none">social_architecture</h4>
-                       <span className="text-xs font-black uppercase tracking-widest text-[#01012A]/40 mt-1">{platform} | Platform Fit Optimized</span>
+                      <h4 className="text-lg md:text-xl font-black text-brand-primary tracking-tighter lowercase leading-none">social_architecture</h4>
+                       <span className="text-xs font-black uppercase tracking-widest text-brand-primary/40 mt-1">{platform} | Platform Fit Optimized</span>
                     </div>
                   </div>
 
                   <div className="grid grid-cols-1 lg:grid-cols-2 gap-10">
                     <div className="flex flex-col gap-4">
-                       <span className="text-xs font-black uppercase tracking-[0.2em] text-[#01012A] pl-1">Primary Platform Copy</span>
+                       <span className="text-xs font-black uppercase tracking-[0.2em] text-brand-primary pl-1">Primary Platform Copy</span>
                        <div className="p-8 bg-slate-900 text-white rounded-[32px] border border-white/5 relative group">
                           <button 
                             onClick={() => {
@@ -1034,7 +1034,7 @@ export default function CampaignDetailPage() {
 
                     <div className="flex flex-col gap-6">
                        <div className="flex flex-col gap-4">
-                          <span className="text-xs font-black uppercase tracking-[0.2em] text-[#01012A] pl-1">Neural Hashtag Clusters</span>
+                          <span className="text-xs font-black uppercase tracking-[0.2em] text-brand-primary pl-1">Neural Hashtag Clusters</span>
                           <div className="p-8 bg-slate-50/50 rounded-[32px] border border-slate-100/50 flex flex-wrap gap-2">
                              {platformContent.hashtags?.map((tag: string, idx: number) => (
                                 <span key={idx} className="px-3 py-1.5 bg-white border border-slate-100 rounded-lg text-xs font-bold text-[#4F4F4F] transition-all hover:border-blue-400/30 hover:text-blue-500">
@@ -1050,7 +1050,7 @@ export default function CampaignDetailPage() {
                           </div>
                           <div className="flex flex-col">
                              <span className="text-xs font-black uppercase text-emerald-600 tracking-widest">Platform Validation</span>
-                             <p className="text-sm font-bold text-[#01012A] mt-1">This dossier is fully compliant with the {platform} advertising matrix.</p>
+                             <p className="text-sm font-bold text-brand-primary mt-1">This dossier is fully compliant with the {platform} advertising matrix.</p>
                           </div>
                        </div>
                     </div>
@@ -1069,12 +1069,12 @@ export default function CampaignDetailPage() {
                       <Icons.Success className="w-5 h-5 md:w-6 md:h-6 text-emerald-600" />
                     </div>
                     <div className="flex flex-col">
-                      <h4 className="text-base sm:text-lg md:text-xl font-black text-[#01012A] tracking-tighter lowercase leading-none">dimension_breakdown</h4>
+                      <h4 className="text-base sm:text-lg md:text-xl font-black text-brand-primary tracking-tighter lowercase leading-none">dimension_breakdown</h4>
                        <span className="text-xs font-black uppercase tracking-widest text-slate-400 mt-1 sm:mt-2">Weighted Audit Results</span>
                     </div>
                   </div>
                   <div className="flex items-center sm:items-end flex-row sm:flex-col justify-between sm:justify-start">
-                    <span className="text-2xl sm:text-3xl md:text-4xl font-black text-[#01012A] tracking-tighter tabular-nums">{Math.round((quality.overall_score || 0) * 100)}%</span>
+                    <span className="text-2xl sm:text-3xl md:text-4xl font-black text-brand-primary tracking-tighter tabular-nums">{Math.round((quality.overall_score || 0) * 100)}%</span>
                   </div>
                 </div>
 
@@ -1082,8 +1082,8 @@ export default function CampaignDetailPage() {
                    {quality.dimension_details && Object.entries(quality.dimension_details).map(([key, dim]: any) => (
                      <div key={key} className="p-6 md:p-8 bg-slate-50/50 rounded-[24px] md:rounded-[32px] border border-slate-100/50 flex flex-col gap-5 hover:bg-white hover:border-slate-200 transition-all">
                        <div className="flex items-center justify-between border-b border-slate-100 pb-4">
-                         <span className="text-xs font-black uppercase tracking-widest text-[#01012A]">{key.replace('_', ' ')}</span>
-                         <span className="text-xl md:text-2xl font-black text-[#01012A]/40 tabular-nums">{Math.round((dim.score || 0) * 100)}%</span>
+                         <span className="text-xs font-black uppercase tracking-widest text-brand-primary">{key.replace('_', ' ')}</span>
+                         <span className="text-xl md:text-2xl font-black text-brand-primary/40 tabular-nums">{Math.round((dim.score || 0) * 100)}%</span>
                        </div>
 
                        {/* Granular Audit Logs */}
@@ -1114,9 +1114,9 @@ export default function CampaignDetailPage() {
                 <div className="bg-white rounded-[32px] md:rounded-[40px] p-6 md:p-10 border border-slate-100 shadow-sm flex flex-col gap-8 md:gap-10">
                   <div className="flex items-center gap-4">
                     <div className="w-10 h-10 bg-slate-50 rounded-[18px] flex items-center justify-center border border-slate-100">
-                      <Icons.Shield className="w-5 h-5 text-[#01012A]" />
+                      <Icons.Shield className="w-5 h-5 text-brand-primary" />
                     </div>
-                    <h4 className="text-lg md:text-xl font-black text-[#01012A] tracking-tighter lowercase leading-none">auditing_agents</h4>
+                    <h4 className="text-lg md:text-xl font-black text-brand-primary tracking-tighter lowercase leading-none">auditing_agents</h4>
                   </div>
                   <div className="flex flex-wrap gap-2">
                     {quality.evaluator_models?.map((model: string, idx: number) => (
@@ -1130,9 +1130,9 @@ export default function CampaignDetailPage() {
                 <div className="bg-white rounded-[32px] md:rounded-[40px] p-6 md:p-10 border border-slate-100 shadow-sm flex flex-col gap-8 md:gap-10 grow">
                   <div className="flex items-center gap-4">
                     <div className="w-10 h-10 bg-slate-50 rounded-[18px] flex items-center justify-center border border-slate-100">
-                      <Icons.Rocket className="w-5 h-5 text-[#01012A]" />
+                      <Icons.Rocket className="w-5 h-5 text-brand-primary" />
                     </div>
-                    <h4 className="text-lg md:text-xl font-black text-[#01012A] tracking-tighter lowercase leading-none truncate">master_assets</h4>
+                    <h4 className="text-lg md:text-xl font-black text-brand-primary tracking-tighter lowercase leading-none truncate">master_assets</h4>
                   </div>
                   <div className="flex flex-col gap-4">
                     {result.video_url && <AssetLink label="Video Render" url={result.video_url} icon={Icons.Video} />}
@@ -1163,15 +1163,15 @@ function AssetLink({ label, url, icon: Icon }: any) {
       href={normalizedUrl}
       target="_blank"
       rel="noopener noreferrer"
-      className="p-4 bg-slate-50/50 border border-slate-100/50 rounded-[18px] md:rounded-[20px] flex items-center justify-between group hover:bg-white hover:border-[#01012A]/10 transition-all"
+      className="p-4 bg-slate-50/50 border border-slate-100/50 rounded-[18px] md:rounded-[20px] flex items-center justify-between group hover:bg-white hover:border-brand-primary/10 transition-all"
     >
       <div className="flex items-center gap-3 overflow-hidden">
         <div className="w-8 h-8 bg-white rounded-xl flex items-center justify-center border border-slate-100 shrink-0 group-hover:scale-110 transition-transform">
-          <Icon className="w-4 h-4 text-[#01012A]" />
+          <Icon className="w-4 h-4 text-brand-primary" />
         </div>
-        <span className="text-xs font-bold text-[#01012A] lowercase truncate">{label}</span>
+        <span className="text-xs font-bold text-brand-primary lowercase truncate">{label}</span>
       </div>
-      <Icons.ExternalLink className="w-3.5 h-3.5 text-slate-300 group-hover:text-[#01012A] transition-colors shrink-0" />
+      <Icons.ExternalLink className="w-3.5 h-3.5 text-slate-300 group-hover:text-brand-primary transition-colors shrink-0" />
     </a>
   );
 }

@@ -206,7 +206,7 @@ export function VoiceSelector({ selectedVoice, onSelect, className, isDark }: Vo
       {!className?.includes("no-label") && (
         <label className={cn(
           "text-[10px] font-black uppercase tracking-widest ml-1 transition-colors",
-          isDark ? "text-white/40" : "text-[#01012A]"
+          isDark ? "text-white/40" : "text-brand-primary"
         )}>
           Selection Voice
         </label>
@@ -218,7 +218,7 @@ export function VoiceSelector({ selectedVoice, onSelect, className, isDark }: Vo
           "w-full h-14 border rounded-[20px] px-6 flex items-center justify-between hover:scale-[1.01] transition-all active:scale-[0.98] shadow-sm overflow-hidden",
           isDark 
             ? "bg-white/5 border-white/10 text-white hover:bg-white/10 hover:border-white/20" 
-            : "bg-white border-slate-100 text-[#01012A] hover:border-slate-300"
+            : "bg-white border-slate-100 text-brand-primary hover:border-slate-300"
         )}
       >
         <div className="flex items-center gap-4">
@@ -226,7 +226,7 @@ export function VoiceSelector({ selectedVoice, onSelect, className, isDark }: Vo
              {isMale ? <Icons.Mic className="w-4 h-4 text-blue-500" /> : <Icons.Mic className="w-4 h-4 text-pink-500" />}
           </div>
           <div className="flex flex-col items-start overflow-hidden">
-             <span className="text-sm font-black text-[#01012A] truncate tracking-tight">{currentVoice.name}</span>
+             <span className="text-sm font-black text-brand-primary truncate tracking-tight">{currentVoice.name}</span>
              <span className="text-[9px] font-bold text-slate-400 uppercase tracking-tighter truncate">{currentVoice.accent} • {currentVoice.category}</span>
           </div>
         </div>
@@ -244,7 +244,7 @@ export function VoiceSelector({ selectedVoice, onSelect, className, isDark }: Vo
                   key={voice.id}
                   className={cn(
                     "w-full p-2 rounded-[18px] flex items-center gap-4 transition-all group relative",
-                    selectedVoice === voice.id ? "bg-linear-to-r from-[#01012A] to-[#2E2C66]" : "hover:bg-slate-50"
+                    selectedVoice === voice.id ? "bg-linear-to-r from-brand-primary to-brand-secondary" : "hover:bg-slate-50"
                   )}
                 >
                   <button
@@ -263,7 +263,7 @@ export function VoiceSelector({ selectedVoice, onSelect, className, isDark }: Vo
                       )}
                     </div>
                     <div className="flex flex-col overflow-hidden">
-                       <span className={cn("text-xs font-black tracking-tight", selectedVoice === voice.id ? "text-white" : "text-[#01012A]")}>{voice.name}</span>
+                       <span className={cn("text-xs font-black tracking-tight", selectedVoice === voice.id ? "text-white" : "text-brand-primary")}>{voice.name}</span>
                        <span className={cn("text-[8px] font-bold uppercase tracking-tighter opacity-60 leading-none mb-1", selectedVoice === voice.id ? "text-white" : "text-slate-400")}>
                          {voice.accent} • {voice.category}
                        </span>
@@ -280,10 +280,10 @@ export function VoiceSelector({ selectedVoice, onSelect, className, isDark }: Vo
                       className={cn(
                         "w-8 h-8 rounded-full flex items-center justify-center transition-all shadow-sm active:scale-95",
                         isCurrentlyPlaying 
-                          ? "bg-white text-[#01012A]" 
+                          ? "bg-white text-brand-primary" 
                           : selectedVoice === voice.id 
                             ? "bg-white/10 text-white hover:bg-white/20" 
-                            : "bg-white border border-slate-100 text-[#01012A] hover:bg-slate-100"
+                            : "bg-white border border-slate-100 text-brand-primary hover:bg-slate-100"
                       )}
                       title="Preview Voice"
                     >

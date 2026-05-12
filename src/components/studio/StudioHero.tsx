@@ -243,7 +243,7 @@ export default function StudioHero({
         <div className="relative flex flex-col gap-3">
         {selectedCampaign && (
           <div className="absolute -top-3 right-4 flex items-center gap-2 px-3 py-1 bg-[#F1F5F9] border border-[#E2E8F0] rounded-full z-20 shadow-sm animate-in fade-in slide-in-from-top-1">
-            <span className="text-[10px] font-black text-[#01012A] uppercase tracking-wider">Campaign: {selectedCampaign.title}</span>
+            <span className="text-[10px] font-black text-brand-primary uppercase tracking-wider">Campaign: {selectedCampaign.title}</span>
             <button 
               onClick={() => onCampaignSelect?.(null)}
               className="text-[#94A3B8] hover:text-red-500 transition-colors"
@@ -337,7 +337,7 @@ export default function StudioHero({
         <div className="flex flex-col gap-2">
           <div className="flex items-center justify-between mb-1">
             <div className="flex items-center gap-2">
-              <span className="text-[11px] font-black text-[#01012A] uppercase tracking-[0.2em]">
+              <span className="text-[11px] font-black text-brand-primary uppercase tracking-[0.2em]">
                 Neural Casting
               </span>
             </div>
@@ -369,7 +369,7 @@ export default function StudioHero({
               <span className="text-[13px] font-semibold text-[#64748B]">Reference Campaign:</span>
               <button 
                 onClick={() => setIsModalOpen(true)}
-                className="px-2.5 py-1 rounded-lg text-[12px] font-bold text-[#121212] transition-all flex items-center gap-1 group hover:bg-linear-to-r hover:from-[#01012A] hover:to-[#2E2C66] hover:text-white active:scale-95"
+                className="px-2.5 py-1 rounded-lg text-[12px] font-bold text-[#121212] transition-all flex items-center gap-1 group hover:bg-linear-to-r hover:from-brand-primary hover:to-brand-secondary hover:text-white active:scale-95"
               >
                 View More <Icons.ArrowRight className="w-3 h-3 transition-transform group-hover:translate-x-0.5" />
               </button>

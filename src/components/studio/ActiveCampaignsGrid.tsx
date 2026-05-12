@@ -38,7 +38,7 @@ export function ActiveCampaignsGrid({
         </h2>
         <button 
           onClick={onViewMore}
-          className="px-3 py-1.5 rounded-lg text-[13px] font-bold text-[#121212] transition-all flex items-center gap-1.5 group hover:bg-linear-to-r hover:from-[#01012A] hover:to-[#2E2C66] hover:text-white active:scale-95"
+          className="px-3 py-1.5 rounded-lg text-[13px] font-bold text-[#121212] transition-all flex items-center gap-1.5 group hover:bg-linear-to-r hover:from-brand-primary hover:to-brand-secondary hover:text-white active:scale-95"
         >
           View More 
           <Icons.ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-0.5" />

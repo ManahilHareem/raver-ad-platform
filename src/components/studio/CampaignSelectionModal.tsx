@@ -206,7 +206,7 @@ export default function CampaignSelectionModal({
 
               <button 
                 onClick={() => handleConfirmSelect(selectedCampaignDetail)}
-                className="flex-2 h-[48px] bg-linear-to-r from-[#01012A] to-[#2E2C66] text-white rounded-xl font-bold text-[15px] shadow-lg shadow-[#01012A]/10 active:scale-95 transition-all flex items-center justify-center gap-2"
+                className="flex-2 h-[48px] bg-linear-to-r from-brand-primary to-brand-secondary text-white rounded-xl font-bold text-[15px] shadow-lg shadow-brand-primary/10 active:scale-95 transition-all flex items-center justify-center gap-2"
               >
                 Select Campaign <Icons.ArrowRight className="w-4 h-4" />
               </button>
@@ -272,7 +272,7 @@ export default function CampaignSelectionModal({
                           onCreateNew();
                           onClose();
                         }}
-                        className="flex items-center gap-2 px-6 py-2 bg-linear-to-r from-[#01012A] to-[#2E2C66] text-white rounded-lg text-[14px] font-bold shadow-lg shadow-[#01012A]/10 active:scale-95 transition-all"
+                        className="flex items-center gap-2 px-6 py-2 bg-linear-to-r from-brand-primary to-brand-secondary text-white rounded-lg text-[14px] font-bold shadow-lg shadow-brand-primary/10 active:scale-95 transition-all"
                       >
                         <Icons.Plus className="w-4 h-4" /> Create New Campaign
                       </button>

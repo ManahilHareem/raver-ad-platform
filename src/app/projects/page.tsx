@@ -372,7 +372,7 @@ function ProjectsContent() {
               </div>
               <button
                 onClick={() => router.push("/studio")}
-                className="px-6 py-2.5 bg-linear-to-r from-[#01012A] to-[#2E2C66] text-white rounded-xl text-[14px] font-bold hover:opacity-90 transition-all shadow-lg active:scale-95"
+                className="px-6 py-2.5 bg-linear-to-r from-brand-primary to-brand-secondary text-white rounded-xl text-[14px] font-bold hover:opacity-90 transition-all shadow-lg active:scale-95"
               >
                 Preview
               </button>

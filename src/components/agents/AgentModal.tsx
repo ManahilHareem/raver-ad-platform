@@ -32,7 +32,7 @@ export default function AgentModal({ agent, isOpen, onClose, onAction }: AgentMo
             onClick={onClose}
             className="absolute top-4 right-4 z-10 p-2 bg-white rounded-full shadow-md hover:bg-slate-50 transition-all border border-slate-100 group"
           >
-            <Icons.Plus className="w-5 h-5 rotate-45 text-slate-400 group-hover:text-[#01012A]" />
+            <Icons.Plus className="w-5 h-5 rotate-45 text-slate-400 group-hover:text-brand-primary" />
           </button>
           
           <div className="w-full h-full relative">
@@ -50,7 +50,7 @@ export default function AgentModal({ agent, isOpen, onClose, onAction }: AgentMo
           
           {agent.isAudio && (
             <div className="absolute top-4 left-4 bg-white/90 backdrop-blur-sm p-2 rounded-xl shadow-sm border border-slate-100">
-                <Icons.AudioWave className="w-5 h-5 text-[#01012A]" />
+                <Icons.AudioWave className="w-5 h-5 text-brand-primary" />
             </div>
           )}
         </div>
@@ -59,7 +59,7 @@ export default function AgentModal({ agent, isOpen, onClose, onAction }: AgentMo
         <div className="flex-1 overflow-y-auto custom-scrollbar px-1">
           <div className="flex flex-col gap-4">
             <div className="flex flex-col gap-1">
-              <h2 className="text-[22px] sm:text-[24px] font-black text-[#01012A] tracking-tighter lowercase">{agent.name}</h2>
+              <h2 className="text-[22px] sm:text-[24px] font-black text-brand-primary tracking-tighter lowercase">{agent.name}</h2>
               <span className="text-[12px] sm:text-[14px] font-bold text-slate-400 uppercase tracking-widest leading-none">{agent.role}</span>
             </div>
 
@@ -72,25 +72,25 @@ export default function AgentModal({ agent, isOpen, onClose, onAction }: AgentMo
             <div className="flex flex-col sm:flex-row gap-3">
               <div className="flex-1 bg-slate-50 p-4 rounded-xl border border-slate-100 flex flex-col gap-1">
                 <span className="text-[9px] font-black text-slate-400 uppercase tracking-widest leading-none">Status</span>
-                <span className="text-[14px] sm:text-[16px] font-bold text-[#01012A]">Active Orchestration</span>
+                <span className="text-[14px] sm:text-[16px] font-bold text-brand-primary">Active Orchestration</span>
               </div>
               <div className="flex-1 bg-slate-50 p-4 rounded-xl border border-slate-100 flex flex-col gap-1">
                 <span className="text-[9px] font-black text-slate-400 uppercase tracking-widest leading-none">Completed</span>
-                <span className="text-[14px] sm:text-[16px] font-bold text-[#01012A]">{agent.tasksCompleted.toLocaleString()} Tasks</span>
+                <span className="text-[14px] sm:text-[16px] font-bold text-brand-primary">{agent.tasksCompleted.toLocaleString()} Tasks</span>
               </div>
             </div>
 
             <div className="bg-white p-4 rounded-xl border border-slate-100 shadow-sm flex flex-col gap-1 relative overflow-hidden group/feat">
-              <div className="absolute left-0 top-0 bottom-0 w-1 bg-linear-to-r from-[#01012A] to-[#2E2C66]  group-hover/feat:w-1.5 transition-all"></div>
+              <div className="absolute left-0 top-0 bottom-0 w-1 bg-linear-to-r from-brand-primary to-brand-secondary  group-hover/feat:w-1.5 transition-all"></div>
               <span className="text-[9px] font-black tracking-widest text-slate-400 uppercase">Strategic Edge</span>
-              <span className="text-[13px] sm:text-[14px] font-bold text-[#01012A]">Precision-tuned neural architecture in established brand context.</span>
+              <span className="text-[13px] sm:text-[14px] font-bold text-brand-primary">Precision-tuned neural architecture in established brand context.</span>
             </div>
           </div>
         </div>
 
         <button 
           onClick={onAction}
-          className="w-full h-14 shrink-0 bg-linear-to-r from-[#01012A] to-[#2E2C66]  text-white rounded-[16px] text-[13px] sm:text-[14px] font-black uppercase tracking-widest hover:bg-slate-900 transition-all flex items-center justify-center gap-2 shadow-xl shadow-[#01012A]/10 active:scale-95 group/btn border border-white/5"
+          className="w-full h-14 shrink-0 bg-linear-to-r from-brand-primary to-brand-secondary  text-white rounded-[16px] text-[13px] sm:text-[14px] font-black uppercase tracking-widest hover:bg-slate-900 transition-all flex items-center justify-center gap-2 shadow-xl shadow-brand-primary/10 active:scale-95 group/btn border border-white/5"
         >
           <span>Start Synthesis with {agent.name.split(' ').pop()}</span>
           <Icons.ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />

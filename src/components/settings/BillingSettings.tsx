@@ -63,7 +63,7 @@ export default function BillingSettings({
               </div>
               <button 
                 onClick={onBuyCredits}
-                className="flex items-center gap-2 px-6 py-3 bg-[linear-gradient(90deg,#01012A_0%,#2E2C66_100%)] text-white rounded-[12px] text-[16px] font-bold hover:opacity-90 transition-all shadow-[inset_0px_-5px_5px_0px_#4F569B] relative z-10"
+                className="flex items-center gap-2 px-6 py-3 bg-[linear-gradient(90deg,var(--color-brand-primary)_0%,var(--color-brand-secondary)_100%)] text-white rounded-[12px] text-[16px] font-bold hover:opacity-90 transition-all shadow-[inset_0px_-5px_5px_0px_#4F569B] relative z-10"
               >
                 <Icons.whiteMagicWand className="w-5 h-5" /> Buy Credits
               </button>

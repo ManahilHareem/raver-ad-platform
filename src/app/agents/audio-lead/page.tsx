@@ -419,10 +419,10 @@ function AudioLeadContent() {
                 href="/agents" 
                 className="w-10 h-10 rounded-[14px] bg-slate-50 border border-slate-100 flex items-center justify-center hover:bg-slate-100 transition-all active:scale-90 group"
               >
-                <Icons.ArrowLeft className="w-5 h-5 text-[#01012A] group-hover:-translate-x-0.5 transition-transform" />
+                <Icons.ArrowLeft className="w-5 h-5 text-brand-primary group-hover:-translate-x-0.5 transition-transform" />
               </Link>
               <div className="flex flex-col">
-                 <h1 className="text-[28px] sm:text-[34px] font-black text-[#01012A] tracking-tighter lowercase leading-none">RAVER AI AUDIO LEAD</h1>
+                 <h1 className="text-[28px] sm:text-[34px] font-black text-brand-primary tracking-tighter lowercase leading-none">RAVER AI AUDIO LEAD</h1>
                  <p className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 mt-3">Synthesizing the Atmosphere of Production</p>
               </div>
             </div>
@@ -433,7 +433,7 @@ function AudioLeadContent() {
                    <div className="w-2 h-2 rounded-full bg-blue-500 animate-pulse" />
                    <div className="flex flex-col">
                       <span className="text-[9px] font-bold text-slate-400 uppercase tracking-tighter">Active Sync Session</span>
-                      <span className="text-[10px] font-black text-[#01012A] font-mono">{sessionId}</span>
+                      <span className="text-[10px] font-black text-brand-primary font-mono">{sessionId}</span>
                    </div>
                    <button 
                     onClick={() => handleDeleteSession(sessionId)}
@@ -446,7 +446,7 @@ function AudioLeadContent() {
               
               <button 
                 onClick={() => setIsModalOpen(true)}
-                className="h-14 px-8 bg-linear-to-r from-[#01012A] to-[#2E2C66]  text-white rounded-[20px] font-black text-[11px] uppercase tracking-widest flex items-center gap-3 transition-all hover:scale-[1.02] active:scale-95 shadow-xl shadow-[#01012A]/10 border border-white/5"
+                className="h-14 px-8 bg-linear-to-r from-brand-primary to-brand-secondary  text-white rounded-[20px] font-black text-[11px] uppercase tracking-widest flex items-center gap-3 transition-all hover:scale-[1.02] active:scale-95 shadow-xl shadow-brand-primary/10 border border-white/5"
               >
                 <Icons.Activity className="w-4 h-4" />
                 Initiate Synthesis
@@ -456,7 +456,7 @@ function AudioLeadContent() {
         </div>
 
         {/* Neural Mixing Suggestion */}
-          <div className="mx-8 mb-4 p-6 bg-linear-to-r from-[#01012A] to-[#2E2C66] rounded-[24px] flex items-center justify-between animate-in slide-in-from-top-4 duration-500 shadow-xl shadow-blue-900/10 border border-white/5">
+          <div className="mx-8 mb-4 p-6 bg-linear-to-r from-brand-primary to-brand-secondary rounded-[24px] flex items-center justify-between animate-in slide-in-from-top-4 duration-500 shadow-xl shadow-blue-900/10 border border-white/5">
             <div className="flex items-center gap-5">
               <div className="w-12 h-12 rounded-2xl bg-white/10 backdrop-blur-md flex items-center justify-center border border-white/10">
                 <Icons.whiteMagicWand className="w-6 h-6" />
@@ -480,7 +480,7 @@ function AudioLeadContent() {
               className={cn(
                 "h-12 px-8 rounded-xl font-black text-[11px] uppercase tracking-widest transition-all shadow-lg",
                 ((selectedMusicUrl && selectedVoiceoverUrl) || canMix)
-                  ? "bg-white text-[#01012A] hover:scale-105 active:scale-95 shadow-white/10"
+                  ? "bg-white text-brand-primary hover:scale-105 active:scale-95 shadow-white/10"
                   : "bg-white/5 text-white/30 cursor-not-allowed border border-white/5"
               )}
             >

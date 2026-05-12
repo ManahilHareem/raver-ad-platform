@@ -62,14 +62,14 @@ export default function AssetCard({
     <div 
       onClick={onClick}
       className={cn(
-        "group relative rounded-[24px] overflow-hidden cursor-pointer transition-all duration-500 hover:shadow-2xl hover:shadow-[#01012A]/10 bg-[#F8F8F8] border border-transparent hover:border-slate-200",
+        "group relative rounded-[24px] overflow-hidden cursor-pointer transition-all duration-500 hover:shadow-2xl hover:shadow-brand-primary/10 bg-[#F8F8F8] border border-transparent hover:border-slate-200",
         aspectClasses[aspectRatio],
-        isSelected && "ring-2 ring-[#01012A] ring-offset-2",
+        isSelected && "ring-2 ring-brand-primary ring-offset-2",
         className
       )}
     >
       {type === "audio" ? (
-         <div className="absolute inset-0 flex items-center justify-center bg-linear-to-br from-[#01012A] via-[#1A1A3F] to-[#2E2C66]">
+         <div className="absolute inset-0 flex items-center justify-center bg-linear-to-br from-brand-primary via-[#1A1A3F] to-brand-secondary">
             {/* Ambient Background Glow */}
             <div className="absolute inset-0 opacity-40">
                <div className="absolute top-1/4 left-1/4 w-32 h-32 bg-blue-500 rounded-full blur-[60px] animate-pulse" />
@@ -97,7 +97,7 @@ export default function AssetCard({
                   >
                     <div className={cn(
                       "w-14 h-14 rounded-full flex items-center justify-center shadow-2xl transition-all duration-300",
-                      isPlaying ? "bg-white text-[#01012A] scale-110" : "bg-white/10 backdrop-blur-md text-white border border-white/20 scale-0 group-hover/play:scale-100"
+                      isPlaying ? "bg-white text-brand-primary scale-110" : "bg-white/10 backdrop-blur-md text-white border border-white/20 scale-0 group-hover/play:scale-100"
                     )}>
                       {isPlaying ? <Icons.Pause className="w-6 h-6 fill-current" /> : <Icons.Play className="w-6 h-6 ml-1 fill-current" />}
                     </div>
@@ -170,7 +170,7 @@ export default function AssetCard({
           <div className="absolute top-4 left-4 z-10">
              <div className="flex items-center gap-2 px-3 py-1.5 bg-white/10 backdrop-blur-md rounded-xl border border-white/10 shadow-lg">
                 <Icons.Image className="w-3.5 h-3.5 text-blue-400" />
-                <span className="text-xs font-black text-[#01012A] uppercase tracking-widest leading-none">Still Asset</span>
+                <span className="text-xs font-black text-brand-primary uppercase tracking-widest leading-none">Still Asset</span>
              </div>
           </div>
         </>
@@ -206,7 +206,7 @@ export default function AssetCard({
                   onClick?.();
                 }
               }}
-              className="flex-1 h-11 bg-white text-[#01012A] rounded-xl text-sm font-black uppercase tracking-widest hover:bg-slate-100 transition-all shadow-xl active:scale-95 flex items-center justify-center gap-2"
+              className="flex-1 h-11 bg-white text-brand-primary rounded-xl text-sm font-black uppercase tracking-widest hover:bg-slate-100 transition-all shadow-xl active:scale-95 flex items-center justify-center gap-2"
             >
               {type === "audio" ? (
                 <>

@@ -53,7 +53,7 @@ export default function AssetModal({ asset, isOpen, onClose, onDelete }: AssetMo
       <div className="bg-white w-full max-w-[541px] rounded-[24px] overflow-hidden shadow-2xl animate-in fade-in zoom-in-95 duration-300 flex flex-col p-3 gap-3 relative border border-white/20">
         
         {/* Top Preview Section */}
-        <div className="relative w-full aspect-square bg-[#01012A] rounded-[24px] overflow-hidden flex items-center justify-center">
+        <div className="relative w-full aspect-square bg-brand-primary rounded-[24px] overflow-hidden flex items-center justify-center">
           <button 
             onClick={onClose}
             className="absolute top-4 right-4 z-20 w-11 h-11 bg-white/10 backdrop-blur-md border border-white/20 rounded-full flex items-center justify-center shadow-xl hover:bg-white/20 transition-all active:scale-95"
@@ -136,7 +136,7 @@ export default function AssetModal({ asset, isOpen, onClose, onDelete }: AssetMo
         <div className="flex flex-col gap-4 p-2">
           <div className="flex flex-col gap-1.5">
             <div className="flex items-center gap-3">
-              <h2 className="text-2xl font-black text-[#01012A] leading-tight tracking-tight">{asset.name || asset.title}</h2>
+              <h2 className="text-2xl font-black text-brand-primary leading-tight tracking-tight">{asset.name || asset.title}</h2>
               <div className={cn(
                 "px-2.5 py-1 rounded-lg text-xs font-black uppercase tracking-widest border",
                 asset.type === "video" ? "bg-emerald-50 text-emerald-600 border-emerald-100" :
@@ -162,7 +162,7 @@ export default function AssetModal({ asset, isOpen, onClose, onDelete }: AssetMo
               </div>
               <div className="flex flex-col">
                 <span className="text-xs text-slate-400 font-black uppercase tracking-widest leading-none mb-1">Asset Class</span>
-                <span className="text-sm font-black text-[#01012A] capitalize">{asset.type}</span>
+                <span className="text-sm font-black text-brand-primary capitalize">{asset.type}</span>
               </div>
             </div>
             <div className="bg-slate-50/80 p-5 rounded-2xl flex items-center gap-4 border border-slate-100/50">
@@ -171,7 +171,7 @@ export default function AssetModal({ asset, isOpen, onClose, onDelete }: AssetMo
               </div>
               <div className="flex flex-col">
                 <span className="text-xs text-slate-400 font-black uppercase tracking-widest leading-none mb-1">Production Use</span>
-                <span className="text-sm font-black text-[#01012A]">{asset.members} Projects</span>
+                <span className="text-sm font-black text-brand-primary">{asset.members} Projects</span>
               </div>
             </div>
           </div>
@@ -180,11 +180,11 @@ export default function AssetModal({ asset, isOpen, onClose, onDelete }: AssetMo
           <div className="flex gap-4 pt-2">
             <button 
               onClick={handleDownload}
-              className="flex-1 h-[48px] bg-white text-[#01012A] rounded-xl border border-slate-200 text-sm font-black uppercase tracking-widest hover:bg-slate-50 transition-all flex items-center justify-center gap-3 active:scale-95 shadow-sm"
+              className="flex-1 h-[48px] bg-white text-brand-primary rounded-xl border border-slate-200 text-sm font-black uppercase tracking-widest hover:bg-slate-50 transition-all flex items-center justify-center gap-3 active:scale-95 shadow-sm"
             >
               <Icons.Download className="w-4 h-4" /> Download
             </button>
-            <button className="flex-[1.8] h-[48px] bg-linear-to-r from-[#01012A] to-[#2E2C66] text-white rounded-xl text-[13px] font-black uppercase tracking-[0.2em] hover:opacity-90 transition-all flex items-center justify-center gap-3 shadow-xl active:scale-95 group">
+            <button className="flex-[1.8] h-[48px] bg-linear-to-r from-brand-primary to-brand-secondary text-white rounded-xl text-[13px] font-black uppercase tracking-[0.2em] hover:opacity-90 transition-all flex items-center justify-center gap-3 shadow-xl active:scale-95 group">
               <Icons.whiteMagicWand className="w-4 h-4 text-white group-hover:rotate-12 transition-transform" /> 
               Deploy to Project
             </button>

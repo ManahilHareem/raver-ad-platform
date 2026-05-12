@@ -117,7 +117,7 @@ export function EditorResultModal({ isOpen, onClose, result }: EditorResultModal
               </div>
               <div className="flex flex-col">
                 <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest leading-none">Editor</span>
-                <span className="text-sm font-black text-[#01012A] uppercase tracking-tight">Synthesis Outcome</span>
+                <span className="text-sm font-black text-brand-primary uppercase tracking-tight">Synthesis Outcome</span>
               </div>
             </div>
             <button onClick={onClose} className="w-8 h-8 rounded-full hover:bg-slate-50 flex items-center justify-center transition-all group">
@@ -130,7 +130,7 @@ export function EditorResultModal({ isOpen, onClose, result }: EditorResultModal
             
             {/* Variations */}
             <div className="space-y-4">
-              <span className="text-[11px] font-black text-[#01012A] uppercase tracking-[0.2em] opacity-40">Available Formats</span>
+              <span className="text-[11px] font-black text-brand-primary uppercase tracking-[0.2em] opacity-40">Available Formats</span>
               <div className="grid grid-cols-1 gap-2">
                 {Object.keys(renders).length > 0 ? (
                   Object.keys(renders).map((f) => (
@@ -140,7 +140,7 @@ export function EditorResultModal({ isOpen, onClose, result }: EditorResultModal
                       className={cn(
                         "flex items-center justify-between px-5 py-4 rounded-2xl border transition-all duration-300",
                         activeFormat === f 
-                          ? "bg-slate-50 border-slate-200 text-[#01012A] shadow-sm" 
+                          ? "bg-slate-50 border-slate-200 text-brand-primary shadow-sm" 
                           : "bg-white border-slate-100 text-slate-400 hover:bg-slate-50"
                       )}
                     >
@@ -163,7 +163,7 @@ export function EditorResultModal({ isOpen, onClose, result }: EditorResultModal
             {result.metadata?.payload && (
               <div className="space-y-4">
                 <div className="flex items-center gap-2">
-                  <span className="text-[11px] font-black text-[#01012A] uppercase tracking-[0.2em] opacity-40">Orchestration Blueprint</span>
+                  <span className="text-[11px] font-black text-brand-primary uppercase tracking-[0.2em] opacity-40">Orchestration Blueprint</span>
                   <div className="h-px bg-slate-100 flex-1" />
                 </div>
                 <div className="grid grid-cols-1 gap-4">
@@ -189,12 +189,12 @@ export function EditorResultModal({ isOpen, onClose, result }: EditorResultModal
 
             {/* Technical Inventory */}
             <div className="space-y-4">
-               <span className="text-[11px] font-black text-[#01012A] uppercase tracking-[0.2em] opacity-40">Synthesis Inventory</span>
+               <span className="text-[11px] font-black text-brand-primary uppercase tracking-[0.2em] opacity-40">Synthesis Inventory</span>
                <div className="bg-slate-50/50 rounded-[32px] p-6 border border-slate-100 space-y-6">
                   {result.metadata?.payload?.business_name && (
                      <div className="flex flex-col gap-1.5">
                         <span className="text-[9px] font-black text-slate-400 uppercase tracking-widest leading-none">Organization</span>
-                        <span className="text-[13px] font-black text-[#01012A] uppercase tracking-tight">{result.metadata.payload.business_name}</span>
+                        <span className="text-[13px] font-black text-brand-primary uppercase tracking-tight">{result.metadata.payload.business_name}</span>
                      </div>
                   )}
                   
@@ -259,7 +259,7 @@ export function EditorResultModal({ isOpen, onClose, result }: EditorResultModal
                      <div className="flex flex-col gap-1.5">
                         <span className="text-[9px] font-black text-slate-400 uppercase tracking-widest leading-none flex items-center justify-between">
                           <span>Neural Identifier</span>
-                          <button onClick={() => handleCopy(result.id)} className="hover:text-[#01012A] transition-colors">
+                          <button onClick={() => handleCopy(result.id)} className="hover:text-brand-primary transition-colors">
                              <Icons.Copy className="w-2.5 h-2.5" />
                           </button>
                         </span>

@@ -67,8 +67,8 @@ export function LaunchBriefForm({ onLaunch, isLoading }: LaunchBriefFormProps) {
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
         <div className="bg-white rounded-[32px] p-8 border border-slate-100 shadow-sm flex flex-col gap-6">
            <div className="flex items-center gap-3 border-b border-slate-50 pb-4">
-              <Icons.Rocket className="w-5 h-5 text-[#01012A]" />
-              <h3 className="text-sm font-black uppercase tracking-widest text-[#01012A]">Campaign Narrative</h3>
+              <Icons.Rocket className="w-5 h-5 text-brand-primary" />
+              <h3 className="text-sm font-black uppercase tracking-widest text-brand-primary">Campaign Narrative</h3>
            </div>
            
            <div className="flex flex-col gap-2">
@@ -78,9 +78,9 @@ export function LaunchBriefForm({ onLaunch, isLoading }: LaunchBriefFormProps) {
                   value={businessName}
                   onChange={(e) => setBusinessName(e.target.value)}
                   placeholder="e.g. Aura Fragrance"
-                  className="w-full bg-white border border-[#E2E8F0] rounded-xl px-4 py-2.5 text-sm focus:border-[#01012A] outline-none transition-all font-medium pr-12"
+                  className="w-full bg-white border border-[#E2E8F0] rounded-xl px-4 py-2.5 text-sm focus:border-brand-primary outline-none transition-all font-medium pr-12"
                 />
-                <Icons.Success className="absolute right-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-200 group-focus-within:text-[#01012A] transition-colors" />
+                <Icons.Success className="absolute right-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-200 group-focus-within:text-brand-primary transition-colors" />
               </div>
            </div>
 
@@ -90,7 +90,7 @@ export function LaunchBriefForm({ onLaunch, isLoading }: LaunchBriefFormProps) {
                 value={productDescription}
                 onChange={(e) => setProductDescription(e.target.value)}
                 placeholder="Describe the product essence..."
-                className="w-full bg-white border border-[#E2E8F0] rounded-xl px-4 py-2.5 text-sm focus:border-[#01012A] outline-none transition-all font-medium min-h-[100px] resize-none"
+                className="w-full bg-white border border-[#E2E8F0] rounded-xl px-4 py-2.5 text-sm focus:border-brand-primary outline-none transition-all font-medium min-h-[100px] resize-none"
               />
            </div>
 
@@ -100,7 +100,7 @@ export function LaunchBriefForm({ onLaunch, isLoading }: LaunchBriefFormProps) {
                 value={targetAudience}
                 onChange={(e) => setTargetAudience(e.target.value)}
                 placeholder="e.g. Gen-Z Lifestyle Enthusiasts"
-                className="w-full bg-white border border-[#E2E8F0] rounded-xl px-4 py-2.5 text-sm focus:border-[#01012A] outline-none transition-all font-medium"
+                className="w-full bg-white border border-[#E2E8F0] rounded-xl px-4 py-2.5 text-sm focus:border-brand-primary outline-none transition-all font-medium"
               />
            </div>
 
@@ -111,7 +111,7 @@ export function LaunchBriefForm({ onLaunch, isLoading }: LaunchBriefFormProps) {
                   value={logoUrl}
                   onChange={(e) => setLogoUrl(e.target.value)}
                   placeholder="https://your-brand-asset.png"
-                  className="w-full bg-white border border-[#E2E8F0] rounded-xl px-4 py-2.5 text-sm focus:border-[#01012A] outline-none transition-all font-medium"
+                  className="w-full bg-white border border-[#E2E8F0] rounded-xl px-4 py-2.5 text-sm focus:border-brand-primary outline-none transition-all font-medium"
                 />
               </div>
            </div>
@@ -130,7 +130,7 @@ export function LaunchBriefForm({ onLaunch, isLoading }: LaunchBriefFormProps) {
                 <select 
                   value={mood}
                   onChange={(e) => setMood(e.target.value)}
-                  className="w-full bg-white border border-[#E2E8F0] rounded-xl px-4 py-2.5 text-sm focus:border-[#01012A] outline-none font-medium appearance-none cursor-pointer"
+                  className="w-full bg-white border border-[#E2E8F0] rounded-xl px-4 py-2.5 text-sm focus:border-brand-primary outline-none font-medium appearance-none cursor-pointer"
                 >
                   <option value="cinematic">Cinematic</option>
                   <option value="minimalist">Minimalist</option>
@@ -143,7 +143,7 @@ export function LaunchBriefForm({ onLaunch, isLoading }: LaunchBriefFormProps) {
                 <select 
                   value={brandTone}
                   onChange={(e) => setBrandTone(e.target.value)}
-                  className="w-full bg-white border border-[#E2E8F0] rounded-xl px-4 py-2.5 text-sm focus:border-[#01012A] outline-none font-medium appearance-none cursor-pointer"
+                  className="w-full bg-white border border-[#E2E8F0] rounded-xl px-4 py-2.5 text-sm focus:border-brand-primary outline-none font-medium appearance-none cursor-pointer"
                 >
                   <option value="bold">Bold & High Energy</option>
                   <option value="minimal">Quiet Luxury</option>
@@ -163,7 +163,7 @@ export function LaunchBriefForm({ onLaunch, isLoading }: LaunchBriefFormProps) {
                      className={cn(
                        "py-2 rounded-lg text-xs font-black transition-all border",
                        aspectRatio === format 
-                        ? "bg-linear-to-r from-[#01012A] to-[#2E2C66] text-white border-[#01012A]" 
+                        ? "bg-linear-to-r from-brand-primary to-brand-secondary text-white border-brand-primary" 
                         : "bg-white text-slate-400 border-slate-100 hover:border-slate-200"
                      )}
                    >
@@ -189,7 +189,7 @@ export function LaunchBriefForm({ onLaunch, isLoading }: LaunchBriefFormProps) {
                     className={cn(
                       "flex-1 py-3 rounded-xl border transition-all flex items-center justify-center",
                       platform === p.id 
-                        ? "bg-white border-[#01012A] text-[#01012A] shadow-sm" 
+                        ? "bg-white border-brand-primary text-brand-primary shadow-sm" 
                         : "bg-slate-100 border-transparent text-slate-400"
                     )}
                   >
@@ -202,7 +202,7 @@ export function LaunchBriefForm({ onLaunch, isLoading }: LaunchBriefFormProps) {
       </div>
 
       {/* ⚙️ Advanced Orchestration Logic */}
-      <div className="bg-linear-to-r from-[#01012A] to-[#2E2C66] rounded-[32px] p-8 border border-white/5 shadow-2xl flex flex-col gap-8 relative group">
+      <div className="bg-linear-to-r from-brand-primary to-brand-secondary rounded-[32px] p-8 border border-white/5 shadow-2xl flex flex-col gap-8 relative group">
          <div className="absolute top-0 right-0 w-64 h-64 bg-blue-900/20 rounded-full -mr-32 -mt-32 blur-3xl pointer-events-none" />
          
          <div className="flex items-center justify-between border-b border-white/10 pb-6 relative z-10">
@@ -255,9 +255,9 @@ export function LaunchBriefForm({ onLaunch, isLoading }: LaunchBriefFormProps) {
                  onChange={(e) => setVideoModel(e.target.value)}
                  className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-sm text-white font-black uppercase tracking-widest outline-none cursor-pointer hover:bg-white/10 transition-colors"
                >
-                 <option value="kling-video" className="bg-linear-to-r from-[#01012A] to-[#2E2C66]">Kling-Video-Neo</option>
-                 <option value="seedance" className="bg-linear-to-r from-[#01012A] to-[#2E2C66]">Seedance Synthesis</option>
-                 <option value="ltx-video" className="bg-linear-to-r from-[#01012A] to-[#2E2C66]">LTX-High-Fidelity</option>
+                 <option value="kling-video" className="bg-linear-to-r from-brand-primary to-brand-secondary">Kling-Video-Neo</option>
+                 <option value="seedance" className="bg-linear-to-r from-brand-primary to-brand-secondary">Seedance Synthesis</option>
+                 <option value="ltx-video" className="bg-linear-to-r from-brand-primary to-brand-secondary">LTX-High-Fidelity</option>
                </select>
             </div>
          </div>
@@ -293,7 +293,7 @@ export function LaunchBriefForm({ onLaunch, isLoading }: LaunchBriefFormProps) {
                      className={cn(
                        "py-2 rounded-lg text-xs font-black uppercase tracking-tight transition-all border",
                        transition === t 
-                         ? "bg-white text-[#01012A] border-white shadow-lg" 
+                         ? "bg-white text-brand-primary border-white shadow-lg" 
                          : "bg-white/5 text-white/40 border-white/10 hover:bg-white/10"
                      )}
                    >
@@ -329,7 +329,7 @@ export function LaunchBriefForm({ onLaunch, isLoading }: LaunchBriefFormProps) {
              "w-full h-16 rounded-2xl font-black text-sm uppercase tracking-[0.3em] transition-all duration-500 shadow-xl flex items-center justify-center gap-4 relative z-10",
              (isLoading || !isFormValid)
                ? "bg-white/5 text-white/20 cursor-not-allowed border-white/5"
-               : "bg-white text-[#01012A] border hover:border-white hover:bg-linear-to-r hover:from-[#01012A] hover:to-[#2E2C66] hover:text-white shadow-black/20 active:scale-[0.98]"
+               : "bg-white text-brand-primary border hover:border-white hover:bg-linear-to-r hover:from-brand-primary hover:to-brand-secondary hover:text-white shadow-black/20 active:scale-[0.98]"
            )}
          >
            {isLoading ? (

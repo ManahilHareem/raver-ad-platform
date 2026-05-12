@@ -167,8 +167,8 @@ export default function TemplatesPage() {
                 className={cn(
                   "px-[16px] py-[12px] rounded-[8px] text-[14px] font-bold transition-all duration-200",
                   activeCategory === cat 
-                    ? "bg-[linear-gradient(90deg,#01012A_0%,#2E2C66_100%)] text-white shadow-lg" 
-                    : "bg-[#F1F5F9] text-[#121212] hover:bg-[linear-gradient(90deg,#01012A_0%,#2E2C66_100%)] hover:text-white"
+                    ? "bg-[linear-gradient(90deg,var(--color-brand-primary)_0%,var(--color-brand-secondary)_100%)] text-white shadow-lg" 
+                    : "bg-[#F1F5F9] text-[#121212] hover:bg-[linear-gradient(90deg,var(--color-brand-primary)_0%,var(--color-brand-secondary)_100%)] hover:text-white"
                 )}
               >
                 {cat}

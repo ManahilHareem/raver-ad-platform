@@ -181,7 +181,7 @@ export function QualityAuditModal({ isOpen, onClose, onRefresh, candidate }: Qua
       case "Audio":
       case "audio_mix":
         return (
-          <div className="w-full h-full bg-linear-to-br from-[#01012A] to-[#2E2C66] rounded-3xl flex flex-col items-center justify-center p-12 gap-8 shadow-2xl">
+          <div className="w-full h-full bg-linear-to-br from-brand-primary to-brand-secondary rounded-3xl flex flex-col items-center justify-center p-12 gap-8 shadow-2xl">
              <div className="w-24 h-24 rounded-full bg-white/5 border border-white/10 flex items-center justify-center">
                <Icons.Mic className="w-10 h-10 text-white/40" />
              </div>
@@ -232,7 +232,7 @@ export function QualityAuditModal({ isOpen, onClose, onRefresh, candidate }: Qua
                     <Icons.Files className="w-6 h-6 text-blue-600" />
                   </div>
                   <div>
-                    <h3 className="text-xl font-black text-[#01012A] tracking-tighter">Candidate Ad Script</h3>
+                    <h3 className="text-xl font-black text-brand-primary tracking-tighter">Candidate Ad Script</h3>
                     <p className="text-[10px] font-black uppercase tracking-widest text-slate-400">Neural Linguistic Output v1.5</p>
                   </div>
                 </div>
@@ -257,7 +257,7 @@ export function QualityAuditModal({ isOpen, onClose, onRefresh, candidate }: Qua
     <div className="fixed inset-0 z-100 flex items-center justify-center p-4 sm:p-10">
       {/* Backdrop */}
       <div 
-        className="absolute inset-0 bg-[#01012A]/40 backdrop-blur-xl animate-in fade-in duration-500"
+        className="absolute inset-0 bg-brand-primary/40 backdrop-blur-xl animate-in fade-in duration-500"
         onClick={onClose}
       />
 
@@ -267,11 +267,11 @@ export function QualityAuditModal({ isOpen, onClose, onRefresh, candidate }: Qua
         {/* Header */}
         <div className="flex items-center justify-between px-10 py-8 bg-white border-b border-slate-100">
           <div className="flex items-center gap-6">
-            <div className="w-14 h-14 rounded-2xl bg-[#01012A] flex items-center justify-center shadow-xl shadow-[#01012A]/20">
+            <div className="w-14 h-14 rounded-2xl bg-brand-primary flex items-center justify-center shadow-xl shadow-brand-primary/20">
               <Icons.ShieldCheck className="w-7 h-7 text-white" />
             </div>
             <div className="flex flex-col">
-              <h2 className="text-2xl font-black text-[#01012A] tracking-tighter lowercase leading-tight">{label}</h2>
+              <h2 className="text-2xl font-black text-brand-primary tracking-tighter lowercase leading-tight">{label}</h2>
               <div className="flex items-center gap-3">
                 <span className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400">Archival Audit Mode</span>
                 <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
@@ -281,7 +281,7 @@ export function QualityAuditModal({ isOpen, onClose, onRefresh, candidate }: Qua
           </div>
           <button 
             onClick={onClose}
-            className="w-12 h-12 rounded-2xl bg-slate-50 border border-slate-100 flex items-center justify-center text-slate-400 hover:text-[#01012A] hover:bg-slate-100 transition-all active:scale-95 group shadow-sm"
+            className="w-12 h-12 rounded-2xl bg-slate-50 border border-slate-100 flex items-center justify-center text-slate-400 hover:text-brand-primary hover:bg-slate-100 transition-all active:scale-95 group shadow-sm"
           >
             <Icons.Plus className="w-6 h-6 rotate-45 group-hover:rotate-135 transition-transform duration-500" />
           </button>
@@ -297,16 +297,16 @@ export function QualityAuditModal({ isOpen, onClose, onRefresh, candidate }: Qua
                 {/* Information Overlay */}
                 <div className="absolute bottom-6 left-6 right-6 p-6 bg-white/90 backdrop-blur-md rounded-[32px] border border-white shadow-2xl transform translate-y-12 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-500 flex items-center justify-between pointer-events-none">
                    <div className="flex items-center gap-4">
-                      <div className="w-10 h-10 rounded-xl bg-[#01012A]/5 flex items-center justify-center">
-                         <Icons.Activity className="w-5 h-5 text-[#01012A]" />
+                      <div className="w-10 h-10 rounded-xl bg-brand-primary/5 flex items-center justify-center">
+                         <Icons.Activity className="w-5 h-5 text-brand-primary" />
                       </div>
                       <div className="flex flex-col">
-                         <span className="text-[11px] font-black text-[#01012A] uppercase tracking-tighter">Candidate Integrity Analysis</span>
+                         <span className="text-[11px] font-black text-brand-primary uppercase tracking-tighter">Candidate Integrity Analysis</span>
                          <span className="text-[10px] text-slate-400 font-bold">Neural weight distribution matches branch signature.</span>
                       </div>
                    </div>
                    <div className="text-right">
-                      <div className="text-xl font-black text-[#01012A]">
+                      <div className="text-xl font-black text-brand-primary">
                         {(() => {
                           const score = auditReport?.overallScore || auditReport?.overall_score || auditReport?.metadata?.overall_score;
                           return score ? `${(score * 100).toFixed(1)}%` : "Pending";
@@ -326,7 +326,7 @@ export function QualityAuditModal({ isOpen, onClose, onRefresh, candidate }: Qua
                 <div className="space-y-6">
                    <div className="flex items-center gap-3">
                       <Icons.Settings className="w-4 h-4 text-blue-500" />
-                      <h3 className="text-[11px] font-black uppercase tracking-[0.2em] text-[#01012A]">Technical Inventory</h3>
+                      <h3 className="text-[11px] font-black uppercase tracking-[0.2em] text-brand-primary">Technical Inventory</h3>
                    </div>
                    
                    <div className="space-y-2">
@@ -340,7 +340,7 @@ export function QualityAuditModal({ isOpen, onClose, onRefresh, candidate }: Qua
                         <div key={idx} className="flex flex-col p-4 bg-slate-50 rounded-2xl border border-slate-100 hover:border-blue-100 transition-all">
                            <span className="text-[9px] font-bold text-slate-400 uppercase tracking-widest mb-1">{item.label}</span>
                            <span className={cn(
-                             "text-[12px] font-bold text-[#01012A]",
+                             "text-[12px] font-bold text-brand-primary",
                              item.mono && "font-mono text-[10px]",
                              item.bold && "font-black"
                            )}>
@@ -354,7 +354,7 @@ export function QualityAuditModal({ isOpen, onClose, onRefresh, candidate }: Qua
                 {/* Neural Foundations Section */}
                 <div className="space-y-4">
                    <div className="flex items-center justify-between">
-                      <h4 className="text-[10px] font-black uppercase tracking-[0.2em] text-[#01012A]">Neural Foundations</h4>
+                      <h4 className="text-[10px] font-black uppercase tracking-[0.2em] text-brand-primary">Neural Foundations</h4>
                       <Icons.Database className="w-3.5 h-3.5 text-blue-500" />
                    </div>
                    
@@ -409,7 +409,7 @@ export function QualityAuditModal({ isOpen, onClose, onRefresh, candidate }: Qua
                      <div className="space-y-4">
                         <div className="flex items-center gap-3">
                            <Icons.ShieldCheck className="w-4 h-4 text-emerald-500" />
-                           <h3 className="text-[11px] font-black uppercase tracking-[0.2em] text-[#01012A]">Neural Report v1.0</h3>
+                           <h3 className="text-[11px] font-black uppercase tracking-[0.2em] text-brand-primary">Neural Report v1.0</h3>
                         </div>
                          <div className="space-y-6">
                             {/* Dashboard of scores */}
@@ -436,7 +436,7 @@ export function QualityAuditModal({ isOpen, onClose, onRefresh, candidate }: Qua
                                 </div>
                                 <div className="flex flex-wrap gap-2">
                                   {auditReport.metadata.evaluator_models.map((model: string, idx: number) => (
-                                    <span key={idx} className="px-3 py-1 bg-[#01012A]/5 border border-[#01012A]/10 rounded-lg text-[9px] font-bold text-[#01012A] lowercase tracking-tight">
+                                    <span key={idx} className="px-3 py-1 bg-brand-primary/5 border border-brand-primary/10 rounded-lg text-[9px] font-bold text-brand-primary lowercase tracking-tight">
                                       {model}
                                     </span>
                                   ))}
@@ -456,10 +456,10 @@ export function QualityAuditModal({ isOpen, onClose, onRefresh, candidate }: Qua
                                     if (!details?.issues?.length && !details?.notes) return null;
                                     return (
                                       <div key={key} className="p-5 bg-slate-50/50 rounded-[28px] border border-slate-100 space-y-3 relative overflow-hidden group/dim">
-                                        <div className="absolute top-0 left-0 w-1 h-full bg-[#01012A]/10 group-hover/dim:bg-blue-500 transition-colors" />
+                                        <div className="absolute top-0 left-0 w-1 h-full bg-brand-primary/10 group-hover/dim:bg-blue-500 transition-colors" />
                                         <div className="flex items-center justify-between">
                                           <div className="flex flex-col">
-                                            <span className="text-[10px] font-black uppercase tracking-[0.2em] text-[#01012A]">{key.replace("_", " ")}</span>
+                                            <span className="text-[10px] font-black uppercase tracking-[0.2em] text-brand-primary">{key.replace("_", " ")}</span>
                                             <div className="flex items-center gap-2 mt-1">
                                               <span className="text-[8px] font-bold text-slate-400 uppercase tracking-widest">Weight: {Math.round((details.weight || 0) * 100)}%</span>
                                               <span className="w-1 h-1 rounded-full bg-slate-200" />
@@ -489,7 +489,7 @@ export function QualityAuditModal({ isOpen, onClose, onRefresh, candidate }: Qua
                                         {details.notes && (
                                           <div className="mt-3 p-3 bg-white/50 rounded-xl border border-slate-100/50">
                                             <span className="text-[8px] font-black text-slate-300 uppercase tracking-widest block mb-1">Expert Forensics</span>
-                                            <p className="text-[10px] font-bold text-[#01012A]/60 italic leading-relaxed">
+                                            <p className="text-[10px] font-bold text-brand-primary/60 italic leading-relaxed">
                                               {details.notes}
                                             </p>
                                           </div>
@@ -548,7 +548,7 @@ export function QualityAuditModal({ isOpen, onClose, onRefresh, candidate }: Qua
                     onClick={handleInitiateEvaluation}
                     disabled={isAuditing || isPolling}
                     className={cn(
-                      "w-full h-14 bg-[#01012A] text-white rounded-[20px] font-black text-[11px] uppercase tracking-widest transition-all shadow-xl shadow-[#01012A]/10 flex items-center justify-center gap-3",
+                      "w-full h-14 bg-brand-primary text-white rounded-[20px] font-black text-[11px] uppercase tracking-widest transition-all shadow-xl shadow-brand-primary/10 flex items-center justify-center gap-3",
                       (isAuditing || isPolling) ? "opacity-50 cursor-not-allowed" : "hover:scale-[1.02] active:scale-95"
                     )}
                   >
@@ -582,7 +582,7 @@ export function QualityAuditModal({ isOpen, onClose, onRefresh, candidate }: Qua
                     )}
                     <button 
                       onClick={onClose}
-                      className="w-full h-14 bg-slate-100 text-[#01012A] rounded-[20px] font-black text-[11px] uppercase tracking-widest hover:bg-slate-200 transition-all active:scale-95"
+                      className="w-full h-14 bg-slate-100 text-brand-primary rounded-[20px] font-black text-[11px] uppercase tracking-widest hover:bg-slate-200 transition-all active:scale-95"
                     >
                       Close Audit Report
                     </button>
@@ -605,7 +605,7 @@ export function QualityAuditModal({ isOpen, onClose, onRefresh, candidate }: Qua
           border-radius: 10px;
         }
         .custom-scrollbar::-webkit-scrollbar-thumb:hover {
-          background: #01012A;
+          background: var(--color-brand-primary);
         }
       `}</style>
     </div>

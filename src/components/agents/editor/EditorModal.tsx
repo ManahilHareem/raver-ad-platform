@@ -28,17 +28,17 @@ export function EditorModal({ isOpen, onClose, onGenerate, isLoading }: EditorMo
         {/* Header */}
         <div className="flex items-center justify-between px-8 py-6 bg-white border-b border-slate-100">
           <div className="flex items-center gap-4">
-            <div className="w-12 h-12 rounded-2xl bg-linear-to-r from-[#01012A] to-[#2E2C66] flex items-center justify-center shadow-lg shadow-[#01012A]/10">
+            <div className="w-12 h-12 rounded-2xl bg-linear-to-r from-brand-primary to-brand-secondary flex items-center justify-center shadow-lg shadow-brand-primary/10">
               <Icons.Rocket className="w-6 h-6 text-white" />
             </div>
             <div className="flex flex-col">
-              <h2 className="text-xl font-black text-[#01012A] tracking-tighter lowercase leading-tight">Initiate Neural Synthesis</h2>
+              <h2 className="text-xl font-black text-brand-primary tracking-tighter lowercase leading-tight">Initiate Neural Synthesis</h2>
               <p className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400">Orchestrating Platform-Ready Visual Campaigns</p>
             </div>
           </div>
           <button 
             onClick={onClose}
-            className="w-10 h-10 rounded-xl bg-slate-50 border border-slate-100 flex items-center justify-center text-slate-400 hover:text-[#01012A] hover:bg-slate-100 transition-all active:scale-90"
+            className="w-10 h-10 rounded-xl bg-slate-50 border border-slate-100 flex items-center justify-center text-slate-400 hover:text-brand-primary hover:bg-slate-100 transition-all active:scale-90"
           >
             <Icons.Plus className="w-5 h-5 rotate-45" />
           </button>

@@ -208,13 +208,13 @@ export default function VoiceStudioPage() {
         {/* Header section */}
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
           <div className="flex flex-col">
-            <h1 className="text-2xl sm:text-[32px] font-black text-[#01012A] tracking-tighter lowercase leading-tight sm:leading-none">Custom Voices</h1>
+            <h1 className="text-2xl sm:text-[32px] font-black text-brand-primary tracking-tighter lowercase leading-tight sm:leading-none">Custom Voices</h1>
             <p className="text-[9px] sm:text-[10px] font-bold uppercase tracking-[0.2em] text-slate-400 mt-2 sm:mt-3">Advanced ElevenLabs Voice Cloning & Management</p>
           </div>
           
           <button 
             onClick={() => setShowCreateForm(true)}
-            className="h-12 sm:h-14 px-6 sm:px-8 bg-linear-to-r from-[#01012A] to-[#2E2C66] text-white rounded-[16px] sm:rounded-[20px] font-black text-[10px] sm:text-[11px] uppercase tracking-widest flex items-center justify-center gap-3 transition-all hover:scale-[1.02] active:scale-95 shadow-xl shadow-[#01012A]/10 border border-white/5"
+            className="h-12 sm:h-14 px-6 sm:px-8 bg-linear-to-r from-brand-primary to-brand-secondary text-white rounded-[16px] sm:rounded-[20px] font-black text-[10px] sm:text-[11px] uppercase tracking-widest flex items-center justify-center gap-3 transition-all hover:scale-[1.02] active:scale-95 shadow-xl shadow-brand-primary/10 border border-white/5"
           >
             <Icons.Plus className="w-4 h-4" />
             Clone New Voice
@@ -226,14 +226,14 @@ export default function VoiceStudioPage() {
           <div className="bg-white p-5 sm:p-6 rounded-[20px] sm:rounded-[24px] border border-slate-100 shadow-sm flex flex-col gap-2">
             <span className="text-[9px] sm:text-[10px] font-black uppercase tracking-widest text-slate-400">Total Custom Voices</span>
             <div className="flex items-end justify-between">
-              <span className="text-2xl sm:text-[32px] font-black text-[#01012A]">{voices.length}</span>
+              <span className="text-2xl sm:text-[32px] font-black text-brand-primary">{voices.length}</span>
               <Icons.Mic className="w-6 h-6 sm:w-8 sm:h-8 text-blue-500/20" />
             </div>
           </div>
           <div className="bg-white p-5 sm:p-6 rounded-[20px] sm:rounded-[24px] border border-slate-100 shadow-sm flex flex-col gap-2">
             <span className="text-[9px] sm:text-[10px] font-black uppercase tracking-widest text-slate-400">Generation Method</span>
             <div className="flex items-end justify-between">
-              <span className="text-xs sm:text-sm font-black text-[#01012A] uppercase tracking-tighter">Instant Cloning</span>
+              <span className="text-xs sm:text-sm font-black text-brand-primary uppercase tracking-tighter">Instant Cloning</span>
               <Icons.Zap className="w-6 h-6 sm:w-8 sm:h-8 text-amber-500/20" />
             </div>
           </div>
@@ -257,11 +257,11 @@ export default function VoiceStudioPage() {
             >
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-3 sm:gap-4">
-                  <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-[14px] sm:rounded-[18px] bg-slate-50 flex items-center justify-center border border-slate-100 group-hover:bg-[#01012A] group-hover:border-[#01012A] transition-all duration-500">
-                    <Icons.Mic className="w-4 h-4 sm:w-5 sm:h-5 text-[#01012A] group-hover:text-white transition-all" />
+                  <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-[14px] sm:rounded-[18px] bg-slate-50 flex items-center justify-center border border-slate-100 group-hover:bg-brand-primary group-hover:border-brand-primary transition-all duration-500">
+                    <Icons.Mic className="w-4 h-4 sm:w-5 sm:h-5 text-brand-primary group-hover:text-white transition-all" />
                   </div>
                   <div className="flex flex-col">
-                    <h3 className="font-black text-[#01012A] tracking-tight text-sm sm:text-base">{voice.name}</h3>
+                    <h3 className="font-black text-brand-primary tracking-tight text-sm sm:text-base">{voice.name}</h3>
                     <span className="text-[9px] sm:text-[10px] font-bold text-slate-400 uppercase tracking-tighter">{voice.category || "Custom Clone"}</span>
                   </div>
                 </div>
@@ -271,10 +271,10 @@ export default function VoiceStudioPage() {
                   className={cn(
                     "w-9 h-9 sm:w-10 sm:h-10 rounded-full flex items-center justify-center transition-all active:scale-90 shadow-sm",
                     playingId === voice.voice_id 
-                      ? "bg-[#01012A] text-white" 
+                      ? "bg-brand-primary text-white" 
                       : !voice.preview_url 
                         ? "bg-slate-50 text-slate-300 cursor-not-allowed border border-slate-100" 
-                        : "bg-white border border-slate-100 text-[#01012A] hover:bg-slate-50"
+                        : "bg-white border border-slate-100 text-brand-primary hover:bg-slate-50"
                   )}
                   title={voice.preview_url ? "Play Preview" : "No preview available"}
                 >
@@ -316,7 +316,7 @@ export default function VoiceStudioPage() {
                       navigator.clipboard.writeText(voice.voice_id);
                       toast.success("Voice ID copied to clipboard");
                     }}
-                    className="p-2 text-slate-300 hover:text-[#01012A] transition-all"
+                    className="p-2 text-slate-300 hover:text-brand-primary transition-all"
                     title="Copy Voice ID"
                   >
                     <Icons.Copy className="w-4 h-4" />
@@ -338,12 +338,12 @@ export default function VoiceStudioPage() {
                 <Icons.Mic className="w-7 h-7 sm:w-8 sm:h-8 text-slate-300" />
               </div>
               <div className="flex flex-col items-center gap-1">
-                <h3 className="font-black text-[#01012A] tracking-tight text-base sm:text-lg">No custom voices found</h3>
+                <h3 className="font-black text-brand-primary tracking-tight text-base sm:text-lg">No custom voices found</h3>
                 <p className="text-slate-400 text-xs sm:text-sm max-w-[250px]">Clone your first voice to get started with ElevenLabs.</p>
               </div>
               <button 
                 onClick={() => setShowCreateForm(true)}
-                className="mt-2 px-6 py-2.5 bg-[#01012A] text-white rounded-xl text-[10px] sm:text-[11px] font-bold uppercase tracking-widest hover:opacity-90 transition-all active:scale-95"
+                className="mt-2 px-6 py-2.5 bg-brand-primary text-white rounded-xl text-[10px] sm:text-[11px] font-bold uppercase tracking-widest hover:opacity-90 transition-all active:scale-95"
               >
                 Start Cloning
               </button>
@@ -355,23 +355,23 @@ export default function VoiceStudioPage() {
         {showCreateForm && (
           <div className="fixed inset-0 z-100 flex items-center justify-center p-4 bg-black/60 backdrop-blur-md animate-in fade-in duration-300 overflow-y-auto">
             <div 
-              className="fixed inset-0 bg-[#01012A]/40 backdrop-blur-sm" 
+              className="fixed inset-0 bg-brand-primary/40 backdrop-blur-sm" 
               onClick={() => setShowCreateForm(false)} 
             />
             <div className="relative w-full max-w-xl bg-white rounded-[24px] sm:rounded-[32px] shadow-2xl border border-slate-100 p-6 sm:p-8 flex flex-col gap-6 sm:gap-8 animate-in zoom-in-95 slide-in-from-bottom-4 duration-300 my-auto">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-3 sm:gap-4">
                   <div className="w-10 h-10 sm:w-12 sm:h-12 bg-slate-50 rounded-[14px] sm:rounded-[18px] flex items-center justify-center border border-slate-100">
-                    <Icons.Activity className="w-5 h-5 sm:w-6 sm:h-6 text-[#01012A]" />
+                    <Icons.Activity className="w-5 h-5 sm:w-6 sm:h-6 text-brand-primary" />
                   </div>
                   <div className="flex flex-col">
-                    <h2 className="text-lg sm:text-xl font-black text-[#01012A] tracking-tight lowercase leading-none">Voice Clone Initiation</h2>
+                    <h2 className="text-lg sm:text-xl font-black text-brand-primary tracking-tight lowercase leading-none">Voice Clone Initiation</h2>
                     <span className="text-[9px] sm:text-[10px] font-bold text-slate-400 uppercase tracking-widest mt-1.5 sm:mt-2">Create a custom ElevenLabs voice profile</span>
                   </div>
                 </div>
                 <button 
                   onClick={() => setShowCreateForm(false)}
-                  className="w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-slate-50 flex items-center justify-center text-slate-400 hover:text-[#01012A] transition-all hover:rotate-90"
+                  className="w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-slate-50 flex items-center justify-center text-slate-400 hover:text-brand-primary transition-all hover:rotate-90"
                 >
                   <Icons.Plus className="w-5 h-5 rotate-45" />
                 </button>
@@ -379,29 +379,29 @@ export default function VoiceStudioPage() {
 
               <form onSubmit={handleCreateVoice} className="flex flex-col gap-4 sm:gap-6">
                 <div className="flex flex-col gap-2">
-                  <label className="text-[9px] sm:text-[10px] font-black uppercase tracking-widest text-[#01012A] ml-1">Voice Identifier (Name)</label>
+                  <label className="text-[9px] sm:text-[10px] font-black uppercase tracking-widest text-brand-primary ml-1">Voice Identifier (Name)</label>
                   <input 
                     type="text"
                     required
                     placeholder="e.g. CEO Custom Voice"
                     value={voiceName}
                     onChange={(e) => setVoiceName(e.target.value)}
-                    className="w-full h-12 sm:h-14 bg-slate-50 border border-transparent rounded-[16px] sm:rounded-[20px] px-5 sm:px-6 text-sm font-bold text-[#01012A] placeholder:text-slate-300 focus:bg-white focus:border-slate-100 transition-all outline-none"
+                    className="w-full h-12 sm:h-14 bg-slate-50 border border-transparent rounded-[16px] sm:rounded-[20px] px-5 sm:px-6 text-sm font-bold text-brand-primary placeholder:text-slate-300 focus:bg-white focus:border-slate-100 transition-all outline-none"
                   />
                 </div>
 
                 <div className="flex flex-col gap-2">
-                  <label className="text-[9px] sm:text-[10px] font-black uppercase tracking-widest text-[#01012A] ml-1">Profile Description</label>
+                  <label className="text-[9px] sm:text-[10px] font-black uppercase tracking-widest text-brand-primary ml-1">Profile Description</label>
                   <textarea 
                     placeholder="Describe the tone, accent, and style of this voice..."
                     value={voiceDescription}
                     onChange={(e) => setVoiceDescription(e.target.value)}
-                    className="w-full h-24 sm:h-32 bg-slate-50 border border-transparent rounded-[20px] sm:rounded-[24px] p-5 sm:p-6 text-sm font-medium text-[#01012A] placeholder:text-slate-300 focus:bg-white focus:border-slate-100 transition-all outline-none resize-none"
+                    className="w-full h-24 sm:h-32 bg-slate-50 border border-transparent rounded-[20px] sm:rounded-[24px] p-5 sm:p-6 text-sm font-medium text-brand-primary placeholder:text-slate-300 focus:bg-white focus:border-slate-100 transition-all outline-none resize-none"
                   />
                 </div>
 
                 <div className="flex flex-col gap-2">
-                  <label className="text-[9px] sm:text-[10px] font-black uppercase tracking-widest text-[#01012A] ml-1">Audio Samples (Audio Files)</label>
+                  <label className="text-[9px] sm:text-[10px] font-black uppercase tracking-widest text-brand-primary ml-1">Audio Samples (Audio Files)</label>
                   <div 
                     onClick={() => fileInputRef.current?.click()}
                     className="w-full h-32 sm:h-40 bg-slate-50 border-2 border-dashed border-slate-200 rounded-[24px] sm:rounded-[28px] flex flex-col items-center justify-center gap-2 sm:gap-3 cursor-pointer hover:bg-slate-100 hover:border-slate-300 transition-all group"
@@ -410,7 +410,7 @@ export default function VoiceStudioPage() {
                       <Icons.Upload className="w-4 h-4 sm:w-5 sm:h-5 text-slate-400" />
                     </div>
                     <div className="flex flex-col items-center px-4 text-center">
-                      <span className="text-[10px] sm:text-[11px] font-black text-[#01012A] uppercase tracking-widest">
+                      <span className="text-[10px] sm:text-[11px] font-black text-brand-primary uppercase tracking-widest">
                         {selectedFiles.length > 0 ? `${selectedFiles.length} Samples Selected` : "Click to Upload Samples"}
                       </span>
                       <p className="text-[8px] sm:text-[9px] font-bold text-slate-400 uppercase tracking-tighter mt-1">MP3, WAV, or M4A (Max 10MB each)</p>
@@ -439,7 +439,7 @@ export default function VoiceStudioPage() {
                 <button 
                   type="submit"
                   disabled={isCreating}
-                  className="w-full h-14 sm:h-16 bg-linear-to-br from-[#01012A] via-[#01012A] to-[#2E2C66] text-white rounded-[20px] sm:rounded-[24px] text-[12px] sm:text-sm font-black uppercase tracking-[0.2em] sm:tracking-[0.25em] transition-all hover:scale-[1.02] active:scale-95 shadow-xl shadow-[#01012A]/10 flex items-center justify-center gap-3 sm:gap-4 disabled:opacity-70 mt-2"
+                  className="w-full h-14 sm:h-16 bg-linear-to-br from-brand-primary via-brand-primary to-brand-secondary text-white rounded-[20px] sm:rounded-[24px] text-[12px] sm:text-sm font-black uppercase tracking-[0.2em] sm:tracking-[0.25em] transition-all hover:scale-[1.02] active:scale-95 shadow-xl shadow-brand-primary/10 flex items-center justify-center gap-3 sm:gap-4 disabled:opacity-70 mt-2"
                 >
                   {isCreating ? (
                     <>

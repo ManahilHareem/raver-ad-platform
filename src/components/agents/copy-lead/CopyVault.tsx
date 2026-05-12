@@ -64,7 +64,7 @@ export function CopyVault({
             <Icons.Loader className="w-8 h-8 text-slate-300 animate-spin" />
          </div>
          <div className="flex flex-col gap-2">
-            <h3 className="text-xl font-black text-[#01012A] tracking-tighter lowercase">
+            <h3 className="text-xl font-black text-brand-primary tracking-tighter lowercase">
               {isGlobalArchive ? "Neural Archives Syncing..." : "Session Vault Syncing..."}
             </h3>
             <p className="text-sm text-slate-400 font-bold max-w-xs">Accessing the synthesis archives to retrieve your copy assets.</p>
@@ -80,7 +80,7 @@ export function CopyVault({
             <Icons.Text className="w-8 h-8 text-slate-200" />
          </div>
          <div className="flex flex-col gap-2">
-            <h3 className="text-xl font-black text-[#01012A] tracking-tighter lowercase">
+            <h3 className="text-xl font-black text-brand-primary tracking-tighter lowercase">
               {isGlobalArchive ? "zero synthesis results found_" : "no copy assets synthesized_"}
             </h3>
             <p className="text-sm text-slate-400 font-bold max-w-xs text-balance">
@@ -95,13 +95,13 @@ export function CopyVault({
       <div className="flex flex-col gap-6 sm:gap-8">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-50 pb-6">
           <div className="flex items-center gap-3">
-            <Icons.Files className="w-5 h-5 text-[#01012A]" />
-            <h3 className="text-lg sm:text-xl font-black text-[#01012A] tracking-tighter lowercase">
+            <Icons.Files className="w-5 h-5 text-brand-primary" />
+            <h3 className="text-lg sm:text-xl font-black text-brand-primary tracking-tighter lowercase">
               {isGlobalArchive ? "Global Copy Archives" : "Session Audit Vault"}
             </h3>
           </div>
           <div className="flex items-center gap-2 px-3 py-1 bg-slate-50 rounded-lg border border-slate-100 self-start sm:self-auto">
-             <span className="text-[9px] sm:text-[10px] font-black uppercase tracking-widest text-[#01012A]">{assets.length} Total Results</span>
+             <span className="text-[9px] sm:text-[10px] font-black uppercase tracking-widest text-brand-primary">{assets.length} Total Results</span>
           </div>
         </div>
 
@@ -118,9 +118,9 @@ export function CopyVault({
                 className={cn(
                   "flex items-center gap-2 sm:gap-3 px-4 sm:px-6 py-2.5 sm:py-3 rounded-xl sm:rounded-2xl font-black text-[9px] sm:text-[10px] uppercase tracking-wider transition-all border whitespace-nowrap active:scale-95 group",
                   isActive 
-                    ? "bg-linear-to-r from-[#01012A] to-[#2E2C66] text-white border-[#01012A] shadow-lg shadow-[#01012A]/10" 
+                    ? "bg-linear-to-r from-brand-primary to-brand-secondary text-white border-brand-primary shadow-lg shadow-brand-primary/10" 
                     : count > 0 
-                      ? "bg-white text-slate-400 border-slate-100 hover:border-[#01012A] hover:text-white hover:bg-linear-to-r hover:from-[#01012A] hover:to-[#2E2C66] shadow-sm"
+                      ? "bg-white text-slate-400 border-slate-100 hover:border-brand-primary hover:text-white hover:bg-linear-to-r hover:from-brand-primary hover:to-brand-secondary shadow-sm"
                       : "bg-slate-50/50 text-slate-300 border-slate-100 cursor-not-allowed opacity-60"
                 )}
                 disabled={count === 0 && activeFilter !== "all"}
@@ -190,7 +190,7 @@ export function CopyVault({
                     )}
                     <button 
                       onClick={() => onCopy(typeof asset.content === "string" ? asset.content : JSON.stringify(asset.content, null, 2))}
-                      className="shrink-0 w-9 h-9 sm:w-10 sm:h-10 rounded-xl sm:rounded-2xl flex items-center justify-center bg-slate-50 text-slate-300 hover:bg-linear-to-r hover:from-[#01012A] hover:to-[#2E2C66] hover:text-white transition-all active:scale-90 shadow-xs border border-slate-100 group/btn"
+                      className="shrink-0 w-9 h-9 sm:w-10 sm:h-10 rounded-xl sm:rounded-2xl flex items-center justify-center bg-slate-50 text-slate-300 hover:bg-linear-to-r hover:from-brand-primary hover:to-brand-secondary hover:text-white transition-all active:scale-90 shadow-xs border border-slate-100 group/btn"
                       title="Copy to clipboard"
                     >
                       <Icons.Files className="w-3.5 h-3.5 sm:w-4 sm:h-4 group-hover/btn:scale-110 transition-transform" />
@@ -207,10 +207,10 @@ export function CopyVault({
                           <div className="space-y-3">
                              <div className="flex items-center gap-2">
                                <Icons.Mic className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-blue-500" />
-                               <span className="text-[9px] sm:text-[10px] font-black uppercase tracking-[0.2em] text-[#01012A]">Narrative Script</span>
+                               <span className="text-[9px] sm:text-[10px] font-black uppercase tracking-[0.2em] text-brand-primary">Narrative Script</span>
                              </div>
                              <div className="p-5 sm:p-6 bg-blue-50/30 rounded-[24px] sm:rounded-[28px] border border-blue-100/30">
-                                <p className="text-[12px] sm:text-[13px] font-bold text-[#01012A] leading-relaxed italic">"{asset.content.script.script}"</p>
+                                <p className="text-[12px] sm:text-[13px] font-bold text-brand-primary leading-relaxed italic">"{asset.content.script.script}"</p>
                              </div>
                           </div>
                         )}
@@ -220,13 +220,13 @@ export function CopyVault({
                           <div className="space-y-3">
                              <div className="flex items-center gap-2">
                                <Icons.AIAgents className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-purple-500" />
-                               <span className="text-[9px] sm:text-[10px] font-black uppercase tracking-[0.2em] text-[#01012A]">Visual Overlays</span>
+                               <span className="text-[9px] sm:text-[10px] font-black uppercase tracking-[0.2em] text-brand-primary">Visual Overlays</span>
                              </div>
                              <div className="space-y-2">
                                 {asset.content.overlays.map((overlay: any, oidx: number) => (
                                   <div key={oidx} className="p-3.5 sm:p-4 bg-slate-50/50 rounded-xl sm:rounded-2xl border border-slate-100 flex items-start gap-3">
                                      <span className="text-[9px] font-black text-slate-300 mt-1">#{overlay.scene_id || oidx + 1}</span>
-                                     <p className="text-[11px] sm:text-[12px] font-bold text-[#01012A]">{overlay.text}</p>
+                                     <p className="text-[11px] sm:text-[12px] font-bold text-brand-primary">{overlay.text}</p>
                                   </div>
                                 ))}
                              </div>
@@ -240,20 +240,20 @@ export function CopyVault({
                                <div key={platform} className="space-y-4">
                                   <div className="flex items-center gap-2">
                                     <Icons.Smartphone className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-emerald-500" />
-                                    <span className="text-[9px] sm:text-[10px] font-black uppercase tracking-[0.2em] text-[#01012A]">{platform} Optimization</span>
+                                    <span className="text-[9px] sm:text-[10px] font-black uppercase tracking-[0.2em] text-brand-primary">{platform} Optimization</span>
                                   </div>
                                   
                                   {copy.caption && (
                                     <div className="p-4 sm:p-5 bg-emerald-50/20 rounded-[20px] sm:rounded-[24px] border border-emerald-100/30">
                                       <span className="text-[7px] sm:text-[8px] font-black uppercase tracking-[0.2em] text-emerald-600/50 block mb-2">Caption</span>
-                                      <p className="text-[11px] sm:text-[12px] font-bold text-[#01012A] leading-relaxed">{copy.caption}</p>
+                                      <p className="text-[11px] sm:text-[12px] font-bold text-brand-primary leading-relaxed">{copy.caption}</p>
                                     </div>
                                   )}
 
                                   {copy.cta && (
                                     <div className="p-3.5 sm:p-4 bg-slate-50 border border-slate-100 rounded-xl sm:rounded-2xl">
                                       <span className="text-[7px] sm:text-[8px] font-black uppercase tracking-[0.2em] text-slate-400 block mb-1">Call to Action</span>
-                                      <p className="text-[10px] sm:text-[11px] font-black text-[#01012A]">{copy.cta}</p>
+                                      <p className="text-[10px] sm:text-[11px] font-black text-brand-primary">{copy.cta}</p>
                                     </div>
                                   )}
 
@@ -283,7 +283,7 @@ export function CopyVault({
                          ))}
                       </div>
                     ) : typeof asset.content === "string" ? (
-                      <p className="text-[12px] sm:text-[13px] font-bold text-[#01012A] leading-relaxed whitespace-pre-wrap italic opacity-90">"{asset.content}"</p>
+                      <p className="text-[12px] sm:text-[13px] font-bold text-brand-primary leading-relaxed whitespace-pre-wrap italic opacity-90">"{asset.content}"</p>
                     ) : (
                       <div className="space-y-4">
                            {Object.entries(asset.content)
@@ -294,7 +294,7 @@ export function CopyVault({
                              .map(([key, value]: [string, any]) => (
                                <div key={key} className="p-4 sm:p-5 bg-slate-50/50 rounded-[20px] sm:rounded-[24px] border border-slate-100/50">
                                   <span className="text-[8px] sm:text-[9px] font-black uppercase tracking-[0.2em] text-slate-400 block mb-2">{key.replace(/_/g, ' ')}</span>
-                                  <div className="text-[11px] sm:text-[12px] font-bold text-[#01012A] leading-relaxed">
+                                  <div className="text-[11px] sm:text-[12px] font-bold text-brand-primary leading-relaxed">
                                     {Array.isArray(value) ? (
                                       <div className="flex flex-wrap gap-1">
                                         {value.map((v, i) => (
@@ -355,7 +355,7 @@ export function CopyVault({
                <Icons.Search className="w-6 h-6 text-slate-200" />
             </div>
             <div className="space-y-1">
-               <p className="text-sm font-black text-[#01012A] tracking-tight">No {activeFilter} assets found</p>
+               <p className="text-sm font-black text-brand-primary tracking-tight">No {activeFilter} assets found</p>
                <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Adjust your filter or initiate a new synthesis</p>
             </div>
             <button 

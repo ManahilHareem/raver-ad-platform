@@ -94,7 +94,7 @@ export default function SettingsPage() {
                 className={cn(
                   "px-[16px] py-[10px] h-[42px] rounded-[8px] text-[14px] font-normal transition-all duration-200",
                   activeTab === tab.id
-                    ? "text-white bg-[linear-gradient(90deg,#01012A_0%,#2E2C66_100%)] shadow-[inset_0px_-5px_5px_0px_#4F569B]"
+                    ? "text-white bg-[linear-gradient(90deg,var(--color-brand-primary)_0%,var(--color-brand-secondary)_100%)] shadow-[inset_0px_-5px_5px_0px_#4F569B]"
                     : "bg-[#F8F8F8] text-[#121212] hover:bg-[#E2E8F0]"
                 )}
               >

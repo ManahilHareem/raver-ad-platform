@@ -166,7 +166,7 @@ export const AgentUtilizationChart = ({ data }: { data?: any[] }) => {
         </div>
         <div className="w-full h-[8px] bg-slate-100 rounded-full overflow-hidden border-[0.5px] border-slate-50">
           <div 
-            className="h-full bg-[linear-to-r(90deg,#01012A_0%,#2E2C66_100%)] rounded-full transition-all duration-1000 shadow-sm" 
+            className="h-full bg-[linear-to-r(90deg,var(--color-brand-primary)_0%,var(--color-brand-secondary)_100%)] rounded-full transition-all duration-1000 shadow-sm" 
             style={{ width: `${item.value}%` }}
           />
         </div>
@@ -212,7 +212,7 @@ export const QualityAuditChart = ({ data }: { data?: any[] }) => {
             }} 
           />
           <Legend verticalAlign="top" align="right" iconType="circle" wrapperStyle={{ paddingBottom: '20px' }} />
-          <Bar dataKey="score" name="Average Score" fill="#01012A" radius={[4, 4, 0, 0]} barSize={32} />
+          <Bar dataKey="score" name="Average Score" fill="var(--color-brand-primary)" radius={[4, 4, 0, 0]} barSize={32} />
         </BarChart>
       </ResponsiveContainer>
     </div>

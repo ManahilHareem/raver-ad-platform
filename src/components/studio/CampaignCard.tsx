@@ -255,7 +255,7 @@ export default function CampaignCard({
           <div className="absolute top-3 right-3 z-20">
             <span className={cn(
               "px-[8px] py-[4px] rounded-[4px] text-[11px] font-bold uppercase tracking-wider shadow-sm",
-              isReady ? "bg-[linear-gradient(90deg,#01012A_0%,#2E2C66_100%)] text-white shadow-lg shadow-[#01012A]/10"
+              isReady ? "bg-[linear-gradient(90deg,var(--color-brand-primary)_0%,var(--color-brand-secondary)_100%)] text-white shadow-lg shadow-brand-primary/10"
                 : isFailed ? "bg-rose-500 text-white"
                 : isInProduction ? "bg-white text-[#02022C] animate-pulse"
                   : "bg-[linear-gradient(135deg,#AD46FF_0%,#2B7FFF_100%)] text-white"

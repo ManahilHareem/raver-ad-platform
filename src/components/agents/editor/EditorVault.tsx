@@ -40,7 +40,7 @@ export function EditorVault({ videos, isLoading, onPreview, onDelete, isGlobalAr
             <Icons.Loader className="w-8 h-8 text-slate-300 animate-spin" />
          </div>
          <div className="flex flex-col gap-2">
-            <h3 className="text-xl font-black text-[#01012A] tracking-tighter lowercase">Neural Archives Syncing...</h3>
+            <h3 className="text-xl font-black text-brand-primary tracking-tighter lowercase">Neural Archives Syncing...</h3>
             <p className="text-sm text-slate-400 font-bold max-w-xs text-balance">Accessing the synthesis archives to retrieve your rendered campaigns.</p>
          </div>
       </div>
@@ -54,7 +54,7 @@ export function EditorVault({ videos, isLoading, onPreview, onDelete, isGlobalAr
             <Icons.Video className="w-8 h-8 text-slate-200" />
          </div>
          <div className="flex flex-col gap-2">
-            <h3 className="text-xl font-black text-[#01012A] tracking-tighter lowercase">zero video assets found_</h3>
+            <h3 className="text-xl font-black text-brand-primary tracking-tighter lowercase">zero video assets found_</h3>
             <p className="text-sm text-slate-400 font-bold max-w-xs text-balance">The archives are currently empty. Initiate your first video synthesis to begin populating your neural vault.</p>
          </div>
       </div>
@@ -65,13 +65,13 @@ export function EditorVault({ videos, isLoading, onPreview, onDelete, isGlobalAr
     <div className="flex flex-col gap-8 animate-in fade-in duration-700">
       <div className="flex items-center justify-between border-b border-slate-50 pb-6">
         <div className="flex items-center gap-3">
-          <Icons.Files className="w-5 h-5 text-[#01012A]" />
-          <h3 className="text-xl font-black text-[#01012A] tracking-tighter lowercase">
+          <Icons.Files className="w-5 h-5 text-brand-primary" />
+          <h3 className="text-xl font-black text-brand-primary tracking-tighter lowercase">
             {isGlobalArchive ? "Global Editor Synthesis Archives" : "Active Session Results"}
           </h3>
         </div>
         <div className="flex items-center gap-2 px-3 py-1 bg-slate-50 rounded-lg border border-slate-100">
-           <span className="text-[10px] font-black uppercase tracking-widest text-[#01012A]">{videos.length} Campaigns Synthesized</span>
+           <span className="text-[10px] font-black uppercase tracking-widest text-brand-primary">{videos.length} Campaigns Synthesized</span>
         </div>
       </div>
 
@@ -85,7 +85,7 @@ export function EditorVault({ videos, isLoading, onPreview, onDelete, isGlobalAr
             {/* Thumbnail/Preview Area */}
             <div className="relative aspect-video bg-slate-100 overflow-hidden">
               {video.status === "processing" ? (
-                <div className="absolute inset-0 flex flex-col items-center justify-center bg-linear-to-r from-[#01012A] to-[#2E2C66] backdrop-blur-md z-10 transition-all">
+                <div className="absolute inset-0 flex flex-col items-center justify-center bg-linear-to-r from-brand-primary to-brand-secondary backdrop-blur-md z-10 transition-all">
                   <Icons.Loader className="w-6 h-6 text-white animate-spin mb-2" />
                   <p className="text-white text-[10px] font-black uppercase tracking-widest animate-pulse">Synthesis Running</p>
                 </div>
@@ -120,7 +120,7 @@ export function EditorVault({ videos, isLoading, onPreview, onDelete, isGlobalAr
                 <div className="absolute top-4 right-4 opacity-0 group-hover:opacity-100 transition-all duration-300 z-30 flex flex-col gap-2">
                   <button 
                     onClick={(e) => handleCopyUrl(e, video.url)}
-                    className="w-8 h-8 rounded-lg bg-white shadow-xl flex items-center justify-center text-[#01012A] hover:bg-linear-to-r hover:from-[#01012A] hover:to-[#2E2C66] hover:text-white transition-all border border-slate-100 active:scale-95"
+                    className="w-8 h-8 rounded-lg bg-white shadow-xl flex items-center justify-center text-brand-primary hover:bg-linear-to-r hover:from-brand-primary hover:to-brand-secondary hover:text-white transition-all border border-slate-100 active:scale-95"
                     title="Copy Video URL"
                   >
                     <Icons.Copy className="w-3.5 h-3.5" />
@@ -150,7 +150,7 @@ export function EditorVault({ videos, isLoading, onPreview, onDelete, isGlobalAr
             {/* Info Footer */}
             <div className="p-5 space-y-3">
               <div className="flex items-center justify-between">
-                <h4 className="text-[13px] font-bold text-[#01012A] line-clamp-1 truncate flex-1 pr-4">
+                <h4 className="text-[13px] font-bold text-brand-primary line-clamp-1 truncate flex-1 pr-4">
                   {video.label || "Neutral Video Synthesis"}
                 </h4>
               </div>

@@ -62,12 +62,12 @@ export function LiveProductionTracker({
 
       <div className="flex items-center justify-between relative z-10">
         <div className="flex items-center gap-4">
-          <div className="w-12 h-12 bg-linear-to-r from-[#01012A] to-[#2E2C66] rounded-[16px] flex items-center justify-center shadow-xl shadow-[#01012A]/10 relative">
+          <div className="w-12 h-12 bg-linear-to-r from-brand-primary to-brand-secondary rounded-[16px] flex items-center justify-center shadow-xl shadow-brand-primary/10 relative">
             <div className="absolute inset-0 bg-white rounded-[16px] animate-pulse opacity-10" />
             <Icons.Activity className="w-6 h-6 text-white relative z-10" />
           </div>
           <div className="flex flex-col">
-            <h2 className="text-xl font-bold tracking-tight text-[#01012A]">Production Pipeline</h2>
+            <h2 className="text-xl font-bold tracking-tight text-brand-primary">Production Pipeline</h2>
             <div className="flex items-center gap-2">
               <div className="w-1.5 h-1.5 rounded-full bg-white animate-pulse shadow-[0_0_8px_rgba(255,255,255,0.4)]" />
               <p className="text-[10px] font-black uppercase tracking-widest text-slate-400">{status}</p>
@@ -76,7 +76,7 @@ export function LiveProductionTracker({
         </div>
         <div className="flex flex-col items-end gap-1 px-3 py-2 bg-slate-50 rounded-xl border border-slate-100">
           <span className="text-[9px] font-black uppercase text-slate-400 tracking-tighter">campaign_id</span>
-          <span className="text-[10px] font-mono font-black text-[#01012A] truncate max-w-[100px]">{campaignId}</span>
+          <span className="text-[10px] font-mono font-black text-brand-primary truncate max-w-[100px]">{campaignId}</span>
         </div>
       </div>
 
@@ -111,7 +111,7 @@ export function LiveProductionTracker({
                     className={cn(
                       "w-8 h-8 rounded-xl flex items-center justify-center transition-all duration-700 relative z-10 shadow-sm",
                       isDone ? "bg-white text-emerald-600 border border-emerald-100" :
-                        isRunning ? "bg-white border-2 border-[#01012A] text-[#01012A] shadow-lg shadow-[#01012A]/10" :
+                        isRunning ? "bg-white border-2 border-brand-primary text-brand-primary shadow-lg shadow-brand-primary/10" :
                           "bg-white border border-slate-100 text-slate-300"
                     )}
                   >
@@ -127,10 +127,10 @@ export function LiveProductionTracker({
                       <span className={cn(
                         "text-[14px] font-bold tracking-tight transition-colors duration-500",
                         step.status === "pending" ? "text-slate-300" :
-                          isRunning ? "text-[#01012A]" : "text-[#01012A]"
+                          isRunning ? "text-brand-primary" : "text-brand-primary"
                       )}>{step.label}</span>
                       {isRunning && (
-                        <span className="px-2 py-0.5 bg-slate-50 text-[#01012A] text-[8px] font-black uppercase rounded-lg border border-slate-100 animate-pulse">
+                        <span className="px-2 py-0.5 bg-slate-50 text-brand-primary text-[8px] font-black uppercase rounded-lg border border-slate-100 animate-pulse">
                           active
                         </span>
                       )}
@@ -154,10 +154,10 @@ export function LiveProductionTracker({
           </div>
           <textarea
             placeholder="e.g. Enhance high-speed transitions..."
-            className="w-full bg-transparent text-sm font-medium outline-none resize-none h-20 text-[#01012A] placeholder:text-slate-300 leading-relaxed"
+            className="w-full bg-transparent text-sm font-medium outline-none resize-none h-20 text-brand-primary placeholder:text-slate-300 leading-relaxed"
           ></textarea>
           <button
-            className="w-full h-11 bg-linear-to-r from-[#01012A] to-[#2E2C66] text-white rounded-[14px] text-[10px] font-black uppercase tracking-[0.2em] transition-all shadow-lg shadow-[#01012A]/10 active:scale-95"
+            className="w-full h-11 bg-linear-to-r from-brand-primary to-brand-secondary text-white rounded-[14px] text-[10px] font-black uppercase tracking-[0.2em] transition-all shadow-lg shadow-brand-primary/10 active:scale-95"
           >
             Update Production Thread
           </button>

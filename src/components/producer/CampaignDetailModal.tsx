@@ -51,12 +51,12 @@ export function CampaignDetailModal({ isOpen, onClose, campaign }: CampaignDetai
         {/* Header Section */}
         <div className="px-12 pt-12 pb-8 border-b border-slate-50 flex items-center justify-between shrink-0 bg-white/80 backdrop-blur-md relative z-20">
            <div className="flex items-center gap-6">
-              <div className="w-16 h-16 rounded-[24px]  flex items-center justify-center shadow-2xl shadow-[#01012A]/20">
+              <div className="w-16 h-16 rounded-[24px]  flex items-center justify-center shadow-2xl shadow-brand-primary/20">
                  <Icons.Activity className="w-8 h-8 text-white" />
               </div>
               <div className="flex flex-col gap-1">
                  <div className="flex items-center gap-3">
-                   <h3 className="text-4xl font-black text-[#01012A] tracking-tighter lowercase leading-none">
+                   <h3 className="text-4xl font-black text-brand-primary tracking-tighter lowercase leading-none">
                      {campaign.name || "unnamed_production"}
                    </h3>
                    <div className={cn(
@@ -86,7 +86,7 @@ export function CampaignDetailModal({ isOpen, onClose, campaign }: CampaignDetai
              onClick={onClose}
              className="w-14 h-14 flex items-center justify-center bg-slate-50 hover:bg-slate-100 rounded-2xl transition-all group active:scale-90"
            >
-              <Icons.Plus className="w-7 h-7 text-slate-400 group-hover:text-[#01012A] rotate-45 transition-transform" />
+              <Icons.Plus className="w-7 h-7 text-slate-400 group-hover:text-brand-primary rotate-45 transition-transform" />
            </button>
         </div>
 
@@ -105,7 +105,7 @@ export function CampaignDetailModal({ isOpen, onClose, campaign }: CampaignDetai
                        <Icons.Image className="w-5 h-5 text-slate-400" />
                     </div>
                     <div className="flex flex-col">
-                       <h4 className="text-lg font-black text-[#01012A] tracking-tighter lowercase leading-none">visual assets_matrix</h4>
+                       <h4 className="text-lg font-black text-brand-primary tracking-tighter lowercase leading-none">visual assets_matrix</h4>
                        <span className="text-[10px] font-black uppercase tracking-widest text-slate-300 mt-1.5">AI Generated Sequence</span>
                     </div>
                   </div>
@@ -114,7 +114,7 @@ export function CampaignDetailModal({ isOpen, onClose, campaign }: CampaignDetai
                       href={normalizeAssetUrl(result.video_url)} 
                       target="_blank" 
                       rel="noopener noreferrer"
-                      className="h-10 px-6 bg-linear-to-r from-[#01012A] to-[#2E2C66] text-white rounded-xl text-[10px] font-black uppercase tracking-widest flex items-center gap-2 hover:bg-[#2E2C66] transition-all shadow-lg shadow-[#01012A]/10"
+                      className="h-10 px-6 bg-linear-to-r from-brand-primary to-brand-secondary text-white rounded-xl text-[10px] font-black uppercase tracking-widest flex items-center gap-2 hover:bg-brand-secondary transition-all shadow-lg shadow-brand-primary/10"
                     >
                       <Icons.Video className="w-3.5 h-3.5" />
                       View High-Res Master
@@ -162,14 +162,14 @@ export function CampaignDetailModal({ isOpen, onClose, campaign }: CampaignDetai
                        <Icons.Success className="w-5 h-5 text-slate-400" />
                     </div>
                     <div className="flex flex-col">
-                       <h4 className="text-lg font-black text-[#01012A] tracking-tighter lowercase leading-none">audited_performance</h4>
+                       <h4 className="text-lg font-black text-brand-primary tracking-tighter lowercase leading-none">audited_performance</h4>
                        <span className="text-[10px] font-black uppercase tracking-widest text-slate-300 mt-1.5">Neural Quality Assessment</span>
                     </div>
                   </div>
 
                   <div className="flex flex-col gap-6">
                     <div className="relative h-40 flex flex-col items-center justify-center">
-                       <div className="text-6xl font-black text-[#01012A] tracking-tighter tabular-nums drop-shadow-sm">
+                       <div className="text-6xl font-black text-brand-primary tracking-tighter tabular-nums drop-shadow-sm">
                          {Math.round((quality.overall_score || 0) * 100)}
                        </div>
                        <span className="text-[10px] font-black uppercase tracking-[0.4em] text-slate-400">composite score</span>
@@ -185,11 +185,11 @@ export function CampaignDetailModal({ isOpen, onClose, campaign }: CampaignDetai
                         <div key={idx} className="p-4 bg-slate-50/50 rounded-[20px] border border-slate-100/50">
                           <div className="flex items-center justify-between mb-2">
                              <span className="text-[10px] font-black uppercase tracking-widest text-slate-400">{m.label}</span>
-                             <span className="text-[10px] font-black text-[#01012A]">{Math.round((m.score || 0) * 100)}%</span>
+                             <span className="text-[10px] font-black text-brand-primary">{Math.round((m.score || 0) * 100)}%</span>
                           </div>
                           <div className="h-1 bg-slate-100 rounded-full overflow-hidden">
                              <div 
-                               className="h-full bg-linear-to-r from-[#01012A] to-[#2E2C66] transition-all duration-1000"
+                               className="h-full bg-linear-to-r from-brand-primary to-brand-secondary transition-all duration-1000"
                                style={{ width: `${(m.score || 0) * 100}%` }}
                              />
                           </div>
@@ -206,14 +206,14 @@ export function CampaignDetailModal({ isOpen, onClose, campaign }: CampaignDetai
                        <Icons.Mic className="w-5 h-5 text-slate-400" />
                     </div>
                     <div className="flex flex-col">
-                       <h4 className="text-lg font-black text-[#01012A] tracking-tighter lowercase leading-none">narrative_thread</h4>
+                       <h4 className="text-lg font-black text-brand-primary tracking-tighter lowercase leading-none">narrative_thread</h4>
                        <span className="text-[10px] font-black uppercase tracking-widest text-slate-300 mt-1.5">Voiceover Script & Dynamic Overlays</span>
                     </div>
                   </div>
                   
                   <div className="flex-1 p-6 bg-slate-50/80 rounded-[24px] border border-slate-100 relative overflow-hidden group/script">
                     <div className="absolute top-4 right-4 text-[9px] font-black text-slate-300 italic">27 Words_Synthesized</div>
-                    <p className="text-sm font-medium text-[#01012A] leading-relaxed italic pr-4">
+                    <p className="text-sm font-medium text-brand-primary leading-relaxed italic pr-4">
                       "{nodes.generate_text?.result?.script?.script || "Initializing narrative matrix..."}"
                     </p>
                   </div>
@@ -222,7 +222,7 @@ export function CampaignDetailModal({ isOpen, onClose, campaign }: CampaignDetai
                     <span className="text-[10px] font-black uppercase tracking-widest text-slate-400 pl-1">Dynamic Overlays</span>
                     <div className="flex flex-wrap gap-2">
                       {nodes.generate_text?.result?.overlays?.map((o: any, idx: number) => (
-                        <div key={idx} className="px-3 py-1.5 bg-white border border-slate-100 rounded-[10px] text-[10px] font-bold text-[#01012A] shadow-xs">
+                        <div key={idx} className="px-3 py-1.5 bg-white border border-slate-100 rounded-[10px] text-[10px] font-bold text-brand-primary shadow-xs">
                           {o.text}
                         </div>
                       ))}
@@ -236,7 +236,7 @@ export function CampaignDetailModal({ isOpen, onClose, campaign }: CampaignDetai
             <div className="col-span-12 lg:col-span-4 flex flex-col gap-10">
               
               {/* Production Pipeline */}
-              <div className="bg-linear-to-br from-[#01012A] to-[#2E2C66] rounded-[40px] p-10 text-white shadow-2xl shadow-[#01012A]/20 relative overflow-hidden group">
+              <div className="bg-linear-to-br from-brand-primary to-brand-secondary rounded-[40px] p-10 text-white shadow-2xl shadow-brand-primary/20 relative overflow-hidden group">
                 <div className="absolute inset-0 bg-white/5 opacity-0 group-hover:opacity-100 transition-opacity duration-1000" />
                 
                 <div className="flex items-center gap-3 mb-10 relative z-10">
@@ -264,7 +264,7 @@ export function CampaignDetailModal({ isOpen, onClose, campaign }: CampaignDetai
                           <div className="relative">
                              <div className={cn(
                                "w-7 h-7 rounded-[10px] flex items-center justify-center transition-all duration-700 relative z-10",
-                               isDone ? "bg-white text-[#01012A] shadow-[0_0_15px_rgba(255,255,255,0.4)]" :
+                               isDone ? "bg-white text-brand-primary shadow-[0_0_15px_rgba(255,255,255,0.4)]" :
                                isRunning ? "bg-white/20 text-white animate-pulse" :
                                "bg-white/5 text-white/20 border border-white/5"
                              )}>
@@ -299,7 +299,7 @@ export function CampaignDetailModal({ isOpen, onClose, campaign }: CampaignDetai
                        <Icons.PenLine className="w-5 h-5 text-slate-400" />
                     </div>
                     <div className="flex flex-col">
-                       <h4 className="text-lg font-black text-[#01012A] tracking-tighter lowercase leading-none">implementation_intel</h4>
+                       <h4 className="text-lg font-black text-brand-primary tracking-tighter lowercase leading-none">implementation_intel</h4>
                        <span className="text-[10px] font-black uppercase tracking-widest text-slate-300 mt-1.5">Creative Objective Matrix</span>
                     </div>
                   </div>
@@ -314,7 +314,7 @@ export function CampaignDetailModal({ isOpen, onClose, campaign }: CampaignDetai
                       <div key={idx} className="flex flex-col gap-1.5">
                          <span className="text-[9px] font-black uppercase tracking-widest text-slate-300 pl-1">{p.label}</span>
                          <div className="p-4 bg-slate-50/50 rounded-[18px] border border-slate-100/50">
-                            <p className="text-[11px] font-bold text-[#01012A] leading-relaxed">{p.value || "Config Default"}</p>
+                            <p className="text-[11px] font-bold text-brand-primary leading-relaxed">{p.value || "Config Default"}</p>
                          </div>
                       </div>
                     ))}
@@ -355,23 +355,23 @@ export function CampaignDetailModal({ isOpen, onClose, campaign }: CampaignDetai
                  <span className="text-[9px] font-black uppercase text-slate-400 tracking-widest leading-none mb-2">Production Status</span>
                  <div className="flex items-center gap-2">
                     <div className="w-2 h-2 rounded-full bg-emerald-400 shadow-[0_0_8px_rgba(52,211,153,0.5)]" />
-                    <span className="text-[13px] font-black text-[#01012A] lowercase tracking-tight">Audit Successfully Deployed</span>
+                    <span className="text-[13px] font-black text-brand-primary lowercase tracking-tight">Audit Successfully Deployed</span>
                  </div>
               </div>
               <div className="w-px h-10 bg-slate-100" />
               <div className="flex flex-col">
                  <span className="text-[9px] font-black uppercase text-slate-400 tracking-widest leading-none mb-2">Estimated Render Efficiency</span>
-                 <span className="text-[13px] font-black text-[#01012A] lowercase tracking-tight">
+                 <span className="text-[13px] font-black text-brand-primary lowercase tracking-tight">
                    {nodes.render?.result?.render_seconds ? `${Math.round(nodes.render.result.render_seconds)} Seconds Sourced` : "N/A"}
                  </span>
               </div>
            </div>
 
            <div className="flex items-center gap-4">
-              <button className="h-14 px-8 bg-slate-50 hover:bg-slate-100 border border-slate-200 text-[#01012A] rounded-[22px] text-[11px] font-black uppercase tracking-widest transition-all active:scale-95">
+              <button className="h-14 px-8 bg-slate-50 hover:bg-slate-100 border border-slate-200 text-brand-primary rounded-[22px] text-[11px] font-black uppercase tracking-widest transition-all active:scale-95">
                 Download Intelligence PDF
               </button>
-              <button className="h-14 px-10 bg-linear-to-r from-[#01012A] to-[#2E2C66] text-white rounded-[22px] text-[11px] font-black uppercase tracking-widest shadow-2xl shadow-[#01012A]/20 transition-all hover:scale-[1.02] active:scale-95 flex items-center gap-3">
+              <button className="h-14 px-10 bg-linear-to-r from-brand-primary to-brand-secondary text-white rounded-[22px] text-[11px] font-black uppercase tracking-widest shadow-2xl shadow-brand-primary/20 transition-all hover:scale-[1.02] active:scale-95 flex items-center gap-3">
                  <Icons.Rocket className="w-4 h-4" />
                  Initiate Client Hand-off
               </button>

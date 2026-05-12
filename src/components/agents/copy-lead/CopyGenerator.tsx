@@ -64,7 +64,7 @@ export function CopyGenerator({ onGenerate, isLoading }: CopyGeneratorProps) {
                 className={cn(
                   "flex-1 flex flex-col items-center justify-center gap-1 sm:gap-2 py-3 sm:py-4 px-3 sm:px-2 rounded-2xl sm:rounded-3xl transition-all duration-500 min-w-[80px] sm:min-w-0",
                   activeTab === tab.id
-                    ? "bg-white text-[#01012A] shadow-xl shadow-blue-900/5 border border-slate-100"
+                    ? "bg-white text-brand-primary shadow-xl shadow-blue-900/5 border border-slate-100"
                     : "text-slate-400 hover:text-slate-600 hover:bg-white/50"
                 )}
               >
@@ -90,7 +90,7 @@ export function CopyGenerator({ onGenerate, isLoading }: CopyGeneratorProps) {
                 <input
                   type="text"
                   placeholder="e.g. Glow Studio"
-                  className="w-full h-14 sm:h-16 bg-slate-50/50 border border-slate-100 rounded-xl sm:rounded-[24px] px-5 sm:px-6 text-[12px] sm:text-[13px] font-bold focus:bg-white focus:border-[#01012A] focus:ring-4 focus:ring-[#01012A]/5 transition-all outline-none"
+                  className="w-full h-14 sm:h-16 bg-slate-50/50 border border-slate-100 rounded-xl sm:rounded-[24px] px-5 sm:px-6 text-[12px] sm:text-[13px] font-bold focus:bg-white focus:border-brand-primary focus:ring-4 focus:ring-brand-primary/5 transition-all outline-none"
                   value={formData.businessName}
                   onChange={(e) => handleInputChange("businessName", e.target.value)}
                 />
@@ -102,7 +102,7 @@ export function CopyGenerator({ onGenerate, isLoading }: CopyGeneratorProps) {
                 <input
                   type="text"
                   placeholder="e.g. matte lipstick collection"
-                  className="w-full h-14 sm:h-16 bg-slate-50/50 border border-slate-100 rounded-xl sm:rounded-[24px] px-5 sm:px-6 text-[12px] sm:text-[13px] font-bold focus:bg-white focus:border-[#01012A] focus:ring-4 focus:ring-[#01012A]/5 transition-all outline-none"
+                  className="w-full h-14 sm:h-16 bg-slate-50/50 border border-slate-100 rounded-xl sm:rounded-[24px] px-5 sm:px-6 text-[12px] sm:text-[13px] font-bold focus:bg-white focus:border-brand-primary focus:ring-4 focus:ring-brand-primary/5 transition-all outline-none"
                   value={formData.product}
                   onChange={(e) => handleInputChange("product", e.target.value)}
                 />
@@ -115,7 +115,7 @@ export function CopyGenerator({ onGenerate, isLoading }: CopyGeneratorProps) {
             <input
               type="text"
               placeholder="e.g. women 25–40 into skincare"
-              className="w-full h-14 sm:h-16 bg-slate-50/50 border border-slate-100 rounded-xl sm:rounded-[24px] px-5 sm:px-6 text-[12px] sm:text-[13px] font-bold focus:bg-white focus:border-[#01012A] transition-all outline-none"
+              className="w-full h-14 sm:h-16 bg-slate-50/50 border border-slate-100 rounded-xl sm:rounded-[24px] px-5 sm:px-6 text-[12px] sm:text-[13px] font-bold focus:bg-white focus:border-brand-primary transition-all outline-none"
               value={formData.audience}
               onChange={(e) => handleInputChange("audience", e.target.value)}
             />
@@ -126,7 +126,7 @@ export function CopyGenerator({ onGenerate, isLoading }: CopyGeneratorProps) {
               <label className="text-xs font-black uppercase tracking-[0.2em] text-slate-400 ml-1">Brand Voice / Tone</label>
               <div className="relative">
                 <select
-                  className="w-full h-14 sm:h-16 bg-slate-50/50 border border-slate-100 rounded-xl sm:rounded-[24px] px-5 sm:px-6 text-[12px] sm:text-[13px] font-bold focus:bg-white focus:border-[#01012A] transition-all outline-none appearance-none cursor-pointer"
+                  className="w-full h-14 sm:h-16 bg-slate-50/50 border border-slate-100 rounded-xl sm:rounded-[24px] px-5 sm:px-6 text-[12px] sm:text-[13px] font-bold focus:bg-white focus:border-brand-primary transition-all outline-none appearance-none cursor-pointer"
                   value={formData.tone}
                   onChange={(e) => handleInputChange("tone", e.target.value)}
                 >
@@ -142,14 +142,14 @@ export function CopyGenerator({ onGenerate, isLoading }: CopyGeneratorProps) {
               <div className="space-y-2 sm:space-y-3 bg-slate-50/50 p-5 sm:p-6 rounded-2xl sm:rounded-[28px] border border-slate-100">
                 <div className="flex items-center justify-between">
                   <label className="text-xs font-black uppercase tracking-[0.2em] text-slate-400">Duration per scene (sec)</label>
-                  <span className="font-black text-[#01012A] text-[10px] sm:text-xs px-2 py-0.5 bg-white rounded-lg border border-slate-100">{formData.duration}s</span>
+                  <span className="font-black text-brand-primary text-[10px] sm:text-xs px-2 py-0.5 bg-white rounded-lg border border-slate-100">{formData.duration}s</span>
                 </div>
                 <input
                   type="range"
                   min="3"
                   max="15"
                   step="1"
-                  className="w-full h-1.5 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-[#01012A]"
+                  className="w-full h-1.5 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-brand-primary"
                   value={formData.duration}
                   onChange={(e) => handleInputChange("duration", e.target.value)}
                 />
@@ -161,7 +161,7 @@ export function CopyGenerator({ onGenerate, isLoading }: CopyGeneratorProps) {
                 <label className="text-xs font-black uppercase tracking-[0.2em] text-slate-400 ml-1">Platform</label>
                 <div className="relative">
                   <select
-                    className="w-full h-14 sm:h-16 bg-slate-50/50 border border-slate-100 rounded-xl sm:rounded-[24px] px-5 sm:px-6 text-[12px] sm:text-[13px] font-bold focus:bg-white focus:border-[#01012A] transition-all outline-none appearance-none cursor-pointer"
+                    className="w-full h-14 sm:h-16 bg-slate-50/50 border border-slate-100 rounded-xl sm:rounded-[24px] px-5 sm:px-6 text-[12px] sm:text-[13px] font-bold focus:bg-white focus:border-brand-primary transition-all outline-none appearance-none cursor-pointer"
                     value={formData.platform}
                     onChange={(e) => handleInputChange("platform", e.target.value)}
                   >
@@ -176,7 +176,7 @@ export function CopyGenerator({ onGenerate, isLoading }: CopyGeneratorProps) {
           </div>
 
           {activeTab === "hashtags" && (
-             <div className="space-y-3 bg-linear-to-r from-[#01012A] to-[#2E2C66]  p-6 sm:p-8 rounded-2xl sm:rounded-[32px] shadow-xl shadow-[#01012A]/20">
+             <div className="space-y-3 bg-linear-to-r from-brand-primary to-brand-secondary  p-6 sm:p-8 rounded-2xl sm:rounded-[32px] shadow-xl shadow-brand-primary/20">
                 <div className="flex items-center justify-between">
                   <label className="text-xs font-black uppercase tracking-[0.2em] text-white/50">Number of hashtags</label>
                   <span className="font-black text-white text-[10px] sm:text-xs px-3 py-1 bg-white/10 rounded-xl border border-white/5">#{formData.hashtagCount}</span>
@@ -198,7 +198,7 @@ export function CopyGenerator({ onGenerate, isLoading }: CopyGeneratorProps) {
               <label className="text-xs font-black uppercase tracking-[0.2em] text-slate-400 ml-1">Campaign context (optional)</label>
               <textarea
                 placeholder="e.g. Summer glow launch, limited time offer"
-                className="w-full h-24 sm:h-32 bg-slate-50/50 border border-slate-100 rounded-2xl sm:rounded-[28px] p-5 sm:p-6 text-[12px] sm:text-[13px] font-bold focus:bg-white focus:border-[#01012A] transition-all outline-none resize-none"
+                className="w-full h-24 sm:h-32 bg-slate-50/50 border border-slate-100 rounded-2xl sm:rounded-[28px] p-5 sm:p-6 text-[12px] sm:text-[13px] font-bold focus:bg-white focus:border-brand-primary transition-all outline-none resize-none"
                 value={formData.context}
                 onChange={(e) => handleInputChange("context", e.target.value)}
               />
@@ -209,7 +209,7 @@ export function CopyGenerator({ onGenerate, isLoading }: CopyGeneratorProps) {
             <div className="space-y-6 sm:space-y-8 pt-2 sm:pt-4">
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 px-1">
                 <div className="flex flex-col gap-1">
-                  <label className="text-xs font-black uppercase tracking-[0.2em] text-[#01012A]">Scene Orchestration</label>
+                  <label className="text-xs font-black uppercase tracking-[0.2em] text-brand-primary">Scene Orchestration</label>
                   <p className="text-xs font-bold text-slate-400 uppercase tracking-widest leading-relaxed">Tailor your scene-by-scene creative brief</p>
                 </div>
                 <span className="text-xs font-black text-blue-600 px-3 py-1 bg-blue-50 border border-blue-100 rounded-full uppercase italic self-start sm:self-auto">7 Active Scenes</span>
@@ -217,13 +217,13 @@ export function CopyGenerator({ onGenerate, isLoading }: CopyGeneratorProps) {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
                 {formData.scenes.map((scene, idx) => (
                   <div key={idx} className="relative group">
-                    <div className="absolute left-4 sm:left-6 top-1/2 -translate-y-1/2 w-7 h-7 sm:w-8 sm:h-8 rounded-xl sm:rounded-2xl bg-slate-50 flex items-center justify-center text-xs font-black text-slate-400 border border-slate-100 group-focus-within:bg-linear-to-r from-[#01012A] to-[#2E2C66]  group-focus-within:text-white group-focus-within:border-[#01012A] transition-all duration-500 shadow-sm">
+                    <div className="absolute left-4 sm:left-6 top-1/2 -translate-y-1/2 w-7 h-7 sm:w-8 sm:h-8 rounded-xl sm:rounded-2xl bg-slate-50 flex items-center justify-center text-xs font-black text-slate-400 border border-slate-100 group-focus-within:bg-linear-to-r from-brand-primary to-brand-secondary  group-focus-within:text-white group-focus-within:border-brand-primary transition-all duration-500 shadow-sm">
                       {idx + 1}
                     </div>
                     <input
                       type="text"
                       placeholder={`Briefing for Scene ${idx+1}...`}
-                      className="w-full h-12 sm:h-14 bg-slate-50/20 border border-slate-100/50 rounded-xl sm:rounded-[20px] pl-14 sm:pl-16 pr-5 sm:pr-6 text-[11px] sm:text-[12px] font-bold focus:bg-white focus:border-[#01012A] transition-all outline-none focus:shadow-lg focus:shadow-blue-900/5"
+                      className="w-full h-12 sm:h-14 bg-slate-50/20 border border-slate-100/50 rounded-xl sm:rounded-[20px] pl-14 sm:pl-16 pr-5 sm:pr-6 text-[11px] sm:text-[12px] font-bold focus:bg-white focus:border-brand-primary transition-all outline-none focus:shadow-lg focus:shadow-blue-900/5"
                       value={scene}
                       onChange={(e) => handleSceneChange(idx, e.target.value)}
                     />
@@ -241,7 +241,7 @@ export function CopyGenerator({ onGenerate, isLoading }: CopyGeneratorProps) {
                 "w-full h-16 sm:h-20 rounded-[20px] sm:rounded-[28px] flex items-center justify-center gap-3 sm:gap-4 transition-all duration-500 active:scale-[0.98] shadow-2xl relative overflow-hidden group/btn",
                 isLoading 
                   ? "bg-slate-100 text-slate-400 cursor-not-allowed" 
-                  : "bg-linear-to-r from-[#01012A] to-[#2E2C66] text-white hover:bg-black shadow-blue-900/20"
+                  : "bg-linear-to-r from-brand-primary to-brand-secondary text-white hover:bg-black shadow-blue-900/20"
               )}
             >
               <div className="absolute inset-0 bg-linear-to-r from-transparent via-white/5 to-transparent -translate-x-full group-hover/btn:translate-x-full transition-transform duration-1000" />

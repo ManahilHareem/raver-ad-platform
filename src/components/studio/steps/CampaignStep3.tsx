@@ -69,7 +69,7 @@ export default function CampaignStep3({ data, updateData, errors }: CampaignStep
                     }`}
                   style={isSelected ? {
                     border: '1px solid transparent',
-                    background: 'linear-gradient(white, white) padding-box, linear-gradient(90deg, #01012A 0%, #2E2C66 100%) border-box'
+                    background: 'linear-gradient(white, white) padding-box, linear-gradient(90deg, var(--color-brand-primary) 0%, var(--color-brand-secondary) 100%) border-box'
                   } : {}}
                 >
                   <p.icon className={`w-4 h-4 ${isSelected ? "text-brand-primary" : "text-text-secondary"}`} />
@@ -95,7 +95,7 @@ export default function CampaignStep3({ data, updateData, errors }: CampaignStep
                     }`}
                   style={isSelected ? {
                     border: '1px solid transparent',
-                    background: 'linear-gradient(white, white) padding-box, linear-gradient(90deg, #01012A 0%, #2E2C66 100%) border-box'
+                    background: 'linear-gradient(white, white) padding-box, linear-gradient(90deg, var(--color-brand-primary) 0%, var(--color-brand-secondary) 100%) border-box'
                   } : {}}
                 >
                   {d}
@@ -119,7 +119,7 @@ export default function CampaignStep3({ data, updateData, errors }: CampaignStep
                     }`}
                   style={isSelected ? {
                     border: '1px solid transparent',
-                    background: 'linear-gradient(white, white) padding-box, linear-gradient(90deg, #01012A 0%, #2E2C66 100%) border-box'
+                    background: 'linear-gradient(white, white) padding-box, linear-gradient(90deg, var(--color-brand-primary) 0%, var(--color-brand-secondary) 100%) border-box'
                   } : {}}
                 >
                   <span className={`text-caption font-bold mb-1 ${isSelected ? "text-brand-primary" : "text-text-primary"}`}>{f.label}</span>

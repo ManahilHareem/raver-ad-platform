@@ -82,10 +82,10 @@ export function AudioPlayer({ url, title, className }: AudioPlayerProps) {
       {/* Title & Type Badge Row */}
       <div className="flex items-center justify-between gap-4">
         <div className="flex items-center gap-3 flex-1 min-w-0">
-           <div className="w-8 h-8 rounded-full bg-linear-to-r from-[#01012A] to-[#2E2C66]  flex items-center justify-center shrink-0">
+           <div className="w-8 h-8 rounded-full bg-linear-to-r from-brand-primary to-brand-secondary  flex items-center justify-center shrink-0">
               <Icons.Mic className="w-4 h-4 text-white" />
            </div>
-           <span className="text-[11px] font-black uppercase tracking-widest text-[#01012A] truncate opacity-60">
+           <span className="text-[11px] font-black uppercase tracking-widest text-brand-primary truncate opacity-60">
               {title || "Neural Audio Asset"}
            </span>
         </div>
@@ -101,7 +101,7 @@ export function AudioPlayer({ url, title, className }: AudioPlayerProps) {
       <div className="flex items-center gap-5">
         <button 
           onClick={togglePlay}
-          className="w-12 h-12 bg-linear-to-r from-[#01012A] to-[#2E2C66]  text-white rounded-[18px] flex items-center justify-center hover:scale-110 active:scale-95 transition-all shadow-xl shadow-[#01012A]/10 group/btn"
+          className="w-12 h-12 bg-linear-to-r from-brand-primary to-brand-secondary  text-white rounded-[18px] flex items-center justify-center hover:scale-110 active:scale-95 transition-all shadow-xl shadow-brand-primary/10 group/btn"
         >
           {isPlaying ? (
             <Icons.Pause className="w-5 h-5 fill-current" />
@@ -112,7 +112,7 @@ export function AudioPlayer({ url, title, className }: AudioPlayerProps) {
 
         <div className="flex flex-col flex-1 gap-2">
            <div className="flex items-center justify-between mb-1">
-              <span className="text-[10px] font-black text-[#01012A] tabular-nums">{formatTime(currentTime)}</span>
+              <span className="text-[10px] font-black text-brand-primary tabular-nums">{formatTime(currentTime)}</span>
               <span className="text-[10px] font-black text-slate-300 tabular-nums">{formatTime(duration)}</span>
            </div>
            
@@ -128,10 +128,10 @@ export function AudioPlayer({ url, title, className }: AudioPlayerProps) {
               />
               <div className="absolute inset-0 bg-slate-100 rounded-full overflow-hidden">
                 <div 
-                  className="h-full bg-[linear-gradient(90deg,#01012A_0%,#2B7FFF_100%)] rounded-full transition-all duration-100 relative"
+                  className="h-full bg-[linear-gradient(90deg,var(--color-brand-primary)_0%,#2B7FFF_100%)] rounded-full transition-all duration-100 relative"
                   style={{ width: `${(currentTime / (duration || 1)) * 100}%` }}
                 >
-                  <div className="absolute right-0 top-1/2 -translate-y-1/2 w-4 h-4 bg-white border-2 border-[#01012A] rounded-full shadow-md scale-0 group-hover/slider:scale-100 transition-transform" />
+                  <div className="absolute right-0 top-1/2 -translate-y-1/2 w-4 h-4 bg-white border-2 border-brand-primary rounded-full shadow-md scale-0 group-hover/slider:scale-100 transition-transform" />
                 </div>
               </div>
            </div>

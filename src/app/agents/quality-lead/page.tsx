@@ -137,22 +137,22 @@ export default function QualityLeadPage() {
               href="/agents" 
               className="w-12 h-12 rounded-2xl bg-white border border-slate-100 flex items-center justify-center hover:bg-slate-50 transition-all active:scale-90 group shadow-sm"
             >
-              <Icons.ArrowLeft className="w-5 h-5 text-[#01012A] group-hover:-translate-x-0.5 transition-transform" />
+              <Icons.ArrowLeft className="w-5 h-5 text-brand-primary group-hover:-translate-x-0.5 transition-transform" />
             </Link>
             <div className="flex flex-col">
-               <h1 className="text-[34px] font-black text-[#01012A] tracking-tighter lowercase leading-none">RAVER QUALITY LEAD</h1>
-               <p className="text-[10px] font-black uppercase tracking-[0.2em] text-[#01012A]/30 mt-3">Neural Integrity & Brand Alignment Governance</p>
+               <h1 className="text-[34px] font-black text-brand-primary tracking-tighter lowercase leading-none">RAVER QUALITY LEAD</h1>
+               <p className="text-[10px] font-black uppercase tracking-[0.2em] text-brand-primary/30 mt-3">Neural Integrity & Brand Alignment Governance</p>
             </div>
           </div>
 
           <div className="flex items-center gap-4">
             <div className="flex flex-col items-end mr-4">
               <span className="text-[9px] font-bold text-slate-400 uppercase tracking-widest">Global Audit Rate</span>
-              <span className="text-[16px] font-black text-[#01012A]">{history.length > 0 ? "100%" : "0%"}</span>
+              <span className="text-[16px] font-black text-brand-primary">{history.length > 0 ? "100%" : "0%"}</span>
             </div>
             <button 
               onClick={refreshAll}
-              className="p-4 rounded-2xl bg-slate-50 border border-slate-100 text-[#01012A] hover:bg-slate-100 transition-all active:rotate-180"
+              className="p-4 rounded-2xl bg-slate-50 border border-slate-100 text-brand-primary hover:bg-slate-100 transition-all active:rotate-180"
             >
               <Icons.RefreshCcw className="w-5 h-5" />
             </button>
@@ -172,7 +172,7 @@ export default function QualityLeadPage() {
                   <span className="text-[10px] font-black uppercase tracking-widest text-slate-400">{stat.label}</span>
                   <stat.icon className={cn("w-4 h-4", stat.color)} />
                 </div>
-                <div className="text-2xl font-black text-[#01012A]">{stat.value}</div>
+                <div className="text-2xl font-black text-brand-primary">{stat.value}</div>
              </div>
            ))}
         </div>

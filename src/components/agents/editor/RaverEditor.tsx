@@ -78,8 +78,8 @@ export function RaverEditor({ onGenerate, isLoading }: VideoGeneratorProps) {
           className={cn(
             "px-6 py-2.5 rounded-[14px] text-sm font-black uppercase tracking-widest transition-all",
             activeTab === "render" 
-              ? "bg-linear-to-r from-[#01012A] to-[#2E2C66] text-white shadow-lg shadow-[#01012A]/10" 
-              : "text-[#64748B] hover:text-[#01012A]"
+              ? "bg-linear-to-r from-brand-primary to-brand-secondary text-white shadow-lg shadow-brand-primary/10" 
+              : "text-[#64748B] hover:text-brand-primary"
           )}
         >
           Render Campaign Video
@@ -90,8 +90,8 @@ export function RaverEditor({ onGenerate, isLoading }: VideoGeneratorProps) {
           className={cn(
             "px-6 py-2.5 rounded-[14px] text-sm font-black uppercase tracking-widest transition-all",
             activeTab === "export" 
-              ? "bg-linear-to-r from-[#01012A] to-[#2E2C66]  text-white shadow-lg shadow-[#01012A]/10" 
-              : "text-[#64748B] hover:text-[#01012A]"
+              ? "bg-linear-to-r from-brand-primary to-brand-secondary  text-white shadow-lg shadow-brand-primary/10" 
+              : "text-[#64748B] hover:text-brand-primary"
           )}
         >
           Export All Formats
@@ -108,7 +108,7 @@ export function RaverEditor({ onGenerate, isLoading }: VideoGeneratorProps) {
                   <div className="w-8 h-8 rounded-xl bg-blue-500/10 flex items-center justify-center">
                     <Icons.Monitor className="w-4 h-4 text-blue-600" />
                   </div>
-                  <h3 className="text-sm font-black text-[#01012A] uppercase tracking-widest">Output Format</h3>
+                  <h3 className="text-sm font-black text-brand-primary uppercase tracking-widest">Output Format</h3>
                 </div>
                 <div className="grid grid-cols-3 gap-4">
                   {[
@@ -123,7 +123,7 @@ export function RaverEditor({ onGenerate, isLoading }: VideoGeneratorProps) {
                       className={cn(
                         "p-6 rounded-[24px] border transition-all text-left group",
                         format === f.id 
-                          ? "border-[#01012A] bg-linear-to-r from-[#01012A] to-[#2E2C66]  text-white shadow-xl" 
+                          ? "border-brand-primary bg-linear-to-r from-brand-primary to-brand-secondary  text-white shadow-xl" 
                           : "border-slate-100 bg-slate-50 hover:border-slate-300"
                       )}
                     >
@@ -138,7 +138,7 @@ export function RaverEditor({ onGenerate, isLoading }: VideoGeneratorProps) {
             )}
 
             {activeTab === "export" && (
-              <div className="bg-linear-to-r from-[#01012A] to-[#2E2C66]  rounded-[32px] p-8 text-white space-y-2">
+              <div className="bg-linear-to-r from-brand-primary to-brand-secondary  rounded-[32px] p-8 text-white space-y-2">
                 <div className="text-xl font-black tracking-tight">Bulk Render Mode Active</div>
                 <p className="text-blue-100 text-sm font-medium">RENDERS 9:16 + 1:1 + 16:9 SIMULTANEOUSLY FROM THE SAME SCENES.</p>
               </div>
@@ -151,7 +151,7 @@ export function RaverEditor({ onGenerate, isLoading }: VideoGeneratorProps) {
                   <div className="w-8 h-8 rounded-xl bg-purple-500/10 flex items-center justify-center">
                     <Icons.Film className="w-4 h-4 text-purple-600" />
                   </div>
-                  <h3 className="text-sm font-black text-[#01012A] uppercase tracking-widest">Raver Scene Matrix</h3>
+                  <h3 className="text-sm font-black text-brand-primary uppercase tracking-widest">Raver Scene Matrix</h3>
                 </div>
                 <div className="flex items-center gap-4 bg-white px-4 py-2 rounded-2xl border border-slate-100 shadow-sm">
                   <span className="text-xs font-black text-slate-400 uppercase tracking-widest">Scenes</span>
@@ -161,9 +161,9 @@ export function RaverEditor({ onGenerate, isLoading }: VideoGeneratorProps) {
                     max="7" 
                     value={numScenes}
                     onChange={(e) => setNumScenes(parseInt(e.target.value))}
-                    className="w-24 accent-[#01012A]"
+                    className="w-24 accent-brand-primary"
                   />
-                  <span className="text-[14px] font-black text-[#01012A] w-4">{numScenes}</span>
+                  <span className="text-[14px] font-black text-brand-primary w-4">{numScenes}</span>
                 </div>
               </div>
 
@@ -226,7 +226,7 @@ export function RaverEditor({ onGenerate, isLoading }: VideoGeneratorProps) {
 
           {/* Global Sidebar Config */}
           <div className="lg:col-span-4 space-y-6">
-            <div className="bg-linear-to-r from-[#01012A] to-[#2E2C66] rounded-[32px] p-8 text-white space-y-8 sticky top-6">
+            <div className="bg-linear-to-r from-brand-primary to-brand-secondary rounded-[32px] p-8 text-white space-y-8 sticky top-6">
               <div className="flex items-center gap-3">
                 <Icons.Settings className="w-5 h-5 text-blue-400" />
                 <h3 className="text-sm font-black uppercase tracking-[0.2em] text-white/60">Global Controls</h3>
@@ -340,7 +340,7 @@ export function RaverEditor({ onGenerate, isLoading }: VideoGeneratorProps) {
                 <button
                   type="submit"
                   disabled={isLoading}
-                  className="w-full py-5 bg-linear-to-r from-[#01012A] to-[#2E2C66] rounded-[24px] text-sm font-black uppercase tracking-[0.2em] shadow-2xl hover:bg-blue-500 active:scale-[0.98] transition-all flex items-center justify-center gap-3 disabled:opacity-50"
+                  className="w-full py-5 bg-linear-to-r from-brand-primary to-brand-secondary rounded-[24px] text-sm font-black uppercase tracking-[0.2em] shadow-2xl hover:bg-blue-500 active:scale-[0.98] transition-all flex items-center justify-center gap-3 disabled:opacity-50"
                 >
                   {isLoading ? (
                     <>

@@ -32,7 +32,7 @@ export default function ConfirmationModal({
   const variantStyles = {
     danger: "bg-red-500 hover:bg-red-600 text-white shadow-red-200",
     warning: "bg-yellow-500 hover:bg-yellow-600 text-white shadow-yellow-200",
-    info: "bg-linear-to-r from-[#01012A] to-[#2E2C66] hover:opacity-90 text-white shadow-[#01012A]/20",
+    info: "bg-linear-to-r from-brand-primary to-brand-secondary hover:opacity-90 text-white shadow-brand-primary/20",
   };
 
   const iconColors = {

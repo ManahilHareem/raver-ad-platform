@@ -280,7 +280,7 @@ export default function AssetSelectionModal({
               <button
                 onClick={handleConfirm}
                 disabled={tempSelected.length === 0}
-                className="px-8 py-2.5 bg-linear-to-r from-[#01012A] to-[#2E2C66] text-white rounded-xl text-[14px] font-bold shadow-lg shadow-[#01012A]/10 active:scale-95 disabled:opacity-50 transition-all"
+                className="px-8 py-2.5 bg-linear-to-r from-brand-primary to-brand-secondary text-white rounded-xl text-[14px] font-bold shadow-lg shadow-brand-primary/10 active:scale-95 disabled:opacity-50 transition-all"
               >
                 Attach to Prompt
               </button>

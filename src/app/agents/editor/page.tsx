@@ -233,10 +233,10 @@ function EditorContent() {
               href="/agents" 
               className="w-10 h-10 rounded-[14px] bg-white border border-slate-100 flex items-center justify-center hover:bg-slate-50 transition-all active:scale-90 group shadow-sm"
             >
-              <Icons.ArrowLeft className="w-5 h-5 text-[#01012A] group-hover:-translate-x-0.5 transition-transform" />
+              <Icons.ArrowLeft className="w-5 h-5 text-brand-primary group-hover:-translate-x-0.5 transition-transform" />
             </Link>
             <div className="flex flex-col">
-               <h1 className="text-[28px] sm:text-[34px] font-black text-[#01012A] tracking-tighter lowercase leading-none">RAVER EDITOR</h1>
+               <h1 className="text-[28px] sm:text-[34px] font-black text-brand-primary tracking-tighter lowercase leading-none">RAVER EDITOR</h1>
                <p className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 mt-3">High-Fidelity Cinematic Orchestration</p>
             </div>
           </div>
@@ -247,7 +247,7 @@ function EditorContent() {
                  <div className="w-2 h-2 rounded-full bg-blue-500 animate-pulse" />
                  <div className="flex flex-col">
                     <span className="text-[9px] font-bold text-slate-400 uppercase tracking-tighter">Active Sync Session</span>
-                    <span className="text-[10px] font-black text-[#01012A] font-mono">{sessionId}</span>
+                    <span className="text-[10px] font-black text-brand-primary font-mono">{sessionId}</span>
                  </div>
                  <button 
                   onClick={() => setIsDeleteModalOpen(true)}
@@ -262,10 +262,10 @@ function EditorContent() {
               onClick={() => !isGenerating && setIsModalOpen(true)}
               disabled={isGenerating}
               className={cn(
-                "h-14 px-8 rounded-[20px] font-black text-[11px] uppercase tracking-widest flex items-center gap-3 transition-all shadow-xl shadow-[#01012A]/10 border border-white/5",
+                "h-14 px-8 rounded-[20px] font-black text-[11px] uppercase tracking-widest flex items-center gap-3 transition-all shadow-xl shadow-brand-primary/10 border border-white/5",
                 isGenerating 
                   ? "bg-slate-100 text-slate-400 cursor-not-allowed" 
-                  : "bg-linear-to-r from-[#01012A] to-[#2E2C66] text-white hover:scale-[1.02] active:scale-95"
+                  : "bg-linear-to-r from-brand-primary to-brand-secondary text-white hover:scale-[1.02] active:scale-95"
               )}
             >
               {isGenerating ? (

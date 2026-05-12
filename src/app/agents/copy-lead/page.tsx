@@ -198,10 +198,10 @@ function CopyLeadContent() {
                 href="/agents" 
                 className="w-10 h-10 shrink-0 rounded-[14px] bg-slate-50 border border-slate-100 flex items-center justify-center hover:bg-slate-100 transition-all active:scale-90 group"
               >
-                <Icons.ArrowLeft className="w-5 h-5 text-[#01012A] group-hover:-translate-x-0.5 transition-transform" />
+                <Icons.ArrowLeft className="w-5 h-5 text-brand-primary group-hover:-translate-x-0.5 transition-transform" />
               </Link>
               <div className="flex flex-col">
-                 <h1 className="text-[24px] sm:text-[34px] font-black text-[#01012A] tracking-tighter lowercase leading-none">raver ai copy lead</h1>
+                 <h1 className="text-[24px] sm:text-[34px] font-black text-brand-primary tracking-tighter lowercase leading-none">raver ai copy lead</h1>
                  <p className="text-[9px] sm:text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 mt-2 sm:mt-3">Creative Orchestration Studio</p>
               </div>
             </div>
@@ -212,7 +212,7 @@ function CopyLeadContent() {
                    <div className="w-2 h-2 rounded-full bg-blue-500 animate-pulse shrink-0" />
                    <div className="flex flex-col min-w-0">
                       <span className="text-[8px] sm:text-[9px] font-bold text-slate-400 uppercase tracking-tighter truncate">Syncing Session</span>
-                      <span className="text-[9px] sm:text-[10px] font-black text-[#01012A] font-mono truncate max-w-[120px] sm:max-w-none">{sessionId}</span>
+                      <span className="text-[9px] sm:text-[10px] font-black text-brand-primary font-mono truncate max-w-[120px] sm:max-w-none">{sessionId}</span>
                    </div>
                    <button 
                     onClick={() => handleDeleteSession(sessionId)}
@@ -225,7 +225,7 @@ function CopyLeadContent() {
               
               <button 
                 onClick={() => setIsModalOpen(true)}
-                className="h-12 sm:h-14 px-6 sm:px-8 bg-linear-to-r from-[#01012A] to-[#2E2C66]  text-white rounded-[18px] sm:rounded-[20px] font-black text-[10px] sm:text-[11px] uppercase tracking-widest flex items-center justify-center gap-2 sm:gap-3 transition-all hover:scale-[1.02] active:scale-95 shadow-xl shadow-[#01012A]/10 border border-white/5 flex-1 sm:flex-none"
+                className="h-12 sm:h-14 px-6 sm:px-8 bg-linear-to-r from-brand-primary to-brand-secondary  text-white rounded-[18px] sm:rounded-[20px] font-black text-[10px] sm:text-[11px] uppercase tracking-widest flex items-center justify-center gap-2 sm:gap-3 transition-all hover:scale-[1.02] active:scale-95 shadow-xl shadow-brand-primary/10 border border-white/5 flex-1 sm:flex-none"
               >
                 <Icons.whiteMagicWand className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
                 <span>Initiate Synthesis</span>

@@ -135,7 +135,7 @@ export default function CreateCampaignModal({ isOpen, onClose, onSuccess }: Crea
           <div className="flex gap-2 mb-4 ">
             {[1, 2, 3, 4].map((i) => (
               <div key={i} className={`h-[3px] flex-1 rounded-full transition-all duration-500 ${
-                i <= step ? "bg-linear-to-r from-[#01012A] to-[#2E2C66]" : "bg-[#E2E8F0]"
+                i <= step ? "bg-linear-to-r from-brand-primary to-brand-secondary" : "bg-[#E2E8F0]"
               }`} />
             ))}
           </div>
