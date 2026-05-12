@@ -35,14 +35,14 @@ export default function CampaignStep2({ data, updateData, errors }: CampaignStep
   return (
     <div className="flex flex-col gap-[24px] animate-in slide-in-from-right-4 duration-300">
       <div className="flex flex-col gap-1">
-        <h3 className="text-[18px] font-bold text-[#121212]">Campaign Details</h3>
-        <p className="text-[14px] text-[#6B7280] font-normal">Define the look and feel of your campaign</p>
+        <h3 className="text-h3 text-text-primary">Campaign Details</h3>
+        <p className="text-body text-text-secondary">Define the look and feel of your campaign</p>
       </div>
 
       <div className="flex flex-col gap-[8px]">
         {/* Visual Style */}
         <div className={`flex flex-col gap-[12px] bg-[#FFFFFF] p-[16px] rounded-[16px] border ${errors.visualStyles ? 'border-red-500' : 'border-transparent'}`}>
-          <label className="text-[14px] font-bold text-[#121212]">Visual Style *</label>
+          <label className="text-label text-text-primary">Visual Style *</label>
           <div className="flex flex-wrap gap-[12px]">
             {["Modern & Clean", "Elegant & Luxury", "Vibrant & Bold", "Minimalist", "Natural & Organic", "Dramatic"].map((s) => {
               const isSelected = data.visualStyles?.includes(s);
@@ -50,7 +50,7 @@ export default function CampaignStep2({ data, updateData, errors }: CampaignStep
                 <button
                   key={s}
                   onClick={() => toggleStyle(s)}
-                  className={`px-4 py-2 rounded-xl text-[13px] font-medium transition-all ${isSelected ? "text-[#02022C]" : "bg-white border text-[#475569] border-[#E2E8F0] hover:border-[#02022C]"
+                  className={`px-4 py-2 rounded-xl text-caption font-medium transition-all ${isSelected ? "text-brand-primary" : "bg-white border text-text-secondary border-[#E2E8F0] hover:border-brand-primary"
                     }`}
                   style={isSelected ? {
                     border: '1px solid transparent',
@@ -67,7 +67,7 @@ export default function CampaignStep2({ data, updateData, errors }: CampaignStep
 
         {/* Tone & Voice */}
         <div className={`flex flex-col gap-[12px] bg-[#FFFFFF] p-[16px] rounded-[16px] border ${errors.tones ? 'border-red-500' : 'border-transparent'}`}>
-          <label className="text-[14px] font-bold text-[#121212]">Tone & Voice *</label>
+          <label className="text-label text-text-primary">Tone & Voice *</label>
           <div className="flex flex-wrap gap-[12px]">
             {["Professional", "Friendly", "Inspiring", "Playful", "Sophisticated", "Educational"].map((t) => {
               const isSelected = data.tones?.includes(t);
@@ -75,7 +75,7 @@ export default function CampaignStep2({ data, updateData, errors }: CampaignStep
                 <button
                   key={t}
                   onClick={() => toggleTone(t)}
-                  className={`px-4 py-2 rounded-xl text-[13px] font-medium transition-all ${isSelected ? "text-[#02022C]" : "bg-white border text-[#475569] border-[#E2E8F0] hover:border-[#02022C]"
+                  className={`px-4 py-2 rounded-xl text-caption font-medium transition-all ${isSelected ? "text-brand-primary" : "bg-white border text-text-secondary border-[#E2E8F0] hover:border-brand-primary"
                     }`}
                   style={isSelected ? {
                     border: '1px solid transparent',
@@ -92,7 +92,7 @@ export default function CampaignStep2({ data, updateData, errors }: CampaignStep
 
         {/* Color Scheme */}
         <div className={`flex flex-col gap-[12px] bg-[#FFFFFF] p-[16px] rounded-[16px] border ${errors.colorScheme ? 'border-red-500' : 'border-transparent'}`}>
-          <label className="text-[14px] font-bold text-[#121212]">Color Scheme *</label>
+          <label className="text-label text-text-primary">Color Scheme *</label>
           <div className="flex flex-wrap gap-[12px]">
             {colorSchemes.map((scheme) => {
               const isSelected = data.colorScheme === scheme.label;
@@ -112,7 +112,7 @@ export default function CampaignStep2({ data, updateData, errors }: CampaignStep
                       <div key={i} className="w-4 h-4 rounded-full" style={{ backgroundColor: color }} />
                     ))}
                   </div>
-                  <span className={`text-[13px] font-medium ${isSelected ? "text-[#02022C]" : "text-[#64748B]"}`}>
+                  <span className={`text-caption font-medium ${isSelected ? "text-brand-primary" : "text-text-secondary"}`}>
                     {scheme.label}
                   </span>
                 </button>

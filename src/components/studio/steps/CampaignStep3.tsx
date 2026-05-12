@@ -50,14 +50,14 @@ export default function CampaignStep3({ data, updateData, errors }: CampaignStep
   return (
     <div className="flex flex-col gap-[24px] animate-in slide-in-from-right-4 duration-300">
       <div className="flex flex-col gap-1">
-        <h3 className="text-[18px] font-bold text-[#121212]">Platform & Format</h3>
-        <p className="text-[14px] font-normal text-[#6B7280]">Where will your campaign be published?</p>
+        <h3 className="text-h3 text-text-primary">Platform & Format</h3>
+        <p className="text-body text-text-secondary">Where will your campaign be published?</p>
       </div>
 
       <div className="flex flex-col gap-[16px]">
         {/* Social Media Platform */}
         <div className={`flex flex-col gap-[12px] bg-[#FFFFFF] p-[16px] rounded-[16px] border ${errors.platforms ? 'border-red-500' : 'border-[#1212121A]'}`}>
-          <label className="text-[14px] font-bold text-[#121212]">Social Media Platform *</label>
+          <label className="text-label text-text-primary">Social Media Platform *</label>
           <div className="flex flex-wrap gap-[12px]">
             {platforms.map((p) => {
               const isSelected = data.platforms?.includes(p.label);
@@ -65,14 +65,14 @@ export default function CampaignStep3({ data, updateData, errors }: CampaignStep
                 <button
                   key={p.label}
                   onClick={() => togglePlatform(p.label)}
-                  className={`px-[16px] py-[8px] rounded-xl text-[16px] font-normal items-center justify-center transition-all flex flex-row gap-[10px] ${isSelected ? "text-[#02022C]" : "bg-white border text-[#475569] border-[#E2E8F0] hover:border-[#02022C] "
+                  className={`px-[16px] py-[8px] rounded-xl text-body font-medium items-center justify-center transition-all flex flex-row gap-[10px] ${isSelected ? "text-brand-primary" : "bg-white border text-text-secondary border-[#E2E8F0] hover:border-brand-primary "
                     }`}
                   style={isSelected ? {
                     border: '1px solid transparent',
                     background: 'linear-gradient(white, white) padding-box, linear-gradient(90deg, #01012A 0%, #2E2C66 100%) border-box'
                   } : {}}
                 >
-                  <p.icon className={`w-4 h-4 ${isSelected ? "text-[#02022C]" : "text-[#94A3B8]"}`} />
+                  <p.icon className={`w-4 h-4 ${isSelected ? "text-brand-primary" : "text-text-secondary"}`} />
                   {p.label}
                 </button>
               );
@@ -83,7 +83,7 @@ export default function CampaignStep3({ data, updateData, errors }: CampaignStep
 
         {/* Video Duration */}
         <div className="flex flex-col gap-4 bg-[#FFFFFF] p-[16px] rounded-[16px] border-[0.35px] border-[#1212121A]">
-          <label className="text-[14px] font-bold text-[#121212]">Video Duration *</label>
+          <label className="text-label text-text-primary">Video Duration *</label>
           <div className="flex flex-wrap gap-[12px]">
             {durations.map((d) => {
               const isSelected = data.duration === d;
@@ -91,7 +91,7 @@ export default function CampaignStep3({ data, updateData, errors }: CampaignStep
                 <button
                   key={d}
                   onClick={() => updateData({ duration: d })}
-                  className={`px-[16px] py-[8px] rounded-xl text-[16px] font-normal items-center justify-center transition-all flex flex-row gap-[10px] ${isSelected ? "text-[#02022C]" : "bg-white border text-[#475569] border-[#E2E8F0] hover:border-[#02022C] "
+                  className={`px-[16px] py-[8px] rounded-xl text-body font-medium items-center justify-center transition-all flex flex-row gap-[10px] ${isSelected ? "text-brand-primary" : "bg-white border text-text-secondary border-[#E2E8F0] hover:border-brand-primary "
                     }`}
                   style={isSelected ? {
                     border: '1px solid transparent',
@@ -107,7 +107,7 @@ export default function CampaignStep3({ data, updateData, errors }: CampaignStep
 
         {/* Video Format */}
         <div className="flex flex-col gap-4 bg-[#FFFFFF] p-[16px] rounded-[16px] border-[0.35px] border-[#1212121A]">
-          <label className="text-[14px] font-bold text-[#121212]">Video Format *</label>
+          <label className="text-label text-text-primary">Video Format *</label>
           <div className="grid grid-cols-2 gap-[12px]">
             {formats.map((f) => {
               const isSelected = data.format === f.label;
@@ -115,15 +115,15 @@ export default function CampaignStep3({ data, updateData, errors }: CampaignStep
                 <button
                   key={f.label}
                   onClick={() => updateData({ format: f.label })}
-                  className={`px-[16px] py-[8px] rounded-xl text-[16px] font-normal items-start transition-all flex flex-col gap-[5px] ${isSelected ? "text-[#02022C]" : "bg-white border text-[#475569] border-[#E2E8F0] hover:border-[#02022C] "
+                  className={`px-[16px] py-[8px] rounded-xl text-body font-medium items-start transition-all flex flex-col gap-[5px] ${isSelected ? "text-brand-primary" : "bg-white border text-text-secondary border-[#E2E8F0] hover:border-brand-primary "
                     }`}
                   style={isSelected ? {
                     border: '1px solid transparent',
                     background: 'linear-gradient(white, white) padding-box, linear-gradient(90deg, #01012A 0%, #2E2C66 100%) border-box'
                   } : {}}
                 >
-                  <span className={`text-[13px] font-bold mb-1 ${isSelected ? "text-[#02022C]" : "text-[#121212]"}`}>{f.label}</span>
-                  <span className="text-[11px] font-medium text-[#94A3B8] leading-tight">{f.desc}</span>
+                  <span className={`text-caption font-bold mb-1 ${isSelected ? "text-brand-primary" : "text-text-primary"}`}>{f.label}</span>
+                  <span className="text-[11px] font-medium text-text-secondary leading-tight">{f.desc}</span>
                 </button>
               );
             })}

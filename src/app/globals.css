@@ -5,8 +5,26 @@
   --font-sans: var(--font-outfit), var(--font-inter), ui-sans-serif, system-ui, sans-serif;
   --font-mono: "Fira Code", ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
   
+  /* Typography Scale */
+  --text-h1: 1.875rem; /* 30px */
+  --text-h1--line-height: 2.25rem;
+  --text-h2: 1.375rem; /* 22px */
+  --text-h2--line-height: 1.75rem;
+  --text-h3: 1.125rem; /* 18px */
+  --text-h3--line-height: 1.625rem;
+  --text-body: 0.875rem; /* 14px */
+  --text-body--line-height: 1.25rem;
+  --text-body-lg: 1rem; /* 16px */
+  --text-body-lg--line-height: 1.5rem;
+  --text-label: 1rem; /* 16px */
+  --text-label--line-height: 1.5rem; /* 24px */
+  --text-caption: 0.75rem; /* 12px */
+  --text-caption--line-height: 1rem;
+
   /* Brand Palette */
-  --color-brand-secondary: #0EA5E9;  /* Sky 500 */
+  --color-brand-primary: #01012A;
+  --color-brand-secondary: #2E2C66;
+  --color-brand-accent: #0EA5E9;  /* Sky 500 */
   
   /* Semantic Surfaces */
   --color-surface-base: var(--background);
@@ -16,7 +34,7 @@
   /* Semantic Text */
   --color-text-primary: var(--foreground);
   --color-text-secondary: var(--text-muted);
-  --color-text-accent: var(--color-brand-primary);
+  --color-text-accent: var(--color-brand-accent);
   
   /* Semantic Borders */
   --color-border-subtle: var(--card-border);
@@ -51,6 +69,33 @@ button, input, select, textarea {
 }
 
 @layer utilities {
+  .text-h1 {
+    @apply text-h1 font-bold tracking-tight;
+    font-family: var(--font-outfit), var(--font-sans);
+  }
+
+  .text-h2 {
+    @apply text-h2 font-bold tracking-tight;
+    font-family: var(--font-outfit), var(--font-sans);
+  }
+
+  .text-h3 {
+    @apply text-h3 font-bold tracking-tight;
+    font-family: var(--font-outfit), var(--font-sans);
+  }
+
+  .text-label {
+    @apply text-label font-normal;
+  }
+
+  .text-caption {
+    @apply text-caption font-normal;
+  }
+
+  .text-premium-gradient {
+    @apply bg-linear-to-r from-brand-primary to-brand-secondary bg-clip-text text-transparent;
+  }
+
   .glass {
     @apply backdrop-blur-xl bg-surface-card border border-border-subtle shadow-xl;
   }

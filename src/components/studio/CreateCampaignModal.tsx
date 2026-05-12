@@ -123,8 +123,8 @@ export default function CreateCampaignModal({ isOpen, onClose, onSuccess }: Crea
         <div className="bg-white px-8 pt-6 pb-2 border-b border-[#F1F5F9] shrink-0">
           <div className="flex items-center justify-between mb-4">
             <div className="flex flex-col">
-              <h2 className="text-[18px] font-bold text-[#121212]">Create New Campaign</h2>
-              <span className="text-[13px] text-[#64748B] font-normal">Step {step} of 4</span>
+              <h2 className="text-h3 text-text-primary">Create New Campaign</h2>
+              <span className="text-caption text-text-secondary">Step {step} of 4</span>
             </div>
             <button onClick={onClose} className="p-2 hover:bg-[#F1F5F9] rounded-full transition-colors">
               <Icons.Plus className="w-5 h-5 rotate-45 text-[#64748B]" />
@@ -155,7 +155,7 @@ export default function CreateCampaignModal({ isOpen, onClose, onSuccess }: Crea
           <button 
             onClick={() => step > 1 && setStep(step - 1)}
             disabled={step === 1}
-            className="flex items-center gap-2 px-6 py-2 bg-white rounded-lg text-[14px] font-bold text-[#121212] hover:bg-[#F1F5F9] transition-all disabled:opacity-0 disabled:pointer-events-none"
+            className="flex items-center gap-2 px-6 py-2 bg-white rounded-lg text-body font-bold text-text-primary hover:bg-[#F1F5F9] transition-all disabled:opacity-0 disabled:pointer-events-none"
           >
             <Icons.ArrowLeft className="w-4 h-4" /> Back
           </button>
@@ -163,7 +163,7 @@ export default function CreateCampaignModal({ isOpen, onClose, onSuccess }: Crea
           {step < 4 ? (
             <button 
               onClick={handleNext}
-              className="flex items-center gap-2 px-10 py-2.5 bg-linear-to-r from-[#01012A] to-[#2E2C66] text-white rounded-[8px] text-[14px] font-bold shadow-lg shadow-[#01012A]/10 active:scale-95 transition-all"
+              className="flex items-center gap-2 px-10 py-2.5 bg-linear-to-r from-brand-primary to-brand-secondary text-white rounded-[8px] text-body font-bold shadow-lg shadow-brand-primary/10 active:scale-95 transition-all"
             >
               Next <Icons.ArrowRight className="w-4 h-4" />
             </button>
@@ -171,7 +171,7 @@ export default function CreateCampaignModal({ isOpen, onClose, onSuccess }: Crea
             <button 
               onClick={handleSubmit}
               disabled={isLoading}
-              className="flex items-center gap-2 px-10 py-2.5 bg-linear-to-r from-[#01012A] to-[#2E2C66] text-white rounded-[8px] text-[14px] font-bold shadow-lg shadow-[#01012A]/10 active:scale-95 transition-all disabled:opacity-50"
+              className="flex items-center gap-2 px-10 py-2.5 bg-linear-to-r from-brand-primary to-brand-secondary text-white rounded-[8px] text-body font-bold shadow-lg shadow-brand-primary/10 active:scale-95 transition-all disabled:opacity-50"
             >
               {isLoading ? "Generating..." : "Generate Campaign"} <Icons.Send className="w-4 h-4 ml-1" />
             </button>
