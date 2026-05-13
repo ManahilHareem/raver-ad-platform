@@ -12,9 +12,10 @@ interface ProductionPipelineProps {
   completedNodes?: string[];
   campaignStatus?: string | null;
   stepApprovals?: any;
+  className?: string;
 }
 
-export default function ProductionPipeline({ status, message, videoUrl, completedNodes = [], campaignStatus, stepApprovals }: ProductionPipelineProps) {
+export default function ProductionPipeline({ status, message, videoUrl, completedNodes = [], campaignStatus, stepApprovals, className }: ProductionPipelineProps) {
   const getStepStatus = (label: string): "completed" | "active" | "pending" | "awaiting_approval" | "rejected" => {
     const s = status?.toLowerCase() || "";
     const msg = message?.toLowerCase() || "";
@@ -129,6 +130,11 @@ export default function ProductionPipeline({ status, message, videoUrl, complete
     return "pending";
   };
 
+  const msg = message?.toLowerCase() || "";
+  const isImageTask = msg.includes("image") || msg.includes("visual");
+  const isMusicTask = msg.includes("music") || msg.includes("track");
+  const isVideoTask = !isImageTask && !isMusicTask || msg.includes("campaign") || msg.includes("video") || !!videoUrl;
+
   const steps = [
     { label: "Prompt", status: getStepStatus("Prompt") },
     { label: "Creative Brief", status: getStepStatus("Creative Brief") },
@@ -139,20 +145,23 @@ export default function ProductionPipeline({ status, message, videoUrl, complete
     { label: "Rendering", status: getStepStatus("Rendering") },
     { label: "Quality Check", status: getStepStatus("Quality Check") },
   ].filter(step => {
-    // Hide rendering/quality steps for image-only tasks (terminal status + no video)
-    const isTerminal = ["delivered", "ready", "completed", "ready_for_human_review", "approved", "shipped"].some(ts => 
-      status?.toLowerCase().includes(ts)
-    );
-    if ((step.label === "Rendering" || step.label === "Quality Check") && isTerminal && !videoUrl) {
-      return false;
+    // If it's purely an image task, only show Image related nodes
+    if (isImageTask && !isVideoTask && !isMusicTask) {
+      return ["Prompt", "Creative Brief", "Image Generation"].includes(step.label);
     }
+    // If it's purely a music task, only show Music related nodes
+    if (isMusicTask && !isVideoTask && !isImageTask) {
+      return ["Prompt", "Creative Brief", "Music Generation"].includes(step.label);
+    }
+    // For video or mixed campaigns, show all nodes (or use existing logic if preferred)
+    // Here we show all nodes for video tasks as requested
     return true;
   });
 
   const isAwaiting = status?.toLowerCase().startsWith("awaiting_approval_");
 
   return (
-    <div className="p-4 md:p-8 rounded-[12px] overflow-hidden">
+    <div className={cn("p-4 md:p-6 rounded-[12px] overflow-hidden", className)}>
       {isAwaiting && message && (
         <div className="mb-8 p-5 bg-amber-50 border border-amber-100 rounded-[22px] flex items-center gap-4 animate-in fade-in slide-in-from-top-4 duration-500">
           <div className="w-12 h-12 bg-white rounded-2xl flex items-center justify-center shadow-sm border border-amber-100">
@@ -167,8 +176,12 @@ export default function ProductionPipeline({ status, message, videoUrl, complete
         </div>
       )}
       <div className="overflow-x-auto custom-scrollbar">
-      <div className="flex items-center justify-between min-w-[800px] relative">
+      <div className={cn(
+        "flex items-center relative transition-all duration-500",
+        steps.length <= 3 ? "justify-center gap-12 md:gap-24 py-4" : "justify-between min-w-[800px]"
+      )}>
         {/* Connection Line */}
+
 
         {steps.map((step, i) => (
           <div key={i} className="flex flex-col items-center gap-3 relative z-10">

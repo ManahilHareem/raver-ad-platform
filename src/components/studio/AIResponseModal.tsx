@@ -10,6 +10,7 @@ import { cn, enrichMessageWithCampaign, normalizeAssetUrl, formatFileSize } from
 import { MarkdownRenderer } from "@/components/ui/MarkdownRenderer";
 import { useVoiceInput } from "@/hooks/useVoiceInput";
 import { useTextToSpeech } from "@/hooks/useTextToSpeech";
+import ProductionPipeline from "./ProductionPipeline";
 
 interface Message {
   id: string;
@@ -136,7 +137,8 @@ export default function AIResponseModal({
 
   const lastAIMessage = [...messages].reverse().find(m => m.role === "ai");
   const isTerminalMessage = lastAIMessage?.content?.includes("Your image is queued — generation has started!") ||
-    lastAIMessage?.content?.includes("Launching your campaign now") ||
+    lastAIMessage?.content?.includes("Launching your campaign now") || 
+    lastAIMessage?.content?.includes("Your music track is queued — generation has started! I'll let you know when it's ready.") ||
     lastAIMessage?.content?.includes("Campaign started! I'll update you");
 
   const isInputDisabled = isGenerating || isTerminalMessage;
@@ -463,6 +465,24 @@ export default function AIResponseModal({
               </div>
             </div>
           ))}
+
+          {isTerminalMessage && (
+            <div className="mt-4 mb-8 bg-slate-50/50 rounded-2xl border border-slate-100 overflow-hidden animate-in fade-in slide-in-from-bottom-4 duration-700 shadow-sm">
+              <div className="px-6 py-4 border-b border-slate-100 bg-white/50 flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse" />
+                  <span className="text-[11px] font-bold text-[#02022C] uppercase tracking-wider">Production Track</span>
+                </div>
+                <span className="text-[10px] font-medium text-slate-400">Real-time status</span>
+              </div>
+              <ProductionPipeline 
+                status="in_production" 
+                message={lastAIMessage?.content || ""}
+                campaignStatus="in_production"
+                className="p-0 py-2"
+              />
+            </div>
+          )}
 
           {isGenerating && (
             <div className="mr-auto max-w-[80%] flex items-start gap-4 animate-in fade-in slide-in-from-left-2 duration-300">
