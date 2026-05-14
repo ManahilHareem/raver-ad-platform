@@ -358,7 +358,7 @@ export default function AIResponseModal({
         {/* Chat History Area */}
         <div
           ref={scrollRef}
-          className="flex-1 overflow-y-auto p-6 flex flex-col gap-6 custom-scrollbar bg-[#FDFDFF]"
+          className="flex-1 overflow-y-auto p-6 flex flex-col gap-6 no-scrollbar bg-[#FDFDFF]"
         >
           {messages.map((m) => (
             <div

@@ -637,7 +637,7 @@ export default function CampaignPreviewModal({
         {/* Content */}
         <div 
           ref={mainContentRef} 
-          className="flex-1 overflow-y-auto custom-scrollbar p-8 space-y-8 bg-slate-50/50 will-change-transform overscroll-contain"
+          className="flex-1 overflow-y-auto no-scrollbar p-8 space-y-8 bg-slate-50/50 will-change-transform overscroll-contain"
         >
           {/* Rejection/Failure Banner */}
           {(isRejected || isFailed) && (
@@ -1154,7 +1154,7 @@ export default function CampaignPreviewModal({
                 {showHistory ? "Session Audit Log" : canChat ? "Live Collaboration" : "Session Outcome"}
               </p>
               <div className="bg-[#FDFDFF] border border-[#F1F5F9] rounded-[32px] overflow-hidden flex flex-col shadow-sm">
-                <div ref={chatContainerRef} className="p-6 space-y-8 flex flex-col max-h-[450px] overflow-y-auto custom-scrollbar will-change-transform">
+                <div ref={chatContainerRef} className="p-6 space-y-8 flex flex-col max-h-[450px] overflow-y-auto no-scrollbar will-change-transform">
                   {(() => {
                     const processedHistory = localHistory
                       .map((msg) => {

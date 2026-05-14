@@ -23,7 +23,7 @@ export function MarkdownRenderer({ content, className, isUser = false }: Markdow
   
   return (
     <div className={cn(
-      "markdown-container text-[13px] max-w-[400px] leading-relaxed",
+      "markdown-container text-[13px] max-w-[400px] leading-relaxed no-scrollbar",
       isUser ? "text-white" : "text-[#121212]",
       className
     )}>

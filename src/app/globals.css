@@ -154,6 +154,15 @@ button, input, select, textarea {
     scrollbar-color: #E2E8F0 transparent;
     -webkit-overflow-scrolling: touch;
   }
+
+  .no-scrollbar::-webkit-scrollbar {
+    display: none !important;
+  }
+
+  .no-scrollbar {
+    -ms-overflow-style: none !important;
+    scrollbar-width: none !important;
+  }
 }
 
 /* Ensure Toastify popups use the same premium typography as the rest of the application */
