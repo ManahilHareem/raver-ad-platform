@@ -55,21 +55,6 @@ export function EditorModal({ isOpen, onClose, onGenerate, isLoading }: EditorMo
         <div className="absolute bottom-0 left-0 right-0 h-10 bg-linear-to-t from-[#F8FAFC] to-transparent pointer-events-none" />
       </div>
 
-      <style jsx global>{`
-        .custom-scrollbar::-webkit-scrollbar {
-          width: 6px;
-        }
-        .custom-scrollbar::-webkit-scrollbar-track {
-          background: transparent;
-        }
-        .custom-scrollbar::-webkit-scrollbar-thumb {
-          background: #E2E8F0;
-          border-radius: 10px;
-        }
-        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
-          background: #CBD5E1;
-        }
-      `}</style>
     </div>
   );
 }

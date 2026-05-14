@@ -66,7 +66,6 @@ export default function CampaignPreviewModal({
   onSelectVoice,
   onSwitchCampaign,
 }: CampaignPreviewModalProps) {
-  console.log(`[CampaignPreviewModal] Rendered. isOpen:`, isOpen, `campaignData:`, !!campaignData);
   const { user } = useUser();
   const [localHistory, setLocalHistory] = useState<{ role: string; content: string }[]>([]);
   const [inputText, setInputText] = useState("");
@@ -636,7 +635,10 @@ export default function CampaignPreviewModal({
         </div>
 
         {/* Content */}
-        <div ref={mainContentRef} className="flex-1 overflow-y-auto custom-scrollbar p-8 space-y-8 bg-slate-50/50">
+        <div 
+          ref={mainContentRef} 
+          className="flex-1 overflow-y-auto custom-scrollbar p-8 space-y-8 bg-slate-50/50 will-change-transform overscroll-contain"
+        >
           {/* Rejection/Failure Banner */}
           {(isRejected || isFailed) && (
             <div className="p-6 bg-red-50 border border-red-100 rounded-[24px] space-y-3">
@@ -787,7 +789,7 @@ export default function CampaignPreviewModal({
                           className="w-full h-full object-contain group-hover:scale-105 transition-transform duration-500" 
                         />
                         <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors" />
-                        <div className="absolute bottom-2 right-2 w-6 h-6 bg-white/80 backdrop-blur-md rounded-lg flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                        <div className="absolute bottom-2 right-2 w-6 h-6 bg-white/90 rounded-lg flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
                           <Icons.Search className="w-3 h-3 text-[#02022C]" />
                         </div>
                       </div>
@@ -1010,11 +1012,11 @@ export default function CampaignPreviewModal({
                           <img src={assetUrl} alt={`Option ${idx + 1}`} className="w-full h-full object-contain" />
                           <div className={cn(
                             "absolute top-3 right-3 w-6 h-6 rounded-full flex items-center justify-center transition-all",
-                            selectedAssetId === assetId ? "bg-[#02022C] text-white shadow-md" : "bg-white/40 backdrop-blur-md"
+                            selectedAssetId === assetId ? "bg-[#02022C] text-white shadow-md" : "bg-white/60"
                           )}>
                             {selectedAssetId === assetId ? <Icons.CheckCircle className="w-4 h-4" /> : <div className="w-1.5 h-1.5 bg-white/50 rounded-full" />}
                           </div>
-                          <div className="absolute bottom-3 left-3 px-2 py-1 bg-black/40 backdrop-blur-md rounded-md text-[9px] font-black text-white uppercase tracking-widest opacity-0 group-hover/cand:opacity-100 transition-opacity">
+                          <div className="absolute bottom-3 left-3 px-2 py-1 bg-black/60 rounded-md text-[9px] font-black text-white uppercase tracking-widest opacity-0 group-hover/cand:opacity-100 transition-opacity">
                             Option {idx + 1}
                           </div>
                         </div>
@@ -1152,7 +1154,7 @@ export default function CampaignPreviewModal({
                 {showHistory ? "Session Audit Log" : canChat ? "Live Collaboration" : "Session Outcome"}
               </p>
               <div className="bg-[#FDFDFF] border border-[#F1F5F9] rounded-[32px] overflow-hidden flex flex-col shadow-sm">
-                <div ref={chatContainerRef} className="p-6 space-y-8 flex flex-col max-h-[450px] overflow-y-auto custom-scrollbar">
+                <div ref={chatContainerRef} className="p-6 space-y-8 flex flex-col max-h-[450px] overflow-y-auto custom-scrollbar will-change-transform">
                   {(() => {
                     const processedHistory = localHistory
                       .map((msg) => {
