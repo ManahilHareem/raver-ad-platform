@@ -338,7 +338,6 @@ export default function StudioHero({
           <div className="flex items-center justify-between mb-1">
             <div className="flex items-center gap-2">
               <span className="text-[11px] font-black text-brand-primary uppercase tracking-[0.2em]">
-                Neural Casting
               </span>
             </div>
             {selectedVoice && (
@@ -402,6 +401,7 @@ export default function StudioHero({
                     onClick={(e) => {
                       e.stopPropagation();
                       onCampaignDelete?.(campaign);
+                      setDbCampaigns(dbCampaigns => dbCampaigns.filter(c => c.id !== campaign.id));
                     }} 
                     className={`ml-2 transition-colors ${
                       selectedCampaign?.title === campaign.title ? "text-white/70 hover:text-red-400" : "hover:text-red-500 text-[#64748B]"
