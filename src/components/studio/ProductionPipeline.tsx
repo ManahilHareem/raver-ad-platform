@@ -16,11 +16,6 @@ interface ProductionPipelineProps {
 }
 
 export default function ProductionPipeline({ status, message, videoUrl, completedNodes = [], campaignStatus, stepApprovals, className }: ProductionPipelineProps) {
-  const getStepStatus = (label: string): "completed" | "active" | "pending" | "awaiting_approval" | "rejected" => {
-    const s = status?.toLowerCase() || "";
-    const msg = message?.toLowerCase() || "";
-    
-    // Explicit completion nodes from director API
     const nodeMap: Record<string, string[]> = {
       "Image Generation": ["generate_image", "generate_images", "generate-images"],
       "Copy Generation": ["generate_text", "generate_script", "generate-copy"],
@@ -30,6 +25,10 @@ export default function ProductionPipeline({ status, message, videoUrl, complete
       "Quality Check": ["score_quality", "check_quality", "guardrails"]
     };
 
+  const getStepStatus = (label: string): "completed" | "active" | "pending" | "awaiting_approval" | "rejected" => {
+    const s = status?.toLowerCase() || "";
+    const msg = message?.toLowerCase() || "";
+    
     // Check for rejection first as it takes precedence
     if (stepApprovals) {
       const stepKey = nodeMap[label]?.[0];
@@ -131,9 +130,20 @@ export default function ProductionPipeline({ status, message, videoUrl, complete
   };
 
   const msg = message?.toLowerCase() || "";
-  const isImageTask = msg.includes("image") || msg.includes("visual");
-  const isMusicTask = msg.includes("music") || msg.includes("track");
-  const isVideoTask = !isImageTask && !isMusicTask || msg.includes("campaign") || msg.includes("video") || !!videoUrl;
+  
+  // Specific task identification based on AI Director response phrases
+  const isImageTask = msg.includes("your image is queued") || msg.includes("generation has started");
+  const isMusicTask = msg.includes("your music track is queued") || msg.includes("i'll let you know when it's ready");
+  const isVideoTask = msg.includes("launching your campaign now") || msg.includes("campaign started");
+  
+  // Fallback identification if phrases don't match exactly but keywords do
+  const isImageFallback = !isImageTask && !isMusicTask && !isVideoTask && (msg.includes("image") || msg.includes("visual"));
+  const isMusicFallback = !isMusicTask && !isImageTask && !isVideoTask && (msg.includes("music") || msg.includes("track"));
+  const isVideoFallback = !isVideoTask && !isImageTask && !isMusicTask && (msg.includes("campaign") || msg.includes("video") || !!videoUrl);
+
+  const finalIsImageTask = isImageTask || isImageFallback;
+  const finalIsMusicTask = isMusicTask || isMusicFallback;
+  const finalIsVideoTask = isVideoTask || isVideoFallback;
 
   const steps = [
     { label: "Prompt", status: getStepStatus("Prompt") },
@@ -144,17 +154,30 @@ export default function ProductionPipeline({ status, message, videoUrl, complete
     { label: "Music Generation", status: getStepStatus("Music Generation") },
     { label: "Rendering", status: getStepStatus("Rendering") },
     { label: "Quality Check", status: getStepStatus("Quality Check") },
-  ].filter(step => {
+  ];
+
+  // Progressive Pipeline Logic:
+  // If it's a video campaign, we start by only showing the image pipeline.
+  // Once the image is generated AND approved (completed), we reveal the full video production pipeline.
+  const isImageGenCompleted = getStepStatus("Image Generation") === "completed";
+
+  const visibleSteps = steps.filter(step => {
     // If it's purely an image task, only show Image related nodes
-    if (isImageTask && !isVideoTask && !isMusicTask) {
+    if (finalIsImageTask && !finalIsVideoTask && !finalIsMusicTask) {
       return ["Prompt", "Creative Brief", "Image Generation"].includes(step.label);
     }
     // If it's purely a music task, only show Music related nodes
-    if (isMusicTask && !isVideoTask && !isImageTask) {
+    if (finalIsMusicTask && !finalIsVideoTask && !finalIsImageTask) {
       return ["Prompt", "Creative Brief", "Music Generation"].includes(step.label);
     }
-    // For video or mixed campaigns, show all nodes (or use existing logic if preferred)
-    // Here we show all nodes for video tasks as requested
+    
+    // For video or mixed campaigns:
+    // If Image Generation is not yet completed/approved, only show the image phase
+    if (finalIsVideoTask && !isImageGenCompleted) {
+      return ["Prompt", "Creative Brief", "Image Generation"].includes(step.label);
+    }
+
+    // For video or mixed campaigns that have passed the image phase, show all nodes
     return true;
   });
 
@@ -178,12 +201,12 @@ export default function ProductionPipeline({ status, message, videoUrl, complete
       <div className="overflow-x-auto custom-scrollbar">
       <div className={cn(
         "flex items-center relative transition-all duration-500",
-        steps.length <= 3 ? "justify-center gap-12 md:gap-24 py-4" : "justify-between min-w-[800px]"
+        visibleSteps.length <= 3 ? "justify-center gap-12 md:gap-24 py-4" : "justify-between min-w-[800px]"
       )}>
         {/* Connection Line */}
 
 
-        {steps.map((step, i) => (
+        {visibleSteps.map((step, i) => (
           <div key={i} className="flex flex-col items-center gap-3 relative z-10">
             <div className="w-[48px] h-[48px] rounded-[8px] flex items-center justify-center border-[0.35px] border-[#0000001A] backdrop-blur-sm transition-all">
               {step.status === "completed" ? (
