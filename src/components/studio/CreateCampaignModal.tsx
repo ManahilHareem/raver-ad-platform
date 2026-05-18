@@ -34,6 +34,14 @@ export default function CreateCampaignModal({ isOpen, onClose, onSuccess }: Crea
 
   const updateData = (fields: Partial<typeof campaignData>) => {
     setCampaignData(prev => ({ ...prev, ...fields }));
+    // Clear validation error when the field is updated
+    setErrors(prev => {
+      const nextErrors = { ...prev };
+      Object.keys(fields).forEach((key) => {
+        delete nextErrors[key];
+      });
+      return nextErrors;
+    });
   };
 
   const validateStep = () => {
