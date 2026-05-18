@@ -187,6 +187,7 @@ export default function StudioHero({
     setSelectedAssets([]);
     audioRef?.pause();
     setPlayingId(null);
+    stopListening();
   };
 
   const [playingId, setPlayingId] = useState<string | null>(null);

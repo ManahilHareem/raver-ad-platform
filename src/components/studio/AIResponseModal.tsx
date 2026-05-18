@@ -189,6 +189,7 @@ export default function AIResponseModal({
       setMessages([]);
       setInputText("");
       setIsGenerating(false);
+      stopListening();
     }
   }, [isOpen, initialUserMessage, initialAIResponse, initialHistory]);
 
@@ -214,6 +215,7 @@ export default function AIResponseModal({
     setMessages(prev => [...prev, userMsg]);
     setInputText("");
     setIsGenerating(true);
+    stopListening();
 
     try {
       const API_BASE = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
