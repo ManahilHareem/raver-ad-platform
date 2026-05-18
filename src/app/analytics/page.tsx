@@ -37,11 +37,12 @@ export default function AnalyticsPage() {
   }, []);
 
   // Map API data to standard AI Studio platform metrics natively
+  // Map API data to standard AI Studio platform metrics natively
   const topStats = data ? [
-    { label: "Assets Generated", value: data.overview.totalAgentOutputs, trend: "+42%", color: "#02022C" },
-    { label: "Studio Sessions", value: data.overview.totalSessions, trend: "+21%", color: "#02022C" },
-    { label: "Active Campaigns", value: data.overview.totalCampaigns, trend: "+12%", color: "#02022C" },
-    { label: "Quality Audits", value: data.overview.totalQualityAudits, trend: "+8%", color: "#02022C" },
+    { label: "Assets Generated", value: Math.max(0, data.overview?.totalAgentOutputs || 0), trend: "+42%", color: "#02022C" },
+    { label: "Studio Sessions", value: Math.max(0, data.overview?.totalSessions || 0), trend: "+21%", color: "#02022C" },
+    { label: "Active Campaigns", value: Math.max(0, data.overview?.totalCampaigns || 0), trend: "+12%", color: "#02022C" },
+    { label: "Quality Audits", value: Math.max(0, data.overview?.totalQualityAudits || 0), trend: "+8%", color: "#02022C" },
   ] : [
     { label: "Assets Generated", value: "...", trend: "...", color: "#02022C" },
     { label: "Studio Sessions", value: "...", trend: "...", color: "#02022C" },
@@ -52,36 +53,36 @@ export default function AnalyticsPage() {
   // Timeline for generation outputs
   const generationTimelineData = data ? data.generationTimeline.map((item: any) => ({
     name: item.label,
-    assets: item.total
+    assets: Math.max(0, item.total || 0)
   })) : undefined;
 
   // Pie chart mapping
   const assetDistributionData = data ? [
-    { name: "Image Assets", value: data.agentOutputs.images, color: "#EA4164" },
-    { name: "Audio Files", value: data.agentOutputs.audio, color: "#3B82F6" },
-    { name: "Copy Variants", value: data.agentOutputs.copy, color: "#121212" },
-    { name: "Video Exports", value: data.agentOutputs.video, color: "#6366F1" },
+    { name: "Image Assets", value: Math.max(0, data.agentOutputs?.images || 0), color: "#EA4164" },
+    { name: "Audio Files", value: Math.max(0, data.agentOutputs?.audio || 0), color: "#3B82F6" },
+    { name: "Copy Variants", value: Math.max(0, data.agentOutputs?.copy || 0), color: "#121212" },
+    { name: "Video Exports", value: Math.max(0, data.agentOutputs?.video || 0), color: "#6366F1" },
   ].filter((d) => d.value > 0) : undefined;
 
   // Agent Utilization (Horizontal Progress Bars)
   const agentUtilizationData = data ? [
-    { name: "Image Director", value: data.agentOutputs?.images || 0, assets: data.agentOutputs?.images || 0 },
-    { name: "Audio Engineer", value: data.agentOutputs?.audio || 0, assets: data.agentOutputs?.audio || 0 },
-    { name: "Copywriter", value: data.agentOutputs?.copy || 0, assets: data.agentOutputs?.copy || 0 },
-    { name: "Video Producer", value: data.agentOutputs?.video || 0, assets: data.agentOutputs?.video || 0 },
+    { name: "Image Director", value: Math.max(0, data.agentOutputs?.images || 0), assets: Math.max(0, data.agentOutputs?.images || 0) },
+    { name: "Audio Engineer", value: Math.max(0, data.agentOutputs?.audio || 0), assets: Math.max(0, data.agentOutputs?.audio || 0) },
+    { name: "Copywriter", value: Math.max(0, data.agentOutputs?.copy || 0), assets: Math.max(0, data.agentOutputs?.copy || 0) },
+    { name: "Video Producer", value: Math.max(0, data.agentOutputs?.video || 0), assets: Math.max(0, data.agentOutputs?.video || 0) },
   ].filter(c => c.value > 0).map(c => ({
     ...c,
     // Calculate percentage purely for the width of the progress bar display
-    value: data.agentOutputs.total > 0 ? Math.round((c.value / data.agentOutputs.total) * 100) : 0
+    value: data.agentOutputs?.total > 0 ? Math.round((c.value / Math.max(1, data.agentOutputs.total)) * 100) : 0
   })) : undefined;
 
   // Quality Audit Scores mapping for BarChart
   const qualityScoresData = data && data.qualitySummary ? [
-    { name: "Visual", score: data.qualitySummary.avgVisualScore || 0 },
-    { name: "Brand", score: data.qualitySummary.avgBrandAlignmentScore || 0 },
-    { name: "Copy", score: data.qualitySummary.avgCopyScore || 0 },
-    { name: "Audio", score: data.qualitySummary.avgAudioFitScore || 0 },
-    { name: "Platform", score: data.qualitySummary.avgPlatformFitScore || 0 },
+    { name: "Visual", score: Math.max(0, data.qualitySummary.avgVisualScore || 0) },
+    { name: "Brand", score: Math.max(0, data.qualitySummary.avgBrandAlignmentScore || 0) },
+    { name: "Copy", score: Math.max(0, data.qualitySummary.avgCopyScore || 0) },
+    { name: "Audio", score: Math.max(0, data.qualitySummary.avgAudioFitScore || 0) },
+    { name: "Platform", score: Math.max(0, data.qualitySummary.avgPlatformFitScore || 0) },
   ] : undefined;
 
 
