@@ -148,12 +148,12 @@ export default function CampaignCard({
   const handleDownload = async (e: React.MouseEvent) => {
     e.stopPropagation();
     const firstImage = Array.isArray(image) ? image[0] : image;
-    const url = localData.video_url || videoUrl || firstImage;
+    const url = localData.video_url || videoUrl || localData.voiceover_url || voiceover_url || localData.music_url || music_url || firstImage;
     if (!url) return;
 
     toast.info('Preparing secure download...');
     const fileName = title.toLowerCase().replace(/\s+/g, '-');
-    const downloadUrl = `/api/download?url=${encodeURIComponent(url)}&filename=raver-${fileName}-${Date.now()}.mp4`;
+    const downloadUrl = `/api/download?url=${encodeURIComponent(url)}&filename=raver-${fileName}-${Date.now()}`;
 
     const link = document.createElement('a');
     link.href = downloadUrl;

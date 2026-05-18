@@ -104,12 +104,12 @@ export default function ProjectCard({
 
   const handleDownload = async (e: React.MouseEvent) => {
     e.stopPropagation();
-    const url = videoUrl || images[0];
+    const url = videoUrl || musicUrl || images[0];
     if (!url) return;
 
     toast.info('Preparing secure download...');
     const fileName = title.toLowerCase().replace(/\s+/g, '-');
-    const downloadUrl = `/api/download?url=${encodeURIComponent(url)}&filename=raver-${fileName}-${Date.now()}.mp4`;
+    const downloadUrl = `/api/download?url=${encodeURIComponent(url)}&filename=raver-${fileName}-${Date.now()}`;
 
     const link = document.createElement('a');
     link.href = downloadUrl;

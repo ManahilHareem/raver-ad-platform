@@ -37,9 +37,17 @@ export default function AssetModal({ asset, isOpen, onClose, onDelete }: AssetMo
 
   const handleDownload = () => {
     const url = asset.url || asset.imagePath;
-    if (url) {
-      window.open(url, '_blank');
-    }
+    if (!url) return;
+
+    const fileName = (asset.name || asset.title || "asset").toLowerCase().replace(/\s+/g, '-');
+    const downloadUrl = `/api/download?url=${encodeURIComponent(url)}&filename=raver-${fileName}-${Date.now()}`;
+
+    const link = document.createElement('a');
+    link.href = downloadUrl;
+    link.setAttribute('download', '');
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
   };
 
   const assetUrl = asset.url || asset.imagePath || "";
