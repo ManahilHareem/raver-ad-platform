@@ -39,6 +39,7 @@ export default function ProjectCard({
   onClick,
   musicUrl
 }: ProjectCardProps) {
+  const [imageError, setImageError] = useState(false);
   const [isMuted, setIsMuted] = useState(true);
   const [videoError, setVideoError] = useState(false);
   const [isPreviewOpen, setIsPreviewOpen] = useState(false);
@@ -49,7 +50,8 @@ export default function ProjectCard({
   // Image slideshow state
   const images = useMemo(() => {
     const raw = Array.isArray(image) ? image : [image];
-    return raw.filter(Boolean);
+    const filtered = raw.filter(Boolean);
+    return filtered.length > 0 ? filtered : ["/assets/hashtag-campaign.jpg"];
   }, [image]);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [isTransitioning, setIsTransitioning] = useState(false);
@@ -249,7 +251,7 @@ export default function ProjectCard({
                 </div>
               ) : (
                 <Image 
-                  src={images[currentImageIndex] || images[0]} 
+                  src={imageError ? "/assets/hashtag-campaign.jpg" : (images[currentImageIndex] || images[0])} 
                   alt={title}
                   fill
                   className={cn(
@@ -262,6 +264,7 @@ export default function ProjectCard({
                     e.stopPropagation();
                     setIsPreviewOpen(true);
                   }}
+                  onError={() => setImageError(true)}
                 />
               )}
               {/* Slideshow search overlay */}
