@@ -68,6 +68,31 @@ button, input, select, textarea {
   font-family: inherit;
 }
 
+/* Universal pointer cursor for all buttons, anchors, checkboxes, and interactive controls */
+button,
+[role="button"],
+select,
+summary,
+a,
+input[type="submit"],
+input[type="button"],
+input[type="checkbox"],
+input[type="radio"],
+.cursor-pointer {
+  cursor: pointer;
+}
+
+/* Override cursor for disabled controls */
+button:disabled,
+[role="button"]:disabled,
+input[type="submit"]:disabled,
+input[type="button"]:disabled,
+input[type="checkbox"]:disabled,
+input[type="radio"]:disabled,
+[disabled] {
+  cursor: not-allowed !important;
+}
+
 @layer utilities {
   .text-h1 {
     @apply text-h1 font-bold tracking-tight;
