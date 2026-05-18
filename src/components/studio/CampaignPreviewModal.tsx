@@ -627,7 +627,7 @@ export default function CampaignPreviewModal({
             </button>
             <button
               onClick={onClose}
-              className="p-2 hover:bg-[#F1F5F9] rounded-full transition-colors group"
+              className="p-2 hover:bg-[#F1F5F9] rounded-full transition-colors group cursor-pointer"
             >
               <Icons.Plus className="w-5 h-5 rotate-45 text-[#94A3B8] group-hover:text-[#121212]" />
             </button>

@@ -39,9 +39,9 @@ export default function CampaignStep1({ data, updateData, errors }: CampaignStep
               <button
                 key={obj}
                 onClick={() => updateData({ objective: obj })}
-                className={`px-[8px] py-[16px] h-[36px] w-[155px] flex items-center justify-center rounded-[8px] border text-caption font-medium transition-all ${data.objective === obj
+                className={`px-[8px] py-[16px] h-[36px] w-[155px] flex items-center justify-center rounded-[8px] border text-caption font-medium transition-all cursor-pointer ${data.objective === obj
                     ? "bg-white border-brand-primary text-brand-primary"
-                    : "bg-white text-text-secondary border-[#F1F5F9] hover:border-[#E2E8F0]"
+                    : "bg-white text-text-secondary border-[#F1F5F9] hover:border-brand-primary hover:bg-[#F8FAFC]"
                   }`}>
                 {obj}
               </button>

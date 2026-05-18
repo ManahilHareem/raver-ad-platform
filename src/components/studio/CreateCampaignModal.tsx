@@ -134,7 +134,7 @@ export default function CreateCampaignModal({ isOpen, onClose, onSuccess }: Crea
               <h2 className="text-h3 text-text-primary">Create New Campaign</h2>
               <span className="text-caption text-text-secondary">Step {step} of 4</span>
             </div>
-            <button onClick={onClose} className="p-2 hover:bg-[#F1F5F9] rounded-full transition-colors">
+            <button onClick={onClose} className="p-2 hover:bg-[#F1F5F9] rounded-full transition-colors cursor-pointer">
               <Icons.Plus className="w-5 h-5 rotate-45 text-[#64748B]" />
             </button>
           </div>

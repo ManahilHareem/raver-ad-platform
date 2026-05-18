@@ -80,7 +80,7 @@ export default function CampaignSelectionModal({
                 : "Choose a campaign to reference in your prompt"}
             </p>
           </div>
-          <button onClick={onClose} className="p-2 hover:bg-[#F1F5F9] rounded-full transition-colors">
+          <button onClick={onClose} className="p-2 hover:bg-[#F1F5F9] rounded-full transition-colors cursor-pointer">
             <Icons.Plus className="w-5 h-5 rotate-45 text-[#64748B]" />
           </button>
         </div>

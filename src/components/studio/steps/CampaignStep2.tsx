@@ -50,7 +50,7 @@ export default function CampaignStep2({ data, updateData, errors }: CampaignStep
                 <button
                   key={s}
                   onClick={() => toggleStyle(s)}
-                  className={`px-4 py-2 rounded-xl text-caption font-medium transition-all ${isSelected ? "text-brand-primary" : "bg-white border text-text-secondary border-[#E2E8F0] hover:border-brand-primary"
+                  className={`px-4 py-2 rounded-xl text-caption font-medium transition-all cursor-pointer ${isSelected ? "text-brand-primary" : "bg-white border text-text-secondary border-[#E2E8F0] hover:border-brand-primary"
                     }`}
                   style={isSelected ? {
                     border: '1px solid transparent',
@@ -75,7 +75,7 @@ export default function CampaignStep2({ data, updateData, errors }: CampaignStep
                 <button
                   key={t}
                   onClick={() => toggleTone(t)}
-                  className={`px-4 py-2 rounded-xl text-caption font-medium transition-all ${isSelected ? "text-brand-primary" : "bg-white border text-text-secondary border-[#E2E8F0] hover:border-brand-primary"
+                  className={`px-4 py-2 rounded-xl text-caption font-medium transition-all cursor-pointer ${isSelected ? "text-brand-primary" : "bg-white border text-text-secondary border-[#E2E8F0] hover:border-brand-primary"
                     }`}
                   style={isSelected ? {
                     border: '1px solid transparent',
@@ -100,7 +100,7 @@ export default function CampaignStep2({ data, updateData, errors }: CampaignStep
                 <button
                   key={scheme.label}
                   onClick={() => toggleColorScheme(scheme.label)}
-                  className={`flex flex-wrap items-center justify-center px-[16px] py-[8px] w-[122px] h-[56px] rounded-[12px] transition-all bg-white border ${isSelected ? "border-transparent" : "border-[#E2E8F0] hover:border-[#02022C]"
+                  className={`flex flex-wrap items-center justify-center px-[16px] py-[8px] w-[122px] h-[56px] rounded-[12px] transition-all bg-white border cursor-pointer ${isSelected ? "border-transparent" : "border-[#E2E8F0] hover:border-[#02022C]"
                     }`}
                   style={isSelected ? {
                     border: '1px solid transparent',

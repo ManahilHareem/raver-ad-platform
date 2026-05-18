@@ -65,7 +65,7 @@ export default function CampaignStep3({ data, updateData, errors }: CampaignStep
                 <button
                   key={p.label}
                   onClick={() => togglePlatform(p.label)}
-                  className={`px-[16px] py-[8px] rounded-xl text-body font-medium items-center justify-center transition-all flex flex-row gap-[10px] ${isSelected ? "text-brand-primary" : "bg-white border text-text-secondary border-[#E2E8F0] hover:border-brand-primary "
+                  className={`px-[16px] py-[8px] rounded-xl text-body font-medium items-center justify-center transition-all flex flex-row gap-[10px] cursor-pointer ${isSelected ? "text-brand-primary" : "bg-white border text-text-secondary border-[#E2E8F0] hover:border-brand-primary "
                     }`}
                   style={isSelected ? {
                     border: '1px solid transparent',
@@ -91,7 +91,7 @@ export default function CampaignStep3({ data, updateData, errors }: CampaignStep
                 <button
                   key={d}
                   onClick={() => updateData({ duration: d })}
-                  className={`px-[16px] py-[8px] rounded-xl text-body font-medium items-center justify-center transition-all flex flex-row gap-[10px] ${isSelected ? "text-brand-primary" : "bg-white border text-text-secondary border-[#E2E8F0] hover:border-brand-primary "
+                  className={`px-[16px] py-[8px] rounded-xl text-body font-medium items-center justify-center transition-all flex flex-row gap-[10px] cursor-pointer ${isSelected ? "text-brand-primary" : "bg-white border text-text-secondary border-[#E2E8F0] hover:border-brand-primary "
                     }`}
                   style={isSelected ? {
                     border: '1px solid transparent',
@@ -115,7 +115,7 @@ export default function CampaignStep3({ data, updateData, errors }: CampaignStep
                 <button
                   key={f.label}
                   onClick={() => updateData({ format: f.label })}
-                  className={`px-[16px] py-[8px] rounded-xl text-body font-medium items-start transition-all flex flex-col gap-[5px] ${isSelected ? "text-brand-primary" : "bg-white border text-text-secondary border-[#E2E8F0] hover:border-brand-primary "
+                  className={`px-[16px] py-[8px] rounded-xl text-body font-medium items-start transition-all flex flex-col gap-[5px] cursor-pointer ${isSelected ? "text-brand-primary" : "bg-white border text-text-secondary border-[#E2E8F0] hover:border-brand-primary "
                     }`}
                   style={isSelected ? {
                     border: '1px solid transparent',
