@@ -83,7 +83,7 @@ export function NotificationCard({ notification, onRead, onDelete }: Notificatio
       {/* Glow Effect for Unread */}
       {!notification.isRead && (
         <div className={cn(
-          "absolute -inset-0.5 rounded-[36px] bg-linear-to-r from-brand-primary to-brand-secondary opacity-5 blur-xl transition-opacity group-hover:opacity-10"
+          "absolute -inset-0.5 rounded-[36px] bg-linear-to-r from-brand-primary to-brand-secondary opacity-5 blur-xl transition-opacity group-hover:opacity-10 pointer-events-none"
         )} />
       )}
 
@@ -157,7 +157,7 @@ export function NotificationCard({ notification, onRead, onDelete }: Notificatio
 
       {/* Unread Indicator */}
       {!notification.isRead && (
-        <div className="absolute top-6 right-6 flex items-center gap-2">
+        <div className="absolute top-6 right-6 flex items-center gap-2 pointer-events-none">
           <div className="w-1.5 h-1.5 rounded-full bg-blue-500 animate-pulse shadow-xs shadow-blue-500" />
         </div>
       )}
