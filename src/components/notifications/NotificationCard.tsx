@@ -113,9 +113,14 @@ export function NotificationCard({ notification, onRead, onDelete }: Notificatio
                {notification.title}
              </h4>
            </div>
-           <span className="text-[12px] font-medium text-[#64748B]">
-             {formatTimeAgo(notification.timestamp)}
-           </span>
+           <div className="flex items-center gap-2">
+             <span className="text-[12px] font-medium text-[#64748B]">
+               {formatTimeAgo(notification.timestamp)}
+             </span>
+             {!notification.isRead && (
+               <div className="w-1.5 h-1.5 rounded-full bg-blue-500 animate-pulse shadow-xs shadow-blue-500 shrink-0" />
+             )}
+           </div>
         </div>
         
         <p className={cn(
@@ -155,12 +160,6 @@ export function NotificationCard({ notification, onRead, onDelete }: Notificatio
         </div>
       </div>
 
-      {/* Unread Indicator */}
-      {!notification.isRead && (
-        <div className="absolute top-6 right-6 flex items-center gap-2 pointer-events-none">
-          <div className="w-1.5 h-1.5 rounded-full bg-blue-500 animate-pulse shadow-xs shadow-blue-500" />
-        </div>
-      )}
     </motion.div>
   );
 }
