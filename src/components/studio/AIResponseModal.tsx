@@ -548,7 +548,10 @@ export default function AIResponseModal({
                 value={chatDisplayValue}
                 onChange={(e) => setInputText(e.target.value)}
                 disabled={isInputDisabled}
-                className="w-full bg-transparent px-3 py-2 text-[14px] text-[#121212] outline-none placeholder:text-slate-400 font-medium disabled:cursor-not-allowed"
+                className={cn(
+                  "w-full bg-transparent py-2 text-[14px] text-[#121212] outline-none placeholder:text-slate-400 font-medium disabled:cursor-not-allowed pl-3 transition-all",
+                  isListening ? "pr-16" : "pr-3"
+                )}
               />
               {isListening && (
                 <span className="absolute right-2 top-1/2 -translate-y-1/2 text-[10px] text-red-500 font-bold animate-pulse">
