@@ -34,7 +34,7 @@ export default function ImageViewerModal({
       {/* Image Container */}
       <div className="relative w-full h-full flex items-center justify-center p-4 sm:p-8 pointer-events-none transition-all duration-700">
          <div className="relative w-full h-full max-w-screen-2xl max-h-screen pointer-events-auto">
-            {imageUrl && imageUrl.startsWith("http") ? (
+            {imageUrl ? (
               <>
                 {isImageLoading && (
                   <div className="absolute inset-0 flex items-center justify-center">
