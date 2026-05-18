@@ -46,7 +46,11 @@ export function useVoiceInput(
   const [isListening, setIsListening] = useState(false);
   const [interimText, setInterimText] = useState("");
   const [isSupported, setIsSupported] = useState(false);
+  
   const recognitionRef = useRef<SpeechRecognitionInstance | null>(null);
+  const shouldBeListeningRef = useRef(false);
+  const consecutiveRestartCountRef = useRef(0);
+  const lastRestartTimeRef = useRef(0);
 
   // Check browser support on mount
   useEffect(() => {
@@ -56,11 +60,8 @@ export function useVoiceInput(
     setIsSupported(supported);
   }, []);
 
-  const startListening = useCallback(() => {
-    if (!isSupported) {
-      alert("Voice input is not supported in this browser. Please use Chrome or Edge.");
-      return;
-    }
+  const startRecognition = useCallback(() => {
+    if (!isSupported) return;
 
     // Create a new recognition instance each time
     const SpeechRecognition =
@@ -98,15 +99,54 @@ export function useVoiceInput(
 
     recognition.onerror = (event: SpeechRecognitionErrorEvent) => {
       console.error("Speech recognition error:", event.error);
-      if (event.error !== "aborted") {
-        setIsListening(false);
-        setInterimText("");
+      
+      // Stop automatic listening on permission blocks or critical errors
+      if (
+        event.error === "not-allowed" ||
+        event.error === "service-not-allowed" ||
+        event.error === "language-not-supported"
+      ) {
+        shouldBeListeningRef.current = false;
       }
     };
 
     recognition.onend = () => {
-      setIsListening(false);
-      setInterimText("");
+      // If the user hasn't explicitly stopped listening, auto-restart the browser API
+      if (shouldBeListeningRef.current) {
+        const now = Date.now();
+        if (now - lastRestartTimeRef.current < 1000) {
+          consecutiveRestartCountRef.current += 1;
+        } else {
+          consecutiveRestartCountRef.current = 0;
+        }
+        lastRestartTimeRef.current = now;
+
+        // Prevent rapid infinite restart loops if microphone is blocked or failing
+        if (consecutiveRestartCountRef.current > 5) {
+          console.warn("Speech recognition restarting too rapidly. Stopping to prevent loop.");
+          shouldBeListeningRef.current = false;
+          setIsListening(false);
+          setInterimText("");
+          return;
+        }
+
+        console.log("Speech recognition timeout detected. Auto-restarting loop...");
+        try {
+          // Slight delay to allow audio device state release/re-entry
+          setTimeout(() => {
+            if (shouldBeListeningRef.current) {
+              startRecognition();
+            }
+          }, 100);
+        } catch (err) {
+          console.error("Failed to auto-restart speech recognition:", err);
+          setIsListening(false);
+          setInterimText("");
+        }
+      } else {
+        setIsListening(false);
+        setInterimText("");
+      }
     };
 
     recognitionRef.current = recognition;
@@ -115,12 +155,35 @@ export function useVoiceInput(
       recognition.start();
     } catch (err) {
       console.error("Failed to start speech recognition:", err);
+      shouldBeListeningRef.current = false;
+      setIsListening(false);
+      setInterimText("");
     }
   }, [isSupported, lang, onFinalResult]);
 
+  const startListening = useCallback(() => {
+    if (!isSupported) {
+      alert("Voice input is not supported in this browser. Please use Chrome or Edge.");
+      return;
+    }
+    
+    shouldBeListeningRef.current = true;
+    consecutiveRestartCountRef.current = 0;
+    lastRestartTimeRef.current = Date.now();
+    startRecognition();
+  }, [isSupported, startRecognition]);
+
   const stopListening = useCallback(() => {
+    shouldBeListeningRef.current = false;
     if (recognitionRef.current) {
-      recognitionRef.current.stop();
+      // Unbind to prevent race conditions during intentional stop
+      recognitionRef.current.onend = null;
+      recognitionRef.current.onerror = null;
+      try {
+        recognitionRef.current.stop();
+      } catch (err) {
+        console.warn("Failed to stop recognition cleanly:", err);
+      }
       recognitionRef.current = null;
     }
     setIsListening(false);
@@ -130,8 +193,15 @@ export function useVoiceInput(
   // Clean up on unmount
   useEffect(() => {
     return () => {
+      shouldBeListeningRef.current = false;
       if (recognitionRef.current) {
-        recognitionRef.current.abort();
+        recognitionRef.current.onend = null;
+        recognitionRef.current.onerror = null;
+        try {
+          recognitionRef.current.abort();
+        } catch (err) {
+          // ignore
+        }
         recognitionRef.current = null;
       }
     };
