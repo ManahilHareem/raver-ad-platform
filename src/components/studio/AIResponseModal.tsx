@@ -265,7 +265,8 @@ export default function AIResponseModal({
             sessionId: sessionId,
             title: title,
             status: (action === "generate_image" && responseData?.image_urls?.length) ? "completed" : (campaignStatus || "completed"),
-            image: responseData?.image_urls?.length ? responseData.image_urls : "/assets/hashtag-campaign.jpg"
+            image: responseData?.image_urls?.length ? responseData.image_urls : "/assets/hashtag-campaign.jpg",
+            format: brief.format || responseData?.format
           });
         }
       }
@@ -475,12 +476,22 @@ export default function AIResponseModal({
                 </div>
                 <span className="text-[10px] font-medium text-slate-400">Real-time status</span>
               </div>
-              <ProductionPipeline 
-                status="in_production" 
-                message={lastAIMessage?.content || ""}
-                campaignStatus="in_production"
-                className="p-0 py-2"
-              />
+              {(() => {
+                const inferredMediaType = selectedCampaign?.format || 
+                  (initialUserMessage?.toLowerCase().includes("video") || initialUserMessage?.toLowerCase().includes("campaign") ? "video" : 
+                   initialUserMessage?.toLowerCase().includes("music") || initialUserMessage?.toLowerCase().includes("track") ? "music" : 
+                   initialUserMessage?.toLowerCase().includes("image") || initialUserMessage?.toLowerCase().includes("visual") ? "image" : "video");
+
+                return (
+                  <ProductionPipeline 
+                    status="in_production" 
+                    message={lastAIMessage?.content || ""}
+                    campaignStatus="in_production"
+                    className="p-0 py-2"
+                    mediaType={inferredMediaType}
+                  />
+                );
+              })()}
             </div>
           )}
 

@@ -734,6 +734,7 @@ function StudioPageContent() {
             completedNodes={currentPipelineCampaign?.completed_nodes}
             campaignStatus={currentPipelineCampaign?.campaign_status}
             stepApprovals={currentPipelineCampaign?.step_approvals}
+            mediaType={currentPipelineCampaign?.format}
           />
         </div>
 

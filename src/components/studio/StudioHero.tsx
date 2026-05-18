@@ -142,12 +142,19 @@ export default function StudioHero({
 
   const { isListening, interimText, startListening, stopListening } = useVoiceInput(handleVoiceResult);
 
-  // Auto-resize textarea
+  // Auto-resize textarea with a max height limit to prevent continuous expansion and show scrollbars instead
   useEffect(() => {
     const textarea = textareaRef.current;
     if (textarea) {
       textarea.style.height = "auto";
-      textarea.style.height = `${textarea.scrollHeight}px`;
+      const maxHeight = 240; // Limit dynamic expansion to 240px
+      if (textarea.scrollHeight > maxHeight) {
+        textarea.style.height = `${maxHeight}px`;
+        textarea.style.overflowY = "auto";
+      } else {
+        textarea.style.height = `${textarea.scrollHeight}px`;
+        textarea.style.overflowY = "hidden";
+      }
     }
   }, [prompt, interimText]);
 
@@ -261,7 +268,7 @@ export default function StudioHero({
           value={displayValue}
           onChange={(e) => setPrompt(e.target.value)}
           placeholder={selectedCampaign ? `Prompt for: ${selectedCampaign.title}` : "Create a summer balayage instagram promotion"}
-          className="w-full min-h-[140px] p-5 bg-white rounded-2xl border border-[#E2E8F0] focus:border-[#02022C] text-[15px] text-[#121212] placeholder:text-[#94A3B8] transition-all resize-none outline-none overflow-hidden shadow-sm"
+          className="w-full min-h-[140px] max-h-[240px] p-5 bg-white rounded-2xl border border-[#E2E8F0] focus:border-[#02022C] text-[15px] text-[#121212] placeholder:text-[#94A3B8] transition-all resize-none outline-none overflow-y-hidden shadow-sm"
         />
         
         {/* Selected Assets Display */}

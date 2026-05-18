@@ -13,9 +13,10 @@ interface ProductionPipelineProps {
   campaignStatus?: string | null;
   stepApprovals?: any;
   className?: string;
+  mediaType?: string | null;
 }
 
-export default function ProductionPipeline({ status, message, videoUrl, completedNodes = [], campaignStatus, stepApprovals, className }: ProductionPipelineProps) {
+export default function ProductionPipeline({ status, message, videoUrl, completedNodes = [], campaignStatus, stepApprovals, className, mediaType }: ProductionPipelineProps) {
     const nodeMap: Record<string, string[]> = {
       "Image Generation": ["generate_image", "generate_images", "generate-images"],
       "Copy Generation": ["generate_text", "generate_script", "generate-copy"],
@@ -131,19 +132,19 @@ export default function ProductionPipeline({ status, message, videoUrl, complete
 
   const msg = message?.toLowerCase() || "";
   
-  // Specific task identification based on AI Director response phrases
-  const isImageTask = msg.includes("your image is queued") || msg.includes("generation has started");
-  const isMusicTask = msg.includes("your music track is queued") || msg.includes("i'll let you know when it's ready");
-  const isVideoTask = msg.includes("launching your campaign now") || msg.includes("campaign started");
-  
-  // Fallback identification if phrases don't match exactly but keywords do
-  const isImageFallback = !isImageTask && !isMusicTask && !isVideoTask && (msg.includes("image") || msg.includes("visual"));
-  const isMusicFallback = !isMusicTask && !isImageTask && !isVideoTask && (msg.includes("music") || msg.includes("track"));
-  const isVideoFallback = !isVideoTask && !isImageTask && !isMusicTask && (msg.includes("campaign") || msg.includes("video") || !!videoUrl);
+  // Refined identification logic: Prioritize persistent context (mediaType) then keywords
+  const isExplicitVideo = (mediaType?.toLowerCase() === "video") || msg.includes("video") || msg.includes("campaign") || !!videoUrl;
+  const isExplicitMusic = (mediaType?.toLowerCase() === "music") || ((msg.includes("music") || msg.includes("track")) && !isExplicitVideo);
+  const isExplicitImage = (mediaType?.toLowerCase() === "image") || ((msg.includes("image") || msg.includes("visual")) && !isExplicitVideo && !isExplicitMusic);
 
-  const finalIsImageTask = isImageTask || isImageFallback;
-  const finalIsMusicTask = isMusicTask || isMusicFallback;
-  const finalIsVideoTask = isVideoTask || isVideoFallback;
+  // Transient task detection for status indicators
+  const isImageTask = msg.includes("your image is queued") || msg.includes("generation has started") || (msg.includes("image") && msg.includes("queue"));
+  const isMusicTask = msg.includes("your music track is queued") || msg.includes("i'll let you know when it's ready") || (msg.includes("music") && msg.includes("queue"));
+  const isVideoTask = msg.includes("launching your campaign now") || msg.includes("campaign started") || (msg.includes("video") && msg.includes("launch"));
+
+  const finalIsVideoTask = isExplicitVideo || isVideoTask;
+  const finalIsMusicTask = (isExplicitMusic || isMusicTask) && !finalIsVideoTask;
+  const finalIsImageTask = (isExplicitImage || isImageTask) && !finalIsVideoTask && !finalIsMusicTask;
 
   const steps = [
     { label: "Prompt", status: getStepStatus("Prompt") },
@@ -157,27 +158,17 @@ export default function ProductionPipeline({ status, message, videoUrl, complete
   ];
 
   // Progressive Pipeline Logic:
-  // If it's a video campaign, we start by only showing the image pipeline.
-  // Once the image is generated AND approved (completed), we reveal the full video production pipeline.
-  const isImageGenCompleted = getStepStatus("Image Generation") === "completed";
-
   const visibleSteps = steps.filter(step => {
     // If it's purely an image task, only show Image related nodes
-    if (finalIsImageTask && !finalIsVideoTask && !finalIsMusicTask) {
+    if (finalIsImageTask) {
       return ["Prompt", "Creative Brief", "Image Generation"].includes(step.label);
     }
     // If it's purely a music task, only show Music related nodes
-    if (finalIsMusicTask && !finalIsVideoTask && !finalIsImageTask) {
+    if (finalIsMusicTask) {
       return ["Prompt", "Creative Brief", "Music Generation"].includes(step.label);
     }
     
-    // For video or mixed campaigns:
-    // If Image Generation is not yet completed/approved, only show the image phase
-    if (finalIsVideoTask && !isImageGenCompleted) {
-      return ["Prompt", "Creative Brief", "Image Generation"].includes(step.label);
-    }
-
-    // For video or mixed campaigns that have passed the image phase, show all nodes
+    // For video or mixed campaigns, show all nodes
     return true;
   });
 
@@ -185,6 +176,7 @@ export default function ProductionPipeline({ status, message, videoUrl, complete
 
   return (
     <div className={cn("p-4 md:p-6 rounded-[12px] overflow-hidden", className)}>
+
       {isAwaiting && message && (
         <div className="mb-8 p-5 bg-amber-50 border border-amber-100 rounded-[22px] flex items-center gap-4 animate-in fade-in slide-in-from-top-4 duration-500">
           <div className="w-12 h-12 bg-white rounded-2xl flex items-center justify-center shadow-sm border border-amber-100">
@@ -200,15 +192,17 @@ export default function ProductionPipeline({ status, message, videoUrl, complete
       )}
       <div className="overflow-x-auto custom-scrollbar">
       <div className={cn(
-        "flex items-center relative transition-all duration-500",
-        visibleSteps.length <= 3 ? "justify-center gap-12 md:gap-24 py-4" : "justify-between min-w-[800px]"
+        "flex items-center relative transition-all duration-500 py-4",
+        visibleSteps.length <= 3 ? "justify-center gap-12 md:gap-24" : "justify-between min-w-[800px]"
       )}>
-        {/* Connection Line */}
-
-
         {visibleSteps.map((step, i) => (
           <div key={i} className="flex flex-col items-center gap-3 relative z-10">
-            <div className="w-[48px] h-[48px] rounded-[8px] flex items-center justify-center border-[0.35px] border-[#0000001A] backdrop-blur-sm transition-all">
+            <div className={cn(
+              "w-[48px] h-[48px] rounded-[12px] flex items-center justify-center border-[0.35px] transition-all duration-500 shadow-sm",
+              step.status === "completed" ? "bg-white border-[#02022C] text-[#02022C]" :
+              step.status === "active" ? "bg-[#02022C] border-[#02022C] text-white shadow-lg" :
+              "bg-white border-[#0000001A] text-slate-300 backdrop-blur-sm"
+            )}>
               {step.status === "completed" ? (
                 <CustomIcons.Success className="w-5 h-5"/> 
               ) : step.status === "awaiting_approval" ? (
@@ -219,17 +213,17 @@ export default function ProductionPipeline({ status, message, videoUrl, complete
                 <div className="flex items-center justify-center bg-red-500/10 border border-red-500 rounded-lg p-2 ring-2 ring-red-500/20">
                   <Icons.Plus className="w-5 h-5 text-red-600 rotate-45" />
                 </div>
+              ) : step.status === "active" ? (
+                <Icons.Loader className="w-5 h-5 animate-spin" />
               ) : (
-                <div className={cn(
-                  "w-[20px] h-[20px] rounded-[8px] flex items-center justify-center border-[0.35px] border-[#0000001A] backdrop-blur-sm transition-all",
-                  step.status === "active" && "bg-[#02022C]/10 border-[#02022C] animate-pulse"
-                )} />
+                <div className="w-[12px] h-[12px] rounded-full bg-slate-100" />
               )}
             </div>
             <span className={cn(
-              "text-[12px] font-medium text-center whitespace-nowrap text-[#121212]",
-              (step.status === "active" || step.status === "awaiting_approval" || step.status === "rejected") && "text-[#02022C] font-bold",
-              step.status === "rejected" && "text-red-600"
+              "text-[12px] font-medium text-center whitespace-nowrap transition-colors duration-500",
+              (step.status === "active" || step.status === "awaiting_approval" || step.status === "rejected") ? "text-[#02022C] font-bold" : "text-slate-400",
+              step.status === "rejected" && "text-red-600",
+              step.status === "completed" && "text-[#02022C]"
             )}>
               {step.label}
             </span>
@@ -240,3 +234,4 @@ export default function ProductionPipeline({ status, message, videoUrl, complete
     </div>
   );
 }
+
