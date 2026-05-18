@@ -56,7 +56,10 @@ export function NotificationList() {
   const handleRead = async (id: string) => {
     try {
       setNotifications(prev => prev.map(n => n.id === id ? { ...n, isRead: true } : n));
-      await apiFetch(`${API_BASE}/notifications/${id}`);
+      const response = await apiFetch(`${API_BASE}/notifications/${id}/read`, { method: 'PATCH' });
+      if (!response.ok) {
+        throw new Error("Failed to mark notification as read");
+      }
     } catch (error) {
       console.error("Failed to mark read:", error);
       fetchNotifications();
@@ -66,7 +69,10 @@ export function NotificationList() {
   const handleDelete = async (id: string) => {
     try {
       setNotifications(prev => prev.filter(n => n.id !== id));
-      await apiFetch(`${API_BASE}/notifications/${id}`, { method: 'DELETE' });
+      const response = await apiFetch(`${API_BASE}/notifications/${id}`, { method: 'DELETE' });
+      if (!response.ok) {
+        throw new Error("Failed to delete notification");
+      }
     } catch (error) {
       console.error("Failed to delete notification:", error);
       fetchNotifications();
@@ -76,7 +82,10 @@ export function NotificationList() {
   const handleMarkAllRead = async () => {
     try {
       setNotifications(prev => prev.map(n => ({ ...n, isRead: true })));
-      await apiFetch(`${API_BASE}/notifications/read-all`, { method: 'PATCH' });
+      const response = await apiFetch(`${API_BASE}/notifications/read-all`, { method: 'PATCH' });
+      if (!response.ok) {
+        throw new Error("Failed to mark all as read");
+      }
     } catch (error) {
       console.error("Failed to mark all as read:", error);
       fetchNotifications();
@@ -87,7 +96,10 @@ export function NotificationList() {
     try {
       const toDelete = [...notifications];
       setNotifications([]);
-      await Promise.all(toDelete.map(n => apiFetch(`${API_BASE}/notifications/${n.id}`, { method: 'DELETE' })));
+      const responses = await Promise.all(toDelete.map(n => apiFetch(`${API_BASE}/notifications/${n.id}`, { method: 'DELETE' })));
+      if (responses.some(res => !res.ok)) {
+        throw new Error("Failed to clear some notifications");
+      }
     } catch (error) {
       console.error("Failed to clear notifications:", error);
       fetchNotifications();
